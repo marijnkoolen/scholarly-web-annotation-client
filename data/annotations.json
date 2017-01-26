@@ -1,0 +1,84 @@
+[
+    {
+        "id": "urn:uuid:7d80f464-59f6-486a-9994-8a0f604a1f4b",
+        "target": [
+            {
+                "source": "urn:vangogh:testletter",
+                "selector": {
+                    "refinedBy": [
+                        {
+                            "suffix": "\t\tTheo van Gogh\n\t\t\t\t",
+                            "prefix": "\t\t\t\ttest\n\t\t\t\t\ttest\nV",
+                            "type": "TextQuoteSelector",
+                            "exact": "\nFrom: Vincent van Gogh \n"
+                        },
+                        {
+                            "end": 134,
+                            "type": "TextPositionSelector",
+                            "start": 109
+                        }
+                    ],
+                    "conformsTo": "http://tools.ietf.org/rfc/rfc3870",
+                    "type": "FragmentSelector",
+                    "value": "urn:vangogh:testletter"
+                },
+                "type": "Text"
+            }
+        ],
+        "@context": "http://www.w3.org/ns/anno.jsonld",
+        "type": "Annotation",
+        "creator": "marijn",
+        "body": [
+            {
+                "vocabulary": "DBpedia",
+                "id": "http://dbpedia.org/resource/Vincent_van_Gogh",
+                "purpose": "classifying",
+                "type": "Classifying",
+                "value": "Vincent van Gogh"
+            }
+        ],
+        "created": 1485427269,
+        "motivation": null
+    },
+    {
+        "id": "urn:uuid:ca1912eb-9a5e-4292-88e9-9841902ca0fe",
+        "target": [
+            {
+                "selector": {
+                    "refinedBy": [
+                        {
+                            "prefix": "\t\t\t\t\n\t\t\t\t\tTheo van G",
+                            "exact": "\nTo: Theo van Gogh \n",
+                            "type": "TextQuoteSelector",
+                            "suffix": "ague\n\t\t\t\t\t\n\t\t\t\t\tSund"
+                        },
+                        {
+                            "end": 166,
+                            "type": "TextPositionSelector",
+                            "start": 146
+                        }
+                    ],
+                    "value": "urn:vangogh:testletter",
+                    "type": "FragmentSelector",
+                    "conformsTo": "http://tools.ietf.org/rfc/rfc3870"
+                },
+                "source": "urn:vangogh:testletter",
+                "type": "Text"
+            }
+        ],
+        "@context": "http://www.w3.org/ns/anno.jsonld",
+        "type": "Annotation",
+        "creator": "marijn",
+        "body": [
+            {
+                "purpose": "classifying",
+                "id": "http://dbpedia.org/resource/Theo_van_Gogh_(art_dealer)",
+                "vocabulary": "DBpedia",
+                "type": "Classifying",
+                "value": "Theo van Gogh (art dealer)"
+            }
+        ],
+        "created": 1485427297,
+        "motivation": null
+    }
+]
