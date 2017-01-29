@@ -48,8 +48,8 @@ The W3C `Motivation` is `linking` an annotatable resource to an annotatable part
 
 Rules:
 
-+ only follow linking annotations bodies that are in the *annotation-target-observer* window.
-+ do not list part-of annotations, i.e. linking annotations with annotation bodies that are in the *annotation-target-observer* window.
++ only follow linking annotations bodies that are *annotatable things* in the *annotation-target-observer* window.
++ do not list part-of annotations, i.e. linking annotations with annotation bodies that are *annotatable things* in the *annotation-target-observer* window.
 
 
 ## Fragment selector
