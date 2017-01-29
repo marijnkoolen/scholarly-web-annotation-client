@@ -10,6 +10,7 @@
 'use strict'
 
 import RDFaUtil from './RDFaUtil.js';
+import DOMUtil from './DOMUtil.js';
 
 const SelectionUtil = {
 
@@ -106,11 +107,30 @@ const SelectionUtil = {
 
                 // Detect if selection is backwards
                 var range = document.createRange();
-                range.setStart(sel.anchorNode, sel.anchorOffset);
-                range.setEnd(sel.focusNode, sel.focusOffset);
-                var backwards = range.collapsed;
-                range.detach();
+				var focusNode = sel.focusNode;
+				let ancestors = DOMUtil.getAncestors(sel.focusNode);
+				let nodes = ancestors.concat([sel.focusNode]).reverse();
+				var wholeElement = null;
+				nodes.forEach(function(node) {
+					if (node.attributes && node.hasAttribute("property") && node.getAttribute("property") === "selectWholeElement") {
+						wholeElement = node;
+					}
+				})
+				console.log(wholeElement);
+				let textNodes = DOMUtil.getTextNodes(DOMUtil.getDescendants(wholeElement));
+				range.setStart(textNodes[0], 0);
+				range.setEnd(textNodes[textNodes.length - 1], textNodes.length - 1);
+				range.selectNodeContents(sel.focusNode);
+				console.log(sel.focusNode.parentNode);
+				let endOffset = sel.anchorNode.parentNode.textContent.length;
+                //range.setStart(sel.anchorNode, sel.anchorOffset);
+                //range.setEnd(sel.focusNode, sel.focusOffset);
+                //var backwards = range.collapsed;
+				sel.removeAllRanges();
+				sel.addRange(range);
+                //range.detach(range);
 
+				/*
                 // modify() works on the focus of the selection
                 var endNode = sel.focusNode, endOffset = sel.focusOffset;
                 sel.collapse(sel.anchorNode, sel.anchorOffset);
@@ -123,10 +143,11 @@ const SelectionUtil = {
                 }
 
                 sel.modify("move", direction[0], "character");
-                sel.modify("move", direction[1], "paragraph");
+                sel.modify("move", direction[1], "line");
                 sel.extend(endNode, endOffset);
                 sel.modify("extend", direction[1], "character");
-                sel.modify("extend", direction[0], "paragraph");
+                sel.modify("extend", direction[0], "line");
+				*/
             }
         } else if ( (sel = document.selection) && sel.type != "Control") {
             var textRange = sel.createRange();
