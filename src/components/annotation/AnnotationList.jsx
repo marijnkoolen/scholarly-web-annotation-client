@@ -10,7 +10,6 @@ import AnnotationAPI from './../../api/AnnotationAPI.js';
 class AnnotationList extends React.Component {
     constructor(props) {
         super(props);
-        console.log(this.props);
         this.resourceIndex = RDFaUtil.indexRDFaResources();
         this.annotationIndex = {};
         this.lookup = this.lookup.bind(this);
@@ -49,7 +48,7 @@ class AnnotationList extends React.Component {
     reloadAnnotations(){
         let component = this;
         // get resource IDs of current RDFa nodes in DOM
-        let resourceIds = getTopRDFaResources(document.body);
+        let resourceIds = RDFaUtil.getTopRDFaResources(document.body);
         let sameList = resourceIds.every(function(resourceId) {
             return (component.state.resourceIds.indexOf(resourceId) > -1);
         });
@@ -92,7 +91,7 @@ class AnnotationList extends React.Component {
     }
     componentDidMount() {
         var resourceIds = RDFaUtil.getTopRDFaResources(document.body);
-        console.log(resourceIds);
+        //console.log(resourceIds);
         this.setState({resourceIds: resourceIds}, function() {
             this.loadAnnotations();
         });
@@ -112,7 +111,7 @@ class AnnotationList extends React.Component {
         var annotationItems = null;
         let component = this;
         if (this.state.annotations) {
-            console.log(this.state.annotations);
+            //console.log(this.state.annotations);
             annotationItems = this.state.annotations.map(function(annotation) {
                 let active = false;
                 if (component.state.activeAnnotations.indexOf(annotation) !== -1) {
