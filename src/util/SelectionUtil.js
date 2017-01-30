@@ -74,21 +74,20 @@ const SelectionUtil = {
     // regardless of whether selection is done forwards or backwards
     getStartEndSelection : function() {
         var selection = document.getSelection();
-        let position = selection.anchorNode.compareDocumentPosition(selection.focusNode);
-        if (position & Node.DOCUMENT_POSITION_PRECEDING) {
+        if (selection.isCollapsed) {
+            let observerNodes = DOMUtil.getObserverNodes();
             return {
-                startNode: selection.focusNode,
-                startOffset: selection.focusOffset,
-                endNode: selection.anchorNode,
-                endOffset: selection.anchorOffset,
-                selectionText: selection.toString()
+                startNode: observerNodes[0],
+                endNode: observerNodes[observerNodes.length - 1]
             }
         }
+        let position = selection.anchorNode.compareDocumentPosition(selection.focusNode);
+        let backwards = position & Node.DOCUMENT_POSITION_PRECEDING;
         return {
-            startNode: selection.anchorNode,
-            startOffset: selection.anchorOffset,
-            endNode: selection.focusNode,
-            endOffset: selection.focusOffset,
+            startNode: backwards ? selection.focusNode : selection.anchorNode,
+            startOffset: backwards ? selection.focusOffset : selection.anchorOffset,
+            endNode: backwards ? selection.anchorNode : selection.focusNode,
+            endOffset: backwards ? selection.anchorOffset : selection.focusOffset,
             selectionText: selection.toString()
         };
     },
@@ -121,7 +120,6 @@ const SelectionUtil = {
         // 5. if start and/or end nodes have SelectWholeElement property,
         // make sure the offsets are set properly
         if (startNode || endNode){
-            console.log(selection);
             var range = document.createRange();
             range.setStart(selection.startNode, selection.startOffset);
             range.setEnd(selection.endNode, selection.endOffset);
