@@ -93,76 +93,57 @@ const SelectionUtil = {
         };
     },
 
+    checkSelectionRange : function() {
+        // 1. do nothing selection is not collapsed
+        if (document.getSelection().isCollapsed) {
+            console.log('selection is collapsed');
+            return null;
+        }
+        // 2. get start and end nodes of selection in display order
+        var selection = SelectionUtil.getStartEndSelection();
+        console.log(selection);
+        // 3. if selection start node has SelectWholeElement property
+        let startNode = SelectionUtil.selectWholeElement(selection.startNode)
+        let endNode = SelectionUtil.selectWholeElement(selection.endNode)
+        if (startNode) {
+            // move selection to start of start node
+            selection.startOffset = 0;
+            selection.startNode = startNode;
+        }
+        // 4. if selection end node has SelectWholeElement property
+        if (endNode) {
+            // move selection to end of end node
+            let textNodes = DOMUtil.getTextNodes(DOMUtil.getDescendants(endNode));
+            console.log(textNodes);
+            selection.endNode = textNodes[textNodes.length - 1];
+            selection.endOffset = selection.endNode.length;
+        }
+        // 5. if start and/or end nodes have SelectWholeElement property,
+        // make sure the offsets are set properly
+        if (startNode || endNode){
+            console.log(selection);
+            var range = document.createRange();
+            range.setStart(selection.startNode, selection.startOffset);
+            range.setEnd(selection.endNode, selection.endOffset);
+            var sel = document.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
 
-    // the function below is derived from code written by Tim Down, see
-    // http://stackoverflow.com/questions/7380190/select-whole-word-with-getselection
-    selectWholeElement : function() {
-        var sel;
 
-        // Check for existence of window.getSelection() and that it has a
-        // modify() method. IE 9 has both selection APIs but no modify() method.
-        if (window.getSelection && (sel = window.getSelection()).modify) {
-            sel = window.getSelection();
-            if (!sel.isCollapsed) {
+    },
 
-                // Detect if selection is backwards
-                var range = document.createRange();
-				var focusNode = sel.focusNode;
-				let ancestors = DOMUtil.getAncestors(sel.focusNode);
-				let nodes = ancestors.concat([sel.focusNode]).reverse();
-				var wholeElement = null;
-				nodes.forEach(function(node) {
-					if (node.attributes && node.hasAttribute("property") && node.getAttribute("property") === "selectWholeElement") {
-						wholeElement = node;
-					}
-				})
-				console.log(wholeElement);
-				let textNodes = DOMUtil.getTextNodes(DOMUtil.getDescendants(wholeElement));
-				range.setStart(textNodes[0], 0);
-				range.setEnd(textNodes[textNodes.length - 1], textNodes.length - 1);
-				range.selectNodeContents(sel.focusNode);
-				console.log(sel.focusNode.parentNode);
-				let endOffset = sel.anchorNode.parentNode.textContent.length;
-                //range.setStart(sel.anchorNode, sel.anchorOffset);
-                //range.setEnd(sel.focusNode, sel.focusOffset);
-                //var backwards = range.collapsed;
-				sel.removeAllRanges();
-				sel.addRange(range);
-                //range.detach(range);
-
-				/*
-                // modify() works on the focus of the selection
-                var endNode = sel.focusNode, endOffset = sel.focusOffset;
-                sel.collapse(sel.anchorNode, sel.anchorOffset);
-
-                var direction = [];
-                if (backwards) {
-                    direction = ['backward', 'forward'];
-                } else {
-                    direction = ['forward', 'backward'];
-                }
-
-                sel.modify("move", direction[0], "character");
-                sel.modify("move", direction[1], "line");
-                sel.extend(endNode, endOffset);
-                sel.modify("extend", direction[1], "character");
-                sel.modify("extend", direction[0], "line");
-				*/
-            }
-        } else if ( (sel = document.selection) && sel.type != "Control") {
-            var textRange = sel.createRange();
-            if (textRange.text) {
-                textRange.expand("word");
-                // Move the end back to not include the word's trailing space(s),
-                // if necessary
-                while (/\s$/.test(textRange.text)) {
-                    textRange.moveEnd("character", -1);
-                }
-                textRange.select();
+    selectWholeElement : function(node) {
+        let ancestors = DOMUtil.getAncestors(node);
+        let nodes = ancestors.concat([node]).reverse();
+        var wholeElement = null;
+        for (var index = 0, node; node = nodes[index++]; ) {
+            if (node.attributes && node.hasAttribute("property") && node.getAttribute("property") === "selectWholeElement") {
+                return node;
             }
         }
-    }
-
+        return null;
+    },
 }
 
 export default SelectionUtil;
