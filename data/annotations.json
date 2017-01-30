@@ -1,0 +1,95 @@
+[
+    {
+        "creator": "marijn",
+        "created": 1485535700,
+        "@context": "http://www.w3.org/ns/anno.jsonld",
+        "type": "Annotation",
+        "id": "urn:uuid:dc88c5a1-7fbe-497f-9857-4161883c8b21",
+        "body": [
+            {
+                "id": "http://dbpedia.org/resource/Vincent_van_Gogh",
+                "vocabulary": "DBpedia",
+                "value": "Vincent van Gogh",
+                "type": "Classifying",
+                "purpose": "classifying"
+            }
+        ],
+        "motivation": null,
+        "target": [
+            {
+                "type": "Text",
+                "source": "urn:vangogh:testletter",
+                "selector": {
+                    "value": "urn:vangogh:testletter.sender",
+                    "type": "FragmentSelector",
+                    "conformsTo": "http://tools.ietf.org/rfc/rfc3870"
+                }
+            }
+        ]
+    },
+    {
+        "creator": "marijn",
+        "created": 1485535725,
+        "@context": "http://www.w3.org/ns/anno.jsonld",
+        "type": "Annotation",
+        "id": "urn:uuid:760c053a-e9b9-420d-8bae-c950d056c25f",
+        "body": [
+            {
+                "id": "http://dbpedia.org/resource/Theo_van_Gogh_(art_dealer)",
+                "vocabulary": "DBpedia",
+                "value": "Theo van Gogh (art dealer)",
+                "type": "Classifying",
+                "purpose": "classifying"
+            }
+        ],
+        "motivation": null,
+        "target": [
+            {
+                "selector": {
+                    "value": "urn:vangogh:testletter.receiver",
+                    "type": "FragmentSelector",
+                    "conformsTo": "http://tools.ietf.org/rfc/rfc3870"
+                },
+                "source": "urn:vangogh:testletter",
+                "type": "Text"
+            }
+        ]
+    },
+    {
+        "creator": "marijn",
+        "created": 1485535746,
+        "@context": "http://www.w3.org/ns/anno.jsonld",
+        "type": "Annotation",
+        "id": "urn:uuid:c045838f-7053-41aa-9786-578d18901175",
+        "body": [
+            {
+                "id": "http://dbpedia.org/resource/Kinship",
+                "vocabulary": "DBpedia",
+                "value": "Kinship",
+                "type": "Classifying",
+                "purpose": "classifying"
+            }
+        ],
+        "motivation": null,
+        "target": [
+            {
+                "type": "Text",
+                "source": "urn:uuid:dc88c5a1-7fbe-497f-9857-4161883c8b21",
+                "selector": {
+                    "value": "urn:uuid:dc88c5a1-7fbe-497f-9857-4161883c8b21",
+                    "type": "FragmentSelector",
+                    "conformsTo": "http://tools.ietf.org/rfc/rfc3870"
+                }
+            },
+            {
+                "type": "Text",
+                "source": "urn:uuid:760c053a-e9b9-420d-8bae-c950d056c25f",
+                "selector": {
+                    "value": "urn:uuid:760c053a-e9b9-420d-8bae-c950d056c25f",
+                    "type": "FragmentSelector",
+                    "conformsTo": "http://tools.ietf.org/rfc/rfc3870"
+                }
+            }
+        ]
+    }
+]
