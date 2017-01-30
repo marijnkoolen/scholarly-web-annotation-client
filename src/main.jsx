@@ -33,7 +33,7 @@ var setAnnotationAttributes = function() {
 var setSelectWholeElement = function(allNodes) {
     let selectWholeNodes = RDFaUtil.getSelectWholeNodes(allNodes);
     selectWholeNodes.forEach(function(selectWholeNode) {
-        selectWholeNode.onmouseup = SelectionUtil.selectWholeElement;
+		selectWholeNode.addEventListener('mouseup', SelectionUtil.checkSelectionRange, false);
     });
 }
 
