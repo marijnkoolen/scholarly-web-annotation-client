@@ -21,6 +21,10 @@ const DOMUtil = {
     ***********************************
     */
 
+    getObserverNodes : function() {
+        return document.getElementsByClassName("annotation-target-observer");
+    },
+
     // return all text nodes in a list of nodes
     getTextNodes : function(nodes) {
         return nodes.filter(function(node) {
@@ -28,14 +32,12 @@ const DOMUtil = {
         })
     },
 
-
     // return all non-text nodes in a list of nodes
     getNonTextNodes : function(nodes) {
         return nodes.filter(function(node) {
             return node.nodeName !== "#text";
         })
     },
-
 
     // return all ancestor nodes of a node
     getAncestors : function(node) {
@@ -68,6 +70,7 @@ const DOMUtil = {
     // select all larger elements (excluding document)
     findCommonAncestors : function(startNode, endNode) {
         var startAncestors = DOMUtil.getAncestors(startNode);
+        startAncestors.push(startNode);
         var currNode = endNode;
         // find lowest common ancestor
         while (!(startAncestors.includes(currNode))) {
