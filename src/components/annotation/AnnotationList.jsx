@@ -64,7 +64,8 @@ class AnnotationList extends React.Component {
             if (error)
                 return null;
 
-            component.filterAnnotations(annotations);
+            component.setState({annotations: annotations});
+            //component.filterAnnotations(annotations);
         });
     }
     filterAnnotations(annotations) {
@@ -111,6 +112,7 @@ class AnnotationList extends React.Component {
         var annotationItems = null;
         let component = this;
         if (this.state.annotations) {
+            console.log(this.state.annotations);
             annotationItems = this.state.annotations.map(function(annotation) {
                 let active = false;
                 if (component.state.activeAnnotations.indexOf(annotation) !== -1) {
