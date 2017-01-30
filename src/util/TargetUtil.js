@@ -104,9 +104,6 @@ const TargetUtil = {
     // Annotation targets are elements containing
     // or contained in the selected passage.
     getCandidateRDFaTargets : function() {
-        if (document.getSelection().anchorNode === null) {
-            return null;
-        }
         var selection = SelectionUtil.getStartEndSelection();
         var ancestors = DOMUtil.findCommonAncestors(selection.startNode, selection.endNode);
         selection.containerNode = ancestors[ancestors.length - 1];
@@ -115,7 +112,7 @@ const TargetUtil = {
         let smallerNodes = TargetUtil.getRDFaCandidates(selectionNodes);
         var wholeNodes = biggerNodes.concat(smallerNodes);
         var highlighted = null;
-        if (wholeNodes.length > 0) {
+        if (selection.startOffset) {
             let container = biggerNodes[biggerNodes.length - 1];
             highlighted = TargetUtil.findHighlighted(container, selection);
         }
