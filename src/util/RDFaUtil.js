@@ -168,28 +168,49 @@ const RDFaUtil = {
 
     },
 
+    makeIndexEntry(node) {
+        return {
+            rdfaResource: node.getAttribute("resource"),
+            domNode: node,
+            rdfaType: node.getAttribute("typeof"),
+            rdfaProperty: node.getAttribute("property"),
+            text: RDFaUtil.getRDFaTextContent(node)
+        }
+    },
+
+    updateStack : function(stack, node) {
+        var top = stack[stack.length - 1];
+        var position = top.compareDocumentPosition(node);
+        while (!(position & Node.DOCUMENT_POSITION_CONTAINED_BY)) {
+            stack.pop();
+            var top = stack[stack.length - 1];
+            var position = top.compareDocumentPosition(node);
+        }
+    },
+
     indexRDFaResources : function() {
         var index = {};
         // get all top-level RDFa resources
         RDFaUtil.getTopRDFaNodes(document.body).forEach(function(rdfaResourceNode) {
-            index[rdfaResourceNode.getAttribute("about")] = {
-                rdfaResource: rdfaResourceNode.getAttribute("about"),
-                domNode: rdfaResourceNode,
-                rdfaType: rdfaResourceNode.getAttribute("typeof"),
-                rdfaProperty: rdfaResourceNode.getAttribute("property"),
-                text: RDFaUtil.getRDFaTextContent(rdfaResourceNode)
-            }
+            index[rdfaResourceNode.getAttribute("about")] = RDFaUtil.makeIndexEntry(rdfaResourceNode);
+            index[rdfaResourceNode.getAttribute("about")].rdfaResource = rdfaResourceNode.getAttribute("about");
+            var resourceStack = [rdfaResourceNode];
             // add all RDFa sub-resources
             var nodes = RDFaUtil.getNotIgnoreDescendants(rdfaResourceNode);
             RDFaUtil.getRDFaNodes(nodes).forEach(function(node) {
-                index[node.getAttribute("resource")] = {
-                    rdfaResource: node.getAttribute("resource"),
-                    partOf: rdfaResourceNode.getAttribute("about"),
-                    domNode: node,
-                    rdfaType: node.getAttribute("typeof"),
-                    rdfaProperty: node.getAttribute("property"),
-                    text: RDFaUtil.getRDFaTextContent(node)
+                RDFaUtil.updateStack(resourceStack, node);
+                var rdfaParent = resourceStack[resourceStack.length - 1];
+                // if top level resource isPartOf a larger resource,
+                // store as partOf information on top level resource,
+                index[node.getAttribute("resource")] = RDFaUtil.makeIndexEntry(node);
+                if (node.getAttribute("property") === "isPartOf") {
+                    index[node.getAttribute("resource")].rdfaParent = null;
+                    index[rdfaResourceNode.getAttribute("about")].rdfaProperty = "hasPart";
+                    index[rdfaResourceNode.getAttribute("about")].rdfaParent = node.getAttribute("resource");
+                } else {
+                    index[node.getAttribute("resource")].rdfaParent = rdfaResourceNode.getAttribute("about");
                 }
+                resourceStack.push(node);
             })
         });
         return index;
