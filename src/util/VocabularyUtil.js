@@ -2,12 +2,14 @@
 'use strict'
 
 import N3 from 'n3';
+var N3Util = N3.Util;
 
 const VocabularyUtil = {
 
     store : N3.Store(),
 
     prefixes : {
+        // common prefixes for ease of reference
         rdfs: "http://www.w3.org/2000/01/rdf-schema#",
         owl: "http://www.w3.org/2002/07/owl#"
     },
@@ -118,12 +120,31 @@ const VocabularyUtil = {
         });
     },
 
-    getSuperClass : function(className) {
-        let triples = VocabularyUtil.store.find(className, VocabularyUtil.expand('rdfs:subClassOf'), null);
-        return triples[0] ? triples[0].subject : null;
+    filterBlanks : function(triples) {
+        return triples.filter(triple => !VocabularyUtil.hasBlankNode(triple));
     },
 
-    expand : function(prefixedName) {
+    hasBlankNode : function(triple) {
+        return N3Util.isBlank(triple.subject) || N3Util.isBlank(triple.object) ? true : false;
+    },
+
+    getSuperClass : function(className) {
+        var triples = VocabularyUtil.store.find(className, VocabularyUtil.expand('rdfs:subClassOf'), null);
+        triples = VocabularyUtil.filterBlanks(triples);
+        return triples[0] ? triples[0].object : null;
+    },
+
+     getSuperClasses : function(className) {
+        var superClasses = [];
+        var superClass = VocabularyUtil.getSuperClass(className);
+        while (superClass) {
+            superClasses.push(superClass);
+            superClass = VocabularyUtil.getSuperClass(className);
+        }
+        return superClasses;
+    },
+
+   expand : function(prefixedName) {
         let prefix = prefixedName.split(":")[0];
         let name = prefixedName.split(":")[1];
         return VocabularyUtil.prefixes[prefix] + name;
