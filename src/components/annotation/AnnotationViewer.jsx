@@ -83,8 +83,7 @@ export default class AnnotationViewer extends React.Component {
         }
     }
     componentDidMount() {
-        // initialize from local storage
-        console.log(localStorage);
+        // temp hack: initialize user from local storage
         if (localStorage.userDetails) {
             this.doLogin(JSON.parse(localStorage.userDetails));
         }
