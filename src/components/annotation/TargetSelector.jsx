@@ -81,7 +81,6 @@ export default class TargetSelector extends React.Component {
         AppAnnotationStore.bind('change-target', this.loadAnnotations.bind(this));
         AppAnnotationStore.bind('save-annotation', this.loadAnnotations.bind(this));
         AppAnnotationStore.bind('del-annotation', this.loadAnnotations.bind(this));
-        console.log("Component mounted, loading annotations");
         this.loadAnnotations();
     }
     addCandidateAnnotation(list, annotation) {
@@ -104,27 +103,9 @@ export default class TargetSelector extends React.Component {
         component.resourceIndex = RDFaUtil.indexRDFaResources();
         console.log(component.resourceIndex);
         var candidateResources = TargetUtil.getCandidateRDFaTargets();
-        if (!candidateResources) {
-            let sources = Object.keys(component.resourceIndex);
-            let wholeNodes = sources.map(function(source) {
-                let resource = component.resourceIndex[source];
-                return {
-                    label: resource.rdfaType,
-                    node: resource.domNode,
-                    text: resource.text,
-                    source: resource.rdfaResource,
-                    type: "resource"
-                }
-            });
-            candidateResources = {
-                wholeNodes: wholeNodes
-            }
-        }
+		console.log(candidateResources);
         this.setState({candidateResources: candidateResources});
         // find annotations overlapping with candidate resources
-        var wholeResources = candidateResources.wholeNodes.map(function(candidate) {
-            return candidate.source;
-        });
         var candidateAnnotations = [];
         this.state.annotations.forEach(function(annotation) {
             // if there is no highlighted resource, add all annotations
@@ -133,13 +114,7 @@ export default class TargetSelector extends React.Component {
                 return true;
             }
             var add = false;
-            var targets = [];
-            if (Array.isArray(annotation.target)) {
-                targets = annotation.target;
-            }
-            else {
-                targets.push(annotation.target);
-            }
+			var targets = Array.isArray(annotation.target) ? annotation.target : [annotation.target];
             targets.forEach(function(target) {
                 var targetResource = target.source;
                 if (target.selector && target.selector.type === "FragmentSelector") {
