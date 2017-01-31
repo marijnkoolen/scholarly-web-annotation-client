@@ -324,3 +324,4 @@ The W3C model allows for extensions to the basic framework. We could consider ad
 
 + **Ontology/vocabulary**: controlled vocabularies used in the RDFa enriched resource (e.g. van Gogh letters ontology). This could in principle be used by the annotation server to reason about relationships between stored annotations and the resources they target.
 + **Research context**: e.g. research project, questions, methodology, intention of use. This allows further interpretation of the annotations and why certain choices were made by the annotator.
++ **Content**: content aspects can be represented using the [RDF Content Representation model](https://www.w3.org/TR/Content-in-RDF10/).
