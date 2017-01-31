@@ -6,18 +6,17 @@ The [IIIF Presentation API (version 2.1)](http://iiif.io/api/presentation/2.1/) 
 
 **Note 2017-01-31: in general, the annotation examples presented in the IIIF Presentation API specification are no longer up to date with the developments of the Web Annotation model. There have been significant changes from the the Open Annotation model to the Web Annotation model.**
 
+Note that there are some differences between the IIIF Presentation API and the W3C Web Annotation framework:
+
++ the annotation target is a canvas, the body is an image.
++ the annotation target is referred to by the `on` property in  IIIF, `target` in the Web Annotation model. [BB: through their respective `@context`s, they both map to `oa:hasTarget`]
++ the annotation body is referred to by the `resource` property in IIIF, `body` in the Web Annotation model. [BB: through their respective `@context`s, they both map to `oa:hasBody`]
 + [Segment selection](http://iiif.io/api/presentation/2.1/#segments) in a canvas is represented as an annotation.
 + Textual annotations can be incorporated as [Embedded content](http://iiif.io/api/presentation/2.1/#embedded-content) using the `resource` property. 
 
 
 ## Example from the British Library
 Below is an example of an annotation in [IIIF](http://iiif.io/) format, taken from the British Library ([source](http://sanddragon.bl.uk/IIIFMetadataService/Cotton_MS_Claudius_B_IV.json)).
-
-Note that there are some differences between the IIIF Presentation API and the W3C Web Annotation framework:
-
-+ the annotation target is a canvas, the body is an image.
-+ the annotation target is referred to by the `on` property in  IIIF, `target` in the Web Annotation model. [BB: through their respective `@context`s, they both map to `oa:hasTarget`]
-+ the annotation body is referred to by the `resource` property in IIIF, `body` in the Web Annotation model. [BB: through their respective `@context`s, they both map to `oa:hasBody`]
 
 More details are available in the [IIIF Presentation API specification](http://iiif.io/api/presentation/2.0/).
 
