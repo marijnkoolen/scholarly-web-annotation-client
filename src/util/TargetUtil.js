@@ -22,6 +22,13 @@ import SelectionUtil from './SelectionUtil.js';
 
 const TargetUtil = {
 
+    /*
+     **************************
+     * RDFa annotation target *
+     * selection functions    *
+     **************************
+     */
+
     // return all RDFa enriched nodes within range of a text selection
     findSelectionRDFaNodes : function(selection) {
         let descendants = RDFaUtil.getNotIgnoreDescendants(selection.containerNode);
@@ -64,27 +71,25 @@ const TargetUtil = {
         var startOffsetInContainer = startNodeOffset + selection.startOffset;
         var endOffsetInContainer = startOffsetInContainer + selection.selectionText.length;
         let textContent = RDFaUtil.getRDFaTextContent(container.node);
-        let prefix = textContent.substr(startOffsetInContainer - 20, 20);
+        let maxPrefix = startOffsetInContainer >= 20 ? 20 : startOffsetInContainer;
+        console.log(maxPrefix);
+        let prefix = textContent.substr(startOffsetInContainer - maxPrefix, maxPrefix);
         let suffix = textContent.substr(endOffsetInContainer, 20);
         return {
             node: container.node,
-            start: startOffsetInContainer,
-            end: startOffsetInContainer + selection.selectionText.length,
-            text: selection.selectionText,
-            prefix: prefix,
-            suffix: suffix,
+            mimeType: selection.mimeType,
+            params: {
+                start: startOffsetInContainer,
+                end: startOffsetInContainer + selection.selectionText.length,
+                text: selection.selectionText,
+                prefix: prefix,
+                suffix: suffix
+            },
             label: container.label,
             source: container.source,
             type: "resource"
         }
     },
-
-    /*
-    **************************
-    * RDFa annotation target *
-    * selection functions    *
-    **************************
-    */
 
     // given a list of nodes, select all RDFa enriched nodes
     // and return as candidate annotation targets
@@ -93,7 +98,10 @@ const TargetUtil = {
             return {
                 node: node,
                 type: "resource",
-                text: RDFaUtil.getRDFaTextContent(node),
+                mimeType: "text",
+                params: {
+                    text: RDFaUtil.getRDFaTextContent(node)
+                },
                 label: node.getAttribute("typeof"),
                 source: node.hasAttribute("resource") ? node.getAttribute("resource") : node.getAttribute("about")
             }
@@ -117,8 +125,119 @@ const TargetUtil = {
             highlighted = TargetUtil.findHighlighted(container, selection);
         }
         return {wholeNodes: wholeNodes, highlighted: highlighted};
-    }
+    },
 
+    selectCandidateAnnotations : function(annotations, highlighted) {
+        if (!highlighted)
+            return TargetUtil.addCandidateAnnotations(annotations);
+        let candidates = annotations.filter(function(annotation) {
+            var targets = Array.isArray(annotation.target) ? annotation.target : [annotation.target];
+            return targets.some(TargetUtil.hasOverlap);
+        });
+        return TargetUtil.addCandidateAnnotations(candidates);
+    },
+
+    hasOverlap : function(target, highlighted) {
+        // if annotation target is not highlighted resource
+        // then annotation is not a candidate target
+        if (target.source != highlighted.source)
+            return false
+        // double check that annotation target and
+        // selected candidate have same mime type
+        if (target.type != TargetUtil.mapMimeType(highlighted.mimeType))
+            return false;
+        // if Text target has no selector, it overlaps
+        // with highlighted range
+        if (!target.selector)
+            return true;
+        // if selection and annotation target are of type Text
+        // check if text position of annotation target overlaps
+        // with highlighted range
+        if (target.type === "Text") {
+            let textPosition = TargetUtil.getSelectorByType(target, "TextPositionSelector");
+            // if a Text target has a selector, it should have a text position selector
+            if (textPosition && highlighted.start < textPosition.end && highlighted.end > textPosition.start)
+                return true;
+            // otherwise, assume target doesn't overlap with highlighted range
+            return false;
+        }
+    },
+
+    addCandidateAnnotations : function(annotations) {
+        return annotations.map(function(annotation) {
+            return {
+                source: annotation.id,
+                type: "annotation",
+                params: {
+                    text: annotation.body[0].value
+                },
+                label: annotation.body[0].purpose,
+                target: {
+                    source: annotation.id
+                }
+            }
+        });
+    },
+
+    /*
+     ********************
+     * RDFa annotation  *
+     * helper functions *
+     ********************
+     */
+
+    getSelectorTypes : function(target) {
+        if (!target.selector)
+            return null;
+
+        let selectorTypes = [];
+
+        let selectors = Array.isArray(target.selector) ? target.selector : [target.selector];
+        selectors.forEach(function(selector) {
+            selectorTypes.push(selector.type);
+            if (selector.refinedBy) {
+                let refinements = Array.isArray(selector.refinedBy) ? selector.refinedBy : [selector.refinedBy];
+                refinements.forEach(function(refinement) {
+                    selectorTypes.push(refinement.type);
+                });
+            }
+        });
+        return selectorTypes;
+    },
+
+    getSelectorByType : function(target, selectorType) {
+        if (!target.selector)
+            return null;
+
+        let typeSelector = null;
+
+        let selectors = Array.isArray(target.selector) ? target.selector : [target.selector];
+        selectors.forEach(function(selector) {
+            if (selector.type === selectorType)
+                typeSelector = selector;
+            else if (selector.refinedBy) {
+                let refinements = Array.isArray(selector.refinedBy) ? selector.refinedBy : [selector.refinedBy];
+                refinements.forEach(function(refinement) {
+                    if (refinement.type === selectorType)
+                        typeSelector = refinement;
+                });
+            }
+        });
+        return typeSelector;
+
+    },
+
+    mimeTypeMap : {
+        "text": "Text",
+        "image": "Image",
+        "audio": "Audio",
+        "video": "Video",
+        "application": "Data"
+    },
+
+    mapMimeType : function(mimeType) {
+        return TargetUtil.mimeTypeMap[mimeType];
+    },
 }
 
 export default TargetUtil;
