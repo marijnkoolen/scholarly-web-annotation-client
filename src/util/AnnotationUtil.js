@@ -8,7 +8,7 @@ const AnnotationUtil = {
     *************************************************************************************/
 
     //called from components that want to create a new annotation with a proper target
-    generateW3CEmptyAnnotation : function(creator, annotationTargets) {
+    generateW3CAnnotation : function(creator, annotationTargets) {
         return {
             "@context": "http://www.w3.org/ns/anno.jsonld",
             type: "Annotation",
@@ -45,6 +45,25 @@ const AnnotationUtil = {
                 }
             })
         }
+    },
+
+    generateRelationAnnotation : function(relation, resourceIndex) {
+        let creator = "rdfa-annotation-client";
+        var annotation = AnnotationUtil.generateW3CAnnotation(creator, []);
+        annotation.target = {
+            type: resourceIndex[relation.target].rdfaType,
+            conformsTo: resourceIndex[relation.target].rdfaVocabulary,
+            purpose: "relating",
+            source: relation.target,
+            value: resourceIndex[relation.target].rdfaProperty
+        };
+        annotation.body = {
+            type: resourceIndex[relation.body].rdfaType,
+            conformsTo: resourceIndex[relation.body].rdfaVocabulary,
+            source: relation.body
+        };
+        annotation.motivation = "linking";
+        return annotation;
     },
 
     /*************************************************************************************
@@ -92,10 +111,11 @@ const AnnotationUtil = {
             if (textPositionSelector) { refinedBy.push(textPositionSelector) }
             if (refinedBy.length > 0) { selector.refinedBy = refinedBy }
         }
-        // prefer textPosition over textQuote for precision
-        else if (textPositionSelector) { selector = TextPositionSelector }
-        else if (TextQuoteSelector) { selector = TextQuoteSelector }
-
+        else if (textPositionSelector && textQuoteSelector) {
+            selector = [textPositionSelector, textQuoteSelector];
+        }
+        else if (textPositionSelector) { selector = textPositionSelector }
+        else if (textQuoteSelector) { selector = textQuoteSelector }
         return selector;
     },
 
