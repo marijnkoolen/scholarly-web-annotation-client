@@ -88,7 +88,8 @@ const SelectionUtil = {
             startOffset: backwards ? selection.focusOffset : selection.anchorOffset,
             endNode: backwards ? selection.anchorNode : selection.focusNode,
             endOffset: backwards ? selection.anchorOffset : selection.focusOffset,
-            selectionText: selection.toString()
+            selectionText: selection.toString(),
+            mimeType: "text"
         };
     },
 
@@ -127,8 +128,6 @@ const SelectionUtil = {
             sel.removeAllRanges();
             sel.addRange(range);
         }
-
-
     },
 
     selectWholeElement : function(node) {
