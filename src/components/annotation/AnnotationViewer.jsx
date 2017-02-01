@@ -93,7 +93,7 @@ export default class AnnotationViewer extends React.Component {
     }
     makeAnnotation(annotationTargets) {
         console.log(annotationTargets);
-        var annotation = AnnotationUtil.generateW3CEmptyAnnotation(this.state.user.username, annotationTargets);
+        var annotation = AnnotationUtil.generateW3CAnnotation(this.state.user.username, annotationTargets);
         this.setState(
             {
                 currentAnnotation: annotation,
