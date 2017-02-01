@@ -9,6 +9,7 @@ import TargetUtil from './../../util/TargetUtil.js';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
 import AppAnnotationStore from './../../flux/AnnotationStore';
+import AnnotationActions from './../../flux/AnnotationActions';
 import AnnotationAPI from './../../api/AnnotationAPI.js';
 
 export default class TargetSelector extends React.Component {
@@ -34,38 +35,15 @@ export default class TargetSelector extends React.Component {
 
     annotateTargets() {
         let component = this;
-        var annotationTargets = this.state.selected.map(function(selected) {
-            console.log(selected);
-            // The target source is the top-level RDFa resource
-            // more specific parts are specified in selectors
-            var source = selected.source;
-            if (selected.type === "resource") {
-                source = component.resourceIndex[source].rdfaResource;
-                if (component.resourceIndex[source].partOf) {
-                    source = component.resourceIndex[source].partOf;
-                }
-            }
-            var annotationTarget = {
-                source: source,
-                mimeType: "text",
-                params: {
-                    // add specific targeted resource part as parameter for selector
-                    resourcePart: selected.source
-                }
-            }
-            if (selected.hasOwnProperty("start")) {
-                annotationTarget.params.start = selected.start,
-                annotationTarget.params.end = selected.end
-            }
-            if (selected.hasOwnProperty("text")) {
-                annotationTarget.params.text = selected.text;
-                annotationTarget.params.prefix = selected.prefix;
-                annotationTarget.params.suffix = selected.suffix;
-            }
-            return annotationTarget;
-        });
         this.setState({ showTargets: false });
-        this.props.makeAnnotation(annotationTargets);
+        let targetResources = this.state.selected.map(function(target) { return target.source });
+        let resourceRelations = RDFaUtil.findResourceRelations(targetResources, component.resourceIndex);
+        let newRelations = RDFaUtil.filterExistingRelationAnnotations(resourceRelations, component.state.annotations);
+        newRelations.forEach(function(relation) {
+            let annotation = AnnotationUtil.generateRelationAnnotation(relation, component.resourceIndex);
+            AnnotationActions.save(annotation);
+        });
+        this.props.makeAnnotation(this.state.selected);
     }
     loadAnnotations() {
         let component = this;
@@ -88,7 +66,9 @@ export default class TargetSelector extends React.Component {
         var candidate = {
             source: annotation.id,
             type: "annotation",
-            text: annotation.body[0].value,
+            params: {
+                text: annotation.body[0].value
+            },
             label: annotation.body[0].purpose,
             target: {
             }
@@ -103,41 +83,10 @@ export default class TargetSelector extends React.Component {
         component.resourceIndex = RDFaUtil.indexRDFaResources();
         console.log(component.resourceIndex);
         var candidateResources = TargetUtil.getCandidateRDFaTargets();
-		console.log(candidateResources);
+        console.log(candidateResources);
         this.setState({candidateResources: candidateResources});
         // find annotations overlapping with candidate resources
-        var candidateAnnotations = [];
-        this.state.annotations.forEach(function(annotation) {
-            // if there is no highlighted resource, add all annotations
-            if (!(candidateResources.highlighted)) {
-                component.addCandidateAnnotation(candidateAnnotations, annotation);
-                return true;
-            }
-            var add = false;
-			var targets = Array.isArray(annotation.target) ? annotation.target : [annotation.target];
-            targets.forEach(function(target) {
-                var targetResource = target.source;
-                if (target.selector && target.selector.type === "FragmentSelector") {
-                    targetResource = target.selector.value;
-                }
-                if (targetResource === candidateResources.highlighted.source) {
-                    if (target.selector && target.selector.refinedBy) {
-                        let textPosition = target.selector.refinedBy;
-                        let start = candidateResources.highlighted.start;
-                        let end = start + candidateResources.highlighted.end;
-                        if (start < textPosition.end && end > textPosition.start) {
-                            add = true;
-                        }
-                    }
-                    else {
-                        add = true;
-                    }
-                }
-            });
-            if (add) {
-                component.addCandidateAnnotation(candidateAnnotations, annotation);
-            }
-        });
+        var candidateAnnotations = TargetUtil.selectCandidateAnnotations(this.state.annotations, candidateResources.highlighted);
         console.log(candidateAnnotations);
         this.setState({candidateAnnotations: candidateAnnotations});
     }
