@@ -168,9 +168,10 @@ const RDFaUtil = {
 
     },
 
-    makeIndexEntry(node) {
+    makeIndexEntry(node, vocabulary) {
         return {
             rdfaResource: node.getAttribute("resource"),
+            rdfaVocabulary: vocabulary,
             domNode: node,
             rdfaType: node.getAttribute("typeof"),
             rdfaProperty: node.getAttribute("property"),
@@ -188,33 +189,78 @@ const RDFaUtil = {
         }
     },
 
+    /*
+     **************************
+     * RDFa resource relation *
+     * and index functions    *
+     **************************
+     */
+
     indexRDFaResources : function() {
         var index = {};
         // get all top-level RDFa resources
         RDFaUtil.getTopRDFaNodes(document.body).forEach(function(rdfaResourceNode) {
-            index[rdfaResourceNode.getAttribute("about")] = RDFaUtil.makeIndexEntry(rdfaResourceNode);
-            index[rdfaResourceNode.getAttribute("about")].rdfaResource = rdfaResourceNode.getAttribute("about");
+            let topAttrs = RDFaUtil.getRDFaAttributes(rdfaResourceNode);
+            index[topAttrs.about] = RDFaUtil.makeIndexEntry(rdfaResourceNode, topAttrs.vocab);
+            index[topAttrs.about].rdfaResource = topAttrs.about;
             var resourceStack = [rdfaResourceNode];
             // add all RDFa sub-resources
             var nodes = RDFaUtil.getNotIgnoreDescendants(rdfaResourceNode);
             RDFaUtil.getRDFaNodes(nodes).forEach(function(node) {
+                let resourceAttrs = RDFaUtil.getRDFaAttributes(node);
                 RDFaUtil.updateStack(resourceStack, node);
-                var rdfaParent = resourceStack[resourceStack.length - 1];
+                var parentAttrs = RDFaUtil.getRDFaAttributes(resourceStack[resourceStack.length - 1]);
+                var rdfaParent = parentAttrs.about ? parentAttrs.about : parentAttrs.resource;
                 // if top level resource isPartOf a larger resource,
                 // store as partOf information on top level resource,
-                index[node.getAttribute("resource")] = RDFaUtil.makeIndexEntry(node);
-                if (node.getAttribute("property") === "isPartOf") {
-                    index[node.getAttribute("resource")].rdfaParent = null;
-                    index[rdfaResourceNode.getAttribute("about")].rdfaProperty = "hasPart";
-                    index[rdfaResourceNode.getAttribute("about")].rdfaParent = node.getAttribute("resource");
+                index[resourceAttrs.resource] = RDFaUtil.makeIndexEntry(node, topAttrs.vocab);
+                if (resourceAttrs.property === "isPartOf") {
+                    index[resourceAttrs.resource].rdfaParent = null;
+                    index[topAttrs.about].rdfaProperty = "hasPart";
+                    index[topAttrs.about].rdfaParent = resourceAttrs.resource;
                 } else {
-                    index[node.getAttribute("resource")].rdfaParent = rdfaResourceNode.getAttribute("about");
+                    index[resourceAttrs.resource].rdfaParent = rdfaParent;
                 }
                 resourceStack.push(node);
             })
         });
         return index;
     },
+
+    findResourceRelations : function(resources, resourceIndex) {
+        var hasParent = {};
+        resources.forEach(function(resource) {
+            var parent = resourceIndex[resource].rdfaParent;
+            while (parent) {
+                hasParent[resource] = parent;
+                resource = parent;
+                parent = resourceIndex[resource].rdfaParent;
+            }
+        });
+        var relations = [];
+        for (var resource in hasParent) {
+            relations.push({body: resource, target: hasParent[resource]});
+        }
+        return relations;
+    },
+
+    filterExistingRelationAnnotations(relations, annotations) {
+        return relations.filter((relation) => function(relation) {
+            return RDFaUtil.relationAnnotationExists(relation, annotations) ? false : true;
+        });
+    },
+
+    relationAnnotationExists : function(relation, annotations) {
+        return annotations.some(function(annotation) {
+            if (annotation.target !== relation.target)
+                return false;
+            if (annotation.body !== relation.body)
+                return false;
+            return true;
+        });
+    },
+
+
 
     setRDFaSelectionRange : function(el, start, end) {
         if (document.createRange && window.getSelection) {
