@@ -63,21 +63,14 @@ class AnnotationList extends React.Component {
             if (error)
                 return null;
 
-            component.setState({annotations: annotations});
-            //component.filterAnnotations(annotations);
+            component.filterAnnotations(annotations);
         });
     }
     filterAnnotations(annotations) {
-        // select only annotations for which at least
-        // one target is part of the DOM
-        let component = this;
-        var targetsInDOM = function(annotation) {
-            return AnnotationUtil.extractTargetSources(annotation).some(function(targetId) {
-                return component.resourceIndex[targetId] ? true : false;
-            });
-        }
-        let relevantAnnotations = annotations.filter(targetsInDOM);
-        component.setState({annotations: relevantAnnotations});
+        // AnnotationList only needs to know about the display annotations
+        // not the structural relation annotations
+        let types = AnnotationUtil.sortAnnotationTypes(annotations, this.resourceIndex);
+        this.setState({annotations: types.display});
     }
     activateAnnotation(annotation) {
         var annotations = this.state.activeAnnotations;
