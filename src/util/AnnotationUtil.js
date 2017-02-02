@@ -51,19 +51,38 @@ const AnnotationUtil = {
         let creator = "rdfa-annotation-client";
         var annotation = AnnotationUtil.generateW3CAnnotation(creator, []);
         annotation.target = {
-            type: resourceIndex[relation.target].rdfaType,
             conformsTo: resourceIndex[relation.target].rdfaVocabulary,
-            purpose: "relating",
             source: relation.target,
+            type: resourceIndex[relation.target].rdfaType,
             value: resourceIndex[relation.target].rdfaProperty
         };
         annotation.body = {
-            type: resourceIndex[relation.body].rdfaType,
             conformsTo: resourceIndex[relation.body].rdfaVocabulary,
-            source: relation.body
+            source: relation.body,
+            type: resourceIndex[relation.body].rdfaType,
+            value: resourceIndex[relation.body].rdfaProperty
         };
         annotation.motivation = "linking";
         return annotation;
+    },
+
+    isStructureAnnotation : function(annotation, resourceIndex) {
+        // Structure annotations have "linking" as motivation
+        if (annotation.motivation !== "linking")
+            return false;
+        // Structure annotations link two resources that are both in the index
+        if (!resourceIndex[annotation.target.source] || !resourceIndex[annotation.body.source])
+            return false;
+        return true;
+    },
+
+    sortAnnotationTypes : function(annotations, resourceIndex) {
+        var display = [];
+        var structure = [];
+        annotations.forEach(function(annotation) {
+            AnnotationUtil.isStructureAnnotation(annotation, resourceIndex) ? structure.push(annotation) : display.push(annotation);
+        });
+        return {display: display, structure: structure};
     },
 
     /*************************************************************************************
