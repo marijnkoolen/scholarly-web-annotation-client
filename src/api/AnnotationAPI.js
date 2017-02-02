@@ -1,3 +1,6 @@
+
+"use strict"
+
 import config from '../rdfa-annotation-config.js';
 const annotationServer = config.services.AnnotationServer.api;
 
@@ -101,12 +104,12 @@ const AnnotationAPI = {
                 if (error)
                     callback(error, null);
 
-                data.forEach(function(annotation) {
+                data.forEach(function(annotation, index) {
                     if (ids.indexOf(annotation.id) === -1) {
                         ids.push(annotation.id);
                         annotations.push(annotation);
                     }
-                    if (targetIndex === targetIds.length - 1) {
+                    if (index === data.length - 1 && targetIndex === targetIds.length - 1) {
                         callback(null, annotations);
                     }
                 });
