@@ -72,7 +72,6 @@ const TargetUtil = {
         var endOffsetInContainer = startOffsetInContainer + selection.selectionText.length;
         let textContent = RDFaUtil.getRDFaTextContent(container.node);
         let maxPrefix = startOffsetInContainer >= 20 ? 20 : startOffsetInContainer;
-        console.log(maxPrefix);
         let prefix = textContent.substr(startOffsetInContainer - maxPrefix, maxPrefix);
         let suffix = textContent.substr(endOffsetInContainer, 20);
         return {
