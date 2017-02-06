@@ -57,7 +57,7 @@ export default class TargetSelector extends React.Component {
    }
     componentDidMount() {
         AppAnnotationStore.bind('change-target', this.loadAnnotations.bind(this));
-        AppAnnotationStore.bind('save-annotation', this.loadAnnotations.bind(this));
+        AppAnnotationStore.bind('reload-annotations', this.loadAnnotations.bind(this));
         AppAnnotationStore.bind('del-annotation', this.loadAnnotations.bind(this));
         this.loadAnnotations();
     }
@@ -81,20 +81,16 @@ export default class TargetSelector extends React.Component {
     getCandidateTargets() {
         let component = this;
         component.resourceIndex = RDFaUtil.indexRDFaResources();
-        console.log(component.resourceIndex);
         var candidateResources = TargetUtil.getCandidateRDFaTargets();
-        console.log(candidateResources);
         this.setState({candidateResources: candidateResources});
         // find annotations overlapping with candidate resources
         var candidateAnnotations = TargetUtil.selectCandidateAnnotations(this.state.annotations, candidateResources.highlighted);
-        console.log(candidateAnnotations);
         this.setState({candidateAnnotations: candidateAnnotations});
     }
     showCandidates() {
         let component = this;
     }
     selectCandidates() {
-        console.log("Selected cadidates, loading annotations");
         this.loadAnnotations();
         this.getCandidateTargets();
 
@@ -104,7 +100,6 @@ export default class TargetSelector extends React.Component {
         });
     }
     addSelected(candidate) {
-        console.log(candidate);
         var selected = this.state.selected;
         if (selected.indexOf(candidate) === -1) {
             selected.push(candidate);
