@@ -17,8 +17,6 @@ const AnnotationAPI = {
             method = 'PUT';
         }
 
-        console.log(annotation);
-
         fetch(url, {
             method: "POST",
             headers: {
