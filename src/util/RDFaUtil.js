@@ -245,17 +245,19 @@ const RDFaUtil = {
     },
 
     filterExistingRelationAnnotations(relations, annotations) {
-        return relations.filter((relation) => function(relation) {
-            return RDFaUtil.relationAnnotationExists(relation, annotations) ? false : true;
-        });
+        return relations.filter((relation) =>
+            RDFaUtil.relationAnnotationExists(relation, annotations) === false
+        );
     },
 
     relationAnnotationExists : function(relation, annotations) {
         return annotations.some(function(annotation) {
-            if (annotation.target !== relation.target)
+            if (annotation.target.source !== relation.target){
                 return false;
-            if (annotation.body !== relation.body)
+            }
+            if (annotation.body.source !== relation.body) {
                 return false;
+            }
             return true;
         });
     },
