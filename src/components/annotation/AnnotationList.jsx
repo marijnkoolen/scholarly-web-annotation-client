@@ -95,7 +95,6 @@ class AnnotationList extends React.Component {
         AppAnnotationStore.bind('change-target', this.loadAnnotations.bind(this));
 
         //also make sure to reload the list when annotations are added/removed (to/from the target)
-        AppAnnotationStore.bind('save-annotation', this.loadAnnotations.bind(this));
         AppAnnotationStore.bind('del-annotation', this.loadAnnotations.bind(this));
     }
     render() {
