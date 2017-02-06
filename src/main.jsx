@@ -47,13 +47,13 @@ var setUnselectable = function(allNodes) {
 
 var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
-        AnnotationActions.reloadAnnotations();
         setAnnotationAttributes();
+        AnnotationActions.reload();
     });
 });
 
 var startObserver = function() {
-    var observerConfig = { childList: true, attributes: true, subtree: true };
+    var observerConfig = { childList: true, attributes: false, subtree: true };
     var observerTargets = document.getElementsByClassName("annotation-target-observer");
 
     for (var index = 0; index < observerTargets.length; index++) {
