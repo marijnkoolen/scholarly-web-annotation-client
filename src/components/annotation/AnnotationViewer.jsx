@@ -89,7 +89,7 @@ export default class AnnotationViewer extends React.Component {
         }
         AppAnnotationStore.bind('activate-annotation', this.activateAnnotation.bind(this));
         AppAnnotationStore.bind('edit-annotation', this.editAnnotation.bind(this));
-        AppAnnotationStore.bind('reload-annotation', this.updateCurrentAnnotation.bind(this));
+        AppAnnotationStore.bind('reload-annotations', this.updateCurrentAnnotation.bind(this));
     }
     makeAnnotation(annotationTargets) {
         var annotation = AnnotationUtil.generateW3CAnnotation(this.state.user.username, annotationTargets);
