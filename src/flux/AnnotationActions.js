@@ -58,7 +58,7 @@ const AnnotationActions = {
         });
     },
 
-    reloadAnnotations : function() {
+    reload: function() {
         AppDispatcher.dispatch({
             eventName: 'reload-annotations'
         });
