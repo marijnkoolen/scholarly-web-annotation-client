@@ -46,7 +46,7 @@ The W3C `Motivation` is `linking` an annotatable resource to an annotatable part
 2. recursively get all annotations *A<sub>n</sub>* of part-of resources of *r* that are annotation bodies in *A<sub>n-1</sub>*
 
 
-Rules:
+Steps:
 
 + only follow linking annotations bodies that are *annotatable things* in the *annotation-target-observer* window.
 + do not list part-of annotations, i.e. linking annotations with annotation bodies that are *annotatable things* in the *annotation-target-observer* window.
