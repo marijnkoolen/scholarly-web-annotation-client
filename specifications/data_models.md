@@ -48,8 +48,14 @@ The W3C `Motivation` is `linking` an annotatable resource to an annotatable part
 
 Steps:
 
-+ only follow linking annotations bodies that are *annotatable things* in the *annotation-target-observer* window.
-+ do not list part-of annotations, i.e. linking annotations with annotation bodies that are *annotatable things* in the *annotation-target-observer* window.
++ The annotation client scans for resource information in RDFa attributes in elements with a *annotation-target-observer* class.
++ The annotation client parses the *annotatable things* ontology and selects annotatable resources within the *annotation-target-observer* elements.
++ The annotation client sends a request to the annotation server per annotatable resource to GET all annotations on that resource.
++ The annotation server responds with a list of annotations, including:
+	+ annotations indicating relations between the resource and sub-resources,
+	+ annotations on resource and on any of its sub-resources,
+	+ recursively: annotations on annotations in the previous step
++ The annotation client does not display annotations that indicate the structural relation between resource and sub-resource, i.e. linking annotations with annotation bodies that are *annotatable things* in the *annotation-target-observer* window.
 
 
 ## Fragment selector
