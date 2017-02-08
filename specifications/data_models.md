@@ -57,7 +57,7 @@ Steps:
 	+ recursively: annotations on annotations in the previous step
 + The annotation client does not display annotations that indicate the structural relation between resource and sub-resource, i.e. linking annotations with annotation bodies that are *annotatable things* in the *annotation-target-observer* window.
 
-**This is old material, needs updated based on the structural relationship annotations in the previous section**
+**Below is old material, needs updated based on the structural relationship annotations in the previous section**
 
 ## Fragment selector
 
