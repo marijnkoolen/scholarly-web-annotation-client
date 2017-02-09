@@ -2,6 +2,7 @@
 
 import React from 'react';
 import AppAnnotationStore from './../../flux/AnnotationStore';
+import AnnotationActions from './../../flux/AnnotationActions';
 import Annotation from './Annotation.jsx';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
@@ -18,6 +19,22 @@ class AnnotationList extends React.Component {
             activeAnnotations: [],
             resourceIds: []
         }
+    }
+    componentDidMount() {
+        var resourceIds = RDFaUtil.getTopRDFaResources(document.body);
+        this.setState({resourceIds: resourceIds}, function() {
+            AnnotationActions.load(resourceIds);
+        });
+
+        AppAnnotationStore.bind('activate-annotation', this.activateAnnotation.bind(this));
+        AppAnnotationStore.bind('save-annotation', this.reloadAnnotations.bind(this));
+        AppAnnotationStore.bind('reload-annotations', this.reloadAnnotations.bind(this));
+        AppAnnotationStore.bind('load-annotations', this.loadAnnotations.bind(this));
+        //make sure to reload the list when the target changes
+        AppAnnotationStore.bind('change-target', this.reloadAnnotations.bind(this));
+
+        //also make sure to reload the list when annotations are added/removed (to/from the target)
+        AppAnnotationStore.bind('del-annotation', this.reloadAnnotations.bind(this));
     }
     lookup(sourceId) {
         if (this.annotationIndex.hasOwnProperty(sourceId)) {
@@ -54,22 +71,18 @@ class AnnotationList extends React.Component {
         });
         if (!sameList) {
             component.setState({annotations: [], resourceIds: resourceIds});
-            component.loadAnnotations();
         }
+        AnnotationActions.load(resourceIds);
     }
-    loadAnnotations() {
+    loadAnnotations(annotations) {
         let component = this;
-        AnnotationAPI.getAnnotationsByTargets(component.state.resourceIds, function(error, annotations) {
-            if (error)
-                return null;
-
-            component.filterAnnotations(annotations);
-        });
+        component.filterAnnotations(annotations);
     }
     filterAnnotations(annotations) {
         // AnnotationList only needs to know about the display annotations
         // not the structural relation annotations
         let types = AnnotationUtil.sortAnnotationTypes(annotations, this.resourceIndex);
+        console.log(types);
         this.setState({annotations: types.display});
     }
     activateAnnotation(annotation) {
@@ -82,28 +95,12 @@ class AnnotationList extends React.Component {
         }
         this.setState({activeAnnotations: annotations});
     }
-    componentDidMount() {
-        var resourceIds = RDFaUtil.getTopRDFaResources(document.body);
-        //console.log(resourceIds);
-        this.setState({resourceIds: resourceIds}, function() {
-            this.loadAnnotations();
-        });
-
-        AppAnnotationStore.bind('activate-annotation', this.activateAnnotation.bind(this));
-        AppAnnotationStore.bind('reload-annotations', this.reloadAnnotations.bind(this));
-        //make sure to reload the list when the target changes
-        AppAnnotationStore.bind('change-target', this.loadAnnotations.bind(this));
-
-        //also make sure to reload the list when annotations are added/removed (to/from the target)
-        AppAnnotationStore.bind('del-annotation', this.loadAnnotations.bind(this));
-    }
     render() {
         this.indexAnnotations();
         this.resourceIndex = RDFaUtil.indexRDFaResources();
         var annotationItems = null;
         let component = this;
         if (this.state.annotations) {
-            //console.log(this.state.annotations);
             annotationItems = this.state.annotations.map(function(annotation) {
                 let active = false;
                 if (component.state.activeAnnotations.indexOf(annotation) !== -1) {
