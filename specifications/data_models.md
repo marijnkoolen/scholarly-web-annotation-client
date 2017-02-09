@@ -36,7 +36,7 @@ Some discussion points:
 + Marijn: In the body I've added a few extra properties, i.e. `type`, `value` and `vocabulary` so that the annotation describes itself more (easier to interpret) and the info can be displayed to the user without needing to do a DBpedia lookup.
 + Marijn: The motivation `classifying` is taken from the [official W3C list of motivations](https://www.w3.org/TR/annotation-model/#motivation-and-purpose).  I don't like this interpretation of *motivation*. Classifying is not a motivation, i.e., it doesn't say why or in what context I'm classifying the target. The W3C framework also has a property `purpose` which it only allows as the property of a body of type `TextualBody` or `SpecificResource`. I would prefer to use `purpose` as a property on all bodies [*This makes me a bit worried on how you want to count annotations. For the user, I'd think that each body would count as an annotation. It would be confusing to have a single annotation, just because the annotation share a target.* PB], since that conveys better what the purpose of the annotation is. When classifying, the purpose of an annotation is to classify a resource. It also makes more sense with multiple bodies, allowing a different purpose per annotation body, e.g. classifying and commenting in a single annotation have different purposes. [*But as we discussed earlier, 'pupose' or motivation can be used for many different sorts of things. 'use in thesis chapter 2' is also a motivation. The W3C motivations are more like an ontological description of the possible functions of annotations.* PB]
 
-### Linking and resource part-of relationship annotations
+### Annotations linking and structural relationships between resources and sub-resources
 
 The RDFa Annotation Client uses a special type of annotation to register part-of relationships between *annotatable resources*. 
 
@@ -46,13 +46,21 @@ The W3C `Motivation` is `linking` an annotatable resource to an annotatable part
 2. recursively get all annotations *A<sub>n</sub>* of part-of resources of *r* that are annotation bodies in *A<sub>n-1</sub>*
 
 
-Rules:
+Steps:
 
-+ only follow linking annotations bodies that are *annotatable things* in the *annotation-target-observer* window.
-+ do not list part-of annotations, i.e. linking annotations with annotation bodies that are *annotatable things* in the *annotation-target-observer* window.
++ The annotation client scans for resource information in RDFa attributes in elements with a *annotation-target-observer* class.
++ The annotation client parses the *annotatable things* ontology and selects annotatable resources within the *annotation-target-observer* elements.
++ The annotation client sends a request to the annotation server per annotatable resource to GET all annotations on that resource.
++ The annotation server responds with a list of annotations, including:
+	+ annotations indicating relations between the resource and sub-resources,
+	+ annotations on resource and on any of its sub-resources,
+	+ recursively: annotations on annotations in the previous step
++ The annotation client does not display annotations that indicate the structural relation between resource and sub-resource, i.e. linking annotations with annotation bodies that are *annotatable things* in the *annotation-target-observer* window.
 
+**Below is old material, needs updated based on the structural relationship annotations in the previous section**
 
 ## Fragment selector
+
 When the annotation targets a resource that is part of a larger resource, a [fragment selector](https://www.w3.org/TR/annotation-model/#fragment-selector) is used to refine the target.
 
 In the example below, the `receiver` metadata of the `letter` is the annotation target, identified through a `FragmentSelector` on the `letter`:
