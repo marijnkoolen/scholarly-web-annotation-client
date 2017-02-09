@@ -8,9 +8,12 @@ import AppDispatcher from './AppDispatcher';
 
 class AnnotationStore {
 
-    //DEPREACATED, SHOULD BE REPLACED!
-    getAll(callback) {
-        AnnotationAPI.getAnnotations(callback);
+    loadAnnotations(resourceIds) {
+        AnnotationAPI.getAnnotationsByTargets(resourceIds, (error, annotations) => {
+            if (error)
+                console.error(resourceIds, error.toString());
+            this.trigger('load-annotations', annotations);
+        });
     }
 
     //DEPRECATED: TODO components calling this function, should switch to getMediaObjectAnnotations()
@@ -105,6 +108,9 @@ AppDispatcher.register( function( action ) {
             break;
         case 'change-target':
             AppAnnotationStore.changeTarget(action.annotationTarget);
+            break;
+        case 'load-annotations':
+            AppAnnotationStore.loadAnnotations(action.resourceIds, action.callback);
             break;
         case 'reload-annotations':
             AppAnnotationStore.reloadAnnotations();
