@@ -45,21 +45,15 @@ export default class TargetSelector extends React.Component {
         });
         this.props.makeAnnotation(this.state.selected);
     }
-    loadAnnotations() {
+    loadAnnotations(annotations) {
         let component = this;
-        let resourceIds = RDFaUtil.getTopRDFaResources(document.body);
-        AnnotationAPI.getAnnotationsByTargets(resourceIds, function(error, annotations) {
-            if (error)
-                return null;
-
-            component.setState({annotations: annotations });
-        });
+        //let resourceIds = RDFaUtil.getTopRDFaResources(document.body);
+        component.setState({annotations: annotations });
    }
     componentDidMount() {
         AppAnnotationStore.bind('change-target', this.loadAnnotations.bind(this));
-        AppAnnotationStore.bind('reload-annotations', this.loadAnnotations.bind(this));
+        AppAnnotationStore.bind('load-annotations', this.loadAnnotations.bind(this));
         AppAnnotationStore.bind('del-annotation', this.loadAnnotations.bind(this));
-        this.loadAnnotations();
     }
     addCandidateAnnotation(list, annotation) {
         var aid = annotation.id;
@@ -79,19 +73,18 @@ export default class TargetSelector extends React.Component {
         }
     }
     getCandidateTargets() {
-        let component = this;
-        component.resourceIndex = RDFaUtil.indexRDFaResources();
+        this.resourceIndex = RDFaUtil.indexRDFaResources();
         var candidateResources = TargetUtil.getCandidateRDFaTargets();
         this.setState({candidateResources: candidateResources});
         // find annotations overlapping with candidate resources
-        var candidateAnnotations = TargetUtil.selectCandidateAnnotations(this.state.annotations, candidateResources.highlighted);
+        let types = AnnotationUtil.sortAnnotationTypes(this.state.annotations, this.resourceIndex);
+        var candidateAnnotations = TargetUtil.selectCandidateAnnotations(types.display, candidateResources.highlighted);
         this.setState({candidateAnnotations: candidateAnnotations});
     }
     showCandidates() {
         let component = this;
     }
     selectCandidates() {
-        this.loadAnnotations();
         this.getCandidateTargets();
 
         this.setState({
