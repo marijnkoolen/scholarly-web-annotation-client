@@ -42,21 +42,20 @@ class Annotation extends React.Component {
     getTargetText(target, resource) {
         // if whole resource is the target,
         // return the text content of the correspondign node
-        if (!target.selector.start && !target.selector.exact && !target.selector.refinedBy) {
+        if (!target.selector) {
             return resource.data.text;
         }
-        var refinedBy = target.selector.refinedBy;
-        // pick any refinedBy selector since they are alternatives
-        refinedBy = Array.isArray(refinedBy) ? refinedBy[0] : refinedBy;
-        if (refinedBy.type) {
-            if (refinedBy.type === "TextQuoteSelector") {
-                return refinedBy.exact;
-            }
-            if (refinedBy.type === "TextPositionSelector") {
-                return this.getTargetRangeText(resource.data.domNode, refinedBy.start, refinedBy.end);
-            }
-
-        }
+        var selector = target.selector;
+        if (target.selector.refinedBy)
+            selector = target.selector.refinedBy;
+        // if there are multiple selectors, pick any selector since they are alternatives
+        selector = Array.isArray(selector) ? selector[0] : selector;
+        if (!selector.type)
+            return null;
+        if (selector.type === "TextQuoteSelector")
+            return selector.exact;
+        if (selector.type === "TextPositionSelector")
+            return this.getTargetRangeText(resource.data.domNode, selector.start, selector.end);
         return null;
     }
     getTargetResources(target) {
