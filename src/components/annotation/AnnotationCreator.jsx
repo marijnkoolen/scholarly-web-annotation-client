@@ -65,7 +65,6 @@ class AnnotationCreator extends React.Component {
         annotation.body = body;
         AnnotationActions.save(annotation);
         this.props.hideAnnotationForm();
-        AnnotationActions.reload();
     }
 
     render() {
