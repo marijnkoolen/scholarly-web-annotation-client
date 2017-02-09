@@ -136,24 +136,6 @@ const AnnotationAPI = {
             });
         }
     },
-
-    //TODO always add the user too!
-    getFilteredAnnotations : function(field, value, callback) {
-        var url = config.services.AnnotationServer.api + '/annotations/filter';
-        url += '?filterType=' + field;
-        url += '&value=' + value;
-        $.ajax({
-            url : url,
-            type : 'GET',
-            //dataType : 'application/json',
-            success : function(data) {
-                callback(data);
-            },
-            error : function(err) {
-                console.debug(err);
-            }
-        });
-    },
 }
 
 export default AnnotationAPI;
