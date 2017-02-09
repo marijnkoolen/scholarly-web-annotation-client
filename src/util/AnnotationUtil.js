@@ -205,7 +205,7 @@ const AnnotationUtil = {
 
     extractTargetSource : function(annotationTarget) {
         if (annotationTarget.source) {
-            if (annotationTarget.selector.value) {
+            if (annotationTarget.selector && annotationTarget.selector.value) {
                 return annotationTarget.selector.value;
             }
             return annotationTarget.source;
@@ -216,6 +216,17 @@ const AnnotationUtil = {
         return AnnotationUtil.extractTargets(annotation).map(function(target) {
             return AnnotationUtil.extractTargetSource(target);
         });
+    },
+
+    getTargetPositionSelector : function(target) {
+        if (!target.selector)
+            return null;
+        let selector
+        if (Array.isArray(target.selector)) {
+            target.selector.forEach(function(selector) {
+                if (selector.type === "TextPositionSelector");
+            })
+        }
     },
 
     /*************************************************************************************
