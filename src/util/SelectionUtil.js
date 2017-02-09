@@ -96,12 +96,10 @@ const SelectionUtil = {
     checkSelectionRange : function() {
         // 1. do nothing selection is not collapsed
         if (document.getSelection().isCollapsed) {
-            console.log('selection is collapsed');
             return null;
         }
         // 2. get start and end nodes of selection in display order
         var selection = SelectionUtil.getStartEndSelection();
-        console.log(selection);
         // 3. if selection start node has SelectWholeElement property
         let startNode = SelectionUtil.selectWholeElement(selection.startNode)
         let endNode = SelectionUtil.selectWholeElement(selection.endNode)
@@ -114,7 +112,6 @@ const SelectionUtil = {
         if (endNode) {
             // move selection to end of end node
             let textNodes = DOMUtil.getTextNodes(DOMUtil.getDescendants(endNode));
-            console.log(textNodes);
             selection.endNode = textNodes[textNodes.length - 1];
             selection.endOffset = selection.endNode.length;
         }
