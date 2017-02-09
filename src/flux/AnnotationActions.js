@@ -58,6 +58,13 @@ const AnnotationActions = {
         });
     },
 
+    load: function(resourceIds) {
+        AppDispatcher.dispatch({
+            eventName: 'load-annotations',
+            resourceIds: resourceIds
+        });
+    },
+
     reload: function() {
         AppDispatcher.dispatch({
             eventName: 'reload-annotations'
