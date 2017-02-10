@@ -8,7 +8,7 @@ const AnnotationAPI = {
 
     saveAnnotation : function(annotation, callback) {
         // default is POSTing a new annotation
-        var url = config.services.AnnotationServer.api + '/annotations';
+        var url = annotationServer + '/annotations';
         var method = 'POST';
 
         // if annotation already has an id, it's an update, so PUT
@@ -34,7 +34,7 @@ const AnnotationAPI = {
     },
 
     login : function(userDetails, callback) {
-        var url = config.services.AnnotationServer.api + "/login";
+        var url = annotationServer + "/login";
         fetch(url, {
             method: "POST",
             headers: {
@@ -52,7 +52,7 @@ const AnnotationAPI = {
 
     getAnnotation : function(annotationId) {
         if(annotationId) {
-            let url = config.services.AnnotationServer.api + '/annotations/annotation/' + annotationId;
+            let url = annotationServer + '/annotations/annotation/' + annotationId;
             fetch(url, {
                 method: "GET",
                 cache: 'no-cache',
@@ -66,7 +66,7 @@ const AnnotationAPI = {
     },
 
     getAnnotations : function(callback) {
-        let url = config.services.AnnotationServer.api + '/annotations';
+        let url = annotationServer + '/annotations';
         fetch(url, {
             method: "GET",
             cache: 'no-cache',
@@ -79,7 +79,11 @@ const AnnotationAPI = {
     },
 
     getAnnotationsByTarget : function(targetId, callback) {
-        let url = config.services.AnnotationServer.api + '/annotations/target/' + targetId;
+        if (typeof(targetId) !== "string") {
+            let error = new TypeError("resource ID should be string");
+            callback(error, null);
+        }
+        let url = annotationServer + '/annotations/target/' + targetId;
         fetch(url, {
             method: "GET",
             cache: 'no-cache',
@@ -122,7 +126,7 @@ const AnnotationAPI = {
         console.debug('deleting: ' + annotation.id);
         if(annotation.id) {
             $.ajax({
-                url : config.services.AnnotationServer.api + '/annotations/annotation/' + annotation.id,
+                url : annotationServer + '/annotations/annotation/' + annotation.id,
                 type : 'DELETE',
                 //dataType : 'application/json',
                 success : function(data) {
