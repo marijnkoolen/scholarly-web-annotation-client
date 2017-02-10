@@ -16,18 +16,6 @@ class AnnotationStore {
         });
     }
 
-    //DEPRECATED: TODO components calling this function, should switch to getMediaObjectAnnotations()
-    getFiltered(field, value, callback) {
-        AnnotationAPI.getFilteredAnnotations(field, value, callback);
-    }
-
-    //TODO the Search API call should be put inside the Annotation API
-    //getMediaObjectAnnotations(mediaObjectURI, callback) {
-        //SearchAPI.getAnnotationsOfMediaObject(mediaObjectURI, callback);
-    //}
-
-
-
     changeTarget() {
         this.trigger('change-target');
     }
