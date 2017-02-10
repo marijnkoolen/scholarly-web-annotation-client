@@ -4,12 +4,14 @@
 import config from '../rdfa-annotation-config.js';
 const annotationServer = config.services.AnnotationServer.api;
 
+
 const AnnotationAPI = {
 
     saveAnnotation : function(annotation, callback) {
         // default is POSTing a new annotation
         var url = annotationServer + '/annotations';
         var method = 'POST';
+        var status = null;
 
         // if annotation already has an id, it's an update, so PUT
         if(annotation.id) {
@@ -24,13 +26,20 @@ const AnnotationAPI = {
             },
             body: JSON.stringify(annotation)
         }).then(function(response) {
+            status = response.status;
             return response.json();
         }).then(function(data) {
-            callback(data);
+            if (status !== 200){
+                let error = {
+                    status: status,
+                    message: data.message
+                }
+                return callback(error, null);
+            }
+            return callback(null, data);
         }).catch(function(error) {
-            console.error(url, error.toString());
+            return callback(error, null);
         });
-
     },
 
     login : function(userDetails, callback) {
@@ -41,7 +50,7 @@ const AnnotationAPI = {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(userDetails)
-        }).then(function(response) {
+        }).then(handleErrors).then(function(response) {
             return response.json();
         }).then(function(data) {
             callback(data);
@@ -50,19 +59,28 @@ const AnnotationAPI = {
         });
     },
 
-    getAnnotation : function(annotationId) {
-        if(annotationId) {
-            let url = annotationServer + '/annotations/annotation/' + annotationId;
-            fetch(url, {
-                method: "GET",
-                cache: 'no-cache',
-                mode: 'cors'
-            }).then(function(response) {
-                return response.json();
-            }).catch(function(err) {
-                console.error(url, err.toString());
-            });
-        }
+    getAnnotationById : function(annotationId, callback) {
+        var status = null;
+        let url = annotationServer + '/annotations/annotation/' + annotationId;
+        fetch(url, {
+            method: "GET",
+            cache: 'no-cache',
+            mode: 'cors'
+        }).then(function(response) {
+            status = response.status;
+            return response.json();
+        }).then(function(data) {
+            if (status !== 200){
+                let error = {
+                    status: status,
+                    message: data.message
+                }
+                return callback(error, null);
+            }
+            return callback(null, data);
+        }).catch(function(err) {
+            callback(err, null);
+        });
     },
 
     getAnnotations : function(callback) {
@@ -72,16 +90,19 @@ const AnnotationAPI = {
             cache: 'no-cache',
             mode: 'cors'
         }).then(function(response) {
-            callback(response.json());
+            return response.json();
+        }).then(function(data) {
+            return callback(null, data);
         }).catch(function(err) {
             console.error(url, err.toString());
+            return callback(err, null)
         });
     },
 
     getAnnotationsByTarget : function(targetId, callback) {
         if (typeof(targetId) !== "string") {
             let error = new TypeError("resource ID should be string");
-            callback(error, null);
+            return callback(error, null);
         }
         let url = annotationServer + '/annotations/target/' + targetId;
         fetch(url, {
@@ -91,10 +112,10 @@ const AnnotationAPI = {
         }).then(function(response) {
             return response.json();
         }).then(function(data) {
-            callback(null, data);
+            return callback(null, data);
         }).catch(function(err) {
             console.error(url, err.toString());
-            callback(err, null);
+            return callback(err, null);
         });
     },
 
@@ -104,7 +125,7 @@ const AnnotationAPI = {
         targetIds.forEach(function(targetId, targetIndex) {
             AnnotationAPI.getAnnotationsByTarget(targetId, function(error, data) {
                 if (error)
-                    callback(error, null);
+                    return callback(error, null);
 
                 data.forEach(function(annotation, index) {
                     if (ids.indexOf(annotation.id) === -1) {
@@ -112,33 +133,50 @@ const AnnotationAPI = {
                         annotations.push(annotation);
                     }
                     if (index === data.length - 1 && targetIndex === targetIds.length - 1) {
-                        callback(null, annotations);
+                        return callback(null, annotations);
                     }
                 });
                 if (data === []) {
-                    callback(null, annotations);
+                    return callback(null, annotations);
                 }
             });
         });
     },
 
     deleteAnnotation : function (annotation, callback) {
-        console.debug('deleting: ' + annotation.id);
-        if(annotation.id) {
-            $.ajax({
-                url : annotationServer + '/annotations/annotation/' + annotation.id,
-                type : 'DELETE',
-                //dataType : 'application/json',
-                success : function(data) {
-                    if(callback) {
-                        callback(data, annotation)
-                    }
-                },
-                error : function(err) {
-                    console.debug(err);
-                }
-            });
+        if(!annotation.id) {
+            let error = Error("annotation MUST have an id property");
+            callback(error, null);
         }
+        let url = annotationServer + '/annotations/annotation/' + annotation.id;
+        fetch(url, {
+            method: "DELETE",
+            cache: 'no-cache',
+            mode: 'cors'
+        }).then(function(response) {
+            return response.json();
+        }).then(function(data) {
+            return callback(null, data);
+        }).catch(function(err) {
+            console.error(url, err.toString());
+            return callback(err, null);
+        });
+    },
+
+    deleteAnnotationById : function (annotationId, callback) {
+        let url = annotationServer + '/annotations/annotation/' + annotationId;
+        fetch(url, {
+            method: "DELETE",
+            cache: 'no-cache',
+            mode: 'cors'
+        }).then(function(response) {
+            return response.json();
+        }).then(function(data) {
+            return callback(null, data);
+        }).catch(function(err) {
+            console.error(url, err.toString());
+            return callback(err, null);
+        });
     },
 }
 
