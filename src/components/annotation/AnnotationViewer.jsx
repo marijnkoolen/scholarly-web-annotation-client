@@ -14,7 +14,7 @@ import TargetSelector from './TargetSelector.jsx';
 import React from 'react';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import AppAnnotationStore from './../../flux/AnnotationStore';
-import LoginBox from './LoginBox';
+import LoginBox from '../LoginBox';
 import config from './../../rdfa-annotation-config.js';
 
 export default class AnnotationViewer extends React.Component {
