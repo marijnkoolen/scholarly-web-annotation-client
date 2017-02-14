@@ -79,7 +79,7 @@ const AnnotationAPI = {
             }
             return callback(null, data);
         }).catch(function(err) {
-            callback(err, null);
+            return callback(err, null);
         });
     },
 
