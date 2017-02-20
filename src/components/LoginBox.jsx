@@ -1,7 +1,7 @@
 import React from 'react';
-import FlexModal from './../FlexModal';
-import AppAnnotationStore from './../../flux/AnnotationStore';
-import AnnotationActions from './../../flux/AnnotationActions';
+import FlexModal from './FlexModal';
+import AppAnnotationStore from './../flux/AnnotationStore';
+import AnnotationActions from './../flux/AnnotationActions';
 
 class LoginBox extends React.Component {
 
