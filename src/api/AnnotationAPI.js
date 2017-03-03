@@ -9,7 +9,7 @@ const AnnotationAPI = {
 
     saveAnnotation : function(annotation, callback) {
         // default is POSTing a new annotation
-        var url = annotationServer + '/annotations';
+        var url = annotationServer + '/annotation';
         var method = 'POST';
         var status = null;
 
