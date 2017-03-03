@@ -4,7 +4,7 @@
 var expect = require('chai').expect;
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
-import AnnotationAPI from '../src/api/AnnotationAPI.js';
+import AnnotationAPI from '../api/AnnotationAPI.js';
 var uuid = require('uuid4');
 
 let annotationInvalid = {
