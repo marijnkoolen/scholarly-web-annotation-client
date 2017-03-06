@@ -80,7 +80,7 @@ const VocabularyUtil = {
                 }
             }
             else {
-                //console.log("# That's all, folks!")
+                // all triples parsed, done!
                 callback(null, importURLs);
             }
         });
@@ -89,7 +89,7 @@ const VocabularyUtil = {
     listAnnotatableThings : function() {
         let rootLabel = '"AnnotatableThing"';
         let rootObject = VocabularyUtil.getLabelClass(rootLabel);
-        let annotatableThings = VocabularyUtil.getSubClasses(rootObject);
+        let annotatableThings = VocabularyUtil.getDescendantClasses(rootObject);
         return VocabularyUtil.toStrings(annotatableThings);
     },
 
@@ -104,13 +104,26 @@ const VocabularyUtil = {
     },
 
     getLabelClass : function(typeLabel) {
-        let triples = VocabularyUtil.store.find(null, VocabularyUtil.expand('rdfs:label'), N3.Util.createLiteral(typeLabel));
+        if (!N3.Util.isLiteral(typeLabel)) {
+            typeLabel = N3.Util.createLiteral(typeLabel);
+        }
+        let triples = VocabularyUtil.store.find(null, VocabularyUtil.expand('rdfs:label'), typeLabel);
         return triples[0] ? triples[0].subject : null;
     },
 
     getClassLabel : function(className) {
         let triples = VocabularyUtil.store.find(className, VocabularyUtil.expand('rdfs:label'), null);
         return triples[0] ? triples[0].object : null;
+    },
+
+    getDescendantClasses : function(className) {
+        let triples = VocabularyUtil.store.find(null, VocabularyUtil.expand('rdfs:subClassOf'), className);
+        var subClasses = [];
+        triples.forEach(function(triple) {
+            subClasses.push(VocabularyUtil.getClassLabel(triple.subject));
+            subClasses = subClasses.concat(VocabularyUtil.getSubClasses(triple.subject));
+        });
+        return subClasses;
     },
 
     getSubClasses : function(className) {
