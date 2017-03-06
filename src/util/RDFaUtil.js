@@ -18,7 +18,7 @@ const RDFaUtil = {
     // Return RDFa attributes of an element.
     getRDFaAttributes : function(node) {
         var nodeRDFaAttrs = {};
-        if (node.nodeName !== "#text" && node.nodeName !== "#comment") {
+        if (node.nodeType === window.Node.ELEMENT_NODE) {
             RDFaAttrs.forEach(function(attr) {
                 if (node.hasAttribute(attr)) {
                     nodeRDFaAttrs[attr] = node.getAttribute(attr);
@@ -99,12 +99,14 @@ const RDFaUtil = {
 
     getRDFaTextContent : function(node) {
         var textContent = "";
-        if (RDFaUtil.isRDFaIgnoreNode(node) || node.nodeName === "#comment") {
+        if (RDFaUtil.isRDFaIgnoreNode(node) || node.nodeType === window.Node.COMMENT_NODE) {
             return "";
         }
         node.childNodes.forEach(function(childNode) {
             var childTextContent;
-            if (childNode.nodeName === "#text") {
+            if (childNode.nodeType === window.Node.TEXT_NODE) {
+                // deal with surrounding whitespace of child nodes
+                // based on browser behaviour
                 childTextContent = StringUtil.collapse(childNode.textContent);
                 if (textContent === "" && DOMUtil.getDisplayType(node) === "block") {
                     childTextContent = childTextContent.trimLeft();
@@ -113,10 +115,7 @@ const RDFaUtil = {
                     childTextContent = childTextContent.trimRight();
                 }
             }
-            else if (childNode.nodeName === "#comment") {
-                return false;
-            }
-            else {
+            else if (childNode.nodeType === window.Node.ELEMENT_NODE) {
                 childTextContent = RDFaUtil.getRDFaTextContent(childNode);
                 if (DOMUtil.getDisplayType(childNode) === "block") {
                     if (textContent.length > 0) {
@@ -182,7 +181,7 @@ const RDFaUtil = {
     updateStack : function(stack, node) {
         var top = stack[stack.length - 1];
         var position = top.compareDocumentPosition(node);
-        while (!(position & Node.DOCUMENT_POSITION_CONTAINED_BY)) {
+        while (!(position & window.Node.DOCUMENT_POSITION_CONTAINED_BY)) {
             stack.pop();
             var top = stack[stack.length - 1];
             var position = top.compareDocumentPosition(node);
