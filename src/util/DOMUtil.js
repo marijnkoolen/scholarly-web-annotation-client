@@ -28,22 +28,29 @@ const DOMUtil = {
     // return all text nodes in a list of nodes
     getTextNodes : function(nodes) {
         return nodes.filter(function(node) {
-            return node.nodeName === "#text";
-        })
+            return node.nodeType === window.Node.TEXT_NODE;
+        });
+    },
+
+    // return all ELEMENT_NODE nodes in a list of nodes
+    getElementNodes : function(nodes) {
+        return nodes.filter(function(node) {
+            return node.nodeType === window.Node.ELEMENT_NODE;
+        });
     },
 
     // return all non-text nodes in a list of nodes
     getNonTextNodes : function(nodes) {
         return nodes.filter(function(node) {
-            return node.nodeName !== "#text";
-        })
+            return node.nodeType !== window.Node.TEXT_NODE;
+        });
     },
 
     // return all ancestor nodes of a node
     getAncestors : function(node) {
         var parentNode = node.parentNode;
         var ancestors = [];
-        if (parentNode.nodeName !== "#document") {
+        if (parentNode && parentNode.nodeType !== window.Node.DOCUMENT_NODE) {
             ancestors = DOMUtil.getAncestors(parentNode);
             ancestors.push(parentNode);
         }
