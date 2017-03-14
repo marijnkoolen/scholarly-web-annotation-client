@@ -3,7 +3,8 @@
  * Taken from http://jsfiddle.net/8mdX4/1211/
  * See stackoverflow discussion: http://stackoverflow.com/questions/6240139/highlight-text-range-using-javascript
  * Originally created by Tim Down
- * Contributors: Marijn Koolen
+ * Contributors:
+ *   - Marijn Koolen
  *
  */
 
