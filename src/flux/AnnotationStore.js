@@ -65,6 +65,10 @@ class AnnotationStore {
         });
     }
 
+    logout(userDetails) {
+        this.trigger('logout-user', userDetails);
+    }
+
 }
 
 var AppAnnotationStore = new AnnotationStore();
@@ -105,6 +109,9 @@ AppDispatcher.register( function( action ) {
             break;
         case 'login-user':
             AppAnnotationStore.login(action.userDetails);
+            break;
+        case 'logout-user':
+            AppAnnotationStore.logout(action.userDetails);
             break;
 
     }

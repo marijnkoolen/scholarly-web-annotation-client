@@ -58,6 +58,13 @@ const AnnotationActions = {
         });
     },
 
+    logout : function() {
+        AppDispatcher.dispatch({
+            eventName: 'logout-user',
+            userDetails: null
+        });
+    },
+
     load: function(resourceIds) {
         AppDispatcher.dispatch({
             eventName: 'load-annotations',
