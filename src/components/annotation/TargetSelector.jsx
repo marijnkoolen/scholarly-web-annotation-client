@@ -10,7 +10,6 @@ import AnnotationUtil from './../../util/AnnotationUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
 import AppAnnotationStore from './../../flux/AnnotationStore';
 import AnnotationActions from './../../flux/AnnotationActions';
-import AnnotationAPI from './../../api/AnnotationAPI.js';
 
 export default class TargetSelector extends React.Component {
     constructor(props) {
