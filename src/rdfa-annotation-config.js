@@ -39,16 +39,39 @@ const config = {
 			"vocabularies" : [
 				"DBpedia",
 				"GTAA"
-			]
+			],
+			"type": "classification",
+			"purpose": "classifying",
+			"format": "text/plain"
 		},
 		"link" : {
 			"apis" : [
 				{"name" : "wikidata"},
 				{"name" : "europeana"}
-			]
+			],
+			"type": "link",
+			"purpose": "linking",
+			"format": "text/plain"
 		},
-		"bookmark" : {},
-		"comment" : {}
+		"bookmark" : {
+			"type": "bookmark",
+			"purpose": "bookmarking"
+		},
+		"comment" : {
+			"type": "comment",
+			"purpose": "commenting",
+			"format": "text/plain"
+		},
+		"correct" : {
+			"type": "correction",
+			"purpose": "correcting",
+			"format": "text/plain"
+		},
+		"transcribe" : {
+			"type": "transcription",
+			"purpose": "transcribing",
+			"format": "text/plain"
+		}
 	},
 	"candidateTypes": ["resource", "annotation"],
 	"tasks": [
