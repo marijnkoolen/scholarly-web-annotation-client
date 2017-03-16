@@ -15,12 +15,12 @@ const AnnotationAPI = {
 
         // if annotation already has an id, it's an update, so PUT
         if(annotation.id) {
-            url += '/annotation/' + annotation.id;
+            url = annotationServer + '/annotations/annotation/' + annotation.id;
             method = 'PUT';
         }
 
         fetch(url, {
-            method: "POST",
+            method: method,
             headers: {
                 "Content-Type": "application/json"
             },
@@ -50,7 +50,7 @@ const AnnotationAPI = {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(userDetails)
-        }).then(handleErrors).then(function(response) {
+        }).then(function(response) {
             return response.json();
         }).then(function(data) {
             callback(data);
