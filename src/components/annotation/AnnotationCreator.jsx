@@ -1,4 +1,4 @@
-import CommentingForm from './CommentingForm';
+import FreetextForm from './FreetextForm';
 import ClassifyingForm from './ClassifyingForm';
 import LinkingForm from './LinkingForm';
 
@@ -12,22 +12,14 @@ class AnnotationCreator extends React.Component {
 
     constructor(props) {
         super(props);
-        //make this less shitty verbosey
-        let comments = [];
-        let classifications = [];
-        let links = [];
+        let bodies = {};
 
         if(this.props.editAnnotation.body) {
             this.props.editAnnotation.body.forEach(function(body) {
-                if (body.type === "Classification") {
-                    classifications.push(body);
+                if (!(body.type in Object.keys(bodies))) {
+                    bodies[body.type] = [];
                 }
-                if (body.type === "Comment") {
-                    comments.push(body);
-                }
-                if (body.type === "Link") {
-                    links.push(body);
-                }
+                bodies[body.type].push(body);
             });
         }
         let activeTab = null;
@@ -39,6 +31,7 @@ class AnnotationCreator extends React.Component {
         }
         this.state = {
             activeTab : activeTab,
+            bodies: bodies,
             classifications : classifications,
             comments : comments,
             links : links
@@ -51,17 +44,13 @@ class AnnotationCreator extends React.Component {
 
     //TODO this function looks like it could be more optimized
     gatherDataAndSave() {
+        let component = this;
         var annotation = this.props.editAnnotation;
         var body = [];
-        if(this.state.classifications.length > 0) {
-            body = body.concat(this.state.classifications);
-        }
-        if(this.state.comments.length > 0) {
-            body = body.concat(this.state.comments);
-        }
-        if(this.state.links.length > 0) {
-            body = body.concat(this.state.links);
-        }
+        console.log(component.state);
+        Object.keys(component.state.bodies).forEach(function(bodyType) {
+            body = body.concat(component.state.bodies[bodyType]);
+        });
         annotation.body = body;
         AnnotationActions.save(annotation);
         this.props.hideAnnotationForm();
@@ -88,17 +77,9 @@ class AnnotationCreator extends React.Component {
             if (mode == 'bookmark') { return null };
             let form = '';
             switch(mode) {
-                case 'comment' : form = (
-                    <CommentingForm
-                        data={this.state.comments}
-                        config={this.props.annotationModes[mode]}
-                        onOutput={this.updateAnnotationBody.bind(this)}
-                    />
-                );
-                break;
                 case 'classify' : form = (
                     <ClassifyingForm
-                        data={this.state.classifications}
+                        data={this.state.bodies.classification}
                         config={this.props.annotationModes[mode]}
                         onOutput={this.updateAnnotationBody.bind(this)}
                         services={this.props.services}
@@ -107,10 +88,18 @@ class AnnotationCreator extends React.Component {
                 break;
                 case 'link' : form = (
                     <LinkingForm
-                        data={this.state.links}
+                        data={this.state.bodies.link}
                         config={this.props.annotationModes[mode]}
                         onOutput={this.updateAnnotationBody.bind(this)}
                         services={this.props.services}
+                    />
+                );
+                break;
+                default : form = (
+                    <FreetextForm
+                        data={this.state.bodies[this.props.annotationModes[mode].type]}
+                        config={this.props.annotationModes[mode]}
+                        onOutput={this.updateAnnotationBody.bind(this)}
                     />
                 );
                 break;
