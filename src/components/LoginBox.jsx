@@ -9,19 +9,53 @@ class LoginBox extends React.Component {
         super(props);
         this.state = {
             username: "",
-            warning: ""
+            warning: "",
+            showLoginModal: false,
+            user: null,
+            loggedIn: false,
+            loginButtonLabel: "login",
+            loginMessage: "You are not logged in"
         }
     }
     componentDidMount() {
-        AppAnnotationStore.bind('login-user', this.onLogin.bind(this));
+        AppAnnotationStore.bind('login-user', this.doLogin.bind(this));
+        if (localStorage.userDetails) {
+            AnnotationActions.login(JSON.parse(localStorage.userDetails));
+        }
     }
-
-    onLogin(userDetails) {
+    handleLogin() {
+        if (!this.state.loggedIn) {
+            this.setState({showLoginModal: true});
+        }
+        else {
+            console.log("logging out");
+            this.setState({
+                user: null,
+                loggedIn: false,
+                loginButtonLabel: "login",
+                loginMessage: "You are not logged in"
+            });
+            AnnotationActions.logout();
+            localStorage.removeItem("userDetails");
+        }
+    }
+    showLoginForm() {
+        this.setState({showLoginModal: true});
+    }
+    hideLoginForm() {
+        $('#login__modal').modal('hide');//TODO ugly, but without this the static backdrop won't disappear!
+        this.setState({showLoginModal: false});
+    }
+    doLogin(userDetails) {
+        this.setState({
+            user: userDetails,
+            loggedIn: true,
+            loginButtonLabel: "logout",
+            loginMessage: "You are logged in as " + userDetails.username
+        });
+        localStorage.setItem("userDetails", JSON.stringify(userDetails));
         if (userDetails.username) {
-            $('#login__modal').modal('hide');//TODO ugly, but without this the static backdrop won't disappear!
-            if(this.props.login) {
-                this.props.login(userDetails);
-            }
+            this.hideLoginForm();
         }
         else if (userDetails.error){
             this.setState({
@@ -43,12 +77,19 @@ class LoginBox extends React.Component {
     }
 
     render() {
+        this.showModal = this.state.showLoginModal;
         return (
             <div>
-                {this.props.showModal ?
+                <button className="btn btn-default"
+                    onClick={this.handleLogin.bind(this)}>
+                    {this.state.loginButtonLabel}
+                </button>
+                &nbsp;
+                <span>{this.state.loginMessage}</span>
+                {this.showModal ?
                     <FlexModal
                         elementId="login__modal"
-                        handleHideModal={this.props.hideLoginForm.bind(this)}
+                        handleHideModal={this.hideLoginForm.bind(this)}
                         title="User Login">
                         <form className="loginForm" onSubmit={this.handleSubmit.bind(this)}>
                             <label>Username</label>

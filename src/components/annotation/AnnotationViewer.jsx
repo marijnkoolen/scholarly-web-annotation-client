@@ -21,44 +21,10 @@ export default class AnnotationViewer extends React.Component {
         super(props);
         this.makeAnnotation = this.makeAnnotation.bind(this);
         this.state = {
-            showLoginModal: false,
             showAnnotationModal: false,
             activeAnnotations: [],
             user: null,
-            loggedIn: false,
-            loginButtonLabel: "login",
-            loginMessage: "You are not logged in"
         };
-    }
-    handleLogin() {
-        if (!this.state.loggedIn) {
-            this.showLoginForm()
-        }
-        else {
-            this.setState({
-                user: null,
-                loggedIn: false,
-                loginButtonLabel: "login",
-                loginMessage: "You are not logged in"
-            });
-            localStorage.removeItem("userDetails");
-        }
-    }
-    showLoginForm() {
-        this.setState({showLoginModal: true});
-    }
-    hideLoginForm() {
-        this.setState({showLoginModal: false});
-    }
-    doLogin(userDetails) {
-        this.setState({
-            user: userDetails,
-            loggedIn: true,
-            loginButtonLabel: "logout",
-            loginMessage: "You are logged in as " + userDetails.username
-        });
-        localStorage.setItem("userDetails", JSON.stringify(userDetails));
-        this.hideLoginForm();
     }
     showAnnotationForm() {
         this.setState({showAnnotationModal: true});
@@ -82,13 +48,14 @@ export default class AnnotationViewer extends React.Component {
         }
     }
     componentDidMount() {
-        // temp hack: initialize user from local storage
-        if (localStorage.userDetails) {
-            this.doLogin(JSON.parse(localStorage.userDetails));
-        }
         AppAnnotationStore.bind('activate-annotation', this.activateAnnotation.bind(this));
         AppAnnotationStore.bind('edit-annotation', this.editAnnotation.bind(this));
         AppAnnotationStore.bind('reload-annotations', this.updateCurrentAnnotation.bind(this));
+        AppAnnotationStore.bind('login-user', this.setUser.bind(this));
+        AppAnnotationStore.bind('logout-user', this.setUser.bind(this));
+    }
+    setUser(user) {
+        this.setState({user: user});
     }
     makeAnnotation(annotationTargets) {
         var annotation = AnnotationUtil.generateW3CAnnotation(this.state.user.username, annotationTargets);
@@ -99,25 +66,14 @@ export default class AnnotationViewer extends React.Component {
         );
     }
     render() {
-        this.state
         return (
         <div className="annotationViewer">
             <h1>Annotation Client</h1>
-            <div className="login-div">
-                <button className="btn btn-default"
-                    onClick={this.handleLogin.bind(this)}>
-                    {this.state.loginButtonLabel}
-                </button>
-                &nbsp;
-                <span>{this.state.loginMessage}</span>
-                <LoginBox
-                    showModal={this.state.showLoginModal}
-                    hideLoginForm={this.hideLoginForm.bind(this)}
-                    login={this.doLogin.bind(this)}
-                />
-            </div>
+            <LoginBox
+                user={this.state.user}
+            />
             <div>
-            {this.state.loggedIn ?
+            {this.state.user ?
                 <TargetSelector
                     makeAnnotation={this.makeAnnotation.bind(this)}
                     /> : null
