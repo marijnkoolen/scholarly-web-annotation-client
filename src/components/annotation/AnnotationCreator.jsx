@@ -16,9 +16,8 @@ class AnnotationCreator extends React.Component {
 
         if(this.props.editAnnotation.body) {
             this.props.editAnnotation.body.forEach(function(body) {
-                if (!(body.type in Object.keys(bodies))) {
+                if (!Object.keys(bodies).includes(body.type))
                     bodies[body.type] = [];
-                }
                 bodies[body.type].push(body);
             });
         }
@@ -32,9 +31,6 @@ class AnnotationCreator extends React.Component {
         this.state = {
             activeTab : activeTab,
             bodies: bodies,
-            classifications : classifications,
-            comments : comments,
-            links : links
         }
     }
 
@@ -47,7 +43,6 @@ class AnnotationCreator extends React.Component {
         let component = this;
         var annotation = this.props.editAnnotation;
         var body = [];
-        console.log(component.state);
         Object.keys(component.state.bodies).forEach(function(bodyType) {
             body = body.concat(component.state.bodies[bodyType]);
         });
