@@ -9,7 +9,6 @@ Currently uses:
 		- check out ViewDir!: https://viewdir.github.io/
 */
 
-import AnnotationAPI from '../../../api/AnnotationAPI';
 import AnnotationUtil from '../../../util/AnnotationUtil';
 
 import AnnotationActions from '../../../flux/AnnotationActions';
