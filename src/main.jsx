@@ -9,10 +9,11 @@ import SelectionUtil from './util/SelectionUtil.js';
 import DOMUtil from './util/DOMUtil.js';
 import config from './rdfa-annotation-config.js';
 import AnnotationActions from './flux/AnnotationActions.js';
-const annotationAPI = config.services.AnnotationServer.api;
 
 ReactDOM.render(
-  <AnnotationViewer api={annotationAPI} pollInterval={60000} />,
+  <AnnotationViewer
+    config={config}
+  />,
   document.getElementById('annotation-viewer')
 );
 
