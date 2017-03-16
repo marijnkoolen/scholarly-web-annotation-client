@@ -15,7 +15,6 @@ import React from 'react';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import AppAnnotationStore from './../../flux/AnnotationStore';
 import LoginBox from '../LoginBox';
-import config from './../../rdfa-annotation-config.js';
 
 export default class AnnotationViewer extends React.Component {
     constructor(props) {
@@ -120,12 +119,10 @@ export default class AnnotationViewer extends React.Component {
             <div>
             {this.state.loggedIn ?
                 <TargetSelector
-                    api={this.props.api}
                     makeAnnotation={this.makeAnnotation.bind(this)}
                     /> : null
             }
                 <AnnotationList
-                    api={this.props.api}
                     currentUser={this.state.user}
                 />
                 <AnnotationBox
@@ -133,8 +130,8 @@ export default class AnnotationViewer extends React.Component {
                     hideAnnotationForm={this.hideAnnotationForm.bind(this)}
                     editAnnotation={this.state.currentAnnotation}
                     currentUser={this.state.user}
-                    annotationModes={config.annotationModes}
-                    services={config.services}
+                    annotationModes={this.props.config.annotationModes}
+                    services={this.props.config.services}
                 />
             </div>
         </div>
