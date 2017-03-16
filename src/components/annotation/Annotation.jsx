@@ -165,7 +165,7 @@ class Annotation extends React.Component {
         let component = this;
         let annotation = component.props.annotation;
         var bodyCount = 0;
-        var timestamp = (new Date(annotation.created * 1000)).toLocaleString();
+        var timestamp = (new Date(annotation.created)).toLocaleString();
         var bodies = AnnotationUtil.extractBodies(annotation).map(function(body) {
             bodyCount++;
             return (
