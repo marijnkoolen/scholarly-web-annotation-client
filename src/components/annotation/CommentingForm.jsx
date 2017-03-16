@@ -34,9 +34,9 @@ class CommentingForm extends React.Component {
 		if(cs) {
             var annotation = {
                 value : this.refs.comment.value,
-                purpose : "commenting",
-                type : "Commenting",
-                format : "text/plain"
+                purpose : this.props.config.purpose,
+                type : this.props.config.type,
+                format : this.props.config.format
             }
 			cs.push(annotation);
 			this.setState({data : cs}, this.onOutput.bind(this));
