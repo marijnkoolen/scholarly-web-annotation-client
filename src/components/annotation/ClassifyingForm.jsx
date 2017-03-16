@@ -39,8 +39,8 @@ class ClassifyingForm extends React.Component {
                     id : this.state.suggestionId,
                     value : this.state.value,
                     vocabulary : this.state.vocabulary,
-                    purpose : "classifying",
-                    type : "Classifying"
+                    purpose : this.props.config.purpose,
+                    type : this.props.config.type
                 });
                 this.setState({
                     value : '',
@@ -60,7 +60,7 @@ class ClassifyingForm extends React.Component {
 
     onOutput() {
         if(this.props.onOutput) {
-            this.props.onOutput('classifications', this.state.data);
+            this.props.onOutput(this.props.config.type, this.state.data);
         }
     }
 
@@ -271,7 +271,7 @@ class ClassifyingForm extends React.Component {
                                 </div>
                                 <br/>
                                 <Autosuggest
-                                    ref="classifications"
+                                    ref={this.props.config.type}
                                     suggestions={this.state.suggestions}
                                      onSuggestionsFetchRequested={this.onSuggestionsFetchRequested.bind(this)}
                                      onSuggestionsClearRequested={this.onSuggestionsClearRequested.bind(this)}
