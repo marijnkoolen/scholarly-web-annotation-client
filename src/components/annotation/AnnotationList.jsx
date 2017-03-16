@@ -6,7 +6,6 @@ import AnnotationActions from './../../flux/AnnotationActions';
 import Annotation from './Annotation.jsx';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
-import AnnotationAPI from './../../api/AnnotationAPI.js';
 
 class AnnotationList extends React.Component {
     constructor(props) {
