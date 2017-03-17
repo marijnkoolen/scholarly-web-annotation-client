@@ -47,8 +47,11 @@ var setUnselectable = function(allNodes) {
 }
 
 var observer = new MutationObserver(function(mutations) {
+    // if something in the observer window changes ...
     mutations.forEach(function(mutation) {
+        // set unselectable and whole element attributes
         setAnnotationAttributes();
+        // reload annotations based on updated DOM
         AnnotationActions.reload();
     });
 });
