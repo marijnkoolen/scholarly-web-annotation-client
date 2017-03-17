@@ -226,6 +226,44 @@ const RDFaUtil = {
         return index;
     },
 
+    buildResourcesMaps : function() {
+        var maps = {};
+        RDFaUtil.getTopRDFaNodes(document.body).forEach((rdfaResourceNode) => {
+            let map = this.buildResourceMap(rdfaResourceNode);
+            maps[map.about] = map;
+        });
+        return maps;
+    },
+
+    buildResourceMap : function(rdfaResourceNode) {
+        var resourceMap = RDFaUtil.getRDFaAttributes(rdfaResourceNode);
+        RDFaUtil.getRDFaSubresources(rdfaResourceNode).forEach((subresourceNode) => {
+            var subresourceMap = RDFaUtil.buildResourceMap(subresourceNode);
+            let property = subresourceMap.property;
+            if (!Object.keys(resourceMap).includes(property))
+                resourceMap[property] = [];
+            resourceMap[property].push(subresourceMap);
+        })
+        return resourceMap;
+    },
+
+    getRDFaSubresources : function(node) {
+        var subresourceNodes = [];
+        if (!node.childNodes)
+            return subresourceNodes;
+        node.childNodes.forEach((childNode) => {
+            if (childNode.nodeType !== window.Node.ELEMENT_NODE)
+                return null;
+            if (RDFaUtil.hasRDFaResource(childNode))
+                subresourceNodes.push(childNode);
+            else {
+                let subsubresourceNodes = RDFaUtil.getRDFaSubresources(childNode);
+                subresourceNodes = subresourceNodes.concat(subsubresourceNodes);
+            }
+        });
+        return subresourceNodes;
+    },
+
     findResourceRelations : function(resources, resourceIndex) {
         var hasParent = {};
         resources.forEach(function(resource) {
