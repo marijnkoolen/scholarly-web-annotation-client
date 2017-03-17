@@ -51,8 +51,9 @@ var observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
         // set unselectable and whole element attributes
         setAnnotationAttributes();
-        // reload annotations based on updated DOM
+        // trigger reload of annotations based on updated DOM
         AnnotationActions.reload();
+        AnnotationActions.loadResources();
     });
 });
 
