@@ -44,8 +44,7 @@ class AnnotationList extends React.Component {
         this.resourceIndex = RDFaUtil.indexRDFaResources();
     }
     loadAnnotations(annotations) {
-        let types = AnnotationUtil.sortAnnotationTypes(annotations, this.resourceIndex);
-        this.setState({annotations: types.display});
+        this.setState({annotations: annotations});
         this.indexAnnotations();
     }
     indexAnnotations() {
@@ -56,7 +55,7 @@ class AnnotationList extends React.Component {
         });
     }
     lookup(sourceId) {
-        var source = { type: null, data: null };
+        var source = { type: "resource", data: null };
         if (this.annotationIndex.hasOwnProperty(sourceId))
             source = { type: "annotation", data: this.annotationIndex[sourceId] };
         else if (this.resourceIndex.hasOwnProperty(sourceId))
@@ -65,7 +64,7 @@ class AnnotationList extends React.Component {
     }
     toggleActiveAnnotation(annotation) {
         this.isActive(annotation) ?
-            this.activateAnnotation(annotation) : this.deactivateAnnotation(annotation);
+            this.activateAnnotation(annotation) : this.deActivateAnnotation(annotation);
     }
     activateAnnotation(annotation) {
         let annotations = this.state.activeAnnotations.concat([annotation]);
