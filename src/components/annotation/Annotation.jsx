@@ -34,7 +34,7 @@ class Annotation extends React.Component {
     }
     getTargetRangeText(node, start, end) {
         RDFaUtil.setRDFaSelectionRange(node, start, end);
-        var selection = document.getSelection();
+        var selection = window.document.getSelection();
         var text = selection.toString();
         selection.removeAllRanges();
         return text;
@@ -42,9 +42,8 @@ class Annotation extends React.Component {
     getTargetText(target, resource) {
         // if whole resource is the target,
         // return the text content of the correspondign node
-        if (!target.selector) {
+        if (!target.selector)
             return resource.data.text;
-        }
         var selector = target.selector;
         if (target.selector.refinedBy)
             selector = target.selector.refinedBy;
