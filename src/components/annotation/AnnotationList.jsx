@@ -10,107 +10,88 @@ import RDFaUtil from './../../util/RDFaUtil.js';
 class AnnotationList extends React.Component {
     constructor(props) {
         super(props);
-        this.resourceIndex = RDFaUtil.indexRDFaResources();
         this.annotationIndex = {};
         this.lookup = this.lookup.bind(this);
         this.state = {
             annotations: [],
             activeAnnotations: [],
-            resourceIds: []
+            topResourceIds: []
         }
     }
     componentDidMount() {
-        var resourceIds = RDFaUtil.getTopRDFaResources(document.body);
-        this.setState({resourceIds: resourceIds}, function() {
-            AnnotationActions.load(resourceIds);
-        });
-
-        AppAnnotationStore.bind('activate-annotation', this.activateAnnotation.bind(this));
-        AppAnnotationStore.bind('save-annotation', this.reloadAnnotations.bind(this));
-        AppAnnotationStore.bind('reload-annotations', this.reloadAnnotations.bind(this));
+        AppAnnotationStore.bind('activate-annotation', this.toggleActiveAnnotation.bind(this));
+        AppAnnotationStore.bind('save-annotation', this.reload.bind(this));
+        AppAnnotationStore.bind('reload-annotations', this.reload.bind(this));
+        AppAnnotationStore.bind('change-target', this.reload.bind(this));
+        AppAnnotationStore.bind('del-annotation', this.reload.bind(this));
         AppAnnotationStore.bind('load-annotations', this.loadAnnotations.bind(this));
-        //make sure to reload the list when the target changes
-        AppAnnotationStore.bind('change-target', this.reloadAnnotations.bind(this));
-
-        //also make sure to reload the list when annotations are added/removed (to/from the target)
-        AppAnnotationStore.bind('del-annotation', this.reloadAnnotations.bind(this));
+        // load resource index and annotations
+        this.reload();
     }
-    lookup(sourceId) {
-        if (this.annotationIndex.hasOwnProperty(sourceId)) {
-            return {
-                type: "annotation",
-                data: this.annotationIndex[sourceId]
-            }
-        }
-        if (this.resourceIndex.hasOwnProperty(sourceId)) {
-            return {
-                type: "resource",
-                data: this.resourceIndex[sourceId]
-            }
-        }
-        console.error("Error: target id " + sourceId + " not found in index");
-        return {
-            type: null,
-            data: null
-        }
-    }
-    indexAnnotations() {
-        var annotationIndex = {}
-        this.state.annotations.forEach(function(annotation) {
-            annotationIndex[annotation.id] = annotation;
-        });
-        this.annotationIndex = annotationIndex;
-    }
-    reloadAnnotations(){
+    reload(){
         let component = this;
-        // get resource IDs of current RDFa nodes in DOM
-        let resourceIds = RDFaUtil.getTopRDFaResources(document.body);
-        let sameList = resourceIds.every(function(resourceId) {
-            return (component.state.resourceIds.indexOf(resourceId) > -1);
-        });
-        if (!sameList) {
-            component.setState({annotations: [], resourceIds: resourceIds});
-        }
-        AnnotationActions.load(resourceIds);
+        let currIds = RDFaUtil.getTopRDFaResources(document.body);
+        let prevIds = this.state.topResourceIds;
+        // only update state if top level resources have changed
+        if (currIds.every(id => prevIds.includes(id)) &&
+                prevIds.every(id => currIds.includes(id)))
+            this.setState({topResourceIds: currIds}, () => {
+                component.indexResources()
+                AnnotationActions.load(currIds);
+            });
+    }
+    indexResources() {
+        this.resourceIndex = RDFaUtil.indexRDFaResources();
     }
     loadAnnotations(annotations) {
-        let component = this;
-        component.filterAnnotations(annotations);
-    }
-    filterAnnotations(annotations) {
         // AnnotationList only needs to know about the display annotations
         // not the structural relation annotations
         let types = AnnotationUtil.sortAnnotationTypes(annotations, this.resourceIndex);
-        console.log(types);
         this.setState({annotations: types.display});
+        this.indexAnnotations();
+    }
+    indexAnnotations() {
+        let component = this;
+        component.annotationIndex = {}
+        component.state.annotations.forEach(function(annotation) {
+            component.annotationIndex[annotation.id] = annotation;
+        });
+    }
+    lookup(sourceId) {
+        var source = { type: null, data: null };
+        if (this.annotationIndex.hasOwnProperty(sourceId))
+            source = { type: "annotation", data: this.annotationIndex[sourceId] };
+        else if (this.resourceIndex.hasOwnProperty(sourceId))
+            source = { type: "resource", data: this.resourceIndex[sourceId] };
+        return source;
+    }
+    toggleActiveAnnotation(annotation) {
+        this.isActive(annotation) ?
+            this.activateAnnotation(annotation) : this.deactivateAnnotation(annotation);
     }
     activateAnnotation(annotation) {
-        var annotations = this.state.activeAnnotations;
-        if (annotations.indexOf(annotation) === -1) {
-            annotations.push(annotation);
-        }
-        else {
-            annotations.splice(annotations.indexOf(annotation), 1);
-        }
+        let annotations = this.state.activeAnnotations.concat([annotation]);
         this.setState({activeAnnotations: annotations});
     }
+    deActivateAnnotation(annotation) {
+        var annotations = this.state.activeAnnotations;
+        annotations.splice(annotations.indexOf(annotation), 1);
+        this.setState({activeAnnotations: annotations});
+    }
+    isActive(annotation) {
+        return this.state.activeAnnotations.includes(annotation);
+    }
     render() {
-        this.indexAnnotations();
-        this.resourceIndex = RDFaUtil.indexRDFaResources();
         var annotationItems = null;
         let component = this;
         if (this.state.annotations) {
             annotationItems = this.state.annotations.map(function(annotation) {
-                let active = false;
-                if (component.state.activeAnnotations.indexOf(annotation) !== -1) {
-                    active = true;
-                }
                 return (
                     <Annotation
                         annotation={annotation}
                         lookup={component.lookup}
                         key={annotation.id}
-                        active={active}
+                        active={component.isActive(annotation)}
                         currentUser={component.props.currentUser}
                     />
                 );
