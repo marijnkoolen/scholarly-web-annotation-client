@@ -76,6 +76,12 @@ const AnnotationActions = {
         AppDispatcher.dispatch({
             eventName: 'reload-annotations'
         });
+    },
+
+    loadResources: function() {
+        AppDispatcher.dispatch({
+            eventName: 'load-resources'
+        });
     }
 
 }

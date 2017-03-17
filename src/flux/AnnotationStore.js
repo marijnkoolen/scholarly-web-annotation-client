@@ -59,6 +59,10 @@ class AnnotationStore {
         this.trigger('reload-annotations');
     }
 
+    loadResources() {
+        this.trigger('load-resources');
+    }
+
     login(userDetails) {
         AnnotationAPI.login(userDetails, (response) => {
             this.trigger('login-user', response);
@@ -106,6 +110,9 @@ AppDispatcher.register( function( action ) {
             break;
         case 'reload-annotations':
             AppAnnotationStore.reloadAnnotations();
+            break;
+        case 'load-resources':
+            AppAnnotationStore.loadResources();
             break;
         case 'login-user':
             AppAnnotationStore.login(action.userDetails);
