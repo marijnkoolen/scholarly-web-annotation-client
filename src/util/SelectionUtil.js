@@ -43,12 +43,12 @@ const SelectionUtil = {
             } catch (ex) {
                 SelectionUtil.makeEditableAndHighlight(colour)
             }
+            sel = window.getSelection();
         } else if (document.selection && document.selection.createRange) {
             // IE <= 8 case
             range = document.selection.createRange();
             range.execCommand("BackColor", false, colour);
         }
-        var sel = window.getSelection();
         sel.removeAllRanges();
     },
 
@@ -70,9 +70,9 @@ const SelectionUtil = {
         SelectionUtil.removeHighlight();
     },
 
-    // find nodes and offsets corresponding to the selection
-    // start node is always before end node in presentation order
-    // regardless of whether selection is done forwards or backwards
+    // Find nodes and offsets corresponding to the selection.
+    // Start node is always before end node in presentation order
+    // regardless of whether selection is done forwards or backwards.
     getStartEndSelection : function() {
         var selection = document.getSelection();
         if (selection.isCollapsed) {
@@ -95,7 +95,7 @@ const SelectionUtil = {
     },
 
     checkSelectionRange : function() {
-        // 1. do nothing selection is not collapsed
+        // 1. do nothing if selection is collapsed (e.g. does not span a range)
         if (document.getSelection().isCollapsed) {
             return null;
         }
