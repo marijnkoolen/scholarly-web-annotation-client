@@ -33,8 +33,8 @@ class AnnotationList extends React.Component {
         let currIds = RDFaUtil.getTopRDFaResources(document.body);
         let prevIds = this.state.topResourceIds;
         // only update state if top level resources have changed
-        if (currIds.every(id => prevIds.includes(id)) &&
-                prevIds.every(id => currIds.includes(id)))
+        if (!currIds.every(id => prevIds.includes(id)) ||
+                !prevIds.every(id => currIds.includes(id)))
             this.setState({topResourceIds: currIds}, () => {
                 component.indexResources()
                 AnnotationActions.load(currIds);
@@ -44,8 +44,6 @@ class AnnotationList extends React.Component {
         this.resourceIndex = RDFaUtil.indexRDFaResources();
     }
     loadAnnotations(annotations) {
-        // AnnotationList only needs to know about the display annotations
-        // not the structural relation annotations
         let types = AnnotationUtil.sortAnnotationTypes(annotations, this.resourceIndex);
         this.setState({annotations: types.display});
         this.indexAnnotations();
