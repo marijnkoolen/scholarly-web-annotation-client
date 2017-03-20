@@ -60,7 +60,7 @@ class Annotation extends React.Component {
     getTargetResources(target) {
         let component = this;
         var targetId = AnnotationUtil.extractTargetSource(target);
-        var source = component.props.lookup(targetId);
+        var source = component.props.lookupIdentifier(targetId);
         var targetResources = [];
         if (source.type === "annotation") {
             let annotation = source.data;
@@ -79,14 +79,14 @@ class Annotation extends React.Component {
         var resourceTargetRanges = [];
         targets.forEach(function(target) {
             var targetId = AnnotationUtil.extractTargetSource(target);
-            var source = component.props.lookup(targetId);
+            var source = component.props.lookupIdentifier(targetId);
             var targetRange = component.makeTargetRange(target, source.data.domNode);
             resourceTargetRanges.push(targetRange);
         });
         return resourceTargetRanges;
     }
     isResource(targetId) {
-        let targetResource = this.props.lookup(targetId);
+        let targetResource = this.props.lookupIdentifier(targetId);
         if (targetResource.type === "resource") {
             return true;
         }
@@ -181,7 +181,7 @@ class Annotation extends React.Component {
         var targetCount = 0;
         var targets = AnnotationUtil.extractTargets(annotation).map(function(target) {
             targetCount++;
-            let source = component.props.lookup(AnnotationUtil.extractTargetSource(target));
+            let source = component.props.lookupIdentifier(AnnotationUtil.extractTargetSource(target));
             var text = "";
             var label;
             if (source.type === "resource") {
