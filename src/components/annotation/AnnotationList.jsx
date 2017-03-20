@@ -2,7 +2,6 @@
 
 import React from 'react';
 import AppAnnotationStore from './../../flux/AnnotationStore';
-import AnnotationActions from './../../flux/AnnotationActions';
 import Annotation from './Annotation.jsx';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
@@ -10,57 +9,10 @@ import RDFaUtil from './../../util/RDFaUtil.js';
 class AnnotationList extends React.Component {
     constructor(props) {
         super(props);
-        this.annotationIndex = {};
-        this.lookup = this.lookup.bind(this);
-        this.state = {
-            annotations: [],
-            activeAnnotations: [],
-            topResourceIds: []
-        }
+        this.state = { activeAnnotations: [] }
     }
     componentDidMount() {
         AppAnnotationStore.bind('activate-annotation', this.toggleActiveAnnotation.bind(this));
-        AppAnnotationStore.bind('save-annotation', this.reload.bind(this));
-        AppAnnotationStore.bind('reload-annotations', this.reload.bind(this));
-        AppAnnotationStore.bind('change-target', this.reload.bind(this));
-        AppAnnotationStore.bind('del-annotation', this.reload.bind(this));
-        AppAnnotationStore.bind('load-annotations', this.loadAnnotations.bind(this));
-        // load resource index and annotations
-        this.reload();
-    }
-    reload(){
-        let component = this;
-        let currIds = RDFaUtil.getTopRDFaResources(document.body);
-        let prevIds = this.state.topResourceIds;
-        // only update state if top level resources have changed
-        if (!currIds.every(id => prevIds.includes(id)) ||
-                !prevIds.every(id => currIds.includes(id)))
-            this.setState({topResourceIds: currIds}, () => {
-                component.indexResources()
-                AnnotationActions.load(currIds);
-            });
-    }
-    indexResources() {
-        this.resourceIndex = RDFaUtil.indexRDFaResources();
-    }
-    loadAnnotations(annotations) {
-        this.setState({annotations: annotations});
-        this.indexAnnotations();
-    }
-    indexAnnotations() {
-        let component = this;
-        component.annotationIndex = {}
-        component.state.annotations.forEach(function(annotation) {
-            component.annotationIndex[annotation.id] = annotation;
-        });
-    }
-    lookup(sourceId) {
-        var source = { type: "resource", data: null };
-        if (this.annotationIndex.hasOwnProperty(sourceId))
-            source = { type: "annotation", data: this.annotationIndex[sourceId] };
-        else if (this.resourceIndex.hasOwnProperty(sourceId))
-            source = { type: "resource", data: this.resourceIndex[sourceId] };
-        return source;
     }
     toggleActiveAnnotation(annotation) {
         this.isActive(annotation) ?
@@ -81,12 +33,12 @@ class AnnotationList extends React.Component {
     render() {
         var annotationItems = null;
         let component = this;
-        if (this.state.annotations) {
-            annotationItems = this.state.annotations.map(function(annotation) {
+        if (this.props.annotations) {
+            annotationItems = this.props.annotations.map(function(annotation) {
                 return (
                     <Annotation
                         annotation={annotation}
-                        lookup={component.lookup}
+                        lookupIdentifier={component.props.lookupIdentifier}
                         key={annotation.id}
                         active={component.isActive(annotation)}
                         currentUser={component.props.currentUser}
