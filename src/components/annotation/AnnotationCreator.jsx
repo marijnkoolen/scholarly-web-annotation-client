@@ -34,8 +34,10 @@ class AnnotationCreator extends React.Component {
         }
     }
 
-    updateAnnotationBody(mode, value) {
-        this.setState({[mode] : value});
+    updateAnnotationBody(annotationMode, value) {
+        var bodies = this.state.bodies;
+        bodies[annotationMode] = value;
+        this.setState({bodies: bodies});
     }
 
     //TODO this function looks like it could be more optimized
