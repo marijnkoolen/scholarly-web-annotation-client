@@ -9,7 +9,6 @@ import TargetUtil from './../../util/TargetUtil.js';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
 import AppAnnotationStore from './../../flux/AnnotationStore';
-import AnnotationActions from './../../flux/AnnotationActions';
 
 export default class TargetSelector extends React.Component {
     constructor(props) {
@@ -35,18 +34,10 @@ export default class TargetSelector extends React.Component {
     annotateTargets() {
         let component = this;
         this.setState({ showTargets: false });
-        let targetResources = this.state.selected.map(function(target) { return target.source });
-        let resourceRelations = RDFaUtil.findResourceRelations(targetResources, component.resourceIndex);
-        let newRelations = RDFaUtil.filterExistingRelationAnnotations(resourceRelations, component.state.annotations);
-        newRelations.forEach(function(relation) {
-            let annotation = AnnotationUtil.generateRelationAnnotation(relation, component.resourceIndex);
-            AnnotationActions.save(annotation);
-        });
-        this.props.makeAnnotation(this.state.selected);
+        this.props.prepareAnnotation(this.state.selected);
     }
     loadAnnotations(annotations) {
         let component = this;
-        //let resourceIds = RDFaUtil.getTopRDFaResources(document.body);
         component.setState({annotations: annotations });
    }
     componentDidMount() {
@@ -76,8 +67,7 @@ export default class TargetSelector extends React.Component {
         var candidateResources = TargetUtil.getCandidateRDFaTargets();
         this.setState({candidateResources: candidateResources});
         // find annotations overlapping with candidate resources
-        let types = AnnotationUtil.sortAnnotationTypes(this.state.annotations, this.resourceIndex);
-        var candidateAnnotations = TargetUtil.selectCandidateAnnotations(types.display, candidateResources.highlighted);
+        var candidateAnnotations = TargetUtil.selectCandidateAnnotations(this.state.annotations, candidateResources.highlighted);
         this.setState({candidateAnnotations: candidateAnnotations});
     }
     showCandidates() {
