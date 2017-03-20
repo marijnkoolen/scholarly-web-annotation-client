@@ -51,20 +51,6 @@ const AnnotationActions = {
         });
     },
 
-    login : function(userDetails) {
-        AppDispatcher.dispatch({
-            eventName: 'login-user',
-            userDetails: userDetails
-        });
-    },
-
-    logout : function() {
-        AppDispatcher.dispatch({
-            eventName: 'logout-user',
-            userDetails: null
-        });
-    },
-
     load: function(resourceIds) {
         AppDispatcher.dispatch({
             eventName: 'load-annotations',
@@ -81,6 +67,20 @@ const AnnotationActions = {
     loadResources: function() {
         AppDispatcher.dispatch({
             eventName: 'load-resources'
+        });
+    },
+
+    login : function(userDetails) {
+        AppDispatcher.dispatch({
+            eventName: 'login-user',
+            userDetails: userDetails
+        });
+    },
+
+    logout : function() {
+        AppDispatcher.dispatch({
+            eventName: 'logout-user',
+            userDetails: null
         });
     }
 
