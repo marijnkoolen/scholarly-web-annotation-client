@@ -21,7 +21,9 @@ import RDFaUtil from '../../util/RDFaUtil.js';
 export default class AnnotationViewer extends React.Component {
     constructor(props) {
         super(props);
-        this.makeAnnotation = this.makeAnnotation.bind(this);
+        this.prepareAnnotation = this.prepareAnnotation.bind(this);
+        this.lookupIdentifier = this.lookupIdentifier.bind(this);
+        this.topResources = [];
         this.state = {
             showAnnotationModal: false,
             user: null,
@@ -29,60 +31,72 @@ export default class AnnotationViewer extends React.Component {
     }
     componentDidMount() {
         AppAnnotationStore.bind('edit-annotation', this.editAnnotation.bind(this));
-        AppAnnotationStore.bind('reload-annotations', this.updateCurrentAnnotation.bind(this));
+        AppAnnotationStore.bind('save-annotation', this.reloadAnnotations.bind(this));
+        AppAnnotationStore.bind('change-target', this.reloadAnnotations.bind(this));
+        AppAnnotationStore.bind('del-annotation', this.reloadAnnotations.bind(this));
         AppAnnotationStore.bind('load-annotations', this.loadAnnotations.bind(this));
+
         AppAnnotationStore.bind('load-resources', this.loadResources.bind(this));
+
         AppAnnotationStore.bind('login-user', this.setUser.bind(this));
         AppAnnotationStore.bind('logout-user', this.setUser.bind(this));
 
         this.loadResources();
     }
     loadResources() {
-        this.maps = RDFaUtil.buildResourcesMaps();
-        console.log(this.maps);
-        this.resourceIndex = RDFaUtil.indexRDFaResources();
-        this.topResources = RDFaUtil.getTopRDFaResources(document.body);
+        if (this.resourcesChanged()) {// if other resources on display...
+            this.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
+            this.maps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
+        }
         AnnotationActions.load(this.topResources);
+    }
+    resourcesChanged() {
+        let topResources = RDFaUtil.getTopRDFaResources(document.body);
+        if (this.listsAreEqual(topResources, this.topResources))
+            return false;
+        this.topResources = topResources; // update register resources list
+        return true;
+    }
+    listsAreEqual(list1, list2) {
+        if (list1.every(id => list2.includes(id)) &&
+                list2.every(id => list1.includes(id)))
+            return true;
+        return false;
     }
     loadAnnotations(annotations) {
         let component = this;
-        component.setState({annotations: annotations});
-        component.annotationIndex = {}
-        component.state.annotations.forEach(function(annotation) {
+        component.annotationIndex = {}; // always start with an empty index
+        annotations.forEach(function(annotation) {
             component.annotationIndex[annotation.id] = annotation;
         });
+        component.setState({annotations: annotations}); // add tp state AFTER indexing
+    }
+    reloadAnnotations() {
+        AnnotationActions.load(this.topResources);
     }
     lookupIdentifier(sourceId) {
-        var source = { type: "resource", data: null };
+        var source = { type: null, data: null }; // for IDs to external resources
         if (this.annotationIndex.hasOwnProperty(sourceId))
             source = { type: "annotation", data: this.annotationIndex[sourceId] };
         else if (this.resourceIndex.hasOwnProperty(sourceId))
             source = { type: "resource", data: this.resourceIndex[sourceId] };
         return source;
     }
-    showAnnotationForm() {
-        this.setState({showAnnotationModal: true});
-    }
     hideAnnotationForm() {
         this.setState({showAnnotationModal: false});
     }
     editAnnotation(annotation) {
-        this.setState({
-            currentAnnotation: annotation
-        }, this.showAnnotationForm());
-    }
-    updateCurrentAnnotation(annotation) {
-        this.setState({currentAnnotation: annotation});
+        this.setState({ currentAnnotation: annotation, showAnnotationModal: true });
     }
     setUser(user) {
         this.setState({user: user});
     }
-    makeAnnotation(annotationTargets) {
+    prepareAnnotation(annotationTargets) {
         var annotation = AnnotationUtil.generateW3CAnnotation(
             this.state.user.username,
             annotationTargets
         );
-        this.setState({ currentAnnotation: annotation }, this.showAnnotationForm());
+        this.editAnnotation(annotation);
     }
     render() {
         return (
@@ -94,11 +108,13 @@ export default class AnnotationViewer extends React.Component {
             <div>
             {this.state.user ?
                 <TargetSelector
-                    makeAnnotation={this.makeAnnotation.bind(this)}
+                    prepareAnnotation={this.prepareAnnotation.bind(this)}
                     /> : null
             }
                 <AnnotationList
                     currentUser={this.state.user}
+                    annotations={this.state.annotations}
+                    lookupIdentifier={this.lookupIdentifier.bind(this)}
                 />
                 <AnnotationBox
                     showModal={this.state.showAnnotationModal}
