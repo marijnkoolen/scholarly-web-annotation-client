@@ -8,17 +8,15 @@ import SelectedList from './SelectedList.jsx';
 import TargetUtil from './../../util/TargetUtil.js';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
-import AppAnnotationStore from './../../flux/AnnotationStore';
 
 export default class TargetSelector extends React.Component {
     constructor(props) {
         super(props);
-        this.addSelected = this.addSelected.bind(this);
-        this.removeSelected = this.removeSelected.bind(this);
-        this.resourceIndex = RDFaUtil.indexRDFaResources();
+        this.addToSelected = this.addToSelected.bind(this);
+        this.removeFromSelected = this.removeFromSelected.bind(this);
         this.state = {
             showAnnotationBox: false,
-            showTargets: false,
+            showSelectorModal: false,
             selected: [],
             candidateResources: {},
             candidateAnnotations: [],
@@ -27,74 +25,38 @@ export default class TargetSelector extends React.Component {
             candidateTypes: ["resource", "annotation"],
         };
     }
-    closeTargetSelector() {
-        this.setState({showTargets: false});
-    }
-
-    annotateTargets() {
-        let component = this;
-        this.setState({ showTargets: false });
-        this.props.prepareAnnotation(this.state.selected);
-    }
-    loadAnnotations(annotations) {
-        let component = this;
-        component.setState({annotations: annotations });
-   }
-    componentDidMount() {
-        AppAnnotationStore.bind('change-target', this.loadAnnotations.bind(this));
-        AppAnnotationStore.bind('load-annotations', this.loadAnnotations.bind(this));
-        AppAnnotationStore.bind('del-annotation', this.loadAnnotations.bind(this));
-    }
-    addCandidateAnnotation(list, annotation) {
-        var aid = annotation.id;
-        var candidate = {
-            source: annotation.id,
-            type: "annotation",
-            params: {
-                text: annotation.body[0].value
-            },
-            label: annotation.body[0].purpose,
-            target: {
-            }
-        }
-        candidate.target.source = aid;
-        if (list.indexOf(candidate) === -1) {
-            list.push(candidate);
-        }
-    }
-    getCandidateTargets() {
-        this.resourceIndex = RDFaUtil.indexRDFaResources();
-        var candidateResources = TargetUtil.getCandidateRDFaTargets();
-        this.setState({candidateResources: candidateResources});
-        // find annotations overlapping with candidate resources
-        var candidateAnnotations = TargetUtil.selectCandidateAnnotations(this.state.annotations, candidateResources.highlighted);
-        this.setState({candidateAnnotations: candidateAnnotations});
-    }
-    showCandidates() {
-        let component = this;
+    closeSelectorModal() {
+        this.setState({showSelectorModal: false});
     }
     selectCandidates() {
-        this.getCandidateTargets();
-
+        var candidateResources = TargetUtil.getCandidateRDFaTargets();
+        // find annotations overlapping with candidate resources
+        var candidateAnnotations = TargetUtil.selectCandidateAnnotations(this.props.annotations, candidateResources.highlighted);
         this.setState({
-            showTargets: true,
+            candidateAnnotations: candidateAnnotations,
+            candidateResources: candidateResources,
+            showSelectorModal: true,
             selected: []
         });
     }
-    addSelected(candidate) {
+    addToSelected(candidate) {
         var selected = this.state.selected;
         if (selected.indexOf(candidate) === -1) {
             selected.push(candidate);
             this.setState({selected: selected});
         }
     }
-    removeSelected(candidate) {
+    removeFromSelected(candidate) {
         var selected = this.state.selected;
         var index = selected.indexOf(candidate);
         if (index !== -1) {
             selected.splice(index, 1);
             this.setState({selected: selected});
         }
+    }
+    annotateTargets() {
+        this.closeSelectorModal();
+        this.props.prepareAnnotation(this.state.selected);
     }
     render() {
         //generate the tabs from the configured modes
@@ -125,7 +87,7 @@ export default class TargetSelector extends React.Component {
                         Click on a {candidateType} to select it as annotation target.
                         <CandidateList
                             candidates={candidates}
-                            addSelected={this.addSelected.bind(this)}
+                            addToSelected={this.addToSelected.bind(this)}
                             candidateType={candidateType}
                             />
                 </div>
@@ -135,13 +97,12 @@ export default class TargetSelector extends React.Component {
         return (
             <div className="TargetSelector">
                 <button onClick={this.selectCandidates.bind(this)}>Make annotation</button>
-                <button onClick={this.showCandidates.bind(this)}>Show resources</button>
-                <Modal show={this.state.showTargets} onHide={this.closeTargetSelector.bind(this)}>
+                <Modal show={this.state.showSelectorModal} onHide={this.closeSelectorModal.bind(this)}>
                     <Modal.Header closeButton>
                         <Modal.Title>Select Annotation Targets</Modal.Title>
                         <SelectedList
                             candidates={this.state.selected}
-                            removeSelected={this.removeSelected.bind(this)}
+                            removeFromSelected={this.removeFromSelected.bind(this)}
                             />
                     </Modal.Header>
                     <Modal.Body>
@@ -155,7 +116,7 @@ export default class TargetSelector extends React.Component {
                     </Modal.Body>
                     <Modal.Footer>
                         <button onClick={this.annotateTargets.bind(this)}>Annotate</button>
-                        <button onClick={this.closeTargetSelector.bind(this)}>Close</button>
+                        <button onClick={this.closeSelectorModal.bind(this)}>Close</button>
                     </Modal.Footer>
                 </Modal>
             </div>

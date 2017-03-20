@@ -18,7 +18,7 @@ export default class CandidateList extends React.Component {
             selected.push(candidate);
             this.setState({selected: selected});
         }
-        this.props.addSelected(candidate);
+        this.props.addToSelected(candidate);
     }
     render() {
         var candidateList = this;

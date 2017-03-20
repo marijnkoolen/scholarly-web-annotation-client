@@ -11,7 +11,7 @@ export default class SelectedList extends React.Component {
         this.state = {selected: []};
     }
     removeTarget(candidate) {
-        this.props.removeSelected(candidate);
+        this.props.removeFromSelected(candidate);
     }
     render() {
         var selectedList = this;
