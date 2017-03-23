@@ -20,46 +20,45 @@ ReactDOM.render(
 document.onreadystatechange = function () {
     if (document.readyState === "complete") {
         console.log("document ready!");
-        startObserver();
-        setAnnotationAttributes();
+        var observerTargets = document.getElementsByClassName("annotation-target-observer");
+        startObserver(observerTargets);
+        setAnnotationAttributes(observerTargets);
     }
 }
 
-var setAnnotationAttributes = function() {
-    let allNodes = DOMUtil.getDescendants(document.body)
-    setSelectWholeElement(allNodes);
-    setUnselectable(allNodes);
+var setAnnotationAttributes = function(observerTargets) {
+    for (var index = 0; index < observerTargets.length; index++) {
+        setSelectWholeElement(observerTargets[index]);
+        setUnselectable(observerTargets[index]);
+    }
 }
 
-var setSelectWholeElement = function(allNodes) {
-    let selectWholeNodes = RDFaUtil.getSelectWholeNodes(allNodes);
+var setSelectWholeElement = function(node) {
+    let selectWholeNodes = RDFaUtil.getSelectWholeNodes(node);
     selectWholeNodes.forEach(function(selectWholeNode) {
         selectWholeNode.addEventListener('mouseup', SelectionUtil.checkSelectionRange, false);
     });
 }
 
-var setUnselectable = function(allNodes) {
-    let ignoreNodes = RDFaUtil.getRDFaIgnoreNodes(allNodes);
+var setUnselectable = function(node) {
+    let ignoreNodes = RDFaUtil.getRDFaIgnoreNodes(node);
     ignoreNodes.forEach(function(ignoreNode) {
         ignoreNode.style.webkitUserSelect = "none";
         ignoreNode.style.cursor = "not-allowed";
     });
 }
 
-var observer = new MutationObserver(function(mutations) {
-    // if something in the observer window changes ...
-    mutations.forEach(function(mutation) {
-        // set unselectable and whole element attributes
-        setAnnotationAttributes();
-        // trigger reload of annotations based on updated DOM
-        AnnotationActions.reload();
-        AnnotationActions.loadResources();
-    });
+var observer = new MutationObserver((mutations) => {
+    var observerTargets = document.getElementsByClassName("annotation-target-observer");
+    // if something in the observer nodes changes ...
+    // set unselectable and whole element attributes
+    setAnnotationAttributes(observerTargets);
+    // trigger reload of annotations based on updated DOM
+    AnnotationActions.reload();
 });
 
-var startObserver = function() {
+var startObserver = function(observerTargets) {
     var observerConfig = { childList: true, attributes: false, subtree: true };
-    var observerTargets = document.getElementsByClassName("annotation-target-observer");
 
     for (var index = 0; index < observerTargets.length; index++) {
         observer.observe(observerTargets[index], observerConfig);
