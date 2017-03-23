@@ -24,7 +24,6 @@ class Annotation extends React.Component {
             let annotationTargetRanges = component.getTargetRanges(target)
             targetRanges = targetRanges.concat(annotationTargetRanges);
         });
-        console.log(targetRanges);
         return targetRanges;
     }
     /*
