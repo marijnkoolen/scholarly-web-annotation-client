@@ -48,79 +48,66 @@ const RDFaUtil = {
         return attrs.hasOwnProperty("resource") || attrs.hasOwnProperty("about") ? true : false;
     },
 
-    getRDFaIgnoreNodes : function(nodes) {
-        return nodes.filter(RDFaUtil.isRDFaIgnoreNode);
+    getRDFaIgnoreNodes : function(node) {
+        return DOMUtil.getDescendants(node).filter(RDFaUtil.isRDFaIgnoreNode);
     },
 
-    getRDFaIgnoreDescendants : function(ignoreRDFaNodes) {
-        var descendants = [];
-        ignoreRDFaNodes.forEach(function(ignoreRDFaNode) {
-            descendants = descendants.concat(DOMUtil.getDescendants(ignoreRDFaNode));
+    getSelectWholeNodes : function(node) {
+        return DOMUtil.getDescendants(node).filter(RDFaUtil.isSelectWholeNode);
+    },
+
+    filterIgnoreNodes : function(nodes) {
+        return nodes.filter(function(node) { return RDFaUtil.isRDFaIgnoreNode(node) === false; });
+    },
+
+    getNotIgnoreDescendants : function(node) {
+        let descendants = [];
+        node.childNodes.forEach((childNode) => {
+            if (!RDFaUtil.isRDFaIgnoreNode(childNode)) {
+                descendants.push(childNode);
+                descendants = descendants.concat(RDFaUtil.getNotIgnoreDescendants(childNode));
+            }
         });
         return descendants;
     },
 
-    getSelectWholeNodes : function(nodes) {
-        return nodes.filter(RDFaUtil.isSelectWholeNode);
-    },
-
-    filterIgnoreNodes : function(nodes) {
-        let ignoreRDFaNodes = RDFaUtil.getRDFaIgnoreNodes(nodes);
-        let ignoreDescendants = RDFaUtil.getRDFaIgnoreDescendants(ignoreRDFaNodes);
-        let ignoreNodes = ignoreRDFaNodes.concat(ignoreDescendants);
-        return nodes.filter(function(node) { return ignoreNodes.indexOf(node) === -1; });
-    },
-
-    getNotIgnoreDescendants : function(node) {
-        let descendants = DOMUtil.getDescendants(node);
-        return RDFaUtil.filterIgnoreNodes(descendants);
-    },
-
-    getRDFaNodes : function(nodes) {
+    selectRDFaNodes : function(nodes) {
         return nodes.filter(RDFaUtil.hasRDFaResource);
     },
 
     getRDFaTextNodes : function(node) {
         var textNodes = [];
-        if (RDFaUtil.isRDFaIgnoreNode(node)) {
+        if (RDFaUtil.isRDFaIgnoreNode(node))
             return textNodes;
-        }
-        node.childNodes.forEach(function(childNode) {
-            if (childNode.nodeName === "#text") {
+        node.childNodes.forEach((childNode) => {
+            if (childNode.nodeType === window.Node.TEXT_NODE)
                 textNodes.push(childNode);
-            }
-            else {
-                let childTextNodes = RDFaUtil.getRDFaTextNodes(childNode);
-                textNodes = textNodes.concat(childTextNodes);
-            }
+            else
+                textNodes = textNodes.concat(RDFaUtil.getRDFaTextNodes(childNode));
         });
         return textNodes;
     },
 
     getRDFaTextContent : function(node) {
         var textContent = "";
-        if (RDFaUtil.isRDFaIgnoreNode(node) || node.nodeType === window.Node.COMMENT_NODE) {
+        if (RDFaUtil.isRDFaIgnoreNode(node) || node.nodeType === window.Node.COMMENT_NODE)
             return "";
-        }
-        node.childNodes.forEach(function(childNode) {
+        node.childNodes.forEach((childNode) => {
             var childTextContent;
             if (childNode.nodeType === window.Node.TEXT_NODE) {
                 // deal with surrounding whitespace of child nodes
                 // based on browser behaviour
                 childTextContent = StringUtil.collapse(childNode.textContent);
-                if (textContent === "" && DOMUtil.getDisplayType(node) === "block") {
+                if (textContent === "" && DOMUtil.getDisplayType(node) === "block")
                     childTextContent = childTextContent.trimLeft();
-                }
-                if (childNode === node.lastChild && DOMUtil.getDisplayType(node) === "block") {
+                if (childNode === node.lastChild && DOMUtil.getDisplayType(node) === "block")
                     childTextContent = childTextContent.trimRight();
-                }
             }
             else if (childNode.nodeType === window.Node.ELEMENT_NODE) {
                 childTextContent = RDFaUtil.getRDFaTextContent(childNode);
                 if (DOMUtil.getDisplayType(childNode) === "block") {
-                    if (textContent.length > 0) {
+                    if (textContent.length > 0)
                         textContent = textContent.trimRight() + "\n";
-                    }
                     childTextContent = childTextContent.trim() + "\n";
                 }
             }
@@ -205,7 +192,7 @@ const RDFaUtil = {
             var resourceStack = [rdfaResourceNode];
             // add all RDFa sub-resources
             var nodes = RDFaUtil.getNotIgnoreDescendants(rdfaResourceNode);
-            RDFaUtil.getRDFaNodes(nodes).forEach(function(node) {
+            RDFaUtil.selectRDFaNodes(nodes).forEach(function(node) {
                 let resourceAttrs = RDFaUtil.getRDFaAttributes(node);
                 RDFaUtil.updateStack(resourceStack, node);
                 var parentAttrs = RDFaUtil.getRDFaAttributes(resourceStack[resourceStack.length - 1]);
@@ -299,46 +286,6 @@ const RDFaUtil = {
         });
     },
 
-
-
-    setRDFaSelectionRange : function(el, start, end) {
-        if (document.createRange && window.getSelection) {
-            var range = document.createRange();
-            range.selectNodeContents(el);
-            var textNodes = RDFaUtil.getRDFaTextNodes(el);
-            var foundStart = false;
-            var charCount = 0, endCharCount;
-
-            for (var i = 0, textNode; textNode = textNodes[i++]; ) {
-                endCharCount = charCount + textNode.length;
-                if (!foundStart && start >= charCount && (start < endCharCount || (start == endCharCount && i <= textNodes.length))) {
-                    range.setStart(textNode, start - charCount);
-                    foundStart = true;
-                }
-                if (foundStart && end === -1) {
-                    let lastTextNode = textNodes[textNodes.length-1];
-                    range.setEnd(lastTextNode, lastTextNode.length);
-                    break;
-                }
-                else if (foundStart && end !== -1 && end <= endCharCount) {
-                    range.setEnd(textNode, end - charCount);
-                    break;
-                }
-                charCount = endCharCount;
-            }
-
-            var sel = window.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
-        } else if (document.selection && document.body.createTextRange) {
-            var textRange = document.body.createTextRange();
-            textRange.moveToElementText(el);
-            textRange.collapse(true);
-            textRange.moveEnd("character", end);
-            textRange.moveStart("character", start);
-            textRange.select();
-        }
-    }
 
 }
 
