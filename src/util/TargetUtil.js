@@ -67,33 +67,40 @@ const TargetUtil = {
         if (selection.selectionText.length === 0) {
             return false;
         }
-        var startNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.startNode);
-        var startOffsetInContainer = startNodeOffset + selection.startOffset;
-        var endOffsetInContainer = startOffsetInContainer + selection.selectionText.length;
-        let textContent = RDFaUtil.getRDFaTextContent(container.node);
-        let maxPrefix = startOffsetInContainer >= 20 ? 20 : startOffsetInContainer;
-        let prefix = textContent.substr(startOffsetInContainer - maxPrefix, maxPrefix);
-        let suffix = textContent.substr(endOffsetInContainer, 20);
+        var params = this.makeTextPositionParams(container, selection);
+        this.makeTextQuoteParams(container, params);
         return {
             node: container.node,
             mimeType: selection.mimeType,
-            params: {
-                start: startOffsetInContainer,
-                end: startOffsetInContainer + selection.selectionText.length,
-                text: selection.selectionText,
-                prefix: prefix,
-                suffix: suffix
-            },
+            params: params,
             label: container.label,
             source: container.source,
             type: "resource"
         }
     },
 
+    makeTextPositionParams : function(container, selection) {
+        var startNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.startNode);
+        var endNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.endNode);
+        return {
+            start: startNodeOffset + selection.startOffset,
+            end: endNodeOffset + selection.endOffset
+        }
+    },
+
+    makeTextQuoteParams : function(container, params) {
+        let textContent = RDFaUtil.getRDFaTextContent(container.node);
+        let maxPrefix = params.start >= 20 ? 20 : params.start;
+        let selectionLength = params.end - params.start;
+        params.text = textContent.substr(params.start, selectionLength);
+        params.prefix = textContent.substr(params.start - maxPrefix, maxPrefix);
+        params.suffix = textContent.substr(params.end, 20);
+    },
+
     // given a list of nodes, select all RDFa enriched nodes
     // and return as candidate annotation targets
     getRDFaCandidates : function(nodes) {
-        return RDFaUtil.getRDFaNodes(nodes).map(function(node) {
+        return RDFaUtil.selectRDFaNodes(nodes).map(function(node) {
             return {
                 node: node,
                 type: "resource",
