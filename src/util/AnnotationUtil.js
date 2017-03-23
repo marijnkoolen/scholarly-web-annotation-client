@@ -203,30 +203,48 @@ const AnnotationUtil = {
         return Array.isArray(annotation.target) ? annotation.target : [annotation.target];
     },
 
-    extractTargetSource : function(annotationTarget) {
-        if (annotationTarget.source) {
-            if (annotationTarget.selector && annotationTarget.selector.value) {
-                return annotationTarget.selector.value;
-            }
+    extractTargetIdentifier : function(annotationTarget) {
+        if (typeof(annotationTarget) === "string")
+            return annotationTarget;
+        if (annotationTarget.id)
+            return annotationTarget.id;
+        if (annotationTarget.source) // the target is a selection in a source
             return annotationTarget.source;
-        }
+        return null;
     },
 
-    extractTargetSources : function(annotation) {
+    extractTargetIdentifiers : function(annotation) {
         return AnnotationUtil.extractTargets(annotation).map(function(target) {
-            return AnnotationUtil.extractTargetSource(target);
+            return AnnotationUtil.extractTargetIdentifier(target);
         });
     },
 
-    getTargetPositionSelector : function(target) {
+    getTextPositionSelector :function(target) {
         if (!target.selector)
             return null;
-        let selector
-        if (Array.isArray(target.selector)) {
-            target.selector.forEach(function(selector) {
-                if (selector.type === "TextPositionSelector");
-            })
-        }
+        if (!target.type || target.type !== "Text")
+            return null;
+        var textPosition = null;
+        let selectors = Array.isArray(target.selector) ? target.selector : [target.selector];
+        selectors.forEach((selector) => {
+            if (selector.type === "TextPositionSelector")
+                textPosition = selector;
+        });
+        return textPosition;
+    },
+
+    getTextQuoteSelector :function(target) {
+        if (!target.selector)
+            return null;
+        if (!target.type || target.type !== "Text")
+            return null;
+        var textQuote = null;
+        let selectors = Array.isArray(target.selector) ? target.selector : [target.selector];
+        selectors.forEach((selector) => {
+            if (selector.type === "TextQuoteSelector")
+                textQuote = selector;
+        });
+        return textQuote;
     },
 
     /*************************************************************************************
