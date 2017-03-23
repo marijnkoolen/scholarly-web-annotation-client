@@ -9,26 +9,6 @@ import RDFaUtil from './../../util/RDFaUtil.js';
 class AnnotationList extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { activeAnnotations: [] }
-    }
-    componentDidMount() {
-        AppAnnotationStore.bind('activate-annotation', this.toggleActiveAnnotation.bind(this));
-    }
-    toggleActiveAnnotation(annotation) {
-        this.isActive(annotation) ?
-            this.activateAnnotation(annotation) : this.deActivateAnnotation(annotation);
-    }
-    activateAnnotation(annotation) {
-        let annotations = this.state.activeAnnotations.concat([annotation]);
-        this.setState({activeAnnotations: annotations});
-    }
-    deActivateAnnotation(annotation) {
-        var annotations = this.state.activeAnnotations;
-        annotations.splice(annotations.indexOf(annotation), 1);
-        this.setState({activeAnnotations: annotations});
-    }
-    isActive(annotation) {
-        return this.state.activeAnnotations.includes(annotation);
     }
     render() {
         var annotationItems = null;
@@ -40,7 +20,6 @@ class AnnotationList extends React.Component {
                         annotation={annotation}
                         lookupIdentifier={component.props.lookupIdentifier}
                         key={annotation.id}
-                        active={component.isActive(annotation)}
                         currentUser={component.props.currentUser}
                     />
                 );
