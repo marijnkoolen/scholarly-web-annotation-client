@@ -11,10 +11,42 @@ class Annotation extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            highlighted: false,
-            warning: "",
-            showConfirmationModal: false
+            highlighted: false
         }
+    }
+    componentDidMount() {
+        this.setState({targetRanges: this.mapTargetsToRanges()});
+    }
+    mapTargetsToRanges() {
+        let component = this;
+        var targetRanges = [];
+        AnnotationUtil.extractTargets(this.props.annotation).forEach((target) => {
+            let annotationTargetRanges = component.getTargetRanges(target)
+            targetRanges = targetRanges.concat(annotationTargetRanges);
+        });
+        console.log(targetRanges);
+        return targetRanges;
+    }
+    /*
+     * A getTargetResources parses a single annotation target
+     * and returns any resources that are the leaves of the
+     * annotation chain (if there are annotations on annotations).
+     * Target resources that are not indexed are ignored.
+     */
+    getTargetRanges(target) {
+        let component = this;
+        var targetId = AnnotationUtil.extractTargetIdentifier(target);
+        if (!targetId) // target is not loaded in browser window
+            return [];
+        var source = component.props.lookupIdentifier(targetId);
+        if (source.type === "resource")
+            return [component.makeTargetRange(target, source.data.domNode)];
+        var targetRanges = [];
+        AnnotationUtil.extractTargets(source.data).forEach((annotationTarget) => {
+            var annotationRanges = component.getTargetRanges(annotationTarget);
+            targetRanges = targetRanges.concat(annotationRanges);
+        });
+        return targetRanges;
     }
     makeTargetRange(target, node) {
         var targetRange = {
@@ -22,22 +54,12 @@ class Annotation extends React.Component {
             end: -1,
             node: node
         }
-        if (target.selector && target.selector.refinedBy) {
-            targetRange.start = target.selector.refinedBy.start;
-            targetRange.end = target.selector.refinedBy.end;
-        }
-        if (target.selector && target.selector.start) {
-            targetRange.start = target.selector.start;
-            targetRange.end = target.selector.end;
+        let textPosition = AnnotationUtil.getTextPositionSelector(target);
+        if (textPosition && textPosition.start) {
+            targetRange.start = textPosition.start;
+            targetRange.end = textPosition.end;
         }
         return targetRange;
-    }
-    getTargetRangeText(node, start, end) {
-        RDFaUtil.setRDFaSelectionRange(node, start, end);
-        var selection = window.document.getSelection();
-        var text = selection.toString();
-        selection.removeAllRanges();
-        return text;
     }
     getTargetText(target, resource) {
         // if whole resource is the target,
@@ -57,64 +79,15 @@ class Annotation extends React.Component {
             return this.getTargetRangeText(resource.data.domNode, selector.start, selector.end);
         return null;
     }
-    getTargetResources(target) {
-        let component = this;
-        var targetId = AnnotationUtil.extractTargetSource(target);
-        var source = component.props.lookupIdentifier(targetId);
-        var targetResources = [];
-        if (source.type === "annotation") {
-            let annotation = source.data;
-            AnnotationUtil.extractTargets(annotation).forEach(function(annotationTarget) {
-                var annotationResources = component.getTargetResources(annotationTarget);
-                targetResources = targetResources.concat(annotationResources);
-            });
-        }
-        else if (source.type === "resource") {
-            targetResources.push(target);
-        }
-        return targetResources;
+    getTargetRangeText(node, start, end) {
+        RDFaUtil.setRDFaSelectionRange(node, start, end);
+        var selection = window.document.getSelection();
+        var text = selection.toString();
+        selection.removeAllRanges();
+        return text;
     }
-    getTargetRanges(targets) {
-        let component = this;
-        var resourceTargetRanges = [];
-        targets.forEach(function(target) {
-            var targetId = AnnotationUtil.extractTargetSource(target);
-            var source = component.props.lookupIdentifier(targetId);
-            var targetRange = component.makeTargetRange(target, source.data.domNode);
-            resourceTargetRanges.push(targetRange);
-        });
-        return resourceTargetRanges;
-    }
-    isResource(targetId) {
-        let targetResource = this.props.lookupIdentifier(targetId);
-        if (targetResource.type === "resource") {
-            return true;
-        }
-        return false;
-    }
-    getTargets() {
-        let component = this;
-        var targetResources = [];
-        AnnotationUtil.extractTargets(this.props.annotation).forEach(function(target) {
-            let annotationTargetResources = component.getTargetResources(target)
-            targetResources = targetResources.concat(annotationTargetResources);
-        });
-        let resourceTargetRanges = this.getTargetRanges(targetResources);
-        return resourceTargetRanges;
-    }
-    toggleHighlight() {
-        let component = this;
-        AnnotationActions.activate(this.props.annotation);
-        this.state.targetRanges.forEach(function(target) {
-            if (component.state.highlighted) {
-                SelectionUtil.selectAndRemoveRange(target.node, target.start, target.end);
-                component.setState({highlighted: false});
-            }
-            else {
-                SelectionUtil.selectAndHighlightRange(target.node, target.start, target.end);
-                component.setState({highlighted: true});
-            }
-        });
+    targetIsAnnotation(target) {
+        return (source.type === "annotation") ? true : false;
     }
     canEdit() {
         return this.props.currentUser && this.props.currentUser.username === this.props.annotation.creator ? true : false;
@@ -149,14 +122,19 @@ class Annotation extends React.Component {
             AnnotationActions.delete(annotation);
         }
     }
-    componentDidMount() {
-        this.setState({targetRanges: this.getTargets()});
+    toggleHighlight() {
+        let component = this;
+        this.state.targetRanges.forEach((target) => {
+            component.state.highlighted ?
+                SelectionUtil.selectAndRemoveRange(target.node, target.start, target.end) :
+                SelectionUtil.selectAndHighlightRange(target.node, target.start, target.end);
+        });
+        this.setState({highlighted: this.state.highlighted ? false : true});
     }
     computeClass() {
         var className = 'list-group-item';
-        if(this.props.active) {
+        if(this.state.highlighted)
             className += ' active';
-        }
         return className;
     }
 
@@ -181,11 +159,12 @@ class Annotation extends React.Component {
         var targetCount = 0;
         var targets = AnnotationUtil.extractTargets(annotation).map(function(target) {
             targetCount++;
-            let source = component.props.lookupIdentifier(AnnotationUtil.extractTargetSource(target));
+            let source = component.props.lookupIdentifier(AnnotationUtil.extractTargetIdentifier(target));
             var text = "";
             var label;
             if (source.type === "resource") {
-                text = component.getTargetText(target, source);
+                let selector = AnnotationUtil.getTextQuoteSelector(target);
+                text = selector ? selector.exact : component.getTargetText(target, source);
                 if (text.length > 40) {
                     text = text.substr(0, 37) + "...";
                 }
