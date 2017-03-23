@@ -61,14 +61,54 @@ const SelectionUtil = {
     },
 
     selectAndHighlightRange : function (node, start, end) {
-        RDFaUtil.setRDFaSelectionRange(node, start, end);
+        SelectionUtil.setRDFaSelectionRange(node, start, end);
         SelectionUtil.addHighlight("yellow");
     },
 
     selectAndRemoveRange : function(node, start, end) {
-        RDFaUtil.setRDFaSelectionRange(node, start, end);
+        SelectionUtil.setRDFaSelectionRange(node, start, end);
         SelectionUtil.removeHighlight();
     },
+
+    setRDFaSelectionRange : function(el, start, end) {
+        if (document.createRange && window.getSelection) {
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            var textNodes = RDFaUtil.getRDFaTextNodes(el);
+            var foundStart = false;
+            var charCount = 0, endCharCount;
+
+            for (var i = 0, textNode; textNode = textNodes[i]; i++) {
+                endCharCount = charCount + textNode.length;
+                if (!foundStart && start >= charCount && (start < endCharCount || (start === endCharCount && i <= textNodes.length))) {
+                    range.setStart(textNode, start - charCount);
+                    foundStart = true;
+                }
+                if (foundStart && end === -1) {
+                    let lastTextNode = textNodes[textNodes.length-1];
+                    range.setEnd(lastTextNode, lastTextNode.length);
+                    break;
+                }
+                else if (foundStart && end !== -1 && end <= endCharCount) {
+                    range.setEnd(textNode, end - charCount);
+                    break;
+                }
+                charCount = endCharCount;
+            }
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+        } else if (document.selection && document.body.createTextRange) {
+            var textRange = document.body.createTextRange();
+            textRange.moveToElementText(el);
+            textRange.collapse(true);
+            textRange.moveEnd("character", end);
+            textRange.moveStart("character", start);
+            textRange.select();
+        }
+    },
+
 
     // Find nodes and offsets corresponding to the selection.
     // Start node is always before end node in presentation order
