@@ -1,3 +1,4 @@
+var RDFaAnnotator =
 /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
@@ -50,6 +51,13 @@
 	
 	'use strict';
 	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.RDFaAnnotator = undefined;
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
 	var _react = __webpack_require__(/*! react */ 1);
 	
 	var _react2 = _interopRequireDefault(_react);
@@ -82,56 +90,99 @@
 	
 	var _AnnotationActions2 = _interopRequireDefault(_AnnotationActions);
 	
+	var _AnnotationStore = __webpack_require__(/*! ./flux/AnnotationStore.js */ 241);
+	
+	var _AnnotationStore2 = _interopRequireDefault(_AnnotationStore);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var annotationAPI = _rdfaAnnotationConfig2.default.services.AnnotationServer.api;
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	_reactDom2.default.render(_react2.default.createElement(_AnnotationViewer2.default, { api: annotationAPI, pollInterval: 60000 }), document.getElementById('annotation-viewer'));
+	var RDFaAnnotator = exports.RDFaAnnotator = function () {
+	    function RDFaAnnotator(configuration) {
+	        _classCallCheck(this, RDFaAnnotator);
 	
-	document.onreadystatechange = function () {
-	    if (document.readyState === "complete") {
-	        console.log("document ready!");
-	        startObserver();
-	        setAnnotationAttributes();
+	        if (!configuration) configuration = _rdfaAnnotationConfig2.default; // use default if no configuration is given
+	        this.clientConfiguration = configuration;
+	        _AnnotationActions2.default.setServerAddress(configuration.services.AnnotationServer.api);
 	    }
-	};
 	
-	var setAnnotationAttributes = function setAnnotationAttributes() {
-	    var allNodes = _DOMUtil2.default.getDescendants(document.body);
-	    setSelectWholeElement(allNodes);
-	    setUnselectable(allNodes);
-	};
+	    _createClass(RDFaAnnotator, [{
+	        key: 'addAnnotationViewer',
+	        value: function addAnnotationViewer(clientConfiguration) {
+	            var observerTargets = document.getElementsByClassName("annotation-target-observer");
+	            this.startObserver(observerTargets);
+	            this.setAnnotationAttributes(observerTargets);
+	            _reactDom2.default.render(_react2.default.createElement(_AnnotationViewer2.default, {
+	                config: this.clientConfiguration
+	            }), document.getElementById('annotation-viewer'));
+	        }
+	    }, {
+	        key: 'getDefaultConfiguration',
+	        value: function getDefaultConfiguration() {
+	            return _rdfaAnnotationConfig2.default;
+	        }
+	    }, {
+	        key: 'overrideConfiguration',
+	        value: function overrideConfiguration(configuration) {
+	            _AnnotationStore2.default.bind("configure-client", handleConfiguration.bind(this));
+	            _AnnotationActions2.default.configureClient("set", "api", "http://localhost:3000/api");
+	            this.clientConfiguration = configuration;
+	        }
+	    }, {
+	        key: 'handleConfiguration',
+	        value: function handleConfiguration(config) {
+	            console.log(config.message + ": " + config.data);
+	        }
+	    }, {
+	        key: 'setAnnotationAttributes',
+	        value: function setAnnotationAttributes(observerTargets) {
+	            for (var index = 0; index < observerTargets.length; index++) {
+	                this.setSelectWholeElement(observerTargets[index]);
+	                this.setUnselectable(observerTargets[index]);
+	            }
+	        }
+	    }, {
+	        key: 'setSelectWholeElement',
+	        value: function setSelectWholeElement(node) {
+	            var selectWholeNodes = _RDFaUtil2.default.getSelectWholeNodes(node);
+	            selectWholeNodes.forEach(function (selectWholeNode) {
+	                selectWholeNode.addEventListener('mouseup', _SelectionUtil2.default.checkSelectionRange, false);
+	            });
+	        }
+	    }, {
+	        key: 'setUnselectable',
+	        value: function setUnselectable(node) {
+	            var ignoreNodes = _RDFaUtil2.default.getRDFaIgnoreNodes(node);
+	            ignoreNodes.forEach(function (ignoreNode) {
+	                ignoreNode.style.webkitUserSelect = "none";
+	                ignoreNode.style.cursor = "not-allowed";
+	            });
+	        }
+	    }, {
+	        key: 'startObserver',
+	        value: function startObserver(observerTargets) {
+	            var _this = this;
 	
-	var setSelectWholeElement = function setSelectWholeElement(allNodes) {
-	    var selectWholeNodes = _RDFaUtil2.default.getSelectWholeNodes(allNodes);
-	    selectWholeNodes.forEach(function (selectWholeNode) {
-	        selectWholeNode.addEventListener('mouseup', _SelectionUtil2.default.checkSelectionRange, false);
-	    });
-	};
+	            var observer = new MutationObserver(function (mutations) {
+	                var observerTargets = document.getElementsByClassName("annotation-target-observer");
+	                // if something in the observer nodes changes ...
+	                // set unselectable and whole element attributes
+	                _this.setAnnotationAttributes(observerTargets);
+	                // trigger reload of annotations based on updated DOM
+	                _AnnotationActions2.default.reload();
+	            });
 	
-	var setUnselectable = function setUnselectable(allNodes) {
-	    var ignoreNodes = _RDFaUtil2.default.getRDFaIgnoreNodes(allNodes);
-	    ignoreNodes.forEach(function (ignoreNode) {
-	        ignoreNode.style.webkitUserSelect = "none";
-	        ignoreNode.style.cursor = "not-allowed";
-	    });
-	};
+	            var observerConfig = { childList: true, attributes: false, subtree: true };
 	
-	var observer = new MutationObserver(function (mutations) {
-	    mutations.forEach(function (mutation) {
-	        setAnnotationAttributes();
-	        _AnnotationActions2.default.reload();
-	    });
-	});
-	
-	var startObserver = function startObserver() {
-	    var observerConfig = { childList: true, attributes: false, subtree: true };
-	    var observerTargets = document.getElementsByClassName("annotation-target-observer");
-	
-	    for (var index = 0; index < observerTargets.length; index++) {
-	        observer.observe(observerTargets[index], observerConfig);
-	    }
-	};
+	            for (var index = 0; index < observerTargets.length; index++) {
+	                observer.observe(observerTargets[index], observerConfig);
+	            }
+	        }
+	    }]);
+
+	    return RDFaAnnotator;
+	}();
 
 /***/ },
 /* 1 */
@@ -22145,13 +22196,17 @@
 	
 	var _AnnotationStore2 = _interopRequireDefault(_AnnotationStore);
 	
-	var _LoginBox = __webpack_require__(/*! ./LoginBox */ 547);
+	var _AnnotationActions = __webpack_require__(/*! ../../flux/AnnotationActions.js */ 236);
+	
+	var _AnnotationActions2 = _interopRequireDefault(_AnnotationActions);
+	
+	var _LoginBox = __webpack_require__(/*! ../LoginBox */ 547);
 	
 	var _LoginBox2 = _interopRequireDefault(_LoginBox);
 	
-	var _rdfaAnnotationConfig = __webpack_require__(/*! ./../../rdfa-annotation-config.js */ 244);
+	var _RDFaUtil = __webpack_require__(/*! ../../util/RDFaUtil.js */ 248);
 	
-	var _rdfaAnnotationConfig2 = _interopRequireDefault(_rdfaAnnotationConfig);
+	var _RDFaUtil2 = _interopRequireDefault(_RDFaUtil);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -22169,60 +22224,81 @@
 	
 	        var _this = _possibleConstructorReturn(this, (AnnotationViewer.__proto__ || Object.getPrototypeOf(AnnotationViewer)).call(this, props));
 	
-	        _this.makeAnnotation = _this.makeAnnotation.bind(_this);
+	        _this.prepareAnnotation = _this.prepareAnnotation.bind(_this);
+	        _this.lookupIdentifier = _this.lookupIdentifier.bind(_this);
+	        _this.topResources = [];
 	        _this.state = {
-	            showLoginModal: false,
 	            showAnnotationModal: false,
-	            activeAnnotations: [],
-	            user: null,
-	            loggedIn: false,
-	            loginButtonLabel: "login",
-	            loginMessage: "You are not logged in"
+	            user: null
 	        };
 	        return _this;
 	    }
 	
 	    _createClass(AnnotationViewer, [{
-	        key: 'handleLogin',
-	        value: function handleLogin() {
-	            if (!this.state.loggedIn) {
-	                this.showLoginForm();
-	            } else {
-	                this.setState({
-	                    user: null,
-	                    loggedIn: false,
-	                    loginButtonLabel: "login",
-	                    loginMessage: "You are not logged in"
-	                });
-	                localStorage.removeItem("userDetails");
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            _AnnotationStore2.default.bind('edit-annotation', this.editAnnotation.bind(this));
+	            _AnnotationStore2.default.bind('save-annotation', this.reloadAnnotations.bind(this));
+	            _AnnotationStore2.default.bind('change-target', this.reloadAnnotations.bind(this));
+	            _AnnotationStore2.default.bind('del-annotation', this.reloadAnnotations.bind(this));
+	            _AnnotationStore2.default.bind('load-annotations', this.loadAnnotations.bind(this));
+	
+	            _AnnotationStore2.default.bind('load-resources', this.loadResources.bind(this));
+	
+	            _AnnotationStore2.default.bind('login-user', this.setUser.bind(this));
+	            _AnnotationStore2.default.bind('logout-user', this.setUser.bind(this));
+	
+	            this.loadResources();
+	        }
+	    }, {
+	        key: 'loadResources',
+	        value: function loadResources() {
+	            if (this.resourcesChanged()) {
+	                // if other resources on display...
+	                this.resourceIndex = _RDFaUtil2.default.indexRDFaResources(); // ... refresh index
+	                this.maps = _RDFaUtil2.default.buildResourcesMaps(); // .. rebuild maps
 	            }
+	            _AnnotationActions2.default.load(this.topResources);
 	        }
 	    }, {
-	        key: 'showLoginForm',
-	        value: function showLoginForm() {
-	            this.setState({ showLoginModal: true });
+	        key: 'resourcesChanged',
+	        value: function resourcesChanged() {
+	            var topResources = _RDFaUtil2.default.getTopRDFaResources(document.body);
+	            if (this.listsAreEqual(topResources, this.topResources)) return false;
+	            this.topResources = topResources; // update register resources list
+	            return true;
 	        }
 	    }, {
-	        key: 'hideLoginForm',
-	        value: function hideLoginForm() {
-	            this.setState({ showLoginModal: false });
+	        key: 'listsAreEqual',
+	        value: function listsAreEqual(list1, list2) {
+	            if (list1.every(function (id) {
+	                return list2.includes(id);
+	            }) && list2.every(function (id) {
+	                return list1.includes(id);
+	            })) return true;
+	            return false;
 	        }
 	    }, {
-	        key: 'doLogin',
-	        value: function doLogin(userDetails) {
-	            this.setState({
-	                user: userDetails,
-	                loggedIn: true,
-	                loginButtonLabel: "logout",
-	                loginMessage: "You are logged in as " + userDetails.username
+	        key: 'loadAnnotations',
+	        value: function loadAnnotations(annotations) {
+	            var component = this;
+	            component.annotationIndex = {}; // always start with an empty index
+	            annotations.forEach(function (annotation) {
+	                component.annotationIndex[annotation.id] = annotation;
 	            });
-	            localStorage.setItem("userDetails", JSON.stringify(userDetails));
-	            this.hideLoginForm();
+	            component.setState({ annotations: annotations }); // add tp state AFTER indexing
 	        }
 	    }, {
-	        key: 'showAnnotationForm',
-	        value: function showAnnotationForm() {
-	            this.setState({ showAnnotationModal: true });
+	        key: 'reloadAnnotations',
+	        value: function reloadAnnotations() {
+	            _AnnotationActions2.default.load(this.topResources);
+	        }
+	    }, {
+	        key: 'lookupIdentifier',
+	        value: function lookupIdentifier(sourceId) {
+	            var source = { type: null, data: null }; // for IDs to external resources
+	            if (this.annotationIndex.hasOwnProperty(sourceId)) source = { type: "annotation", data: this.annotationIndex[sourceId] };else if (this.resourceIndex.hasOwnProperty(sourceId)) source = { type: "resource", data: this.resourceIndex[sourceId] };
+	            return source;
 	        }
 	    }, {
 	        key: 'hideAnnotationForm',
@@ -22232,47 +22308,22 @@
 	    }, {
 	        key: 'editAnnotation',
 	        value: function editAnnotation(annotation) {
-	            this.setState({
-	                currentAnnotation: annotation
-	            }, this.showAnnotationForm());
+	            this.setState({ currentAnnotation: annotation, showAnnotationModal: true });
 	        }
 	    }, {
-	        key: 'updateCurrentAnnotation',
-	        value: function updateCurrentAnnotation(annotation) {
-	            this.setState({ currentAnnotation: annotation });
+	        key: 'setUser',
+	        value: function setUser(user) {
+	            this.setState({ user: user });
 	        }
 	    }, {
-	        key: 'activateAnnotation',
-	        value: function activateAnnotation(annotation) {
-	            var annotations = this.state.activeAnnotations;
-	            annotations.push(annotation);
-	            if (this.state.activeAnnotations.indexOf(annotation) === -1) {
-	                this.setState({ activeAnnotations: annotations });
-	            }
-	        }
-	    }, {
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            // temp hack: initialize user from local storage
-	            if (localStorage.userDetails) {
-	                this.doLogin(JSON.parse(localStorage.userDetails));
-	            }
-	            _AnnotationStore2.default.bind('activate-annotation', this.activateAnnotation.bind(this));
-	            _AnnotationStore2.default.bind('edit-annotation', this.editAnnotation.bind(this));
-	            _AnnotationStore2.default.bind('reload-annotations', this.updateCurrentAnnotation.bind(this));
-	        }
-	    }, {
-	        key: 'makeAnnotation',
-	        value: function makeAnnotation(annotationTargets) {
+	        key: 'prepareAnnotation',
+	        value: function prepareAnnotation(annotationTargets) {
 	            var annotation = _AnnotationUtil2.default.generateW3CAnnotation(this.state.user.username, annotationTargets);
-	            this.setState({
-	                currentAnnotation: annotation
-	            }, this.showAnnotationForm());
+	            this.editAnnotation(annotation);
 	        }
 	    }, {
 	        key: 'render',
 	        value: function render() {
-	            this.state;
 	            return _react2.default.createElement(
 	                'div',
 	                { className: 'annotationViewer' },
@@ -22281,45 +22332,28 @@
 	                    null,
 	                    'Annotation Client'
 	                ),
-	                _react2.default.createElement(
-	                    'div',
-	                    { className: 'login-div' },
-	                    _react2.default.createElement(
-	                        'button',
-	                        { className: 'btn btn-default',
-	                            onClick: this.handleLogin.bind(this) },
-	                        this.state.loginButtonLabel
-	                    ),
-	                    '\xA0',
-	                    _react2.default.createElement(
-	                        'span',
-	                        null,
-	                        this.state.loginMessage
-	                    ),
-	                    _react2.default.createElement(_LoginBox2.default, {
-	                        showModal: this.state.showLoginModal,
-	                        hideLoginForm: this.hideLoginForm.bind(this),
-	                        login: this.doLogin.bind(this)
-	                    })
-	                ),
+	                _react2.default.createElement(_LoginBox2.default, {
+	                    user: this.state.user
+	                }),
 	                _react2.default.createElement(
 	                    'div',
 	                    null,
-	                    this.state.loggedIn ? _react2.default.createElement(_TargetSelector2.default, {
-	                        api: this.props.api,
-	                        makeAnnotation: this.makeAnnotation.bind(this)
+	                    this.state.user ? _react2.default.createElement(_TargetSelector2.default, {
+	                        prepareAnnotation: this.prepareAnnotation.bind(this),
+	                        annotations: this.state.annotations
 	                    }) : null,
 	                    _react2.default.createElement(_AnnotationList2.default, {
-	                        api: this.props.api,
-	                        currentUser: this.state.user
+	                        currentUser: this.state.user,
+	                        annotations: this.state.annotations,
+	                        lookupIdentifier: this.lookupIdentifier.bind(this)
 	                    }),
 	                    _react2.default.createElement(_AnnotationBox2.default, {
 	                        showModal: this.state.showAnnotationModal,
 	                        hideAnnotationForm: this.hideAnnotationForm.bind(this),
 	                        editAnnotation: this.state.currentAnnotation,
 	                        currentUser: this.state.user,
-	                        annotationModes: _rdfaAnnotationConfig2.default.annotationModes,
-	                        services: _rdfaAnnotationConfig2.default.services
+	                        annotationModes: this.props.config.annotationModes,
+	                        services: this.props.config.services
 	                    })
 	                )
 	            );
@@ -22461,9 +22495,9 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _CommentingForm = __webpack_require__(/*! ./CommentingForm */ 181);
+	var _FreetextForm = __webpack_require__(/*! ./FreetextForm */ 181);
 	
-	var _CommentingForm2 = _interopRequireDefault(_CommentingForm);
+	var _FreetextForm2 = _interopRequireDefault(_FreetextForm);
 	
 	var _ClassifyingForm = __webpack_require__(/*! ./ClassifyingForm */ 182);
 	
@@ -22483,8 +22517,6 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -22499,24 +22531,14 @@
 	    function AnnotationCreator(props) {
 	        _classCallCheck(this, AnnotationCreator);
 	
-	        //make this less shitty verbosey
 	        var _this = _possibleConstructorReturn(this, (AnnotationCreator.__proto__ || Object.getPrototypeOf(AnnotationCreator)).call(this, props));
 	
-	        var comments = [];
-	        var classifications = [];
-	        var links = [];
+	        var bodies = {};
 	
 	        if (_this.props.editAnnotation.body) {
 	            _this.props.editAnnotation.body.forEach(function (body) {
-	                if (body.type === "Classification") {
-	                    classifications.push(body);
-	                }
-	                if (body.type === "Comment") {
-	                    comments.push(body);
-	                }
-	                if (body.type === "Link") {
-	                    links.push(body);
-	                }
+	                if (!Object.keys(bodies).includes(body.type)) bodies[body.type] = [];
+	                bodies[body.type].push(body);
 	            });
 	        }
 	        var activeTab = null;
@@ -22528,17 +22550,17 @@
 	        }
 	        _this.state = {
 	            activeTab: activeTab,
-	            classifications: classifications,
-	            comments: comments,
-	            links: links
+	            bodies: bodies
 	        };
 	        return _this;
 	    }
 	
 	    _createClass(AnnotationCreator, [{
 	        key: 'updateAnnotationBody',
-	        value: function updateAnnotationBody(mode, value) {
-	            this.setState(_defineProperty({}, mode, value));
+	        value: function updateAnnotationBody(annotationMode, value) {
+	            var bodies = this.state.bodies;
+	            bodies[annotationMode] = value;
+	            this.setState({ bodies: bodies });
 	        }
 	
 	        //TODO this function looks like it could be more optimized
@@ -22546,17 +22568,12 @@
 	    }, {
 	        key: 'gatherDataAndSave',
 	        value: function gatherDataAndSave() {
+	            var component = this;
 	            var annotation = this.props.editAnnotation;
 	            var body = [];
-	            if (this.state.classifications.length > 0) {
-	                body = body.concat(this.state.classifications);
-	            }
-	            if (this.state.comments.length > 0) {
-	                body = body.concat(this.state.comments);
-	            }
-	            if (this.state.links.length > 0) {
-	                body = body.concat(this.state.links);
-	            }
+	            Object.keys(component.state.bodies).forEach(function (bodyType) {
+	                body = body.concat(component.state.bodies[bodyType]);
+	            });
 	            annotation.body = body;
 	            _AnnotationActions2.default.save(annotation);
 	            this.props.hideAnnotationForm();
@@ -22590,16 +22607,9 @@
 	                };
 	                var form = '';
 	                switch (mode) {
-	                    case 'comment':
-	                        form = _react2.default.createElement(_CommentingForm2.default, {
-	                            data: this.state.comments,
-	                            config: this.props.annotationModes[mode],
-	                            onOutput: this.updateAnnotationBody.bind(this)
-	                        });
-	                        break;
 	                    case 'classify':
 	                        form = _react2.default.createElement(_ClassifyingForm2.default, {
-	                            data: this.state.classifications,
+	                            data: this.state.bodies.classification,
 	                            config: this.props.annotationModes[mode],
 	                            onOutput: this.updateAnnotationBody.bind(this),
 	                            services: this.props.services
@@ -22607,10 +22617,17 @@
 	                        break;
 	                    case 'link':
 	                        form = _react2.default.createElement(_LinkingForm2.default, {
-	                            data: this.state.links,
+	                            data: this.state.bodies.link,
 	                            config: this.props.annotationModes[mode],
 	                            onOutput: this.updateAnnotationBody.bind(this),
 	                            services: this.props.services
+	                        });
+	                        break;
+	                    default:
+	                        form = _react2.default.createElement(_FreetextForm2.default, {
+	                            data: this.state.bodies[this.props.annotationModes[mode].type],
+	                            config: this.props.annotationModes[mode],
+	                            onOutput: this.updateAnnotationBody.bind(this)
 	                        });
 	                        break;
 	                }
@@ -22660,12 +22677,12 @@
 
 /***/ },
 /* 181 */
-/*!******************************************************!*\
-  !*** ./src/components/annotation/CommentingForm.jsx ***!
-  \******************************************************/
+/*!****************************************************!*\
+  !*** ./src/components/annotation/FreetextForm.jsx ***!
+  \****************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	Object.defineProperty(exports, "__esModule", {
 		value: true
@@ -22688,27 +22705,27 @@
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               	-
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               Input:
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               	- list of comments (props.data)
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               	- list of free text bodies (props.data)
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               		- annotation ID
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               		- the comment (string value)
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               		- the free text statement (string value)
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               	- a annotation config (props.config)
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               	- onOutput (what to do after adding/removing a comment) --> should be changed to Flux?
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               	- onOutput (what to do after adding/removing a free text statement) --> should be changed to Flux?
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               Output/emits:
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               	- 'on change' (whenever adding/removing a comment)
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               	- 'on change' (whenever adding/removing a free text statement)
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               		- data:
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               			- event type ('add', 'delete')
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               			- the item that was added/deleted (ID + value)
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               			- the list of comments
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               			- the list of statements
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               */
 	
-	var CommentingForm = function (_React$Component) {
-		_inherits(CommentingForm, _React$Component);
+	var FreetextForm = function (_React$Component) {
+		_inherits(FreetextForm, _React$Component);
 	
-		function CommentingForm(props) {
-			_classCallCheck(this, CommentingForm);
+		function FreetextForm(props) {
+			_classCallCheck(this, FreetextForm);
 	
-			var _this = _possibleConstructorReturn(this, (CommentingForm.__proto__ || Object.getPrototypeOf(CommentingForm)).call(this, props));
+			var _this = _possibleConstructorReturn(this, (FreetextForm.__proto__ || Object.getPrototypeOf(FreetextForm)).call(this, props));
 	
 			_this.state = {
 				data: _this.props.data ? _this.props.data : []
@@ -22716,26 +22733,26 @@
 			return _this;
 		}
 	
-		_createClass(CommentingForm, [{
-			key: "addComment",
-			value: function addComment(e) {
+		_createClass(FreetextForm, [{
+			key: 'addStatement',
+			value: function addStatement(e) {
 				e.preventDefault();
 				var cs = this.state.data;
 				if (cs) {
 					var annotation = {
-						value: this.refs.comment.value,
-						purpose: "commenting",
-						type: "Commenting",
-						format: "text/plain"
+						value: this.refs.statement.value,
+						purpose: this.props.config.purpose,
+						type: this.props.config.type,
+						format: this.props.config.format
 					};
 					cs.push(annotation);
 					this.setState({ data: cs }, this.onOutput.bind(this));
-					this.refs.comment.value = '';
+					this.refs.statement.value = '';
 				}
 			}
 		}, {
-			key: "removeComment",
-			value: function removeComment(index) {
+			key: 'removeStatement',
+			value: function removeStatement(index) {
 				var cs = this.state.data;
 				if (cs) {
 					cs.splice(index, 1);
@@ -22743,85 +22760,87 @@
 				}
 			}
 		}, {
-			key: "onOutput",
+			key: 'onOutput',
 			value: function onOutput() {
 				if (this.props.onOutput) {
-					this.props.onOutput('comments', this.state.data);
+					this.props.onOutput('statements', this.state.data);
 				}
 			}
 		}, {
-			key: "render",
+			key: 'render',
 			value: function render() {
 				var _this2 = this;
 	
-				var commentList = null;
-				var comments = this.state.data.map(function (comment, index) {
+				var statementList = null;
+				var elementKey = "form__" + this.props.config.purpose;
+				var placeholder = "Add " + this.props.config.type;
+				var statements = this.state.data.map(function (statement, index) {
 					return _react2.default.createElement(
-						"li",
-						{ key: 'com__' + index, className: "list-group-item" },
-						_react2.default.createElement("i", { className: "glyphicon glyphicon-remove interactive", onClick: _this2.removeComment.bind(_this2, index) }),
-						"\xA0",
-						comment.value
+						'li',
+						{ key: 'com__' + index, className: 'list-group-item' },
+						_react2.default.createElement('i', { className: 'glyphicon glyphicon-remove interactive', onClick: _this2.removeStatement.bind(_this2, index) }),
+						'\xA0',
+						statement.value
 					);
 				}, this);
-				if (comments.length > 0) {
-					commentList = _react2.default.createElement(
-						"div",
+				if (statements.length > 0) {
+					statementList = _react2.default.createElement(
+						'div',
 						null,
 						_react2.default.createElement(
-							"h4",
+							'h4',
 							null,
-							"Added comments"
+							'Added statements'
 						),
 						_react2.default.createElement(
-							"ul",
-							{ className: "list-group" },
-							comments
+							'ul',
+							{ className: 'list-group' },
+							statements
 						)
 					);
 				}
 	
 				return _react2.default.createElement(
-					"div",
-					{ key: "form__comment" },
-					_react2.default.createElement("br", null),
+					'div',
+					{ key: elementKey },
+					_react2.default.createElement('br', null),
 					_react2.default.createElement(
-						"div",
-						{ className: "row" },
+						'div',
+						{ className: 'row' },
 						_react2.default.createElement(
-							"div",
-							{ className: "col-md-12" },
-							commentList
+							'div',
+							{ className: 'col-md-12' },
+							statementList
 						)
 					),
 					_react2.default.createElement(
-						"div",
-						{ className: "row" },
+						'div',
+						{ className: 'row' },
 						_react2.default.createElement(
-							"div",
-							{ className: "col-md-12" },
+							'div',
+							{ className: 'col-md-12' },
 							_react2.default.createElement(
-								"form",
+								'form',
 								null,
 								_react2.default.createElement(
-									"div",
-									{ className: "form-group" },
+									'div',
+									{ className: 'form-group' },
 									_react2.default.createElement(
-										"h4",
+										'h4',
 										null,
-										"Comment"
+										this.props.config.type
 									),
-									_react2.default.createElement("input", {
-										ref: "comment",
-										type: "text",
-										className: "form-control",
-										placeholder: "Add one or more tags"
+									_react2.default.createElement('input', {
+										ref: 'statement',
+										type: 'text',
+										className: 'form-control',
+										placeholder: placeholder
 									}),
-									_react2.default.createElement("br", null),
+									_react2.default.createElement('br', null),
 									_react2.default.createElement(
-										"button",
-										{ className: "btn btn-primary", onClick: this.addComment.bind(this) },
-										"Add"
+										'button',
+										{ className: 'btn btn-primary', onClick: this.addStatement.bind(this) },
+										'Add'
 									)
 								)
 							)
@@ -22831,10 +22850,10 @@
 			}
 		}]);
 	
-		return CommentingForm;
+		return FreetextForm;
 	}(_react2.default.Component);
 	
-	exports.default = CommentingForm;
+	exports.default = FreetextForm;
 
 /***/ },
 /* 182 */
@@ -22912,8 +22931,8 @@
 	                        id: this.state.suggestionId,
 	                        value: this.state.value,
 	                        vocabulary: this.state.vocabulary,
-	                        purpose: "classifying",
-	                        type: "Classifying"
+	                        purpose: this.props.config.purpose,
+	                        type: this.props.config.type
 	                    });
 	                    this.setState({
 	                        value: '',
@@ -22935,7 +22954,7 @@
 	        key: 'onOutput',
 	        value: function onOutput() {
 	            if (this.props.onOutput) {
-	                this.props.onOutput('classifications', this.state.data);
+	                this.props.onOutput(this.props.config.type, this.state.data);
 	            }
 	        }
 	    }, {
@@ -23271,7 +23290,7 @@
 	                                ),
 	                                _react2.default.createElement('br', null),
 	                                _react2.default.createElement(_reactAutosuggest2.default, {
-	                                    ref: 'classifications',
+	                                    ref: this.props.config.type,
 	                                    suggestions: this.state.suggestions,
 	                                    onSuggestionsFetchRequested: this.onSuggestionsFetchRequested.bind(this),
 	                                    onSuggestionsClearRequested: this.onSuggestionsClearRequested.bind(this),
@@ -28062,13 +28081,6 @@
 	        });
 	    },
 	
-	    login: function login(userDetails) {
-	        _AppDispatcher2.default.dispatch({
-	            eventName: 'login-user',
-	            userDetails: userDetails
-	        });
-	    },
-	
 	    load: function load(resourceIds) {
 	        _AppDispatcher2.default.dispatch({
 	            eventName: 'load-annotations',
@@ -28079,6 +28091,39 @@
 	    reload: function reload() {
 	        _AppDispatcher2.default.dispatch({
 	            eventName: 'reload-annotations'
+	        });
+	    },
+	
+	    loadResources: function loadResources() {
+	        _AppDispatcher2.default.dispatch({
+	            eventName: 'load-resources'
+	        });
+	    },
+	
+	    login: function login(userDetails) {
+	        _AppDispatcher2.default.dispatch({
+	            eventName: 'login-user',
+	            userDetails: userDetails
+	        });
+	    },
+	
+	    logout: function logout() {
+	        _AppDispatcher2.default.dispatch({
+	            eventName: 'logout-user',
+	            userDetails: null
+	        });
+	    },
+	
+	    getServerAddress: function getServerAddress() {
+	        _AppDispatcher2.default.dispatch({
+	            eventName: 'get-server-address'
+	        });
+	    },
+	
+	    setServerAddress: function setServerAddress(apiURL) {
+	        _AppDispatcher2.default.dispatch({
+	            eventName: 'set-server-address',
+	            apiURL: apiURL
 	        });
 	    }
 	
@@ -28498,8 +28543,6 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	//import SearchAPI from '../api/SearchAPI';
-	
 	//See: https://github.com/jeromeetienne/microevent.js
 	
 	
@@ -28509,6 +28552,16 @@
 	    }
 	
 	    _createClass(AnnotationStore, [{
+	        key: 'getServerAddress',
+	        value: function getServerAddress() {
+	            return _AnnotationAPI2.default.getServerAddress();
+	        }
+	    }, {
+	        key: 'setServerAddress',
+	        value: function setServerAddress(apiURL) {
+	            return _AnnotationAPI2.default.setServerAddress(apiURL);
+	        }
+	    }, {
 	        key: 'loadAnnotations',
 	        value: function loadAnnotations(resourceIds) {
 	            var _this = this;
@@ -28518,21 +28571,6 @@
 	                _this.trigger('load-annotations', annotations);
 	            });
 	        }
-	
-	        //DEPRECATED: TODO components calling this function, should switch to getMediaObjectAnnotations()
-	
-	    }, {
-	        key: 'getFiltered',
-	        value: function getFiltered(field, value, callback) {
-	            _AnnotationAPI2.default.getFilteredAnnotations(field, value, callback);
-	        }
-	
-	        //TODO the Search API call should be put inside the Annotation API
-	        //getMediaObjectAnnotations(mediaObjectURI, callback) {
-	        //SearchAPI.getAnnotationsOfMediaObject(mediaObjectURI, callback);
-	        //}
-	
-	
 	    }, {
 	        key: 'changeTarget',
 	        value: function changeTarget() {
@@ -28591,6 +28629,11 @@
 	            this.trigger('reload-annotations');
 	        }
 	    }, {
+	        key: 'loadResources',
+	        value: function loadResources() {
+	            this.trigger('load-resources');
+	        }
+	    }, {
 	        key: 'login',
 	        value: function login(userDetails) {
 	            var _this4 = this;
@@ -28598,6 +28641,11 @@
 	            _AnnotationAPI2.default.login(userDetails, function (response) {
 	                _this4.trigger('login-user', response);
 	            });
+	        }
+	    }, {
+	        key: 'logout',
+	        value: function logout(userDetails) {
+	            this.trigger('logout-user', userDetails);
 	        }
 	    }]);
 	
@@ -28640,8 +28688,20 @@
 	        case 'reload-annotations':
 	            AppAnnotationStore.reloadAnnotations();
 	            break;
+	        case 'load-resources':
+	            AppAnnotationStore.loadResources();
+	            break;
 	        case 'login-user':
 	            AppAnnotationStore.login(action.userDetails);
+	            break;
+	        case 'logout-user':
+	            AppAnnotationStore.logout(action.userDetails);
+	            break;
+	        case 'get-server-address':
+	            AppAnnotationStore.getServerAddress();
+	            break;
+	        case 'set-server-address':
+	            AppAnnotationStore.setServerAddress(action.apiURL);
 	            break;
 	
 	    }
@@ -28714,7 +28774,7 @@
 /*!**********************************!*\
   !*** ./src/api/AnnotationAPI.js ***!
   \**********************************/
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	
 	"use strict";
@@ -28722,45 +28782,62 @@
 	Object.defineProperty(exports, "__esModule", {
 	    value: true
 	});
-	
-	var _rdfaAnnotationConfig = __webpack_require__(/*! ../rdfa-annotation-config.js */ 244);
-	
-	var _rdfaAnnotationConfig2 = _interopRequireDefault(_rdfaAnnotationConfig);
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	var annotationServer = _rdfaAnnotationConfig2.default.services.AnnotationServer.api;
-	
 	var AnnotationAPI = {
 	
+	    annotationServer: null,
+	
+	    serverNotSet: function serverNotSet() {
+	        return Error("No annotation server configured.");
+	    },
+	
+	    setServerAddress: function setServerAddress(apiURL) {
+	        this.annotationServer = apiURL;
+	        return this.annotationServer;
+	    },
+	
+	    getServerAddress: function getServerAddress() {
+	        return this.annotationServer;
+	    },
+	
 	    saveAnnotation: function saveAnnotation(annotation, callback) {
+	        if (!this.annotationServer) callback(serverNotSet(), null);
 	        // default is POSTing a new annotation
-	        var url = _rdfaAnnotationConfig2.default.services.AnnotationServer.api + '/annotations';
+	        var url = this.annotationServer + '/annotation';
 	        var method = 'POST';
+	        var status = null;
 	
 	        // if annotation already has an id, it's an update, so PUT
 	        if (annotation.id) {
-	            url += '/annotation/' + annotation.id;
+	            url = this.annotationServer + '/annotations/annotation/' + annotation.id;
 	            method = 'PUT';
 	        }
 	
 	        fetch(url, {
-	            method: "POST",
+	            method: method,
 	            headers: {
 	                "Content-Type": "application/json"
 	            },
 	            body: JSON.stringify(annotation)
 	        }).then(function (response) {
+	            status = response.status;
 	            return response.json();
 	        }).then(function (data) {
-	            callback(data);
+	            if (status !== 200) {
+	                var error = {
+	                    status: status,
+	                    message: data.message
+	                };
+	                return callback(error, null);
+	            }
+	            return callback(null, data);
 	        }).catch(function (error) {
-	            console.error(url, error.toString());
+	            return callback(error, null);
 	        });
 	    },
 	
 	    login: function login(userDetails, callback) {
-	        var url = _rdfaAnnotationConfig2.default.services.AnnotationServer.api + "/login";
+	        if (!this.annotationServer) callback(serverNotSet(), null);
+	        var url = this.annotationServer + "/login";
 	        fetch(url, {
 	            method: "POST",
 	            headers: {
@@ -28776,38 +28853,34 @@
 	        });
 	    },
 	
-	    getAnnotation: function getAnnotation(annotationId) {
-	        if (annotationId) {
-	            (function () {
-	                var url = _rdfaAnnotationConfig2.default.services.AnnotationServer.api + '/annotations/annotation/' + annotationId;
-	                fetch(url, {
-	                    method: "GET",
-	                    cache: 'no-cache',
-	                    mode: 'cors'
-	                }).then(function (response) {
-	                    return response.json();
-	                }).catch(function (err) {
-	                    console.error(url, err.toString());
-	                });
-	            })();
-	        }
-	    },
-	
-	    getAnnotations: function getAnnotations(callback) {
-	        var url = _rdfaAnnotationConfig2.default.services.AnnotationServer.api + '/annotations';
+	    getAnnotationById: function getAnnotationById(annotationId, callback) {
+	        if (!this.annotationServer) callback(serverNotSet(), null);
+	        var status = null;
+	        var url = this.annotationServer + '/annotations/annotation/' + annotationId;
 	        fetch(url, {
 	            method: "GET",
 	            cache: 'no-cache',
 	            mode: 'cors'
 	        }).then(function (response) {
-	            callback(response.json());
+	            status = response.status;
+	            return response.json();
+	        }).then(function (data) {
+	            if (status !== 200) {
+	                var error = {
+	                    status: status,
+	                    message: data.message
+	                };
+	                return callback(error, null);
+	            }
+	            return callback(null, data);
 	        }).catch(function (err) {
-	            console.error(url, err.toString());
+	            return callback(err, null);
 	        });
 	    },
 	
-	    getAnnotationsByTarget: function getAnnotationsByTarget(targetId, callback) {
-	        var url = _rdfaAnnotationConfig2.default.services.AnnotationServer.api + '/annotations/target/' + targetId;
+	    getAnnotations: function getAnnotations(callback) {
+	        if (!this.annotationServer) callback(serverNotSet(), null);
+	        var url = this.annotationServer + '/annotations';
 	        fetch(url, {
 	            method: "GET",
 	            cache: 'no-cache',
@@ -28815,19 +28888,41 @@
 	        }).then(function (response) {
 	            return response.json();
 	        }).then(function (data) {
-	            callback(null, data);
+	            return callback(null, data);
 	        }).catch(function (err) {
 	            console.error(url, err.toString());
-	            callback(err, null);
+	            return callback(err, null);
+	        });
+	    },
+	
+	    getAnnotationsByTarget: function getAnnotationsByTarget(targetId, callback) {
+	        if (!this.annotationServer) callback(serverNotSet(), null);
+	        if (typeof targetId !== "string") {
+	            var error = new TypeError("resource ID should be string");
+	            return callback(error, null);
+	        }
+	        var url = this.annotationServer + '/annotations/target/' + targetId;
+	        fetch(url, {
+	            method: "GET",
+	            cache: 'no-cache',
+	            mode: 'cors'
+	        }).then(function (response) {
+	            return response.json();
+	        }).then(function (data) {
+	            return callback(null, data);
+	        }).catch(function (err) {
+	            console.error(url, err.toString());
+	            return callback(err, null);
 	        });
 	    },
 	
 	    getAnnotationsByTargets: function getAnnotationsByTargets(targetIds, callback) {
+	        if (!this.annotationServer) callback(serverNotSet(), null);
 	        var annotations = [];
 	        var ids = [];
 	        targetIds.forEach(function (targetId, targetIndex) {
 	            AnnotationAPI.getAnnotationsByTarget(targetId, function (error, data) {
-	                if (error) callback(error, null);
+	                if (error) return callback(error, null);
 	
 	                data.forEach(function (annotation, index) {
 	                    if (ids.indexOf(annotation.id) === -1) {
@@ -28835,33 +28930,53 @@
 	                        annotations.push(annotation);
 	                    }
 	                    if (index === data.length - 1 && targetIndex === targetIds.length - 1) {
-	                        callback(null, annotations);
+	                        return callback(null, annotations);
 	                    }
 	                });
 	                if (data === []) {
-	                    callback(null, annotations);
+	                    return callback(null, annotations);
 	                }
 	            });
 	        });
 	    },
 	
 	    deleteAnnotation: function deleteAnnotation(annotation, callback) {
-	        console.debug('deleting: ' + annotation.id);
-	        if (annotation.id) {
-	            $.ajax({
-	                url: _rdfaAnnotationConfig2.default.services.AnnotationServer.api + '/annotations/annotation/' + annotation.id,
-	                type: 'DELETE',
-	                //dataType : 'application/json',
-	                success: function success(data) {
-	                    if (callback) {
-	                        callback(data, annotation);
-	                    }
-	                },
-	                error: function error(err) {
-	                    console.debug(err);
-	                }
-	            });
+	        if (!this.annotationServer) callback(serverNotSet(), null);
+	        if (!annotation.id) {
+	            var error = Error("annotation MUST have an id property");
+	            callback(error, null);
 	        }
+	        console.log('deleting via API ' + serverAPI);
+	        var url = this.annotationServer + '/annotations/annotation/' + annotation.id;
+	        fetch(url, {
+	            method: "DELETE",
+	            cache: 'no-cache',
+	            mode: 'cors'
+	        }).then(function (response) {
+	            return response.json();
+	        }).then(function (data) {
+	            return callback(null, data);
+	        }).catch(function (err) {
+	            console.error(url, err.toString());
+	            return callback(err, null);
+	        });
+	    },
+	
+	    deleteAnnotationById: function deleteAnnotationById(annotationId, callback) {
+	        if (!this.annotationServer) callback(serverNotSet(), null);
+	        var url = this.annotationServer + '/annotations/annotation/' + annotationId;
+	        fetch(url, {
+	            method: "DELETE",
+	            cache: 'no-cache',
+	            mode: 'cors'
+	        }).then(function (response) {
+	            return response.json();
+	        }).then(function (data) {
+	            return callback(null, data);
+	        }).catch(function (err) {
+	            console.error(url, err.toString());
+	            return callback(err, null);
+	        });
 	    }
 	};
 	
@@ -28877,64 +28992,87 @@
 	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", {
-		value: true
+	    value: true
 	});
 	var config = {
-		"id": "text-annotation",
-		"name": "Basic Text Annotation",
-		"type": "annotation",
-		"description": "Select and annotate text",
-		"services": {
-			"AnnotationServer": {
-				"api": "http://localhost:3000/api"
-			},
-			"GTAA": {
-				"api": "http://openskos.beeldengeluid.nl/api/autocomplete/",
-				"params": {
-					"lang": "nl"
-				}
-			},
-			"DBpedia": {
-				"api": "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString="
-			}
-		},
-		"annotationSupport": {
-			"currentQuery": {
-				"modes": ["bookmark"]
-			},
-			"singleItem": {
-				"modes": ["bookmark"]
-			},
-			"mediaObject": {
-				"modes": ["classify", "comment", "link"]
-			},
-			"mediaSegment": {
-				"modes": ["classify", "comment", "link"]
-			},
-			"annotation": {
-				"modes": ["comment"]
-			}
-		},
-		"annotationModes": {
-			"classify": {
-				"vocabularies": ["DBpedia", "GTAA"]
-			},
-			"link": {
-				"apis": [{ "name": "wikidata" }, { "name": "europeana" }]
-			},
-			"bookmark": {},
-			"comment": {}
-		},
-		"candidateTypes": ["resource", "annotation"],
-		"tasks": [{
-			"task": "tagging",
-			"placeholder": "Add one or more tags",
-			"label": "Tagging"
-		}, {
-			"taskname": "describing",
-			"placeholder": "Add a description",
-			"tasklabel": "Describing"
-		}]
+	    "id": "text-annotation",
+	    "name": "Basic Text Annotation",
+	    "type": "annotation",
+	    "description": "Select and annotate text",
+	    "services": {
+	        "AnnotationServer": {
+	            "api": "http://localhost:3000/api"
+	        },
+	        "GTAA": {
+	            "api": "http://openskos.beeldengeluid.nl/api/autocomplete/",
+	            "params": {
+	                "lang": "nl"
+	            }
+	        },
+	        "DBpedia": {
+	            "api": "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString="
+	        }
+	    },
+	    "annotationSupport": {
+	        "currentQuery": {
+	            "modes": ["bookmark"]
+	        },
+	        "singleItem": {
+	            "modes": ["bookmark"]
+	        },
+	        "mediaObject": {
+	            "modes": ["classify", "comment", "link"]
+	        },
+	        "mediaSegment": {
+	            "modes": ["classify", "comment", "link"]
+	        },
+	        "annotation": {
+	            "modes": ["comment"]
+	        }
+	    },
+	    "annotationModes": {
+	        "classify": {
+	            "vocabularies": ["DBpedia", "GTAA"],
+	            "type": "classification",
+	            "purpose": "classifying",
+	            "format": "text/plain"
+	        },
+	        "link": {
+	            "apis": [{ "name": "wikidata" }, { "name": "europeana" }],
+	            "type": "link",
+	            "purpose": "linking",
+	            "format": "text/plain"
+	        },
+	        "bookmark": {
+	            "type": "bookmark",
+	            "purpose": "bookmarking"
+	        },
+	        "comment": {
+	            "type": "comment",
+	            "purpose": "commenting",
+	            "format": "text/plain"
+	        },
+	        "correct": {
+	            "type": "correction",
+	            "purpose": "correcting",
+	            "format": "text/plain"
+	        },
+	        "transcribe": {
+	            "type": "transcription",
+	            "purpose": "transcribing",
+	            "format": "text/plain"
+	        }
+	    },
+	    "candidateTypes": ["resource", "annotation"],
+	    "tasks": [{
+	        "task": "tagging",
+	        "placeholder": "Add one or more tags",
+	        "label": "Tagging"
+	    }, {
+	        "taskname": "describing",
+	        "placeholder": "Add a description",
+	        "tasklabel": "Describing"
+	    }]
 	};
 	
 	exports.default = config;
@@ -28962,10 +29100,6 @@
 	
 	var _AnnotationStore2 = _interopRequireDefault(_AnnotationStore);
 	
-	var _AnnotationActions = __webpack_require__(/*! ./../../flux/AnnotationActions */ 236);
-	
-	var _AnnotationActions2 = _interopRequireDefault(_AnnotationActions);
-	
 	var _Annotation = __webpack_require__(/*! ./Annotation.jsx */ 246);
 	
 	var _Annotation2 = _interopRequireDefault(_Annotation);
@@ -28977,10 +29111,6 @@
 	var _RDFaUtil = __webpack_require__(/*! ./../../util/RDFaUtil.js */ 248);
 	
 	var _RDFaUtil2 = _interopRequireDefault(_RDFaUtil);
-	
-	var _AnnotationAPI = __webpack_require__(/*! ./../../api/AnnotationAPI.js */ 243);
-	
-	var _AnnotationAPI2 = _interopRequireDefault(_AnnotationAPI);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -28996,125 +29126,20 @@
 	    function AnnotationList(props) {
 	        _classCallCheck(this, AnnotationList);
 	
-	        var _this = _possibleConstructorReturn(this, (AnnotationList.__proto__ || Object.getPrototypeOf(AnnotationList)).call(this, props));
-	
-	        _this.resourceIndex = _RDFaUtil2.default.indexRDFaResources();
-	        _this.annotationIndex = {};
-	        _this.lookup = _this.lookup.bind(_this);
-	        _this.state = {
-	            annotations: [],
-	            activeAnnotations: [],
-	            resourceIds: []
-	        };
-	        return _this;
+	        return _possibleConstructorReturn(this, (AnnotationList.__proto__ || Object.getPrototypeOf(AnnotationList)).call(this, props));
 	    }
 	
 	    _createClass(AnnotationList, [{
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            var resourceIds = _RDFaUtil2.default.getTopRDFaResources(document.body);
-	            this.setState({ resourceIds: resourceIds }, function () {
-	                _AnnotationActions2.default.load(resourceIds);
-	            });
-	
-	            _AnnotationStore2.default.bind('activate-annotation', this.activateAnnotation.bind(this));
-	            _AnnotationStore2.default.bind('save-annotation', this.reloadAnnotations.bind(this));
-	            _AnnotationStore2.default.bind('reload-annotations', this.reloadAnnotations.bind(this));
-	            _AnnotationStore2.default.bind('load-annotations', this.loadAnnotations.bind(this));
-	            //make sure to reload the list when the target changes
-	            _AnnotationStore2.default.bind('change-target', this.reloadAnnotations.bind(this));
-	
-	            //also make sure to reload the list when annotations are added/removed (to/from the target)
-	            _AnnotationStore2.default.bind('del-annotation', this.reloadAnnotations.bind(this));
-	        }
-	    }, {
-	        key: 'lookup',
-	        value: function lookup(sourceId) {
-	            if (this.annotationIndex.hasOwnProperty(sourceId)) {
-	                return {
-	                    type: "annotation",
-	                    data: this.annotationIndex[sourceId]
-	                };
-	            }
-	            if (this.resourceIndex.hasOwnProperty(sourceId)) {
-	                return {
-	                    type: "resource",
-	                    data: this.resourceIndex[sourceId]
-	                };
-	            }
-	            console.error("Error: target id " + sourceId + " not found in index");
-	            return {
-	                type: null,
-	                data: null
-	            };
-	        }
-	    }, {
-	        key: 'indexAnnotations',
-	        value: function indexAnnotations() {
-	            var annotationIndex = {};
-	            this.state.annotations.forEach(function (annotation) {
-	                annotationIndex[annotation.id] = annotation;
-	            });
-	            this.annotationIndex = annotationIndex;
-	        }
-	    }, {
-	        key: 'reloadAnnotations',
-	        value: function reloadAnnotations() {
-	            var component = this;
-	            // get resource IDs of current RDFa nodes in DOM
-	            var resourceIds = _RDFaUtil2.default.getTopRDFaResources(document.body);
-	            var sameList = resourceIds.every(function (resourceId) {
-	                return component.state.resourceIds.indexOf(resourceId) > -1;
-	            });
-	            if (!sameList) {
-	                component.setState({ annotations: [], resourceIds: resourceIds });
-	            }
-	            _AnnotationActions2.default.load(resourceIds);
-	        }
-	    }, {
-	        key: 'loadAnnotations',
-	        value: function loadAnnotations(annotations) {
-	            var component = this;
-	            component.filterAnnotations(annotations);
-	        }
-	    }, {
-	        key: 'filterAnnotations',
-	        value: function filterAnnotations(annotations) {
-	            // AnnotationList only needs to know about the display annotations
-	            // not the structural relation annotations
-	            var types = _AnnotationUtil2.default.sortAnnotationTypes(annotations, this.resourceIndex);
-	            console.log(types);
-	            this.setState({ annotations: types.display });
-	        }
-	    }, {
-	        key: 'activateAnnotation',
-	        value: function activateAnnotation(annotation) {
-	            var annotations = this.state.activeAnnotations;
-	            if (annotations.indexOf(annotation) === -1) {
-	                annotations.push(annotation);
-	            } else {
-	                annotations.splice(annotations.indexOf(annotation), 1);
-	            }
-	            this.setState({ activeAnnotations: annotations });
-	        }
-	    }, {
 	        key: 'render',
 	        value: function render() {
-	            this.indexAnnotations();
-	            this.resourceIndex = _RDFaUtil2.default.indexRDFaResources();
 	            var annotationItems = null;
 	            var component = this;
-	            if (this.state.annotations) {
-	                annotationItems = this.state.annotations.map(function (annotation) {
-	                    var active = false;
-	                    if (component.state.activeAnnotations.indexOf(annotation) !== -1) {
-	                        active = true;
-	                    }
+	            if (this.props.annotations) {
+	                annotationItems = this.props.annotations.map(function (annotation) {
 	                    return _react2.default.createElement(_Annotation2.default, {
 	                        annotation: annotation,
-	                        lookup: component.lookup,
+	                        lookupIdentifier: component.props.lookupIdentifier,
 	                        key: annotation.id,
-	                        active: active,
 	                        currentUser: component.props.currentUser
 	                    });
 	                });
@@ -29197,14 +29222,51 @@
 	        var _this = _possibleConstructorReturn(this, (Annotation.__proto__ || Object.getPrototypeOf(Annotation)).call(this, props));
 	
 	        _this.state = {
-	            highlighted: false,
-	            warning: "",
-	            showConfirmationModal: false
+	            highlighted: false
 	        };
 	        return _this;
 	    }
 	
 	    _createClass(Annotation, [{
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            this.setState({ targetRanges: this.mapTargetsToRanges() });
+	        }
+	    }, {
+	        key: 'mapTargetsToRanges',
+	        value: function mapTargetsToRanges() {
+	            var component = this;
+	            var targetRanges = [];
+	            _AnnotationUtil2.default.extractTargets(this.props.annotation).forEach(function (target) {
+	                var annotationTargetRanges = component.getTargetRanges(target);
+	                targetRanges = targetRanges.concat(annotationTargetRanges);
+	            });
+	            return targetRanges;
+	        }
+	        /*
+	         * A getTargetResources parses a single annotation target
+	         * and returns any resources that are the leaves of the
+	         * annotation chain (if there are annotations on annotations).
+	         * Target resources that are not indexed are ignored.
+	         */
+	
+	    }, {
+	        key: 'getTargetRanges',
+	        value: function getTargetRanges(target) {
+	            var component = this;
+	            var targetId = _AnnotationUtil2.default.extractTargetIdentifier(target);
+	            if (!targetId) // target is not loaded in browser window
+	                return [];
+	            var source = component.props.lookupIdentifier(targetId);
+	            if (source.type === "resource") return [component.makeTargetRange(target, source.data.domNode)];
+	            var targetRanges = [];
+	            _AnnotationUtil2.default.extractTargets(source.data).forEach(function (annotationTarget) {
+	                var annotationRanges = component.getTargetRanges(annotationTarget);
+	                targetRanges = targetRanges.concat(annotationRanges);
+	            });
+	            return targetRanges;
+	        }
+	    }, {
 	        key: 'makeTargetRange',
 	        value: function makeTargetRange(target, node) {
 	            var targetRange = {
@@ -29212,33 +29274,19 @@
 	                end: -1,
 	                node: node
 	            };
-	            if (target.selector && target.selector.refinedBy) {
-	                targetRange.start = target.selector.refinedBy.start;
-	                targetRange.end = target.selector.refinedBy.end;
-	            }
-	            if (target.selector && target.selector.start) {
-	                targetRange.start = target.selector.start;
-	                targetRange.end = target.selector.end;
+	            var textPosition = _AnnotationUtil2.default.getTextPositionSelector(target);
+	            if (textPosition && textPosition.start) {
+	                targetRange.start = textPosition.start;
+	                targetRange.end = textPosition.end;
 	            }
 	            return targetRange;
-	        }
-	    }, {
-	        key: 'getTargetRangeText',
-	        value: function getTargetRangeText(node, start, end) {
-	            _RDFaUtil2.default.setRDFaSelectionRange(node, start, end);
-	            var selection = document.getSelection();
-	            var text = selection.toString();
-	            selection.removeAllRanges();
-	            return text;
 	        }
 	    }, {
 	        key: 'getTargetText',
 	        value: function getTargetText(target, resource) {
 	            // if whole resource is the target,
 	            // return the text content of the correspondign node
-	            if (!target.selector) {
-	                return resource.data.text;
-	            }
+	            if (!target.selector) return resource.data.text;
 	            var selector = target.selector;
 	            if (target.selector.refinedBy) selector = target.selector.refinedBy;
 	            // if there are multiple selectors, pick any selector since they are alternatives
@@ -29249,71 +29297,18 @@
 	            return null;
 	        }
 	    }, {
-	        key: 'getTargetResources',
-	        value: function getTargetResources(target) {
-	            var component = this;
-	            var targetId = _AnnotationUtil2.default.extractTargetSource(target);
-	            var source = component.props.lookup(targetId);
-	            var targetResources = [];
-	            if (source.type === "annotation") {
-	                var annotation = source.data;
-	                _AnnotationUtil2.default.extractTargets(annotation).forEach(function (annotationTarget) {
-	                    var annotationResources = component.getTargetResources(annotationTarget);
-	                    targetResources = targetResources.concat(annotationResources);
-	                });
-	            } else if (source.type === "resource") {
-	                targetResources.push(target);
-	            }
-	            return targetResources;
+	        key: 'getTargetRangeText',
+	        value: function getTargetRangeText(node, start, end) {
+	            _RDFaUtil2.default.setRDFaSelectionRange(node, start, end);
+	            var selection = window.document.getSelection();
+	            var text = selection.toString();
+	            selection.removeAllRanges();
+	            return text;
 	        }
 	    }, {
-	        key: 'getTargetRanges',
-	        value: function getTargetRanges(targets) {
-	            var component = this;
-	            var resourceTargetRanges = [];
-	            targets.forEach(function (target) {
-	                var targetId = _AnnotationUtil2.default.extractTargetSource(target);
-	                var source = component.props.lookup(targetId);
-	                var targetRange = component.makeTargetRange(target, source.data.domNode);
-	                resourceTargetRanges.push(targetRange);
-	            });
-	            return resourceTargetRanges;
-	        }
-	    }, {
-	        key: 'isResource',
-	        value: function isResource(targetId) {
-	            var targetResource = this.props.lookup(targetId);
-	            if (targetResource.type === "resource") {
-	                return true;
-	            }
-	            return false;
-	        }
-	    }, {
-	        key: 'getTargets',
-	        value: function getTargets() {
-	            var component = this;
-	            var targetResources = [];
-	            _AnnotationUtil2.default.extractTargets(this.props.annotation).forEach(function (target) {
-	                var annotationTargetResources = component.getTargetResources(target);
-	                targetResources = targetResources.concat(annotationTargetResources);
-	            });
-	            var resourceTargetRanges = this.getTargetRanges(targetResources);
-	            return resourceTargetRanges;
-	        }
-	    }, {
-	        key: 'toggleHighlight',
-	        value: function toggleHighlight() {
-	            var component = this;
-	            _AnnotationActions2.default.activate(this.props.annotation);
-	            this.state.targetRanges.forEach(function (target) {
-	                if (component.state.highlighted) {
-	                    _SelectionUtil2.default.selectAndRemoveRange(target.node, target.start, target.end);
-	                    component.setState({ highlighted: false });
-	                } else {
-	                    _SelectionUtil2.default.selectAndHighlightRange(target.node, target.start, target.end);
-	                    component.setState({ highlighted: true });
-	                }
-	            });
+	        key: 'targetIsAnnotation',
+	        value: function targetIsAnnotation(target) {
+	            return source.type === "annotation" ? true : false;
 	        }
 	    }, {
 	        key: 'canEdit',
@@ -29363,17 +29358,19 @@
 	            }
 	        }
 	    }, {
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            this.setState({ targetRanges: this.getTargets() });
+	        key: 'toggleHighlight',
+	        value: function toggleHighlight() {
+	            var component = this;
+	            this.state.targetRanges.forEach(function (target) {
+	                component.state.highlighted ? _SelectionUtil2.default.selectAndRemoveRange(target.node, target.start, target.end) : _SelectionUtil2.default.selectAndHighlightRange(target.node, target.start, target.end);
+	            });
+	            this.setState({ highlighted: this.state.highlighted ? false : true });
 	        }
 	    }, {
 	        key: 'computeClass',
 	        value: function computeClass() {
 	            var className = 'list-group-item';
-	            if (this.props.active) {
-	                className += ' active';
-	            }
+	            if (this.state.highlighted) className += ' active';
 	            return className;
 	        }
 	    }, {
@@ -29382,7 +29379,7 @@
 	            var component = this;
 	            var annotation = component.props.annotation;
 	            var bodyCount = 0;
-	            var timestamp = new Date(annotation.created * 1000).toLocaleString();
+	            var timestamp = new Date(annotation.created).toLocaleString();
 	            var bodies = _AnnotationUtil2.default.extractBodies(annotation).map(function (body) {
 	                bodyCount++;
 	                return _react2.default.createElement(
@@ -29411,11 +29408,12 @@
 	            var targetCount = 0;
 	            var targets = _AnnotationUtil2.default.extractTargets(annotation).map(function (target) {
 	                targetCount++;
-	                var source = component.props.lookup(_AnnotationUtil2.default.extractTargetSource(target));
+	                var source = component.props.lookupIdentifier(_AnnotationUtil2.default.extractTargetIdentifier(target));
 	                var text = "";
 	                var label;
 	                if (source.type === "resource") {
-	                    text = component.getTargetText(target, source);
+	                    var selector = _AnnotationUtil2.default.getTextQuoteSelector(target);
+	                    text = selector ? selector.exact : component.getTargetText(target, source);
 	                    if (text.length > 40) {
 	                        text = text.substr(0, 37) + "...";
 	                    }
@@ -29784,29 +29782,40 @@
 	        return Array.isArray(annotation.target) ? annotation.target : [annotation.target];
 	    },
 	
-	    extractTargetSource: function extractTargetSource(annotationTarget) {
-	        if (annotationTarget.source) {
-	            if (annotationTarget.selector && annotationTarget.selector.value) {
-	                return annotationTarget.selector.value;
-	            }
+	    extractTargetIdentifier: function extractTargetIdentifier(annotationTarget) {
+	        if (typeof annotationTarget === "string") return annotationTarget;
+	        if (annotationTarget.id) return annotationTarget.id;
+	        if (annotationTarget.source) // the target is a selection in a source
 	            return annotationTarget.source;
-	        }
+	        return null;
 	    },
 	
-	    extractTargetSources: function extractTargetSources(annotation) {
+	    extractTargetIdentifiers: function extractTargetIdentifiers(annotation) {
 	        return AnnotationUtil.extractTargets(annotation).map(function (target) {
-	            return AnnotationUtil.extractTargetSource(target);
+	            return AnnotationUtil.extractTargetIdentifier(target);
 	        });
 	    },
 	
-	    getTargetPositionSelector: function getTargetPositionSelector(target) {
+	    getTextPositionSelector: function getTextPositionSelector(target) {
 	        if (!target.selector) return null;
-	        var selector = void 0;
-	        if (Array.isArray(target.selector)) {
-	            target.selector.forEach(function (selector) {
-	                if (selector.type === "TextPositionSelector") ;
-	            });
-	        }
+	        if (!target.type || target.type !== "Text") return null;
+	        var textPosition = null;
+	        var selectors = Array.isArray(target.selector) ? target.selector : [target.selector];
+	        selectors.forEach(function (selector) {
+	            if (selector.type === "TextPositionSelector") textPosition = selector;
+	        });
+	        return textPosition;
+	    },
+	
+	    getTextQuoteSelector: function getTextQuoteSelector(target) {
+	        if (!target.selector) return null;
+	        if (!target.type || target.type !== "Text") return null;
+	        var textQuote = null;
+	        var selectors = Array.isArray(target.selector) ? target.selector : [target.selector];
+	        selectors.forEach(function (selector) {
+	            if (selector.type === "TextQuoteSelector") textQuote = selector;
+	        });
+	        return textQuote;
 	    },
 	
 	    /*************************************************************************************
@@ -29866,7 +29875,7 @@
 	    // Return RDFa attributes of an element.
 	    getRDFaAttributes: function getRDFaAttributes(node) {
 	        var nodeRDFaAttrs = {};
-	        if (node.nodeName !== "#text" && node.nodeName !== "#comment") {
+	        if (node.nodeType === window.Node.ELEMENT_NODE) {
 	            RDFaAttrs.forEach(function (attr) {
 	                if (node.hasAttribute(attr)) {
 	                    nodeRDFaAttrs[attr] = node.getAttribute(attr);
@@ -29896,79 +29905,59 @@
 	        return attrs.hasOwnProperty("resource") || attrs.hasOwnProperty("about") ? true : false;
 	    },
 	
-	    getRDFaIgnoreNodes: function getRDFaIgnoreNodes(nodes) {
-	        return nodes.filter(RDFaUtil.isRDFaIgnoreNode);
+	    getRDFaIgnoreNodes: function getRDFaIgnoreNodes(node) {
+	        return _DOMUtil2.default.getDescendants(node).filter(RDFaUtil.isRDFaIgnoreNode);
 	    },
 	
-	    getRDFaIgnoreDescendants: function getRDFaIgnoreDescendants(ignoreRDFaNodes) {
-	        var descendants = [];
-	        ignoreRDFaNodes.forEach(function (ignoreRDFaNode) {
-	            descendants = descendants.concat(_DOMUtil2.default.getDescendants(ignoreRDFaNode));
-	        });
-	        return descendants;
-	    },
-	
-	    getSelectWholeNodes: function getSelectWholeNodes(nodes) {
-	        return nodes.filter(RDFaUtil.isSelectWholeNode);
+	    getSelectWholeNodes: function getSelectWholeNodes(node) {
+	        return _DOMUtil2.default.getDescendants(node).filter(RDFaUtil.isSelectWholeNode);
 	    },
 	
 	    filterIgnoreNodes: function filterIgnoreNodes(nodes) {
-	        var ignoreRDFaNodes = RDFaUtil.getRDFaIgnoreNodes(nodes);
-	        var ignoreDescendants = RDFaUtil.getRDFaIgnoreDescendants(ignoreRDFaNodes);
-	        var ignoreNodes = ignoreRDFaNodes.concat(ignoreDescendants);
 	        return nodes.filter(function (node) {
-	            return ignoreNodes.indexOf(node) === -1;
+	            return RDFaUtil.isRDFaIgnoreNode(node) === false;
 	        });
 	    },
 	
 	    getNotIgnoreDescendants: function getNotIgnoreDescendants(node) {
-	        var descendants = _DOMUtil2.default.getDescendants(node);
-	        return RDFaUtil.filterIgnoreNodes(descendants);
+	        var descendants = [];
+	        node.childNodes.forEach(function (childNode) {
+	            if (!RDFaUtil.isRDFaIgnoreNode(childNode)) {
+	                descendants.push(childNode);
+	                descendants = descendants.concat(RDFaUtil.getNotIgnoreDescendants(childNode));
+	            }
+	        });
+	        return descendants;
 	    },
 	
-	    getRDFaNodes: function getRDFaNodes(nodes) {
+	    selectRDFaNodes: function selectRDFaNodes(nodes) {
 	        return nodes.filter(RDFaUtil.hasRDFaResource);
 	    },
 	
 	    getRDFaTextNodes: function getRDFaTextNodes(node) {
 	        var textNodes = [];
-	        if (RDFaUtil.isRDFaIgnoreNode(node)) {
-	            return textNodes;
-	        }
+	        if (RDFaUtil.isRDFaIgnoreNode(node)) return textNodes;
 	        node.childNodes.forEach(function (childNode) {
-	            if (childNode.nodeName === "#text") {
-	                textNodes.push(childNode);
-	            } else {
-	                var childTextNodes = RDFaUtil.getRDFaTextNodes(childNode);
-	                textNodes = textNodes.concat(childTextNodes);
-	            }
+	            if (childNode.nodeType === window.Node.TEXT_NODE) textNodes.push(childNode);else textNodes = textNodes.concat(RDFaUtil.getRDFaTextNodes(childNode));
 	        });
 	        return textNodes;
 	    },
 	
 	    getRDFaTextContent: function getRDFaTextContent(node) {
 	        var textContent = "";
-	        if (RDFaUtil.isRDFaIgnoreNode(node) || node.nodeName === "#comment") {
-	            return "";
-	        }
+	        if (RDFaUtil.isRDFaIgnoreNode(node) || node.nodeType === window.Node.COMMENT_NODE) return "";
 	        node.childNodes.forEach(function (childNode) {
 	            var childTextContent;
-	            if (childNode.nodeName === "#text") {
+	            if (childNode.nodeType === window.Node.TEXT_NODE) {
+	                // deal with surrounding whitespace of child nodes
+	                // based on browser behaviour
 	                childTextContent = _StringUtil2.default.collapse(childNode.textContent);
-	                if (textContent === "" && _DOMUtil2.default.getDisplayType(node) === "block") {
-	                    childTextContent = childTextContent.trimLeft();
-	                }
-	                if (childNode === node.lastChild && _DOMUtil2.default.getDisplayType(node) === "block") {
-	                    childTextContent = childTextContent.trimRight();
-	                }
-	            } else if (childNode.nodeName === "#comment") {
-	                return false;
-	            } else {
+	                if (textContent === "" && _DOMUtil2.default.getDisplayType(node) === "block") childTextContent = childTextContent.trimLeft();
+	                if (childNode === node.lastChild && _DOMUtil2.default.getDisplayType(node) === "block") childTextContent = childTextContent.trimRight();
+	            } else if (childNode.nodeType === window.Node.ELEMENT_NODE) {
 	                childTextContent = RDFaUtil.getRDFaTextContent(childNode);
 	                if (_DOMUtil2.default.getDisplayType(childNode) === "block") {
-	                    if (textContent.length > 0) {
-	                        textContent = textContent.trimRight() + "\n";
-	                    }
+	                    if (textContent.length > 0) textContent = textContent.trimRight() + "\n";
 	                    childTextContent = childTextContent.trim() + "\n";
 	                }
 	            }
@@ -30026,7 +30015,7 @@
 	    updateStack: function updateStack(stack, node) {
 	        var top = stack[stack.length - 1];
 	        var position = top.compareDocumentPosition(node);
-	        while (!(position & Node.DOCUMENT_POSITION_CONTAINED_BY)) {
+	        while (!(position & window.Node.DOCUMENT_POSITION_CONTAINED_BY)) {
 	            stack.pop();
 	            var top = stack[stack.length - 1];
 	            var position = top.compareDocumentPosition(node);
@@ -30050,7 +30039,7 @@
 	            var resourceStack = [rdfaResourceNode];
 	            // add all RDFa sub-resources
 	            var nodes = RDFaUtil.getNotIgnoreDescendants(rdfaResourceNode);
-	            RDFaUtil.getRDFaNodes(nodes).forEach(function (node) {
+	            RDFaUtil.selectRDFaNodes(nodes).forEach(function (node) {
 	                var resourceAttrs = RDFaUtil.getRDFaAttributes(node);
 	                RDFaUtil.updateStack(resourceStack, node);
 	                var parentAttrs = RDFaUtil.getRDFaAttributes(resourceStack[resourceStack.length - 1]);
@@ -30069,6 +30058,41 @@
 	            });
 	        });
 	        return index;
+	    },
+	
+	    buildResourcesMaps: function buildResourcesMaps() {
+	        var _this = this;
+	
+	        var maps = {};
+	        RDFaUtil.getTopRDFaNodes(document.body).forEach(function (rdfaResourceNode) {
+	            var map = _this.buildResourceMap(rdfaResourceNode);
+	            maps[map.about] = map;
+	        });
+	        return maps;
+	    },
+	
+	    buildResourceMap: function buildResourceMap(rdfaResourceNode) {
+	        var resourceMap = RDFaUtil.getRDFaAttributes(rdfaResourceNode);
+	        RDFaUtil.getRDFaSubresources(rdfaResourceNode).forEach(function (subresourceNode) {
+	            var subresourceMap = RDFaUtil.buildResourceMap(subresourceNode);
+	            var property = subresourceMap.property;
+	            if (!Object.keys(resourceMap).includes(property)) resourceMap[property] = [];
+	            resourceMap[property].push(subresourceMap);
+	        });
+	        return resourceMap;
+	    },
+	
+	    getRDFaSubresources: function getRDFaSubresources(node) {
+	        var subresourceNodes = [];
+	        if (!node.childNodes) return subresourceNodes;
+	        node.childNodes.forEach(function (childNode) {
+	            if (childNode.nodeType !== window.Node.ELEMENT_NODE) return null;
+	            if (RDFaUtil.hasRDFaResource(childNode)) subresourceNodes.push(childNode);else {
+	                var subsubresourceNodes = RDFaUtil.getRDFaSubresources(childNode);
+	                subresourceNodes = subresourceNodes.concat(subsubresourceNodes);
+	            }
+	        });
+	        return subresourceNodes;
 	    },
 	
 	    findResourceRelations: function findResourceRelations(resources, resourceIndex) {
@@ -30105,45 +30129,6 @@
 	            }
 	            return true;
 	        });
-	    },
-	
-	    setRDFaSelectionRange: function setRDFaSelectionRange(el, start, end) {
-	        if (document.createRange && window.getSelection) {
-	            var range = document.createRange();
-	            range.selectNodeContents(el);
-	            var textNodes = RDFaUtil.getRDFaTextNodes(el);
-	            var foundStart = false;
-	            var charCount = 0,
-	                endCharCount;
-	
-	            for (var i = 0, textNode; textNode = textNodes[i++];) {
-	                endCharCount = charCount + textNode.length;
-	                if (!foundStart && start >= charCount && (start < endCharCount || start == endCharCount && i <= textNodes.length)) {
-	                    range.setStart(textNode, start - charCount);
-	                    foundStart = true;
-	                }
-	                if (foundStart && end === -1) {
-	                    var lastTextNode = textNodes[textNodes.length - 1];
-	                    range.setEnd(lastTextNode, lastTextNode.length);
-	                    break;
-	                } else if (foundStart && end !== -1 && end <= endCharCount) {
-	                    range.setEnd(textNode, end - charCount);
-	                    break;
-	                }
-	                charCount = endCharCount;
-	            }
-	
-	            var sel = window.getSelection();
-	            sel.removeAllRanges();
-	            sel.addRange(range);
-	        } else if (document.selection && document.body.createTextRange) {
-	            var textRange = document.body.createTextRange();
-	            textRange.moveToElementText(el);
-	            textRange.collapse(true);
-	            textRange.moveEnd("character", end);
-	            textRange.moveStart("character", start);
-	            textRange.select();
-	        }
 	    }
 	
 	};
@@ -30242,7 +30227,7 @@
 	                    importURLs.push(triple.object);
 	                }
 	            } else {
-	                //console.log("# That's all, folks!")
+	                // all triples parsed, done!
 	                callback(null, importURLs);
 	            }
 	        });
@@ -30251,7 +30236,7 @@
 	    listAnnotatableThings: function listAnnotatableThings() {
 	        var rootLabel = '"AnnotatableThing"';
 	        var rootObject = VocabularyUtil.getLabelClass(rootLabel);
-	        var annotatableThings = VocabularyUtil.getSubClasses(rootObject);
+	        var annotatableThings = VocabularyUtil.getDescendantClasses(rootObject);
 	        return VocabularyUtil.toStrings(annotatableThings);
 	    },
 	
@@ -30266,13 +30251,26 @@
 	    },
 	
 	    getLabelClass: function getLabelClass(typeLabel) {
-	        var triples = VocabularyUtil.store.find(null, VocabularyUtil.expand('rdfs:label'), _n2.default.Util.createLiteral(typeLabel));
+	        if (!_n2.default.Util.isLiteral(typeLabel)) {
+	            typeLabel = _n2.default.Util.createLiteral(typeLabel);
+	        }
+	        var triples = VocabularyUtil.store.find(null, VocabularyUtil.expand('rdfs:label'), typeLabel);
 	        return triples[0] ? triples[0].subject : null;
 	    },
 	
 	    getClassLabel: function getClassLabel(className) {
 	        var triples = VocabularyUtil.store.find(className, VocabularyUtil.expand('rdfs:label'), null);
 	        return triples[0] ? triples[0].object : null;
+	    },
+	
+	    getDescendantClasses: function getDescendantClasses(className) {
+	        var triples = VocabularyUtil.store.find(null, VocabularyUtil.expand('rdfs:subClassOf'), className);
+	        var subClasses = [];
+	        triples.forEach(function (triple) {
+	            subClasses.push(VocabularyUtil.getClassLabel(triple.subject));
+	            subClasses = subClasses.concat(VocabularyUtil.getSubClasses(triple.subject));
+	        });
+	        return subClasses;
 	    },
 	
 	    getSubClasses: function getSubClasses(className) {
@@ -38704,14 +38702,21 @@
 	    // return all text nodes in a list of nodes
 	    getTextNodes: function getTextNodes(nodes) {
 	        return nodes.filter(function (node) {
-	            return node.nodeName === "#text";
+	            return node.nodeType === window.Node.TEXT_NODE;
+	        });
+	    },
+	
+	    // return all ELEMENT_NODE nodes in a list of nodes
+	    getElementNodes: function getElementNodes(nodes) {
+	        return nodes.filter(function (node) {
+	            return node.nodeType === window.Node.ELEMENT_NODE;
 	        });
 	    },
 	
 	    // return all non-text nodes in a list of nodes
 	    getNonTextNodes: function getNonTextNodes(nodes) {
 	        return nodes.filter(function (node) {
-	            return node.nodeName !== "#text";
+	            return node.nodeType !== window.Node.TEXT_NODE;
 	        });
 	    },
 	
@@ -38719,7 +38724,7 @@
 	    getAncestors: function getAncestors(node) {
 	        var parentNode = node.parentNode;
 	        var ancestors = [];
-	        if (parentNode.nodeName !== "#document") {
+	        if (parentNode && parentNode.nodeType !== window.Node.DOCUMENT_NODE) {
 	            ancestors = DOMUtil.getAncestors(parentNode);
 	            ancestors.push(parentNode);
 	        }
@@ -38841,7 +38846,8 @@
 	 * Taken from http://jsfiddle.net/8mdX4/1211/
 	 * See stackoverflow discussion: http://stackoverflow.com/questions/6240139/highlight-text-range-using-javascript
 	 * Originally created by Tim Down
-	 * Contributors: Marijn Koolen
+	 * Contributors:
+	 *   - Marijn Koolen
 	 *
 	 */
 	
@@ -38891,12 +38897,12 @@
 	            } catch (ex) {
 	                SelectionUtil.makeEditableAndHighlight(colour);
 	            }
+	            sel = window.getSelection();
 	        } else if (document.selection && document.selection.createRange) {
 	            // IE <= 8 case
 	            range = document.selection.createRange();
 	            range.execCommand("BackColor", false, colour);
 	        }
-	        var sel = window.getSelection();
 	        sel.removeAllRanges();
 	    },
 	
@@ -38909,18 +38915,56 @@
 	    },
 	
 	    selectAndHighlightRange: function selectAndHighlightRange(node, start, end) {
-	        _RDFaUtil2.default.setRDFaSelectionRange(node, start, end);
+	        SelectionUtil.setRDFaSelectionRange(node, start, end);
 	        SelectionUtil.addHighlight("yellow");
 	    },
 	
 	    selectAndRemoveRange: function selectAndRemoveRange(node, start, end) {
-	        _RDFaUtil2.default.setRDFaSelectionRange(node, start, end);
+	        SelectionUtil.setRDFaSelectionRange(node, start, end);
 	        SelectionUtil.removeHighlight();
 	    },
 	
-	    // find nodes and offsets corresponding to the selection
-	    // start node is always before end node in presentation order
-	    // regardless of whether selection is done forwards or backwards
+	    setRDFaSelectionRange: function setRDFaSelectionRange(el, start, end) {
+	        if (document.createRange && window.getSelection) {
+	            var range = document.createRange();
+	            range.selectNodeContents(el);
+	            var textNodes = _RDFaUtil2.default.getRDFaTextNodes(el);
+	            var foundStart = false;
+	            var charCount = 0,
+	                endCharCount;
+	
+	            for (var i = 0, textNode; textNode = textNodes[i]; i++) {
+	                endCharCount = charCount + textNode.length;
+	                if (!foundStart && start >= charCount && (start < endCharCount || start === endCharCount && i <= textNodes.length)) {
+	                    range.setStart(textNode, start - charCount);
+	                    foundStart = true;
+	                }
+	                if (foundStart && end === -1) {
+	                    var lastTextNode = textNodes[textNodes.length - 1];
+	                    range.setEnd(lastTextNode, lastTextNode.length);
+	                    break;
+	                } else if (foundStart && end !== -1 && end <= endCharCount) {
+	                    range.setEnd(textNode, end - charCount);
+	                    break;
+	                }
+	                charCount = endCharCount;
+	            }
+	            var sel = window.getSelection();
+	            sel.removeAllRanges();
+	            sel.addRange(range);
+	        } else if (document.selection && document.body.createTextRange) {
+	            var textRange = document.body.createTextRange();
+	            textRange.moveToElementText(el);
+	            textRange.collapse(true);
+	            textRange.moveEnd("character", end);
+	            textRange.moveStart("character", start);
+	            textRange.select();
+	        }
+	    },
+	
+	    // Find nodes and offsets corresponding to the selection.
+	    // Start node is always before end node in presentation order
+	    // regardless of whether selection is done forwards or backwards.
 	    getStartEndSelection: function getStartEndSelection() {
 	        var selection = document.getSelection();
 	        if (selection.isCollapsed) {
@@ -38943,7 +38987,7 @@
 	    },
 	
 	    checkSelectionRange: function checkSelectionRange() {
-	        // 1. do nothing selection is not collapsed
+	        // 1. do nothing if selection is collapsed (e.g. does not span a range)
 	        if (document.getSelection().isCollapsed) {
 	            return null;
 	        }
@@ -39033,18 +39077,6 @@
 	
 	var _RDFaUtil2 = _interopRequireDefault(_RDFaUtil);
 	
-	var _AnnotationStore = __webpack_require__(/*! ./../../flux/AnnotationStore */ 241);
-	
-	var _AnnotationStore2 = _interopRequireDefault(_AnnotationStore);
-	
-	var _AnnotationActions = __webpack_require__(/*! ./../../flux/AnnotationActions */ 236);
-	
-	var _AnnotationActions2 = _interopRequireDefault(_AnnotationActions);
-	
-	var _AnnotationAPI = __webpack_require__(/*! ./../../api/AnnotationAPI.js */ 243);
-	
-	var _AnnotationAPI2 = _interopRequireDefault(_AnnotationAPI);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -39061,12 +39093,11 @@
 	
 	        var _this = _possibleConstructorReturn(this, (TargetSelector.__proto__ || Object.getPrototypeOf(TargetSelector)).call(this, props));
 	
-	        _this.addSelected = _this.addSelected.bind(_this);
-	        _this.removeSelected = _this.removeSelected.bind(_this);
-	        _this.resourceIndex = _RDFaUtil2.default.indexRDFaResources();
+	        _this.addToSelected = _this.addToSelected.bind(_this);
+	        _this.removeFromSelected = _this.removeFromSelected.bind(_this);
 	        _this.state = {
 	            showAnnotationBox: false,
-	            showTargets: false,
+	            showSelectorModal: false,
 	            selected: [],
 	            candidateResources: {},
 	            candidateAnnotations: [],
@@ -39078,87 +39109,26 @@
 	    }
 	
 	    _createClass(TargetSelector, [{
-	        key: 'closeTargetSelector',
-	        value: function closeTargetSelector() {
-	            this.setState({ showTargets: false });
-	        }
-	    }, {
-	        key: 'annotateTargets',
-	        value: function annotateTargets() {
-	            var component = this;
-	            this.setState({ showTargets: false });
-	            var targetResources = this.state.selected.map(function (target) {
-	                return target.source;
-	            });
-	            var resourceRelations = _RDFaUtil2.default.findResourceRelations(targetResources, component.resourceIndex);
-	            var newRelations = _RDFaUtil2.default.filterExistingRelationAnnotations(resourceRelations, component.state.annotations);
-	            newRelations.forEach(function (relation) {
-	                var annotation = _AnnotationUtil2.default.generateRelationAnnotation(relation, component.resourceIndex);
-	                _AnnotationActions2.default.save(annotation);
-	            });
-	            this.props.makeAnnotation(this.state.selected);
-	        }
-	    }, {
-	        key: 'loadAnnotations',
-	        value: function loadAnnotations(annotations) {
-	            var component = this;
-	            //let resourceIds = RDFaUtil.getTopRDFaResources(document.body);
-	            component.setState({ annotations: annotations });
-	        }
-	    }, {
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            _AnnotationStore2.default.bind('change-target', this.loadAnnotations.bind(this));
-	            _AnnotationStore2.default.bind('load-annotations', this.loadAnnotations.bind(this));
-	            _AnnotationStore2.default.bind('del-annotation', this.loadAnnotations.bind(this));
-	        }
-	    }, {
-	        key: 'addCandidateAnnotation',
-	        value: function addCandidateAnnotation(list, annotation) {
-	            var aid = annotation.id;
-	            var candidate = {
-	                source: annotation.id,
-	                type: "annotation",
-	                params: {
-	                    text: annotation.body[0].value
-	                },
-	                label: annotation.body[0].purpose,
-	                target: {}
-	            };
-	            candidate.target.source = aid;
-	            if (list.indexOf(candidate) === -1) {
-	                list.push(candidate);
-	            }
-	        }
-	    }, {
-	        key: 'getCandidateTargets',
-	        value: function getCandidateTargets() {
-	            this.resourceIndex = _RDFaUtil2.default.indexRDFaResources();
-	            var candidateResources = _TargetUtil2.default.getCandidateRDFaTargets();
-	            this.setState({ candidateResources: candidateResources });
-	            // find annotations overlapping with candidate resources
-	            var types = _AnnotationUtil2.default.sortAnnotationTypes(this.state.annotations, this.resourceIndex);
-	            var candidateAnnotations = _TargetUtil2.default.selectCandidateAnnotations(types.display, candidateResources.highlighted);
-	            this.setState({ candidateAnnotations: candidateAnnotations });
-	        }
-	    }, {
-	        key: 'showCandidates',
-	        value: function showCandidates() {
-	            var component = this;
+	        key: 'closeSelectorModal',
+	        value: function closeSelectorModal() {
+	            this.setState({ showSelectorModal: false });
 	        }
 	    }, {
 	        key: 'selectCandidates',
 	        value: function selectCandidates() {
-	            this.getCandidateTargets();
-	
+	            var candidateResources = _TargetUtil2.default.getCandidateRDFaTargets();
+	            // find annotations overlapping with candidate resources
+	            var candidateAnnotations = _TargetUtil2.default.selectCandidateAnnotations(this.props.annotations, candidateResources.highlighted);
 	            this.setState({
-	                showTargets: true,
+	                candidateAnnotations: candidateAnnotations,
+	                candidateResources: candidateResources,
+	                showSelectorModal: true,
 	                selected: []
 	            });
 	        }
 	    }, {
-	        key: 'addSelected',
-	        value: function addSelected(candidate) {
+	        key: 'addToSelected',
+	        value: function addToSelected(candidate) {
 	            var selected = this.state.selected;
 	            if (selected.indexOf(candidate) === -1) {
 	                selected.push(candidate);
@@ -39166,14 +39136,20 @@
 	            }
 	        }
 	    }, {
-	        key: 'removeSelected',
-	        value: function removeSelected(candidate) {
+	        key: 'removeFromSelected',
+	        value: function removeFromSelected(candidate) {
 	            var selected = this.state.selected;
 	            var index = selected.indexOf(candidate);
 	            if (index !== -1) {
 	                selected.splice(index, 1);
 	                this.setState({ selected: selected });
 	            }
+	        }
+	    }, {
+	        key: 'annotateTargets',
+	        value: function annotateTargets() {
+	            this.closeSelectorModal();
+	            this.props.prepareAnnotation(this.state.selected);
 	        }
 	    }, {
 	        key: 'render',
@@ -39211,7 +39187,7 @@
 	                    ' to select it as annotation target.',
 	                    _react2.default.createElement(_CandidateList2.default, {
 	                        candidates: candidates,
-	                        addSelected: this.addSelected.bind(this),
+	                        addToSelected: this.addToSelected.bind(this),
 	                        candidateType: candidateType
 	                    })
 	                );
@@ -39226,13 +39202,8 @@
 	                    'Make annotation'
 	                ),
 	                _react2.default.createElement(
-	                    'button',
-	                    { onClick: this.showCandidates.bind(this) },
-	                    'Show resources'
-	                ),
-	                _react2.default.createElement(
 	                    _reactBootstrap.Modal,
-	                    { show: this.state.showTargets, onHide: this.closeTargetSelector.bind(this) },
+	                    { show: this.state.showSelectorModal, onHide: this.closeSelectorModal.bind(this) },
 	                    _react2.default.createElement(
 	                        _reactBootstrap.Modal.Header,
 	                        { closeButton: true },
@@ -39243,7 +39214,7 @@
 	                        ),
 	                        _react2.default.createElement(_SelectedList2.default, {
 	                            candidates: this.state.selected,
-	                            removeSelected: this.removeSelected.bind(this)
+	                            removeFromSelected: this.removeFromSelected.bind(this)
 	                        })
 	                    ),
 	                    _react2.default.createElement(
@@ -39275,7 +39246,7 @@
 	                        ),
 	                        _react2.default.createElement(
 	                            'button',
-	                            { onClick: this.closeTargetSelector.bind(this) },
+	                            { onClick: this.closeSelectorModal.bind(this) },
 	                            'Close'
 	                        )
 	                    )
@@ -58864,7 +58835,7 @@
 	                selected.push(candidate);
 	                this.setState({ selected: selected });
 	            }
-	            this.props.addSelected(candidate);
+	            this.props.addToSelected(candidate);
 	        }
 	    }, {
 	        key: 'render',
@@ -59073,7 +59044,7 @@
 	    _createClass(SelectedList, [{
 	        key: 'removeTarget',
 	        value: function removeTarget(candidate) {
-	            this.props.removeSelected(candidate);
+	            this.props.removeFromSelected(candidate);
 	        }
 	    }, {
 	        key: 'render',
@@ -59202,33 +59173,40 @@
 	        if (selection.selectionText.length === 0) {
 	            return false;
 	        }
-	        var startNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.startNode);
-	        var startOffsetInContainer = startNodeOffset + selection.startOffset;
-	        var endOffsetInContainer = startOffsetInContainer + selection.selectionText.length;
-	        var textContent = _RDFaUtil2.default.getRDFaTextContent(container.node);
-	        var maxPrefix = startOffsetInContainer >= 20 ? 20 : startOffsetInContainer;
-	        var prefix = textContent.substr(startOffsetInContainer - maxPrefix, maxPrefix);
-	        var suffix = textContent.substr(endOffsetInContainer, 20);
+	        var params = this.makeTextPositionParams(container, selection);
+	        this.makeTextQuoteParams(container, params);
 	        return {
 	            node: container.node,
 	            mimeType: selection.mimeType,
-	            params: {
-	                start: startOffsetInContainer,
-	                end: startOffsetInContainer + selection.selectionText.length,
-	                text: selection.selectionText,
-	                prefix: prefix,
-	                suffix: suffix
-	            },
+	            params: params,
 	            label: container.label,
 	            source: container.source,
 	            type: "resource"
 	        };
 	    },
 	
+	    makeTextPositionParams: function makeTextPositionParams(container, selection) {
+	        var startNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.startNode);
+	        var endNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.endNode);
+	        return {
+	            start: startNodeOffset + selection.startOffset,
+	            end: endNodeOffset + selection.endOffset
+	        };
+	    },
+	
+	    makeTextQuoteParams: function makeTextQuoteParams(container, params) {
+	        var textContent = _RDFaUtil2.default.getRDFaTextContent(container.node);
+	        var maxPrefix = params.start >= 20 ? 20 : params.start;
+	        var selectionLength = params.end - params.start;
+	        params.text = textContent.substr(params.start, selectionLength);
+	        params.prefix = textContent.substr(params.start - maxPrefix, maxPrefix);
+	        params.suffix = textContent.substr(params.end, 20);
+	    },
+	
 	    // given a list of nodes, select all RDFa enriched nodes
 	    // and return as candidate annotation targets
 	    getRDFaCandidates: function getRDFaCandidates(nodes) {
-	        return _RDFaUtil2.default.getRDFaNodes(nodes).map(function (node) {
+	        return _RDFaUtil2.default.selectRDFaNodes(nodes).map(function (node) {
 	            return {
 	                node: node,
 	                type: "resource",
@@ -59367,9 +59345,9 @@
 
 /***/ },
 /* 547 */
-/*!************************************************!*\
-  !*** ./src/components/annotation/LoginBox.jsx ***!
-  \************************************************/
+/*!*************************************!*\
+  !*** ./src/components/LoginBox.jsx ***!
+  \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -59384,15 +59362,15 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _FlexModal = __webpack_require__(/*! ./../FlexModal */ 240);
+	var _FlexModal = __webpack_require__(/*! ./FlexModal */ 240);
 	
 	var _FlexModal2 = _interopRequireDefault(_FlexModal);
 	
-	var _AnnotationStore = __webpack_require__(/*! ./../../flux/AnnotationStore */ 241);
+	var _AnnotationStore = __webpack_require__(/*! ./../flux/AnnotationStore */ 241);
 	
 	var _AnnotationStore2 = _interopRequireDefault(_AnnotationStore);
 	
-	var _AnnotationActions = __webpack_require__(/*! ./../../flux/AnnotationActions */ 236);
+	var _AnnotationActions = __webpack_require__(/*! ./../flux/AnnotationActions */ 236);
 	
 	var _AnnotationActions2 = _interopRequireDefault(_AnnotationActions);
 	
@@ -59414,7 +59392,12 @@
 	
 	        _this.state = {
 	            username: "",
-	            warning: ""
+	            warning: "",
+	            showLoginModal: false,
+	            user: null,
+	            loggedIn: false,
+	            loginButtonLabel: "login",
+	            loginMessage: "You are not logged in"
 	        };
 	        return _this;
 	    }
@@ -59422,16 +59405,51 @@
 	    _createClass(LoginBox, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            _AnnotationStore2.default.bind('login-user', this.onLogin.bind(this));
+	            _AnnotationStore2.default.bind('login-user', this.doLogin.bind(this));
+	            if (localStorage.userDetails) {
+	                _AnnotationActions2.default.login(JSON.parse(localStorage.userDetails));
+	            }
 	        }
 	    }, {
-	        key: 'onLogin',
-	        value: function onLogin(userDetails) {
+	        key: 'handleLogin',
+	        value: function handleLogin() {
+	            if (!this.state.loggedIn) {
+	                this.setState({ showLoginModal: true });
+	            } else {
+	                console.log("logging out");
+	                this.setState({
+	                    user: null,
+	                    loggedIn: false,
+	                    loginButtonLabel: "login",
+	                    loginMessage: "You are not logged in"
+	                });
+	                _AnnotationActions2.default.logout();
+	                localStorage.removeItem("userDetails");
+	            }
+	        }
+	    }, {
+	        key: 'showLoginForm',
+	        value: function showLoginForm() {
+	            this.setState({ showLoginModal: true });
+	        }
+	    }, {
+	        key: 'hideLoginForm',
+	        value: function hideLoginForm() {
+	            $('#login__modal').modal('hide'); //TODO ugly, but without this the static backdrop won't disappear!
+	            this.setState({ showLoginModal: false });
+	        }
+	    }, {
+	        key: 'doLogin',
+	        value: function doLogin(userDetails) {
+	            this.setState({
+	                user: userDetails,
+	                loggedIn: true,
+	                loginButtonLabel: "logout",
+	                loginMessage: "You are logged in as " + userDetails.username
+	            });
+	            localStorage.setItem("userDetails", JSON.stringify(userDetails));
 	            if (userDetails.username) {
-	                $('#login__modal').modal('hide'); //TODO ugly, but without this the static backdrop won't disappear!
-	                if (this.props.login) {
-	                    this.props.login(userDetails);
-	                }
+	                this.hideLoginForm();
 	            } else if (userDetails.error) {
 	                this.setState({
 	                    warning: userDetails.error
@@ -59455,14 +59473,27 @@
 	    }, {
 	        key: 'render',
 	        value: function render() {
+	            this.showModal = this.state.showLoginModal;
 	            return _react2.default.createElement(
 	                'div',
 	                null,
-	                this.props.showModal ? _react2.default.createElement(
+	                _react2.default.createElement(
+	                    'button',
+	                    { className: 'btn btn-default',
+	                        onClick: this.handleLogin.bind(this) },
+	                    this.state.loginButtonLabel
+	                ),
+	                '\xA0',
+	                _react2.default.createElement(
+	                    'span',
+	                    null,
+	                    this.state.loginMessage
+	                ),
+	                this.showModal ? _react2.default.createElement(
 	                    _FlexModal2.default,
 	                    {
 	                        elementId: 'login__modal',
-	                        handleHideModal: this.props.hideLoginForm.bind(this),
+	                        handleHideModal: this.hideLoginForm.bind(this),
 	                        title: 'User Login' },
 	                    _react2.default.createElement(
 	                        'form',
