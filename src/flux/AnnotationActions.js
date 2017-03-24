@@ -82,7 +82,20 @@ const AnnotationActions = {
             eventName: 'logout-user',
             userDetails: null
         });
-    }
+    },
+
+    getServerAddress : function() {
+        AppDispatcher.dispatch({
+            eventName: 'get-server-address'
+        });
+    },
+
+    setServerAddress : function(apiURL) {
+        AppDispatcher.dispatch({
+            eventName: 'set-server-address',
+            apiURL: apiURL
+        });
+    },
 
 }
 

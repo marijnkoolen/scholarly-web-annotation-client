@@ -1,12 +1,19 @@
 import MicroEvent from 'microevent';
 import AnnotationAPI from '../api/AnnotationAPI';
 import AppDispatcher from './AppDispatcher';
-//import SearchAPI from '../api/SearchAPI';
 
 //See: https://github.com/jeromeetienne/microevent.js
 
 
 class AnnotationStore {
+
+    getServerAddress() {
+        return AnnotationAPI.getServerAddress();
+    }
+
+    setServerAddress(apiURL) {
+        return AnnotationAPI.setServerAddress(apiURL);
+    }
 
     loadAnnotations(resourceIds) {
         AnnotationAPI.getAnnotationsByTargets(resourceIds, (error, annotations) => {
@@ -119,6 +126,12 @@ AppDispatcher.register( function( action ) {
             break;
         case 'logout-user':
             AppAnnotationStore.logout(action.userDetails);
+            break;
+        case 'get-server-address':
+            AppAnnotationStore.getServerAddress();
+            break;
+        case 'set-server-address':
+            AppAnnotationStore.setServerAddress(action.apiURL);
             break;
 
     }
