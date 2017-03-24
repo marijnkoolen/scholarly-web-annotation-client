@@ -9,59 +9,81 @@ import SelectionUtil from './util/SelectionUtil.js';
 import DOMUtil from './util/DOMUtil.js';
 import defaultConfig from './rdfa-annotation-config.js';
 import AnnotationActions from './flux/AnnotationActions.js';
+import AppAnnotationStore from './flux/AnnotationStore.js';
 
-ReactDOM.render(
-    <AnnotationViewer
-        config={defaultConfig}
-    />,
-    document.getElementById('annotation-viewer')
-);
+export class RDFaAnnotator {
 
-document.onreadystatechange = function () {
-    if (document.readyState === "complete") {
-        console.log("document ready!");
+    constructor(configuration) {
+        if (!configuration)
+            configuration = defaultConfig; // use default if no configuration is given
+        this.clientConfiguration = configuration;
+        AnnotationActions.setServerAddress(configuration.services.AnnotationServer.api);
+    }
+
+    addAnnotationViewer(clientConfiguration) {
         var observerTargets = document.getElementsByClassName("annotation-target-observer");
-        startObserver(observerTargets);
-        setAnnotationAttributes(observerTargets);
+        this.startObserver(observerTargets);
+        this.setAnnotationAttributes(observerTargets);
+        ReactDOM.render(
+            <AnnotationViewer
+                config={this.clientConfiguration}
+            />,
+            document.getElementById('annotation-viewer')
+        );
     }
-}
 
-var setAnnotationAttributes = function(observerTargets) {
-    for (var index = 0; index < observerTargets.length; index++) {
-        setSelectWholeElement(observerTargets[index]);
-        setUnselectable(observerTargets[index]);
+    getDefaultConfiguration() {
+        return defaultConfig;
     }
-}
 
-var setSelectWholeElement = function(node) {
-    let selectWholeNodes = RDFaUtil.getSelectWholeNodes(node);
-    selectWholeNodes.forEach(function(selectWholeNode) {
-        selectWholeNode.addEventListener('mouseup', SelectionUtil.checkSelectionRange, false);
-    });
-}
+    overrideConfiguration(configuration) {
+        AppAnnotationStore.bind("configure-client", handleConfiguration.bind(this));
+        AnnotationActions.configureClient("set", "api", "http://localhost:3000/api");
+        this.clientConfiguration = configuration;
+    }
 
-var setUnselectable = function(node) {
-    let ignoreNodes = RDFaUtil.getRDFaIgnoreNodes(node);
-    ignoreNodes.forEach(function(ignoreNode) {
-        ignoreNode.style.webkitUserSelect = "none";
-        ignoreNode.style.cursor = "not-allowed";
-    });
-}
+    handleConfiguration(config) {
+        console.log(config.message + ": " + config.data);
+    }
 
-var observer = new MutationObserver((mutations) => {
-    var observerTargets = document.getElementsByClassName("annotation-target-observer");
-    // if something in the observer nodes changes ...
-    // set unselectable and whole element attributes
-    setAnnotationAttributes(observerTargets);
-    // trigger reload of annotations based on updated DOM
-    AnnotationActions.reload();
-});
+    setAnnotationAttributes(observerTargets) {
+        for (var index = 0; index < observerTargets.length; index++) {
+            this.setSelectWholeElement(observerTargets[index]);
+            this.setUnselectable(observerTargets[index]);
+        }
+    }
 
-var startObserver = function(observerTargets) {
-    var observerConfig = { childList: true, attributes: false, subtree: true };
+    setSelectWholeElement(node) {
+        let selectWholeNodes = RDFaUtil.getSelectWholeNodes(node);
+        selectWholeNodes.forEach(function(selectWholeNode) {
+            selectWholeNode.addEventListener('mouseup', SelectionUtil.checkSelectionRange, false);
+        });
+    }
 
-    for (var index = 0; index < observerTargets.length; index++) {
-        observer.observe(observerTargets[index], observerConfig);
+    setUnselectable(node) {
+        let ignoreNodes = RDFaUtil.getRDFaIgnoreNodes(node);
+        ignoreNodes.forEach(function(ignoreNode) {
+            ignoreNode.style.webkitUserSelect = "none";
+            ignoreNode.style.cursor = "not-allowed";
+        });
+    }
+
+    startObserver(observerTargets) {
+        var observer = new MutationObserver((mutations) => {
+            var observerTargets = document.getElementsByClassName("annotation-target-observer");
+            // if something in the observer nodes changes ...
+            // set unselectable and whole element attributes
+            this.setAnnotationAttributes(observerTargets);
+            // trigger reload of annotations based on updated DOM
+            AnnotationActions.reload();
+        });
+
+        var observerConfig = { childList: true, attributes: false, subtree: true };
+
+        for (var index = 0; index < observerTargets.length; index++) {
+            observer.observe(observerTargets[index], observerConfig);
+        }
+
     }
 
 }
