@@ -1,21 +1,34 @@
 
 "use strict"
 
-import config from '../rdfa-annotation-config.js';
-const annotationServer = config.services.AnnotationServer.api;
-
-
 const AnnotationAPI = {
 
+    annotationServer : null,
+
+    serverNotSet : function() {
+        return Error("No annotation server configured.");
+    },
+
+    setServerAddress : function(apiURL) {
+        this.annotationServer = apiURL;
+        return this.annotationServer;
+    },
+
+    getServerAddress : function() {
+        return this.annotationServer;
+    },
+
     saveAnnotation : function(annotation, callback) {
+        if (!this.annotationServer)
+            callback(serverNotSet(), null);
         // default is POSTing a new annotation
-        var url = annotationServer + '/annotation';
+        var url = this.annotationServer + '/annotation';
         var method = 'POST';
         var status = null;
 
         // if annotation already has an id, it's an update, so PUT
         if(annotation.id) {
-            url = annotationServer + '/annotations/annotation/' + annotation.id;
+            url = this.annotationServer + '/annotations/annotation/' + annotation.id;
             method = 'PUT';
         }
 
@@ -43,7 +56,9 @@ const AnnotationAPI = {
     },
 
     login : function(userDetails, callback) {
-        var url = annotationServer + "/login";
+        if (!this.annotationServer)
+            callback(serverNotSet(), null);
+        var url = this.annotationServer + "/login";
         fetch(url, {
             method: "POST",
             headers: {
@@ -60,8 +75,10 @@ const AnnotationAPI = {
     },
 
     getAnnotationById : function(annotationId, callback) {
+        if (!this.annotationServer)
+            callback(serverNotSet(), null);
         var status = null;
-        let url = annotationServer + '/annotations/annotation/' + annotationId;
+        let url = this.annotationServer + '/annotations/annotation/' + annotationId;
         fetch(url, {
             method: "GET",
             cache: 'no-cache',
@@ -84,7 +101,9 @@ const AnnotationAPI = {
     },
 
     getAnnotations : function(callback) {
-        let url = annotationServer + '/annotations';
+        if (!this.annotationServer)
+            callback(serverNotSet(), null);
+        let url = this.annotationServer + '/annotations';
         fetch(url, {
             method: "GET",
             cache: 'no-cache',
@@ -100,11 +119,13 @@ const AnnotationAPI = {
     },
 
     getAnnotationsByTarget : function(targetId, callback) {
+        if (!this.annotationServer)
+            callback(serverNotSet(), null);
         if (typeof(targetId) !== "string") {
             let error = new TypeError("resource ID should be string");
             return callback(error, null);
         }
-        let url = annotationServer + '/annotations/target/' + targetId;
+        let url = this.annotationServer + '/annotations/target/' + targetId;
         fetch(url, {
             method: "GET",
             cache: 'no-cache',
@@ -120,6 +141,8 @@ const AnnotationAPI = {
     },
 
     getAnnotationsByTargets : function(targetIds, callback) {
+        if (!this.annotationServer)
+            callback(serverNotSet(), null);
         var annotations = [];
         var ids = [];
         targetIds.forEach(function(targetId, targetIndex) {
@@ -144,11 +167,14 @@ const AnnotationAPI = {
     },
 
     deleteAnnotation : function (annotation, callback) {
+        if (!this.annotationServer)
+            callback(serverNotSet(), null);
         if(!annotation.id) {
             let error = Error("annotation MUST have an id property");
             callback(error, null);
         }
-        let url = annotationServer + '/annotations/annotation/' + annotation.id;
+        console.log('deleting via API ' + serverAPI);
+        let url = this.annotationServer + '/annotations/annotation/' + annotation.id;
         fetch(url, {
             method: "DELETE",
             cache: 'no-cache',
@@ -164,7 +190,9 @@ const AnnotationAPI = {
     },
 
     deleteAnnotationById : function (annotationId, callback) {
-        let url = annotationServer + '/annotations/annotation/' + annotationId;
+        if (!this.annotationServer)
+            callback(serverNotSet(), null);
+        let url = this.annotationServer + '/annotations/annotation/' + annotationId;
         fetch(url, {
             method: "DELETE",
             cache: 'no-cache',
