@@ -19,12 +19,12 @@ class AnnotationStore {
         AnnotationAPI.getAnnotationsByTargets(resourceIds, (error, annotations) => {
             if (error)
                 console.error(resourceIds, error.toString());
-            this.trigger('load-annotations', annotations);
+            this.trigger('loaded-annotations', annotations);
         });
     }
 
     changeTarget() {
-        this.trigger('change-target');
+        this.trigger('changed-target');
     }
 
     //TODO change the name of the event 'change' --> save-annotation
@@ -33,7 +33,7 @@ class AnnotationStore {
             //notify all components that just listen to a single target (e.g. FlexPlayer, FlexImageViewer)
             this.trigger(annotation.target.source, 'update', data, annotation);
             //then notify all components that are interested in all annotations
-            this.trigger('save-annotation', data, annotation);
+            this.trigger('saved-annotation', data, annotation);
         });
     }
 
@@ -42,7 +42,7 @@ class AnnotationStore {
             //notify all components that just listen to a single target (e.g. FlexPlayer, FlexImageViewer)
             this.trigger(annotation.target.source, 'delete', data, annotation);
             //then notify all components that are interested in all annotations
-            this.trigger('del-annotation', data, annotation);
+            this.trigger('deleted-annotation', data, annotation);
         });
     }
 
@@ -78,6 +78,19 @@ class AnnotationStore {
 
     logout(userDetails) {
         this.trigger('logout-user', userDetails);
+    }
+
+    registerResources(maps) {
+        console.log(maps);
+        Object.keys(maps).forEach((resourceId, index) => {
+            AnnotationAPI.registerResource(resourceId, maps[resourceId], (error, data) => {
+                if (error)
+                    return null;
+
+                if (index === Object.keys(maps).length -1)
+                    this.trigger('registered-resources', Object.keys(maps));
+            });
+        });
     }
 
 }
@@ -132,6 +145,10 @@ AppDispatcher.register( function( action ) {
             break;
         case 'set-server-address':
             AppAnnotationStore.setServerAddress(action.apiURL);
+            break;
+        case 'register-resources':
+            console.log("registering resources");
+            AppAnnotationStore.registerResources(action.maps);
             break;
 
     }

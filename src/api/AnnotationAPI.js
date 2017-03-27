@@ -206,6 +206,32 @@ const AnnotationAPI = {
             return callback(err, null);
         });
     },
+
+    registerResource : function(resourceId, resourceMap, callback) {
+        console.log(resourceId);
+        console.log(resourceMap);
+        if (!this.annotationServer)
+            callback(serverNotSet(), null);
+        let url = this.annotationServer + '/register/resource/' + resourceId;
+        fetch(url, {
+            method: "POST",
+            cache: "no-cache",
+            mode: "cors",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(resourceMap)
+        }).then(function(response) {
+            return response.json();
+        }).then(function(data) {
+            console.log("calling back with response data:");
+            console.log(data);
+            return callback(null, data);
+        }).catch(function(error) {
+            console.error(url, err.toString());
+            return callback(error, null);
+        });
+    }
 }
 
 export default AnnotationAPI;

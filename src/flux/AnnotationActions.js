@@ -97,6 +97,14 @@ const AnnotationActions = {
         });
     },
 
+    registerResources : function(maps) {
+        console.log(maps);
+        AppDispatcher.dispatch({
+            eventName: 'register-resources',
+            maps: maps
+        });
+    },
+
 }
 
 export default AnnotationActions;
