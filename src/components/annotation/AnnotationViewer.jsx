@@ -31,24 +31,26 @@ export default class AnnotationViewer extends React.Component {
     }
     componentDidMount() {
         AppAnnotationStore.bind('edit-annotation', this.editAnnotation.bind(this));
-        AppAnnotationStore.bind('save-annotation', this.reloadAnnotations.bind(this));
-        AppAnnotationStore.bind('change-target', this.reloadAnnotations.bind(this));
-        AppAnnotationStore.bind('del-annotation', this.reloadAnnotations.bind(this));
-        AppAnnotationStore.bind('load-annotations', this.loadAnnotations.bind(this));
+        AppAnnotationStore.bind('saved-annotation', this.loadAnnotations.bind(this));
+        AppAnnotationStore.bind('changed-target', this.loadAnnotations.bind(this));
+        AppAnnotationStore.bind('deleted-annotation', this.loadAnnotations.bind(this));
+        AppAnnotationStore.bind('loaded-annotations', this.indexAnnotations.bind(this));
 
         AppAnnotationStore.bind('load-resources', this.loadResources.bind(this));
 
         AppAnnotationStore.bind('login-user', this.setUser.bind(this));
         AppAnnotationStore.bind('logout-user', this.setUser.bind(this));
+        AppAnnotationStore.bind('registered-resources', this.loadAnnotations.bind(this));
 
         this.loadResources();
     }
     loadResources() {
-        if (this.resourcesChanged()) {// if other resources on display...
+        if (this.resourcesChanged()) {// if resources on display change, then ...
             this.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
             this.maps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
         }
-        AnnotationActions.load(this.topResources);
+        console.log(this.maps);
+        AnnotationActions.registerResources(this.maps);
     }
     resourcesChanged() {
         let topResources = RDFaUtil.getTopRDFaResources(document.body);
@@ -63,7 +65,7 @@ export default class AnnotationViewer extends React.Component {
             return true;
         return false;
     }
-    loadAnnotations(annotations) {
+    indexAnnotations(annotations) {
         let component = this;
         component.annotationIndex = {}; // always start with an empty index
         annotations.forEach(function(annotation) {
@@ -71,7 +73,7 @@ export default class AnnotationViewer extends React.Component {
         });
         component.setState({annotations: annotations}); // add tp state AFTER indexing
     }
-    reloadAnnotations() {
+    loadAnnotations() {
         AnnotationActions.load(this.topResources);
     }
     lookupIdentifier(sourceId) {
