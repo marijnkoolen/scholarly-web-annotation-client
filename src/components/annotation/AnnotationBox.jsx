@@ -31,17 +31,8 @@ class AnnotationBox extends React.Component {
         this.onHide = this.onHide.bind(this);
     }
 
-    componentDidMount() {
-        //AnnotationStore.bind('reload-annotations', this.onSave.bind(this));
-    }
-
     onHide() {
         $('#annotation__modal').modal('hide');//TODO ugly, but without this the static backdrop won't disappear!
-        /*
-        if(this.props.onSave) {
-            this.props.onSave(annotation);
-        }
-        */
     }
 
     render() {
