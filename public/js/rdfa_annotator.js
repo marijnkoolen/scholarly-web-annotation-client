@@ -70,19 +70,19 @@ var RDFaAnnotator =
 	
 	var _AnnotationViewer2 = _interopRequireDefault(_AnnotationViewer);
 	
-	var _RDFaUtil = __webpack_require__(/*! ./util/RDFaUtil.js */ 248);
+	var _RDFaUtil = __webpack_require__(/*! ./util/RDFaUtil.js */ 247);
 	
 	var _RDFaUtil2 = _interopRequireDefault(_RDFaUtil);
 	
-	var _SelectionUtil = __webpack_require__(/*! ./util/SelectionUtil.js */ 290);
+	var _SelectionUtil = __webpack_require__(/*! ./util/SelectionUtil.js */ 289);
 	
 	var _SelectionUtil2 = _interopRequireDefault(_SelectionUtil);
 	
-	var _DOMUtil = __webpack_require__(/*! ./util/DOMUtil.js */ 288);
+	var _DOMUtil = __webpack_require__(/*! ./util/DOMUtil.js */ 287);
 	
 	var _DOMUtil2 = _interopRequireDefault(_DOMUtil);
 	
-	var _rdfaAnnotationConfig = __webpack_require__(/*! ./rdfa-annotation-config.js */ 244);
+	var _rdfaAnnotationConfig = __webpack_require__(/*! ./rdfa-annotation-config.js */ 547);
 	
 	var _rdfaAnnotationConfig2 = _interopRequireDefault(_rdfaAnnotationConfig);
 	
@@ -109,7 +109,7 @@ var RDFaAnnotator =
 	
 	    _createClass(RDFaAnnotator, [{
 	        key: 'addAnnotationViewer',
-	        value: function addAnnotationViewer(clientConfiguration) {
+	        value: function addAnnotationViewer() {
 	            var observerTargets = document.getElementsByClassName("annotation-target-observer");
 	            this.startObserver(observerTargets);
 	            this.setAnnotationAttributes(observerTargets);
@@ -121,18 +121,6 @@ var RDFaAnnotator =
 	        key: 'getDefaultConfiguration',
 	        value: function getDefaultConfiguration() {
 	            return _rdfaAnnotationConfig2.default;
-	        }
-	    }, {
-	        key: 'overrideConfiguration',
-	        value: function overrideConfiguration(configuration) {
-	            _AnnotationStore2.default.bind("configure-client", handleConfiguration.bind(this));
-	            _AnnotationActions2.default.configureClient("set", "api", "http://localhost:3000/api");
-	            this.clientConfiguration = configuration;
-	        }
-	    }, {
-	        key: 'handleConfiguration',
-	        value: function handleConfiguration(config) {
-	            console.log(config.message + ": " + config.data);
 	        }
 	    }, {
 	        key: 'setAnnotationAttributes',
@@ -22176,11 +22164,11 @@ var RDFaAnnotator =
 	
 	var _AnnotationBox2 = _interopRequireDefault(_AnnotationBox);
 	
-	var _AnnotationList = __webpack_require__(/*! ./AnnotationList.jsx */ 245);
+	var _AnnotationList = __webpack_require__(/*! ./AnnotationList.jsx */ 244);
 	
 	var _AnnotationList2 = _interopRequireDefault(_AnnotationList);
 	
-	var _TargetSelector = __webpack_require__(/*! ./TargetSelector.jsx */ 291);
+	var _TargetSelector = __webpack_require__(/*! ./TargetSelector.jsx */ 290);
 	
 	var _TargetSelector2 = _interopRequireDefault(_TargetSelector);
 	
@@ -22188,7 +22176,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _AnnotationUtil = __webpack_require__(/*! ./../../util/AnnotationUtil.js */ 247);
+	var _AnnotationUtil = __webpack_require__(/*! ./../../util/AnnotationUtil.js */ 246);
 	
 	var _AnnotationUtil2 = _interopRequireDefault(_AnnotationUtil);
 	
@@ -22200,11 +22188,11 @@ var RDFaAnnotator =
 	
 	var _AnnotationActions2 = _interopRequireDefault(_AnnotationActions);
 	
-	var _LoginBox = __webpack_require__(/*! ../LoginBox */ 547);
+	var _LoginBox = __webpack_require__(/*! ../LoginBox */ 546);
 	
 	var _LoginBox2 = _interopRequireDefault(_LoginBox);
 	
-	var _RDFaUtil = __webpack_require__(/*! ../../util/RDFaUtil.js */ 248);
+	var _RDFaUtil = __webpack_require__(/*! ../../util/RDFaUtil.js */ 247);
 	
 	var _RDFaUtil2 = _interopRequireDefault(_RDFaUtil);
 	
@@ -22340,7 +22328,8 @@ var RDFaAnnotator =
 	                    null,
 	                    this.state.user ? _react2.default.createElement(_TargetSelector2.default, {
 	                        prepareAnnotation: this.prepareAnnotation.bind(this),
-	                        annotations: this.state.annotations
+	                        annotations: this.state.annotations,
+	                        defaultTargets: this.props.config.defaults.target
 	                    }) : null,
 	                    _react2.default.createElement(_AnnotationList2.default, {
 	                        currentUser: this.state.user,
@@ -22437,19 +22426,9 @@ var RDFaAnnotator =
 	    }
 	
 	    _createClass(AnnotationBox, [{
-	        key: 'componentDidMount',
-	        value: function componentDidMount() {
-	            //AnnotationStore.bind('reload-annotations', this.onSave.bind(this));
-	        }
-	    }, {
 	        key: 'onHide',
 	        value: function onHide() {
 	            $('#annotation__modal').modal('hide'); //TODO ugly, but without this the static backdrop won't disappear!
-	            /*
-	            if(this.props.onSave) {
-	                this.props.onSave(annotation);
-	            }
-	            */
 	        }
 	    }, {
 	        key: 'render',
@@ -28984,101 +28963,6 @@ var RDFaAnnotator =
 
 /***/ },
 /* 244 */
-/*!***************************************!*\
-  !*** ./src/rdfa-annotation-config.js ***!
-  \***************************************/
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	Object.defineProperty(exports, "__esModule", {
-	    value: true
-	});
-	var config = {
-	    "id": "text-annotation",
-	    "name": "Basic Text Annotation",
-	    "type": "annotation",
-	    "description": "Select and annotate text",
-	    "services": {
-	        "AnnotationServer": {
-	            "api": "http://localhost:3000/api"
-	        },
-	        "GTAA": {
-	            "api": "http://openskos.beeldengeluid.nl/api/autocomplete/",
-	            "params": {
-	                "lang": "nl"
-	            }
-	        },
-	        "DBpedia": {
-	            "api": "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString="
-	        }
-	    },
-	    "annotationSupport": {
-	        "currentQuery": {
-	            "modes": ["bookmark"]
-	        },
-	        "singleItem": {
-	            "modes": ["bookmark"]
-	        },
-	        "mediaObject": {
-	            "modes": ["classify", "comment", "link"]
-	        },
-	        "mediaSegment": {
-	            "modes": ["classify", "comment", "link"]
-	        },
-	        "annotation": {
-	            "modes": ["comment"]
-	        }
-	    },
-	    "annotationModes": {
-	        "classify": {
-	            "vocabularies": ["DBpedia", "GTAA"],
-	            "type": "classification",
-	            "purpose": "classifying",
-	            "format": "text/plain"
-	        },
-	        "link": {
-	            "apis": [{ "name": "wikidata" }, { "name": "europeana" }],
-	            "type": "link",
-	            "purpose": "linking",
-	            "format": "text/plain"
-	        },
-	        "bookmark": {
-	            "type": "bookmark",
-	            "purpose": "bookmarking"
-	        },
-	        "comment": {
-	            "type": "comment",
-	            "purpose": "commenting",
-	            "format": "text/plain"
-	        },
-	        "correct": {
-	            "type": "correction",
-	            "purpose": "correcting",
-	            "format": "text/plain"
-	        },
-	        "transcribe": {
-	            "type": "transcription",
-	            "purpose": "transcribing",
-	            "format": "text/plain"
-	        }
-	    },
-	    "candidateTypes": ["resource", "annotation"],
-	    "tasks": [{
-	        "task": "tagging",
-	        "placeholder": "Add one or more tags",
-	        "label": "Tagging"
-	    }, {
-	        "taskname": "describing",
-	        "placeholder": "Add a description",
-	        "tasklabel": "Describing"
-	    }]
-	};
-	
-	exports.default = config;
-
-/***/ },
-/* 245 */
 /*!******************************************************!*\
   !*** ./src/components/annotation/AnnotationList.jsx ***!
   \******************************************************/
@@ -29100,15 +28984,15 @@ var RDFaAnnotator =
 	
 	var _AnnotationStore2 = _interopRequireDefault(_AnnotationStore);
 	
-	var _Annotation = __webpack_require__(/*! ./Annotation.jsx */ 246);
+	var _Annotation = __webpack_require__(/*! ./Annotation.jsx */ 245);
 	
 	var _Annotation2 = _interopRequireDefault(_Annotation);
 	
-	var _AnnotationUtil = __webpack_require__(/*! ./../../util/AnnotationUtil.js */ 247);
+	var _AnnotationUtil = __webpack_require__(/*! ./../../util/AnnotationUtil.js */ 246);
 	
 	var _AnnotationUtil2 = _interopRequireDefault(_AnnotationUtil);
 	
-	var _RDFaUtil = __webpack_require__(/*! ./../../util/RDFaUtil.js */ 248);
+	var _RDFaUtil = __webpack_require__(/*! ./../../util/RDFaUtil.js */ 247);
 	
 	var _RDFaUtil2 = _interopRequireDefault(_RDFaUtil);
 	
@@ -29167,7 +29051,7 @@ var RDFaAnnotator =
 	exports.default = AnnotationList;
 
 /***/ },
-/* 246 */
+/* 245 */
 /*!**************************************************!*\
   !*** ./src/components/annotation/Annotation.jsx ***!
   \**************************************************/
@@ -29193,15 +29077,15 @@ var RDFaAnnotator =
 	
 	var _FlexModal2 = _interopRequireDefault(_FlexModal);
 	
-	var _AnnotationUtil = __webpack_require__(/*! ./../../util/AnnotationUtil.js */ 247);
+	var _AnnotationUtil = __webpack_require__(/*! ./../../util/AnnotationUtil.js */ 246);
 	
 	var _AnnotationUtil2 = _interopRequireDefault(_AnnotationUtil);
 	
-	var _RDFaUtil = __webpack_require__(/*! ./../../util/RDFaUtil.js */ 248);
+	var _RDFaUtil = __webpack_require__(/*! ./../../util/RDFaUtil.js */ 247);
 	
 	var _RDFaUtil2 = _interopRequireDefault(_RDFaUtil);
 	
-	var _SelectionUtil = __webpack_require__(/*! ./../../util/SelectionUtil.js */ 290);
+	var _SelectionUtil = __webpack_require__(/*! ./../../util/SelectionUtil.js */ 289);
 	
 	var _SelectionUtil2 = _interopRequireDefault(_SelectionUtil);
 	
@@ -29564,7 +29448,7 @@ var RDFaAnnotator =
 	exports.default = Annotation;
 
 /***/ },
-/* 247 */
+/* 246 */
 /*!************************************!*\
   !*** ./src/util/AnnotationUtil.js ***!
   \************************************/
@@ -29835,7 +29719,7 @@ var RDFaAnnotator =
 	exports.default = AnnotationUtil;
 
 /***/ },
-/* 248 */
+/* 247 */
 /*!******************************!*\
   !*** ./src/util/RDFaUtil.js ***!
   \******************************/
@@ -29848,15 +29732,15 @@ var RDFaAnnotator =
 	    value: true
 	});
 	
-	var _VocabularyUtil = __webpack_require__(/*! ./VocabularyUtil.js */ 249);
+	var _VocabularyUtil = __webpack_require__(/*! ./VocabularyUtil.js */ 248);
 	
 	var _VocabularyUtil2 = _interopRequireDefault(_VocabularyUtil);
 	
-	var _DOMUtil = __webpack_require__(/*! ./DOMUtil.js */ 288);
+	var _DOMUtil = __webpack_require__(/*! ./DOMUtil.js */ 287);
 	
 	var _DOMUtil2 = _interopRequireDefault(_DOMUtil);
 	
-	var _StringUtil = __webpack_require__(/*! ./StringUtil.js */ 289);
+	var _StringUtil = __webpack_require__(/*! ./StringUtil.js */ 288);
 	
 	var _StringUtil2 = _interopRequireDefault(_StringUtil);
 	
@@ -30136,7 +30020,7 @@ var RDFaAnnotator =
 	exports.default = RDFaUtil;
 
 /***/ },
-/* 249 */
+/* 248 */
 /*!************************************!*\
   !*** ./src/util/VocabularyUtil.js ***!
   \************************************/
@@ -30149,7 +30033,7 @@ var RDFaAnnotator =
 	    value: true
 	});
 	
-	var _n = __webpack_require__(/*! n3 */ 250);
+	var _n = __webpack_require__(/*! n3 */ 249);
 	
 	var _n2 = _interopRequireDefault(_n);
 	
@@ -30316,7 +30200,7 @@ var RDFaAnnotator =
 	exports.default = VocabularyUtil;
 
 /***/ },
-/* 250 */
+/* 249 */
 /*!********************!*\
   !*** ./~/n3/N3.js ***!
   \********************/
@@ -30344,34 +30228,34 @@ var RDFaAnnotator =
 	    enumerable: true,
 	    get: function () {
 	      delete exports[submodule];
-	      return exports[submodule] = __webpack_require__(/*! ./lib */ 251)("./N3" + submodule);
+	      return exports[submodule] = __webpack_require__(/*! ./lib */ 250)("./N3" + submodule);
 	    },
 	  });
 	});
 
 
 /***/ },
-/* 251 */
+/* 250 */
 /*!*****************************!*\
   !*** ./~/n3/lib ^\.\/N3.*$ ***!
   \*****************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	var map = {
-		"./N3Lexer": 252,
-		"./N3Lexer.js": 252,
-		"./N3Parser": 255,
-		"./N3Parser.js": 255,
-		"./N3Store": 256,
-		"./N3Store.js": 256,
-		"./N3StreamParser": 258,
-		"./N3StreamParser.js": 258,
-		"./N3StreamWriter": 286,
-		"./N3StreamWriter.js": 286,
-		"./N3Util": 257,
-		"./N3Util.js": 257,
-		"./N3Writer": 287,
-		"./N3Writer.js": 287
+		"./N3Lexer": 251,
+		"./N3Lexer.js": 251,
+		"./N3Parser": 254,
+		"./N3Parser.js": 254,
+		"./N3Store": 255,
+		"./N3Store.js": 255,
+		"./N3StreamParser": 257,
+		"./N3StreamParser.js": 257,
+		"./N3StreamWriter": 285,
+		"./N3StreamWriter.js": 285,
+		"./N3Util": 256,
+		"./N3Util.js": 256,
+		"./N3Writer": 286,
+		"./N3Writer.js": 286
 	};
 	function webpackContext(req) {
 		return __webpack_require__(webpackContextResolve(req));
@@ -30384,11 +30268,11 @@ var RDFaAnnotator =
 	};
 	webpackContext.resolve = webpackContextResolve;
 	module.exports = webpackContext;
-	webpackContext.id = 251;
+	webpackContext.id = 250;
 
 
 /***/ },
-/* 252 */
+/* 251 */
 /*!*****************************!*\
   !*** ./~/n3/lib/N3Lexer.js ***!
   \*****************************/
@@ -30803,10 +30687,10 @@ var RDFaAnnotator =
 	// ## Exports
 	module.exports = N3Lexer;
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../timers-browserify/main.js */ 253).setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../timers-browserify/main.js */ 252).setImmediate))
 
 /***/ },
-/* 253 */
+/* 252 */
 /*!*************************************!*\
   !*** ./~/timers-browserify/main.js ***!
   \*************************************/
@@ -30862,13 +30746,13 @@ var RDFaAnnotator =
 	};
 	
 	// setimmediate attaches itself to the global object
-	__webpack_require__(/*! setimmediate */ 254);
+	__webpack_require__(/*! setimmediate */ 253);
 	exports.setImmediate = setImmediate;
 	exports.clearImmediate = clearImmediate;
 
 
 /***/ },
-/* 254 */
+/* 253 */
 /*!****************************************!*\
   !*** ./~/setimmediate/setImmediate.js ***!
   \****************************************/
@@ -31064,14 +30948,14 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(/*! ./../process/browser.js */ 3)))
 
 /***/ },
-/* 255 */
+/* 254 */
 /*!******************************!*\
   !*** ./~/n3/lib/N3Parser.js ***!
   \******************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// **N3Parser** parses N3 documents.
-	var N3Lexer = __webpack_require__(/*! ./N3Lexer */ 252);
+	var N3Lexer = __webpack_require__(/*! ./N3Lexer */ 251);
 	
 	var RDF_PREFIX = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
 	    RDF_NIL    = RDF_PREFIX + 'nil',
@@ -31977,7 +31861,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 256 */
+/* 255 */
 /*!*****************************!*\
   !*** ./~/n3/lib/N3Store.js ***!
   \*****************************/
@@ -31985,7 +31869,7 @@ var RDFaAnnotator =
 
 	// **N3Store** objects store N3 triples by graph in memory.
 	
-	var expandPrefixedName = __webpack_require__(/*! ./N3Util */ 257).expandPrefixedName;
+	var expandPrefixedName = __webpack_require__(/*! ./N3Util */ 256).expandPrefixedName;
 	
 	// ## Constructor
 	function N3Store(triples, options) {
@@ -32371,7 +32255,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 257 */
+/* 256 */
 /*!****************************!*\
   !*** ./~/n3/lib/N3Util.js ***!
   \****************************/
@@ -32535,16 +32419,16 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 258 */
+/* 257 */
 /*!************************************!*\
   !*** ./~/n3/lib/N3StreamParser.js ***!
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// **N3StreamParser** parses an N3 stream into a triple stream.
-	var Transform = __webpack_require__(/*! stream */ 259).Transform,
-	    util = __webpack_require__(/*! util */ 283),
-	    N3Parser = __webpack_require__(/*! ./N3Parser.js */ 255);
+	var Transform = __webpack_require__(/*! stream */ 258).Transform,
+	    util = __webpack_require__(/*! util */ 282),
+	    N3Parser = __webpack_require__(/*! ./N3Parser.js */ 254);
 	
 	// ## Constructor
 	function N3StreamParser(options) {
@@ -32576,7 +32460,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 259 */
+/* 258 */
 /*!**************************************!*\
   !*** ./~/stream-browserify/index.js ***!
   \**************************************/
@@ -32605,15 +32489,15 @@ var RDFaAnnotator =
 	
 	module.exports = Stream;
 	
-	var EE = __webpack_require__(/*! events */ 260).EventEmitter;
-	var inherits = __webpack_require__(/*! inherits */ 261);
+	var EE = __webpack_require__(/*! events */ 259).EventEmitter;
+	var inherits = __webpack_require__(/*! inherits */ 260);
 	
 	inherits(Stream, EE);
-	Stream.Readable = __webpack_require__(/*! readable-stream/readable.js */ 262);
-	Stream.Writable = __webpack_require__(/*! readable-stream/writable.js */ 279);
-	Stream.Duplex = __webpack_require__(/*! readable-stream/duplex.js */ 280);
-	Stream.Transform = __webpack_require__(/*! readable-stream/transform.js */ 281);
-	Stream.PassThrough = __webpack_require__(/*! readable-stream/passthrough.js */ 282);
+	Stream.Readable = __webpack_require__(/*! readable-stream/readable.js */ 261);
+	Stream.Writable = __webpack_require__(/*! readable-stream/writable.js */ 278);
+	Stream.Duplex = __webpack_require__(/*! readable-stream/duplex.js */ 279);
+	Stream.Transform = __webpack_require__(/*! readable-stream/transform.js */ 280);
+	Stream.PassThrough = __webpack_require__(/*! readable-stream/passthrough.js */ 281);
 	
 	// Backwards-compat with node 0.4.x
 	Stream.Stream = Stream;
@@ -32712,7 +32596,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 260 */
+/* 259 */
 /*!****************************!*\
   !*** ./~/events/events.js ***!
   \****************************/
@@ -33023,7 +32907,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 261 */
+/* 260 */
 /*!****************************************!*\
   !*** ./~/inherits/inherits_browser.js ***!
   \****************************************/
@@ -33055,7 +32939,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 262 */
+/* 261 */
 /*!***************************************!*\
   !*** ./~/readable-stream/readable.js ***!
   \***************************************/
@@ -33063,16 +32947,16 @@ var RDFaAnnotator =
 
 	/* WEBPACK VAR INJECTION */(function(process) {var Stream = (function (){
 	  try {
-	    return __webpack_require__(/*! stream */ 259); // hack to fix a circular dependency issue when used with browserify
+	    return __webpack_require__(/*! stream */ 258); // hack to fix a circular dependency issue when used with browserify
 	  } catch(_){}
 	}());
-	exports = module.exports = __webpack_require__(/*! ./lib/_stream_readable.js */ 263);
+	exports = module.exports = __webpack_require__(/*! ./lib/_stream_readable.js */ 262);
 	exports.Stream = Stream || exports;
 	exports.Readable = exports;
-	exports.Writable = __webpack_require__(/*! ./lib/_stream_writable.js */ 274);
-	exports.Duplex = __webpack_require__(/*! ./lib/_stream_duplex.js */ 273);
-	exports.Transform = __webpack_require__(/*! ./lib/_stream_transform.js */ 277);
-	exports.PassThrough = __webpack_require__(/*! ./lib/_stream_passthrough.js */ 278);
+	exports.Writable = __webpack_require__(/*! ./lib/_stream_writable.js */ 273);
+	exports.Duplex = __webpack_require__(/*! ./lib/_stream_duplex.js */ 272);
+	exports.Transform = __webpack_require__(/*! ./lib/_stream_transform.js */ 276);
+	exports.PassThrough = __webpack_require__(/*! ./lib/_stream_passthrough.js */ 277);
 	
 	if (!process.browser && process.env.READABLE_STREAM === 'disable' && Stream) {
 	  module.exports = Stream;
@@ -33081,7 +32965,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../process/browser.js */ 3)))
 
 /***/ },
-/* 263 */
+/* 262 */
 /*!***************************************************!*\
   !*** ./~/readable-stream/lib/_stream_readable.js ***!
   \***************************************************/
@@ -33092,11 +32976,11 @@ var RDFaAnnotator =
 	module.exports = Readable;
 	
 	/*<replacement>*/
-	var processNextTick = __webpack_require__(/*! process-nextick-args */ 264);
+	var processNextTick = __webpack_require__(/*! process-nextick-args */ 263);
 	/*</replacement>*/
 	
 	/*<replacement>*/
-	var isArray = __webpack_require__(/*! isarray */ 265);
+	var isArray = __webpack_require__(/*! isarray */ 264);
 	/*</replacement>*/
 	
 	/*<replacement>*/
@@ -33106,7 +32990,7 @@ var RDFaAnnotator =
 	Readable.ReadableState = ReadableState;
 	
 	/*<replacement>*/
-	var EE = __webpack_require__(/*! events */ 260).EventEmitter;
+	var EE = __webpack_require__(/*! events */ 259).EventEmitter;
 	
 	var EElistenerCount = function (emitter, type) {
 	  return emitter.listeners(type).length;
@@ -33117,25 +33001,25 @@ var RDFaAnnotator =
 	var Stream;
 	(function () {
 	  try {
-	    Stream = __webpack_require__(/*! stream */ 259);
+	    Stream = __webpack_require__(/*! stream */ 258);
 	  } catch (_) {} finally {
-	    if (!Stream) Stream = __webpack_require__(/*! events */ 260).EventEmitter;
+	    if (!Stream) Stream = __webpack_require__(/*! events */ 259).EventEmitter;
 	  }
 	})();
 	/*</replacement>*/
 	
-	var Buffer = __webpack_require__(/*! buffer */ 266).Buffer;
+	var Buffer = __webpack_require__(/*! buffer */ 265).Buffer;
 	/*<replacement>*/
-	var bufferShim = __webpack_require__(/*! buffer-shims */ 269);
+	var bufferShim = __webpack_require__(/*! buffer-shims */ 268);
 	/*</replacement>*/
 	
 	/*<replacement>*/
-	var util = __webpack_require__(/*! core-util-is */ 270);
-	util.inherits = __webpack_require__(/*! inherits */ 261);
+	var util = __webpack_require__(/*! core-util-is */ 269);
+	util.inherits = __webpack_require__(/*! inherits */ 260);
 	/*</replacement>*/
 	
 	/*<replacement>*/
-	var debugUtil = __webpack_require__(/*! util */ 271);
+	var debugUtil = __webpack_require__(/*! util */ 270);
 	var debug = void 0;
 	if (debugUtil && debugUtil.debuglog) {
 	  debug = debugUtil.debuglog('stream');
@@ -33144,7 +33028,7 @@ var RDFaAnnotator =
 	}
 	/*</replacement>*/
 	
-	var BufferList = __webpack_require__(/*! ./internal/streams/BufferList */ 272);
+	var BufferList = __webpack_require__(/*! ./internal/streams/BufferList */ 271);
 	var StringDecoder;
 	
 	util.inherits(Readable, Stream);
@@ -33164,7 +33048,7 @@ var RDFaAnnotator =
 	}
 	
 	function ReadableState(options, stream) {
-	  Duplex = Duplex || __webpack_require__(/*! ./_stream_duplex */ 273);
+	  Duplex = Duplex || __webpack_require__(/*! ./_stream_duplex */ 272);
 	
 	  options = options || {};
 	
@@ -33226,14 +33110,14 @@ var RDFaAnnotator =
 	  this.decoder = null;
 	  this.encoding = null;
 	  if (options.encoding) {
-	    if (!StringDecoder) StringDecoder = __webpack_require__(/*! string_decoder/ */ 276).StringDecoder;
+	    if (!StringDecoder) StringDecoder = __webpack_require__(/*! string_decoder/ */ 275).StringDecoder;
 	    this.decoder = new StringDecoder(options.encoding);
 	    this.encoding = options.encoding;
 	  }
 	}
 	
 	function Readable(options) {
-	  Duplex = Duplex || __webpack_require__(/*! ./_stream_duplex */ 273);
+	  Duplex = Duplex || __webpack_require__(/*! ./_stream_duplex */ 272);
 	
 	  if (!(this instanceof Readable)) return new Readable(options);
 	
@@ -33336,7 +33220,7 @@ var RDFaAnnotator =
 	
 	// backwards compatibility.
 	Readable.prototype.setEncoding = function (enc) {
-	  if (!StringDecoder) StringDecoder = __webpack_require__(/*! string_decoder/ */ 276).StringDecoder;
+	  if (!StringDecoder) StringDecoder = __webpack_require__(/*! string_decoder/ */ 275).StringDecoder;
 	  this._readableState.decoder = new StringDecoder(enc);
 	  this._readableState.encoding = enc;
 	  return this;
@@ -34031,7 +33915,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ },
-/* 264 */
+/* 263 */
 /*!*****************************************!*\
   !*** ./~/process-nextick-args/index.js ***!
   \*****************************************/
@@ -34084,7 +33968,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../process/browser.js */ 3)))
 
 /***/ },
-/* 265 */
+/* 264 */
 /*!****************************!*\
   !*** ./~/isarray/index.js ***!
   \****************************/
@@ -34098,7 +33982,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 266 */
+/* 265 */
 /*!***************************!*\
   !*** ./~/buffer/index.js ***!
   \***************************/
@@ -34114,9 +33998,9 @@ var RDFaAnnotator =
 	
 	'use strict'
 	
-	var base64 = __webpack_require__(/*! base64-js */ 267)
-	var ieee754 = __webpack_require__(/*! ieee754 */ 268)
-	var isArray = __webpack_require__(/*! isarray */ 265)
+	var base64 = __webpack_require__(/*! base64-js */ 266)
+	var ieee754 = __webpack_require__(/*! ieee754 */ 267)
+	var isArray = __webpack_require__(/*! isarray */ 264)
 	
 	exports.Buffer = Buffer
 	exports.SlowBuffer = SlowBuffer
@@ -35897,7 +35781,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 267 */
+/* 266 */
 /*!******************************!*\
   !*** ./~/base64-js/index.js ***!
   \******************************/
@@ -36020,7 +35904,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 268 */
+/* 267 */
 /*!****************************!*\
   !*** ./~/ieee754/index.js ***!
   \****************************/
@@ -36113,7 +35997,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 269 */
+/* 268 */
 /*!*********************************!*\
   !*** ./~/buffer-shims/index.js ***!
   \*********************************/
@@ -36121,7 +36005,7 @@ var RDFaAnnotator =
 
 	/* WEBPACK VAR INJECTION */(function(global) {'use strict';
 	
-	var buffer = __webpack_require__(/*! buffer */ 266);
+	var buffer = __webpack_require__(/*! buffer */ 265);
 	var Buffer = buffer.Buffer;
 	var SlowBuffer = buffer.SlowBuffer;
 	var MAX_LEN = buffer.kMaxLength || 2147483647;
@@ -36231,7 +36115,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 270 */
+/* 269 */
 /*!************************************!*\
   !*** ./~/core-util-is/lib/util.js ***!
   \************************************/
@@ -36345,10 +36229,10 @@ var RDFaAnnotator =
 	  return Object.prototype.toString.call(o);
 	}
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../buffer/index.js */ 266).Buffer))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../buffer/index.js */ 265).Buffer))
 
 /***/ },
-/* 271 */
+/* 270 */
 /*!**********************!*\
   !*** util (ignored) ***!
   \**********************/
@@ -36357,7 +36241,7 @@ var RDFaAnnotator =
 	/* (ignored) */
 
 /***/ },
-/* 272 */
+/* 271 */
 /*!**************************************************************!*\
   !*** ./~/readable-stream/lib/internal/streams/BufferList.js ***!
   \**************************************************************/
@@ -36365,9 +36249,9 @@ var RDFaAnnotator =
 
 	'use strict';
 	
-	var Buffer = __webpack_require__(/*! buffer */ 266).Buffer;
+	var Buffer = __webpack_require__(/*! buffer */ 265).Buffer;
 	/*<replacement>*/
-	var bufferShim = __webpack_require__(/*! buffer-shims */ 269);
+	var bufferShim = __webpack_require__(/*! buffer-shims */ 268);
 	/*</replacement>*/
 	
 	module.exports = BufferList;
@@ -36429,7 +36313,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 273 */
+/* 272 */
 /*!*************************************************!*\
   !*** ./~/readable-stream/lib/_stream_duplex.js ***!
   \*************************************************/
@@ -36455,16 +36339,16 @@ var RDFaAnnotator =
 	module.exports = Duplex;
 	
 	/*<replacement>*/
-	var processNextTick = __webpack_require__(/*! process-nextick-args */ 264);
+	var processNextTick = __webpack_require__(/*! process-nextick-args */ 263);
 	/*</replacement>*/
 	
 	/*<replacement>*/
-	var util = __webpack_require__(/*! core-util-is */ 270);
-	util.inherits = __webpack_require__(/*! inherits */ 261);
+	var util = __webpack_require__(/*! core-util-is */ 269);
+	util.inherits = __webpack_require__(/*! inherits */ 260);
 	/*</replacement>*/
 	
-	var Readable = __webpack_require__(/*! ./_stream_readable */ 263);
-	var Writable = __webpack_require__(/*! ./_stream_writable */ 274);
+	var Readable = __webpack_require__(/*! ./_stream_readable */ 262);
+	var Writable = __webpack_require__(/*! ./_stream_writable */ 273);
 	
 	util.inherits(Duplex, Readable);
 	
@@ -36512,7 +36396,7 @@ var RDFaAnnotator =
 	}
 
 /***/ },
-/* 274 */
+/* 273 */
 /*!***************************************************!*\
   !*** ./~/readable-stream/lib/_stream_writable.js ***!
   \***************************************************/
@@ -36527,7 +36411,7 @@ var RDFaAnnotator =
 	module.exports = Writable;
 	
 	/*<replacement>*/
-	var processNextTick = __webpack_require__(/*! process-nextick-args */ 264);
+	var processNextTick = __webpack_require__(/*! process-nextick-args */ 263);
 	/*</replacement>*/
 	
 	/*<replacement>*/
@@ -36541,13 +36425,13 @@ var RDFaAnnotator =
 	Writable.WritableState = WritableState;
 	
 	/*<replacement>*/
-	var util = __webpack_require__(/*! core-util-is */ 270);
-	util.inherits = __webpack_require__(/*! inherits */ 261);
+	var util = __webpack_require__(/*! core-util-is */ 269);
+	util.inherits = __webpack_require__(/*! inherits */ 260);
 	/*</replacement>*/
 	
 	/*<replacement>*/
 	var internalUtil = {
-	  deprecate: __webpack_require__(/*! util-deprecate */ 275)
+	  deprecate: __webpack_require__(/*! util-deprecate */ 274)
 	};
 	/*</replacement>*/
 	
@@ -36555,16 +36439,16 @@ var RDFaAnnotator =
 	var Stream;
 	(function () {
 	  try {
-	    Stream = __webpack_require__(/*! stream */ 259);
+	    Stream = __webpack_require__(/*! stream */ 258);
 	  } catch (_) {} finally {
-	    if (!Stream) Stream = __webpack_require__(/*! events */ 260).EventEmitter;
+	    if (!Stream) Stream = __webpack_require__(/*! events */ 259).EventEmitter;
 	  }
 	})();
 	/*</replacement>*/
 	
-	var Buffer = __webpack_require__(/*! buffer */ 266).Buffer;
+	var Buffer = __webpack_require__(/*! buffer */ 265).Buffer;
 	/*<replacement>*/
-	var bufferShim = __webpack_require__(/*! buffer-shims */ 269);
+	var bufferShim = __webpack_require__(/*! buffer-shims */ 268);
 	/*</replacement>*/
 	
 	util.inherits(Writable, Stream);
@@ -36579,7 +36463,7 @@ var RDFaAnnotator =
 	}
 	
 	function WritableState(options, stream) {
-	  Duplex = Duplex || __webpack_require__(/*! ./_stream_duplex */ 273);
+	  Duplex = Duplex || __webpack_require__(/*! ./_stream_duplex */ 272);
 	
 	  options = options || {};
 	
@@ -36713,7 +36597,7 @@ var RDFaAnnotator =
 	}
 	
 	function Writable(options) {
-	  Duplex = Duplex || __webpack_require__(/*! ./_stream_duplex */ 273);
+	  Duplex = Duplex || __webpack_require__(/*! ./_stream_duplex */ 272);
 	
 	  // Writable ctor is applied to Duplexes, too.
 	  // `realHasInstance` is necessary because using plain `instanceof`
@@ -37072,10 +36956,10 @@ var RDFaAnnotator =
 	    }
 	  };
 	}
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3), __webpack_require__(/*! ./../../timers-browserify/main.js */ 253).setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3), __webpack_require__(/*! ./../../timers-browserify/main.js */ 252).setImmediate))
 
 /***/ },
-/* 275 */
+/* 274 */
 /*!*************************************!*\
   !*** ./~/util-deprecate/browser.js ***!
   \*************************************/
@@ -37152,7 +37036,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 276 */
+/* 275 */
 /*!***********************************!*\
   !*** ./~/string_decoder/index.js ***!
   \***********************************/
@@ -37179,7 +37063,7 @@ var RDFaAnnotator =
 	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 	// USE OR OTHER DEALINGS IN THE SOFTWARE.
 	
-	var Buffer = __webpack_require__(/*! buffer */ 266).Buffer;
+	var Buffer = __webpack_require__(/*! buffer */ 265).Buffer;
 	
 	var isBufferEncoding = Buffer.isEncoding
 	  || function(encoding) {
@@ -37382,7 +37266,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 277 */
+/* 276 */
 /*!****************************************************!*\
   !*** ./~/readable-stream/lib/_stream_transform.js ***!
   \****************************************************/
@@ -37434,11 +37318,11 @@ var RDFaAnnotator =
 	
 	module.exports = Transform;
 	
-	var Duplex = __webpack_require__(/*! ./_stream_duplex */ 273);
+	var Duplex = __webpack_require__(/*! ./_stream_duplex */ 272);
 	
 	/*<replacement>*/
-	var util = __webpack_require__(/*! core-util-is */ 270);
-	util.inherits = __webpack_require__(/*! inherits */ 261);
+	var util = __webpack_require__(/*! core-util-is */ 269);
+	util.inherits = __webpack_require__(/*! inherits */ 260);
 	/*</replacement>*/
 	
 	util.inherits(Transform, Duplex);
@@ -37572,7 +37456,7 @@ var RDFaAnnotator =
 	}
 
 /***/ },
-/* 278 */
+/* 277 */
 /*!******************************************************!*\
   !*** ./~/readable-stream/lib/_stream_passthrough.js ***!
   \******************************************************/
@@ -37586,11 +37470,11 @@ var RDFaAnnotator =
 	
 	module.exports = PassThrough;
 	
-	var Transform = __webpack_require__(/*! ./_stream_transform */ 277);
+	var Transform = __webpack_require__(/*! ./_stream_transform */ 276);
 	
 	/*<replacement>*/
-	var util = __webpack_require__(/*! core-util-is */ 270);
-	util.inherits = __webpack_require__(/*! inherits */ 261);
+	var util = __webpack_require__(/*! core-util-is */ 269);
+	util.inherits = __webpack_require__(/*! inherits */ 260);
 	/*</replacement>*/
 	
 	util.inherits(PassThrough, Transform);
@@ -37606,47 +37490,47 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 279 */
+/* 278 */
 /*!***************************************!*\
   !*** ./~/readable-stream/writable.js ***!
   \***************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(/*! ./lib/_stream_writable.js */ 274)
+	module.exports = __webpack_require__(/*! ./lib/_stream_writable.js */ 273)
 
 
 /***/ },
-/* 280 */
+/* 279 */
 /*!*************************************!*\
   !*** ./~/readable-stream/duplex.js ***!
   \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(/*! ./lib/_stream_duplex.js */ 273)
+	module.exports = __webpack_require__(/*! ./lib/_stream_duplex.js */ 272)
 
 
 /***/ },
-/* 281 */
+/* 280 */
 /*!****************************************!*\
   !*** ./~/readable-stream/transform.js ***!
   \****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(/*! ./lib/_stream_transform.js */ 277)
+	module.exports = __webpack_require__(/*! ./lib/_stream_transform.js */ 276)
 
 
 /***/ },
-/* 282 */
+/* 281 */
 /*!******************************************!*\
   !*** ./~/readable-stream/passthrough.js ***!
   \******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(/*! ./lib/_stream_passthrough.js */ 278)
+	module.exports = __webpack_require__(/*! ./lib/_stream_passthrough.js */ 277)
 
 
 /***/ },
-/* 283 */
+/* 282 */
 /*!************************!*\
   !*** ./~/util/util.js ***!
   \************************/
@@ -38177,7 +38061,7 @@ var RDFaAnnotator =
 	}
 	exports.isPrimitive = isPrimitive;
 	
-	exports.isBuffer = __webpack_require__(/*! ./support/isBuffer */ 284);
+	exports.isBuffer = __webpack_require__(/*! ./support/isBuffer */ 283);
 	
 	function objectToString(o) {
 	  return Object.prototype.toString.call(o);
@@ -38221,7 +38105,7 @@ var RDFaAnnotator =
 	 *     prototype.
 	 * @param {function} superCtor Constructor function to inherit prototype from.
 	 */
-	exports.inherits = __webpack_require__(/*! inherits */ 285);
+	exports.inherits = __webpack_require__(/*! inherits */ 284);
 	
 	exports._extend = function(origin, add) {
 	  // Don't do anything if add isn't an object
@@ -38242,7 +38126,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(/*! ./../process/browser.js */ 3)))
 
 /***/ },
-/* 284 */
+/* 283 */
 /*!*******************************************!*\
   !*** ./~/util/support/isBufferBrowser.js ***!
   \*******************************************/
@@ -38256,7 +38140,7 @@ var RDFaAnnotator =
 	}
 
 /***/ },
-/* 285 */
+/* 284 */
 /*!***********************************************!*\
   !*** ./~/util/~/inherits/inherits_browser.js ***!
   \***********************************************/
@@ -38288,16 +38172,16 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 286 */
+/* 285 */
 /*!************************************!*\
   !*** ./~/n3/lib/N3StreamWriter.js ***!
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// **N3StreamWriter** serializes a triple stream into an N3 stream.
-	var Transform = __webpack_require__(/*! stream */ 259).Transform,
-	    util = __webpack_require__(/*! util */ 283),
-	    N3Writer = __webpack_require__(/*! ./N3Writer.js */ 287);
+	var Transform = __webpack_require__(/*! stream */ 258).Transform,
+	    util = __webpack_require__(/*! util */ 282),
+	    N3Writer = __webpack_require__(/*! ./N3Writer.js */ 286);
 	
 	// ## Constructor
 	function N3StreamWriter(options) {
@@ -38326,7 +38210,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 287 */
+/* 286 */
 /*!******************************!*\
   !*** ./~/n3/lib/N3Writer.js ***!
   \******************************/
@@ -38663,7 +38547,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 288 */
+/* 287 */
 /*!*****************************!*\
   !*** ./src/util/DOMUtil.js ***!
   \*****************************/
@@ -38766,7 +38650,7 @@ var RDFaAnnotator =
 	exports.default = DOMUtil;
 
 /***/ },
-/* 289 */
+/* 288 */
 /*!********************************!*\
   !*** ./src/util/StringUtil.js ***!
   \********************************/
@@ -38835,7 +38719,7 @@ var RDFaAnnotator =
 	exports.default = StringUtil;
 
 /***/ },
-/* 290 */
+/* 289 */
 /*!***********************************!*\
   !*** ./src/util/SelectionUtil.js ***!
   \***********************************/
@@ -38857,11 +38741,11 @@ var RDFaAnnotator =
 	    value: true
 	});
 	
-	var _RDFaUtil = __webpack_require__(/*! ./RDFaUtil.js */ 248);
+	var _RDFaUtil = __webpack_require__(/*! ./RDFaUtil.js */ 247);
 	
 	var _RDFaUtil2 = _interopRequireDefault(_RDFaUtil);
 	
-	var _DOMUtil = __webpack_require__(/*! ./DOMUtil.js */ 288);
+	var _DOMUtil = __webpack_require__(/*! ./DOMUtil.js */ 287);
 	
 	var _DOMUtil2 = _interopRequireDefault(_DOMUtil);
 	
@@ -39036,7 +38920,7 @@ var RDFaAnnotator =
 	exports.default = SelectionUtil;
 
 /***/ },
-/* 291 */
+/* 290 */
 /*!******************************************************!*\
   !*** ./src/components/annotation/TargetSelector.jsx ***!
   \******************************************************/
@@ -39055,25 +38939,25 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _reactBootstrap = __webpack_require__(/*! react-bootstrap */ 292);
+	var _reactBootstrap = __webpack_require__(/*! react-bootstrap */ 291);
 	
-	var _CandidateList = __webpack_require__(/*! ./CandidateList.jsx */ 543);
+	var _CandidateList = __webpack_require__(/*! ./CandidateList.jsx */ 542);
 	
 	var _CandidateList2 = _interopRequireDefault(_CandidateList);
 	
-	var _SelectedList = __webpack_require__(/*! ./SelectedList.jsx */ 545);
+	var _SelectedList = __webpack_require__(/*! ./SelectedList.jsx */ 544);
 	
 	var _SelectedList2 = _interopRequireDefault(_SelectedList);
 	
-	var _TargetUtil = __webpack_require__(/*! ./../../util/TargetUtil.js */ 546);
+	var _TargetUtil = __webpack_require__(/*! ./../../util/TargetUtil.js */ 545);
 	
 	var _TargetUtil2 = _interopRequireDefault(_TargetUtil);
 	
-	var _AnnotationUtil = __webpack_require__(/*! ./../../util/AnnotationUtil.js */ 247);
+	var _AnnotationUtil = __webpack_require__(/*! ./../../util/AnnotationUtil.js */ 246);
 	
 	var _AnnotationUtil2 = _interopRequireDefault(_AnnotationUtil);
 	
-	var _RDFaUtil = __webpack_require__(/*! ./../../util/RDFaUtil.js */ 248);
+	var _RDFaUtil = __webpack_require__(/*! ./../../util/RDFaUtil.js */ 247);
 	
 	var _RDFaUtil2 = _interopRequireDefault(_RDFaUtil);
 	
@@ -39116,7 +39000,7 @@ var RDFaAnnotator =
 	    }, {
 	        key: 'selectCandidates',
 	        value: function selectCandidates() {
-	            var candidateResources = _TargetUtil2.default.getCandidateRDFaTargets();
+	            var candidateResources = _TargetUtil2.default.getCandidateRDFaTargets(this.props.defaultTargets);
 	            // find annotations overlapping with candidate resources
 	            var candidateAnnotations = _TargetUtil2.default.selectCandidateAnnotations(this.props.annotations, candidateResources.highlighted);
 	            this.setState({
@@ -39261,7 +39145,7 @@ var RDFaAnnotator =
 	exports.default = TargetSelector;
 
 /***/ },
-/* 292 */
+/* 291 */
 /*!****************************************!*\
   !*** ./~/react-bootstrap/lib/index.js ***!
   \****************************************/
@@ -39272,271 +39156,271 @@ var RDFaAnnotator =
 	exports.__esModule = true;
 	exports.utils = exports.Well = exports.Tooltip = exports.Thumbnail = exports.Tabs = exports.TabPane = exports.Table = exports.TabContent = exports.TabContainer = exports.Tab = exports.SplitButton = exports.SafeAnchor = exports.Row = exports.ResponsiveEmbed = exports.Radio = exports.ProgressBar = exports.Popover = exports.PanelGroup = exports.Panel = exports.Pagination = exports.Pager = exports.PageItem = exports.PageHeader = exports.OverlayTrigger = exports.Overlay = exports.NavItem = exports.NavDropdown = exports.NavbarBrand = exports.Navbar = exports.Nav = exports.ModalTitle = exports.ModalHeader = exports.ModalFooter = exports.ModalBody = exports.Modal = exports.MenuItem = exports.Media = exports.ListGroupItem = exports.ListGroup = exports.Label = exports.Jumbotron = exports.InputGroup = exports.Image = exports.HelpBlock = exports.Grid = exports.Glyphicon = exports.FormGroup = exports.FormControl = exports.Form = exports.Fade = exports.DropdownButton = exports.Dropdown = exports.Collapse = exports.Col = exports.ControlLabel = exports.Clearfix = exports.Checkbox = exports.CarouselItem = exports.Carousel = exports.ButtonToolbar = exports.ButtonGroup = exports.Button = exports.BreadcrumbItem = exports.Breadcrumb = exports.Badge = exports.Alert = exports.Accordion = undefined;
 	
-	var _Accordion2 = __webpack_require__(/*! ./Accordion */ 293);
+	var _Accordion2 = __webpack_require__(/*! ./Accordion */ 292);
 	
 	var _Accordion3 = _interopRequireDefault(_Accordion2);
 	
-	var _Alert2 = __webpack_require__(/*! ./Alert */ 388);
+	var _Alert2 = __webpack_require__(/*! ./Alert */ 387);
 	
 	var _Alert3 = _interopRequireDefault(_Alert2);
 	
-	var _Badge2 = __webpack_require__(/*! ./Badge */ 392);
+	var _Badge2 = __webpack_require__(/*! ./Badge */ 391);
 	
 	var _Badge3 = _interopRequireDefault(_Badge2);
 	
-	var _Breadcrumb2 = __webpack_require__(/*! ./Breadcrumb */ 393);
+	var _Breadcrumb2 = __webpack_require__(/*! ./Breadcrumb */ 392);
 	
 	var _Breadcrumb3 = _interopRequireDefault(_Breadcrumb2);
 	
-	var _BreadcrumbItem2 = __webpack_require__(/*! ./BreadcrumbItem */ 394);
+	var _BreadcrumbItem2 = __webpack_require__(/*! ./BreadcrumbItem */ 393);
 	
 	var _BreadcrumbItem3 = _interopRequireDefault(_BreadcrumbItem2);
 	
-	var _Button2 = __webpack_require__(/*! ./Button */ 398);
+	var _Button2 = __webpack_require__(/*! ./Button */ 397);
 	
 	var _Button3 = _interopRequireDefault(_Button2);
 	
-	var _ButtonGroup2 = __webpack_require__(/*! ./ButtonGroup */ 399);
+	var _ButtonGroup2 = __webpack_require__(/*! ./ButtonGroup */ 398);
 	
 	var _ButtonGroup3 = _interopRequireDefault(_ButtonGroup2);
 	
-	var _ButtonToolbar2 = __webpack_require__(/*! ./ButtonToolbar */ 401);
+	var _ButtonToolbar2 = __webpack_require__(/*! ./ButtonToolbar */ 400);
 	
 	var _ButtonToolbar3 = _interopRequireDefault(_ButtonToolbar2);
 	
-	var _Carousel2 = __webpack_require__(/*! ./Carousel */ 402);
+	var _Carousel2 = __webpack_require__(/*! ./Carousel */ 401);
 	
 	var _Carousel3 = _interopRequireDefault(_Carousel2);
 	
-	var _CarouselItem2 = __webpack_require__(/*! ./CarouselItem */ 404);
+	var _CarouselItem2 = __webpack_require__(/*! ./CarouselItem */ 403);
 	
 	var _CarouselItem3 = _interopRequireDefault(_CarouselItem2);
 	
-	var _Checkbox2 = __webpack_require__(/*! ./Checkbox */ 407);
+	var _Checkbox2 = __webpack_require__(/*! ./Checkbox */ 406);
 	
 	var _Checkbox3 = _interopRequireDefault(_Checkbox2);
 	
-	var _Clearfix2 = __webpack_require__(/*! ./Clearfix */ 409);
+	var _Clearfix2 = __webpack_require__(/*! ./Clearfix */ 408);
 	
 	var _Clearfix3 = _interopRequireDefault(_Clearfix2);
 	
-	var _ControlLabel2 = __webpack_require__(/*! ./ControlLabel */ 411);
+	var _ControlLabel2 = __webpack_require__(/*! ./ControlLabel */ 410);
 	
 	var _ControlLabel3 = _interopRequireDefault(_ControlLabel2);
 	
-	var _Col2 = __webpack_require__(/*! ./Col */ 412);
+	var _Col2 = __webpack_require__(/*! ./Col */ 411);
 	
 	var _Col3 = _interopRequireDefault(_Col2);
 	
-	var _Collapse2 = __webpack_require__(/*! ./Collapse */ 413);
+	var _Collapse2 = __webpack_require__(/*! ./Collapse */ 412);
 	
 	var _Collapse3 = _interopRequireDefault(_Collapse2);
 	
-	var _Dropdown2 = __webpack_require__(/*! ./Dropdown */ 426);
+	var _Dropdown2 = __webpack_require__(/*! ./Dropdown */ 425);
 	
 	var _Dropdown3 = _interopRequireDefault(_Dropdown2);
 	
-	var _DropdownButton2 = __webpack_require__(/*! ./DropdownButton */ 451);
+	var _DropdownButton2 = __webpack_require__(/*! ./DropdownButton */ 450);
 	
 	var _DropdownButton3 = _interopRequireDefault(_DropdownButton2);
 	
-	var _Fade2 = __webpack_require__(/*! ./Fade */ 453);
+	var _Fade2 = __webpack_require__(/*! ./Fade */ 452);
 	
 	var _Fade3 = _interopRequireDefault(_Fade2);
 	
-	var _Form2 = __webpack_require__(/*! ./Form */ 454);
+	var _Form2 = __webpack_require__(/*! ./Form */ 453);
 	
 	var _Form3 = _interopRequireDefault(_Form2);
 	
-	var _FormControl2 = __webpack_require__(/*! ./FormControl */ 455);
+	var _FormControl2 = __webpack_require__(/*! ./FormControl */ 454);
 	
 	var _FormControl3 = _interopRequireDefault(_FormControl2);
 	
-	var _FormGroup2 = __webpack_require__(/*! ./FormGroup */ 458);
+	var _FormGroup2 = __webpack_require__(/*! ./FormGroup */ 457);
 	
 	var _FormGroup3 = _interopRequireDefault(_FormGroup2);
 	
-	var _Glyphicon2 = __webpack_require__(/*! ./Glyphicon */ 406);
+	var _Glyphicon2 = __webpack_require__(/*! ./Glyphicon */ 405);
 	
 	var _Glyphicon3 = _interopRequireDefault(_Glyphicon2);
 	
-	var _Grid2 = __webpack_require__(/*! ./Grid */ 459);
+	var _Grid2 = __webpack_require__(/*! ./Grid */ 458);
 	
 	var _Grid3 = _interopRequireDefault(_Grid2);
 	
-	var _HelpBlock2 = __webpack_require__(/*! ./HelpBlock */ 460);
+	var _HelpBlock2 = __webpack_require__(/*! ./HelpBlock */ 459);
 	
 	var _HelpBlock3 = _interopRequireDefault(_HelpBlock2);
 	
-	var _Image2 = __webpack_require__(/*! ./Image */ 461);
+	var _Image2 = __webpack_require__(/*! ./Image */ 460);
 	
 	var _Image3 = _interopRequireDefault(_Image2);
 	
-	var _InputGroup2 = __webpack_require__(/*! ./InputGroup */ 462);
+	var _InputGroup2 = __webpack_require__(/*! ./InputGroup */ 461);
 	
 	var _InputGroup3 = _interopRequireDefault(_InputGroup2);
 	
-	var _Jumbotron2 = __webpack_require__(/*! ./Jumbotron */ 465);
+	var _Jumbotron2 = __webpack_require__(/*! ./Jumbotron */ 464);
 	
 	var _Jumbotron3 = _interopRequireDefault(_Jumbotron2);
 	
-	var _Label2 = __webpack_require__(/*! ./Label */ 466);
+	var _Label2 = __webpack_require__(/*! ./Label */ 465);
 	
 	var _Label3 = _interopRequireDefault(_Label2);
 	
-	var _ListGroup2 = __webpack_require__(/*! ./ListGroup */ 467);
+	var _ListGroup2 = __webpack_require__(/*! ./ListGroup */ 466);
 	
 	var _ListGroup3 = _interopRequireDefault(_ListGroup2);
 	
-	var _ListGroupItem2 = __webpack_require__(/*! ./ListGroupItem */ 468);
+	var _ListGroupItem2 = __webpack_require__(/*! ./ListGroupItem */ 467);
 	
 	var _ListGroupItem3 = _interopRequireDefault(_ListGroupItem2);
 	
-	var _Media2 = __webpack_require__(/*! ./Media */ 469);
+	var _Media2 = __webpack_require__(/*! ./Media */ 468);
 	
 	var _Media3 = _interopRequireDefault(_Media2);
 	
-	var _MenuItem2 = __webpack_require__(/*! ./MenuItem */ 476);
+	var _MenuItem2 = __webpack_require__(/*! ./MenuItem */ 475);
 	
 	var _MenuItem3 = _interopRequireDefault(_MenuItem2);
 	
-	var _Modal2 = __webpack_require__(/*! ./Modal */ 477);
+	var _Modal2 = __webpack_require__(/*! ./Modal */ 476);
 	
 	var _Modal3 = _interopRequireDefault(_Modal2);
 	
-	var _ModalBody2 = __webpack_require__(/*! ./ModalBody */ 495);
+	var _ModalBody2 = __webpack_require__(/*! ./ModalBody */ 494);
 	
 	var _ModalBody3 = _interopRequireDefault(_ModalBody2);
 	
-	var _ModalFooter2 = __webpack_require__(/*! ./ModalFooter */ 497);
+	var _ModalFooter2 = __webpack_require__(/*! ./ModalFooter */ 496);
 	
 	var _ModalFooter3 = _interopRequireDefault(_ModalFooter2);
 	
-	var _ModalHeader2 = __webpack_require__(/*! ./ModalHeader */ 498);
+	var _ModalHeader2 = __webpack_require__(/*! ./ModalHeader */ 497);
 	
 	var _ModalHeader3 = _interopRequireDefault(_ModalHeader2);
 	
-	var _ModalTitle2 = __webpack_require__(/*! ./ModalTitle */ 499);
+	var _ModalTitle2 = __webpack_require__(/*! ./ModalTitle */ 498);
 	
 	var _ModalTitle3 = _interopRequireDefault(_ModalTitle2);
 	
-	var _Nav2 = __webpack_require__(/*! ./Nav */ 500);
+	var _Nav2 = __webpack_require__(/*! ./Nav */ 499);
 	
 	var _Nav3 = _interopRequireDefault(_Nav2);
 	
-	var _Navbar2 = __webpack_require__(/*! ./Navbar */ 501);
+	var _Navbar2 = __webpack_require__(/*! ./Navbar */ 500);
 	
 	var _Navbar3 = _interopRequireDefault(_Navbar2);
 	
-	var _NavbarBrand2 = __webpack_require__(/*! ./NavbarBrand */ 502);
+	var _NavbarBrand2 = __webpack_require__(/*! ./NavbarBrand */ 501);
 	
 	var _NavbarBrand3 = _interopRequireDefault(_NavbarBrand2);
 	
-	var _NavDropdown2 = __webpack_require__(/*! ./NavDropdown */ 506);
+	var _NavDropdown2 = __webpack_require__(/*! ./NavDropdown */ 505);
 	
 	var _NavDropdown3 = _interopRequireDefault(_NavDropdown2);
 	
-	var _NavItem2 = __webpack_require__(/*! ./NavItem */ 507);
+	var _NavItem2 = __webpack_require__(/*! ./NavItem */ 506);
 	
 	var _NavItem3 = _interopRequireDefault(_NavItem2);
 	
-	var _Overlay2 = __webpack_require__(/*! ./Overlay */ 508);
+	var _Overlay2 = __webpack_require__(/*! ./Overlay */ 507);
 	
 	var _Overlay3 = _interopRequireDefault(_Overlay2);
 	
-	var _OverlayTrigger2 = __webpack_require__(/*! ./OverlayTrigger */ 517);
+	var _OverlayTrigger2 = __webpack_require__(/*! ./OverlayTrigger */ 516);
 	
 	var _OverlayTrigger3 = _interopRequireDefault(_OverlayTrigger2);
 	
-	var _PageHeader2 = __webpack_require__(/*! ./PageHeader */ 518);
+	var _PageHeader2 = __webpack_require__(/*! ./PageHeader */ 517);
 	
 	var _PageHeader3 = _interopRequireDefault(_PageHeader2);
 	
-	var _PageItem2 = __webpack_require__(/*! ./PageItem */ 519);
+	var _PageItem2 = __webpack_require__(/*! ./PageItem */ 518);
 	
 	var _PageItem3 = _interopRequireDefault(_PageItem2);
 	
-	var _Pager2 = __webpack_require__(/*! ./Pager */ 522);
+	var _Pager2 = __webpack_require__(/*! ./Pager */ 521);
 	
 	var _Pager3 = _interopRequireDefault(_Pager2);
 	
-	var _Pagination2 = __webpack_require__(/*! ./Pagination */ 523);
+	var _Pagination2 = __webpack_require__(/*! ./Pagination */ 522);
 	
 	var _Pagination3 = _interopRequireDefault(_Pagination2);
 	
-	var _Panel2 = __webpack_require__(/*! ./Panel */ 525);
+	var _Panel2 = __webpack_require__(/*! ./Panel */ 524);
 	
 	var _Panel3 = _interopRequireDefault(_Panel2);
 	
-	var _PanelGroup2 = __webpack_require__(/*! ./PanelGroup */ 377);
+	var _PanelGroup2 = __webpack_require__(/*! ./PanelGroup */ 376);
 	
 	var _PanelGroup3 = _interopRequireDefault(_PanelGroup2);
 	
-	var _Popover2 = __webpack_require__(/*! ./Popover */ 526);
+	var _Popover2 = __webpack_require__(/*! ./Popover */ 525);
 	
 	var _Popover3 = _interopRequireDefault(_Popover2);
 	
-	var _ProgressBar2 = __webpack_require__(/*! ./ProgressBar */ 527);
+	var _ProgressBar2 = __webpack_require__(/*! ./ProgressBar */ 526);
 	
 	var _ProgressBar3 = _interopRequireDefault(_ProgressBar2);
 	
-	var _Radio2 = __webpack_require__(/*! ./Radio */ 528);
+	var _Radio2 = __webpack_require__(/*! ./Radio */ 527);
 	
 	var _Radio3 = _interopRequireDefault(_Radio2);
 	
-	var _ResponsiveEmbed2 = __webpack_require__(/*! ./ResponsiveEmbed */ 529);
+	var _ResponsiveEmbed2 = __webpack_require__(/*! ./ResponsiveEmbed */ 528);
 	
 	var _ResponsiveEmbed3 = _interopRequireDefault(_ResponsiveEmbed2);
 	
-	var _Row2 = __webpack_require__(/*! ./Row */ 530);
+	var _Row2 = __webpack_require__(/*! ./Row */ 529);
 	
 	var _Row3 = _interopRequireDefault(_Row2);
 	
-	var _SafeAnchor2 = __webpack_require__(/*! ./SafeAnchor */ 395);
+	var _SafeAnchor2 = __webpack_require__(/*! ./SafeAnchor */ 394);
 	
 	var _SafeAnchor3 = _interopRequireDefault(_SafeAnchor2);
 	
-	var _SplitButton2 = __webpack_require__(/*! ./SplitButton */ 531);
+	var _SplitButton2 = __webpack_require__(/*! ./SplitButton */ 530);
 	
 	var _SplitButton3 = _interopRequireDefault(_SplitButton2);
 	
-	var _Tab2 = __webpack_require__(/*! ./Tab */ 533);
+	var _Tab2 = __webpack_require__(/*! ./Tab */ 532);
 	
 	var _Tab3 = _interopRequireDefault(_Tab2);
 	
-	var _TabContainer2 = __webpack_require__(/*! ./TabContainer */ 534);
+	var _TabContainer2 = __webpack_require__(/*! ./TabContainer */ 533);
 	
 	var _TabContainer3 = _interopRequireDefault(_TabContainer2);
 	
-	var _TabContent2 = __webpack_require__(/*! ./TabContent */ 535);
+	var _TabContent2 = __webpack_require__(/*! ./TabContent */ 534);
 	
 	var _TabContent3 = _interopRequireDefault(_TabContent2);
 	
-	var _Table2 = __webpack_require__(/*! ./Table */ 537);
+	var _Table2 = __webpack_require__(/*! ./Table */ 536);
 	
 	var _Table3 = _interopRequireDefault(_Table2);
 	
-	var _TabPane2 = __webpack_require__(/*! ./TabPane */ 536);
+	var _TabPane2 = __webpack_require__(/*! ./TabPane */ 535);
 	
 	var _TabPane3 = _interopRequireDefault(_TabPane2);
 	
-	var _Tabs2 = __webpack_require__(/*! ./Tabs */ 538);
+	var _Tabs2 = __webpack_require__(/*! ./Tabs */ 537);
 	
 	var _Tabs3 = _interopRequireDefault(_Tabs2);
 	
-	var _Thumbnail2 = __webpack_require__(/*! ./Thumbnail */ 539);
+	var _Thumbnail2 = __webpack_require__(/*! ./Thumbnail */ 538);
 	
 	var _Thumbnail3 = _interopRequireDefault(_Thumbnail2);
 	
-	var _Tooltip2 = __webpack_require__(/*! ./Tooltip */ 540);
+	var _Tooltip2 = __webpack_require__(/*! ./Tooltip */ 539);
 	
 	var _Tooltip3 = _interopRequireDefault(_Tooltip2);
 	
-	var _Well2 = __webpack_require__(/*! ./Well */ 541);
+	var _Well2 = __webpack_require__(/*! ./Well */ 540);
 	
 	var _Well3 = _interopRequireDefault(_Well2);
 	
-	var _utils2 = __webpack_require__(/*! ./utils */ 542);
+	var _utils2 = __webpack_require__(/*! ./utils */ 541);
 	
 	var _utils = _interopRequireWildcard(_utils2);
 	
@@ -39613,7 +39497,7 @@ var RDFaAnnotator =
 	exports.utils = _utils;
 
 /***/ },
-/* 293 */
+/* 292 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/Accordion.js ***!
   \********************************************/
@@ -39623,19 +39507,19 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
@@ -39643,7 +39527,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _PanelGroup = __webpack_require__(/*! ./PanelGroup */ 377);
+	var _PanelGroup = __webpack_require__(/*! ./PanelGroup */ 376);
 	
 	var _PanelGroup2 = _interopRequireDefault(_PanelGroup);
 	
@@ -39672,7 +39556,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 294 */
+/* 293 */
 /*!********************************************!*\
   !*** ./~/babel-runtime/helpers/extends.js ***!
   \********************************************/
@@ -39682,7 +39566,7 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _assign = __webpack_require__(/*! ../core-js/object/assign */ 295);
+	var _assign = __webpack_require__(/*! ../core-js/object/assign */ 294);
 	
 	var _assign2 = _interopRequireDefault(_assign);
 	
@@ -39703,47 +39587,47 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 295 */
+/* 294 */
 /*!**************************************************!*\
   !*** ./~/babel-runtime/core-js/object/assign.js ***!
   \**************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/object/assign */ 296), __esModule: true };
+	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/object/assign */ 295), __esModule: true };
 
 /***/ },
-/* 296 */
+/* 295 */
 /*!***************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/fn/object/assign.js ***!
   \***************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(/*! ../../modules/es6.object.assign */ 297);
-	module.exports = __webpack_require__(/*! ../../modules/_core */ 300).Object.assign;
+	__webpack_require__(/*! ../../modules/es6.object.assign */ 296);
+	module.exports = __webpack_require__(/*! ../../modules/_core */ 299).Object.assign;
 
 /***/ },
-/* 297 */
+/* 296 */
 /*!************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es6.object.assign.js ***!
   \************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// 19.1.3.1 Object.assign(target, source)
-	var $export = __webpack_require__(/*! ./_export */ 298);
+	var $export = __webpack_require__(/*! ./_export */ 297);
 	
-	$export($export.S + $export.F, 'Object', {assign: __webpack_require__(/*! ./_object-assign */ 313)});
+	$export($export.S + $export.F, 'Object', {assign: __webpack_require__(/*! ./_object-assign */ 312)});
 
 /***/ },
-/* 298 */
+/* 297 */
 /*!**************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_export.js ***!
   \**************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var global    = __webpack_require__(/*! ./_global */ 299)
-	  , core      = __webpack_require__(/*! ./_core */ 300)
-	  , ctx       = __webpack_require__(/*! ./_ctx */ 301)
-	  , hide      = __webpack_require__(/*! ./_hide */ 303)
+	var global    = __webpack_require__(/*! ./_global */ 298)
+	  , core      = __webpack_require__(/*! ./_core */ 299)
+	  , ctx       = __webpack_require__(/*! ./_ctx */ 300)
+	  , hide      = __webpack_require__(/*! ./_hide */ 302)
 	  , PROTOTYPE = 'prototype';
 	
 	var $export = function(type, name, source){
@@ -39803,7 +39687,7 @@ var RDFaAnnotator =
 	module.exports = $export;
 
 /***/ },
-/* 299 */
+/* 298 */
 /*!**************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_global.js ***!
   \**************************************************************/
@@ -39815,7 +39699,7 @@ var RDFaAnnotator =
 	if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
 
 /***/ },
-/* 300 */
+/* 299 */
 /*!************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_core.js ***!
   \************************************************************/
@@ -39825,14 +39709,14 @@ var RDFaAnnotator =
 	if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
 
 /***/ },
-/* 301 */
+/* 300 */
 /*!***********************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_ctx.js ***!
   \***********************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// optional / simple context binding
-	var aFunction = __webpack_require__(/*! ./_a-function */ 302);
+	var aFunction = __webpack_require__(/*! ./_a-function */ 301);
 	module.exports = function(fn, that, length){
 	  aFunction(fn);
 	  if(that === undefined)return fn;
@@ -39853,7 +39737,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 302 */
+/* 301 */
 /*!******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_a-function.js ***!
   \******************************************************************/
@@ -39865,15 +39749,15 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 303 */
+/* 302 */
 /*!************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_hide.js ***!
   \************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var dP         = __webpack_require__(/*! ./_object-dp */ 304)
-	  , createDesc = __webpack_require__(/*! ./_property-desc */ 312);
-	module.exports = __webpack_require__(/*! ./_descriptors */ 308) ? function(object, key, value){
+	var dP         = __webpack_require__(/*! ./_object-dp */ 303)
+	  , createDesc = __webpack_require__(/*! ./_property-desc */ 311);
+	module.exports = __webpack_require__(/*! ./_descriptors */ 307) ? function(object, key, value){
 	  return dP.f(object, key, createDesc(1, value));
 	} : function(object, key, value){
 	  object[key] = value;
@@ -39881,18 +39765,18 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 304 */
+/* 303 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-dp.js ***!
   \*****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var anObject       = __webpack_require__(/*! ./_an-object */ 305)
-	  , IE8_DOM_DEFINE = __webpack_require__(/*! ./_ie8-dom-define */ 307)
-	  , toPrimitive    = __webpack_require__(/*! ./_to-primitive */ 311)
+	var anObject       = __webpack_require__(/*! ./_an-object */ 304)
+	  , IE8_DOM_DEFINE = __webpack_require__(/*! ./_ie8-dom-define */ 306)
+	  , toPrimitive    = __webpack_require__(/*! ./_to-primitive */ 310)
 	  , dP             = Object.defineProperty;
 	
-	exports.f = __webpack_require__(/*! ./_descriptors */ 308) ? Object.defineProperty : function defineProperty(O, P, Attributes){
+	exports.f = __webpack_require__(/*! ./_descriptors */ 307) ? Object.defineProperty : function defineProperty(O, P, Attributes){
 	  anObject(O);
 	  P = toPrimitive(P, true);
 	  anObject(Attributes);
@@ -39905,20 +39789,20 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 305 */
+/* 304 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_an-object.js ***!
   \*****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(/*! ./_is-object */ 306);
+	var isObject = __webpack_require__(/*! ./_is-object */ 305);
 	module.exports = function(it){
 	  if(!isObject(it))throw TypeError(it + ' is not an object!');
 	  return it;
 	};
 
 /***/ },
-/* 306 */
+/* 305 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_is-object.js ***!
   \*****************************************************************/
@@ -39929,30 +39813,30 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 307 */
+/* 306 */
 /*!**********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_ie8-dom-define.js ***!
   \**********************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = !__webpack_require__(/*! ./_descriptors */ 308) && !__webpack_require__(/*! ./_fails */ 309)(function(){
-	  return Object.defineProperty(__webpack_require__(/*! ./_dom-create */ 310)('div'), 'a', {get: function(){ return 7; }}).a != 7;
+	module.exports = !__webpack_require__(/*! ./_descriptors */ 307) && !__webpack_require__(/*! ./_fails */ 308)(function(){
+	  return Object.defineProperty(__webpack_require__(/*! ./_dom-create */ 309)('div'), 'a', {get: function(){ return 7; }}).a != 7;
 	});
 
 /***/ },
-/* 308 */
+/* 307 */
 /*!*******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_descriptors.js ***!
   \*******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// Thank's IE8 for his funny defineProperty
-	module.exports = !__webpack_require__(/*! ./_fails */ 309)(function(){
+	module.exports = !__webpack_require__(/*! ./_fails */ 308)(function(){
 	  return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
 	});
 
 /***/ },
-/* 309 */
+/* 308 */
 /*!*************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_fails.js ***!
   \*************************************************************/
@@ -39967,14 +39851,14 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 310 */
+/* 309 */
 /*!******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_dom-create.js ***!
   \******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var isObject = __webpack_require__(/*! ./_is-object */ 306)
-	  , document = __webpack_require__(/*! ./_global */ 299).document
+	var isObject = __webpack_require__(/*! ./_is-object */ 305)
+	  , document = __webpack_require__(/*! ./_global */ 298).document
 	  // in old IE typeof document.createElement is 'object'
 	  , is = isObject(document) && isObject(document.createElement);
 	module.exports = function(it){
@@ -39982,14 +39866,14 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 311 */
+/* 310 */
 /*!********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_to-primitive.js ***!
   \********************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// 7.1.1 ToPrimitive(input [, PreferredType])
-	var isObject = __webpack_require__(/*! ./_is-object */ 306);
+	var isObject = __webpack_require__(/*! ./_is-object */ 305);
 	// instead of the ES6 spec version, we didn't implement @@toPrimitive case
 	// and the second argument - flag - preferred type is a string
 	module.exports = function(it, S){
@@ -40002,7 +39886,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 312 */
+/* 311 */
 /*!*********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_property-desc.js ***!
   \*********************************************************************/
@@ -40018,7 +39902,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 313 */
+/* 312 */
 /*!*********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-assign.js ***!
   \*********************************************************************/
@@ -40026,15 +39910,15 @@ var RDFaAnnotator =
 
 	'use strict';
 	// 19.1.2.1 Object.assign(target, source, ...)
-	var getKeys  = __webpack_require__(/*! ./_object-keys */ 314)
-	  , gOPS     = __webpack_require__(/*! ./_object-gops */ 329)
-	  , pIE      = __webpack_require__(/*! ./_object-pie */ 330)
-	  , toObject = __webpack_require__(/*! ./_to-object */ 331)
-	  , IObject  = __webpack_require__(/*! ./_iobject */ 318)
+	var getKeys  = __webpack_require__(/*! ./_object-keys */ 313)
+	  , gOPS     = __webpack_require__(/*! ./_object-gops */ 328)
+	  , pIE      = __webpack_require__(/*! ./_object-pie */ 329)
+	  , toObject = __webpack_require__(/*! ./_to-object */ 330)
+	  , IObject  = __webpack_require__(/*! ./_iobject */ 317)
 	  , $assign  = Object.assign;
 	
 	// should work with symbols and should have deterministic property order (V8 bug)
-	module.exports = !$assign || __webpack_require__(/*! ./_fails */ 309)(function(){
+	module.exports = !$assign || __webpack_require__(/*! ./_fails */ 308)(function(){
 	  var A = {}
 	    , B = {}
 	    , S = Symbol()
@@ -40059,31 +39943,31 @@ var RDFaAnnotator =
 	} : $assign;
 
 /***/ },
-/* 314 */
+/* 313 */
 /*!*******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-keys.js ***!
   \*******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// 19.1.2.14 / 15.2.3.14 Object.keys(O)
-	var $keys       = __webpack_require__(/*! ./_object-keys-internal */ 315)
-	  , enumBugKeys = __webpack_require__(/*! ./_enum-bug-keys */ 328);
+	var $keys       = __webpack_require__(/*! ./_object-keys-internal */ 314)
+	  , enumBugKeys = __webpack_require__(/*! ./_enum-bug-keys */ 327);
 	
 	module.exports = Object.keys || function keys(O){
 	  return $keys(O, enumBugKeys);
 	};
 
 /***/ },
-/* 315 */
+/* 314 */
 /*!****************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-keys-internal.js ***!
   \****************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var has          = __webpack_require__(/*! ./_has */ 316)
-	  , toIObject    = __webpack_require__(/*! ./_to-iobject */ 317)
-	  , arrayIndexOf = __webpack_require__(/*! ./_array-includes */ 321)(false)
-	  , IE_PROTO     = __webpack_require__(/*! ./_shared-key */ 325)('IE_PROTO');
+	var has          = __webpack_require__(/*! ./_has */ 315)
+	  , toIObject    = __webpack_require__(/*! ./_to-iobject */ 316)
+	  , arrayIndexOf = __webpack_require__(/*! ./_array-includes */ 320)(false)
+	  , IE_PROTO     = __webpack_require__(/*! ./_shared-key */ 324)('IE_PROTO');
 	
 	module.exports = function(object, names){
 	  var O      = toIObject(object)
@@ -40099,7 +39983,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 316 */
+/* 315 */
 /*!***********************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_has.js ***!
   \***********************************************************/
@@ -40111,34 +39995,34 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 317 */
+/* 316 */
 /*!******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_to-iobject.js ***!
   \******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// to indexed object, toObject with fallback for non-array-like ES3 strings
-	var IObject = __webpack_require__(/*! ./_iobject */ 318)
-	  , defined = __webpack_require__(/*! ./_defined */ 320);
+	var IObject = __webpack_require__(/*! ./_iobject */ 317)
+	  , defined = __webpack_require__(/*! ./_defined */ 319);
 	module.exports = function(it){
 	  return IObject(defined(it));
 	};
 
 /***/ },
-/* 318 */
+/* 317 */
 /*!***************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_iobject.js ***!
   \***************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// fallback for non-array-like ES3 and non-enumerable old V8 strings
-	var cof = __webpack_require__(/*! ./_cof */ 319);
+	var cof = __webpack_require__(/*! ./_cof */ 318);
 	module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
 	  return cof(it) == 'String' ? it.split('') : Object(it);
 	};
 
 /***/ },
-/* 319 */
+/* 318 */
 /*!***********************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_cof.js ***!
   \***********************************************************/
@@ -40151,7 +40035,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 320 */
+/* 319 */
 /*!***************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_defined.js ***!
   \***************************************************************/
@@ -40164,7 +40048,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 321 */
+/* 320 */
 /*!**********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_array-includes.js ***!
   \**********************************************************************/
@@ -40172,9 +40056,9 @@ var RDFaAnnotator =
 
 	// false -> Array#indexOf
 	// true  -> Array#includes
-	var toIObject = __webpack_require__(/*! ./_to-iobject */ 317)
-	  , toLength  = __webpack_require__(/*! ./_to-length */ 322)
-	  , toIndex   = __webpack_require__(/*! ./_to-index */ 324);
+	var toIObject = __webpack_require__(/*! ./_to-iobject */ 316)
+	  , toLength  = __webpack_require__(/*! ./_to-length */ 321)
+	  , toIndex   = __webpack_require__(/*! ./_to-index */ 323);
 	module.exports = function(IS_INCLUDES){
 	  return function($this, el, fromIndex){
 	    var O      = toIObject($this)
@@ -40193,21 +40077,21 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 322 */
+/* 321 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_to-length.js ***!
   \*****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// 7.1.15 ToLength
-	var toInteger = __webpack_require__(/*! ./_to-integer */ 323)
+	var toInteger = __webpack_require__(/*! ./_to-integer */ 322)
 	  , min       = Math.min;
 	module.exports = function(it){
 	  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 	};
 
 /***/ },
-/* 323 */
+/* 322 */
 /*!******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_to-integer.js ***!
   \******************************************************************/
@@ -40221,13 +40105,13 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 324 */
+/* 323 */
 /*!****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_to-index.js ***!
   \****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var toInteger = __webpack_require__(/*! ./_to-integer */ 323)
+	var toInteger = __webpack_require__(/*! ./_to-integer */ 322)
 	  , max       = Math.max
 	  , min       = Math.min;
 	module.exports = function(index, length){
@@ -40236,26 +40120,26 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 325 */
+/* 324 */
 /*!******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_shared-key.js ***!
   \******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var shared = __webpack_require__(/*! ./_shared */ 326)('keys')
-	  , uid    = __webpack_require__(/*! ./_uid */ 327);
+	var shared = __webpack_require__(/*! ./_shared */ 325)('keys')
+	  , uid    = __webpack_require__(/*! ./_uid */ 326);
 	module.exports = function(key){
 	  return shared[key] || (shared[key] = uid(key));
 	};
 
 /***/ },
-/* 326 */
+/* 325 */
 /*!**************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_shared.js ***!
   \**************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var global = __webpack_require__(/*! ./_global */ 299)
+	var global = __webpack_require__(/*! ./_global */ 298)
 	  , SHARED = '__core-js_shared__'
 	  , store  = global[SHARED] || (global[SHARED] = {});
 	module.exports = function(key){
@@ -40263,7 +40147,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 327 */
+/* 326 */
 /*!***********************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_uid.js ***!
   \***********************************************************/
@@ -40276,7 +40160,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 328 */
+/* 327 */
 /*!*********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_enum-bug-keys.js ***!
   \*********************************************************************/
@@ -40288,7 +40172,7 @@ var RDFaAnnotator =
 	).split(',');
 
 /***/ },
-/* 329 */
+/* 328 */
 /*!*******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-gops.js ***!
   \*******************************************************************/
@@ -40297,7 +40181,7 @@ var RDFaAnnotator =
 	exports.f = Object.getOwnPropertySymbols;
 
 /***/ },
-/* 330 */
+/* 329 */
 /*!******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-pie.js ***!
   \******************************************************************/
@@ -40306,20 +40190,20 @@ var RDFaAnnotator =
 	exports.f = {}.propertyIsEnumerable;
 
 /***/ },
-/* 331 */
+/* 330 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_to-object.js ***!
   \*****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// 7.1.13 ToObject(argument)
-	var defined = __webpack_require__(/*! ./_defined */ 320);
+	var defined = __webpack_require__(/*! ./_defined */ 319);
 	module.exports = function(it){
 	  return Object(defined(it));
 	};
 
 /***/ },
-/* 332 */
+/* 331 */
 /*!***************************************************!*\
   !*** ./~/babel-runtime/helpers/classCallCheck.js ***!
   \***************************************************/
@@ -40336,7 +40220,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 333 */
+/* 332 */
 /*!**************************************************************!*\
   !*** ./~/babel-runtime/helpers/possibleConstructorReturn.js ***!
   \**************************************************************/
@@ -40346,7 +40230,7 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _typeof2 = __webpack_require__(/*! ../helpers/typeof */ 334);
+	var _typeof2 = __webpack_require__(/*! ../helpers/typeof */ 333);
 	
 	var _typeof3 = _interopRequireDefault(_typeof2);
 	
@@ -40361,7 +40245,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 334 */
+/* 333 */
 /*!*******************************************!*\
   !*** ./~/babel-runtime/helpers/typeof.js ***!
   \*******************************************/
@@ -40371,11 +40255,11 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _iterator = __webpack_require__(/*! ../core-js/symbol/iterator */ 335);
+	var _iterator = __webpack_require__(/*! ../core-js/symbol/iterator */ 334);
 	
 	var _iterator2 = _interopRequireDefault(_iterator);
 	
-	var _symbol = __webpack_require__(/*! ../core-js/symbol */ 355);
+	var _symbol = __webpack_require__(/*! ../core-js/symbol */ 354);
 	
 	var _symbol2 = _interopRequireDefault(_symbol);
 	
@@ -40390,37 +40274,37 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 335 */
+/* 334 */
 /*!****************************************************!*\
   !*** ./~/babel-runtime/core-js/symbol/iterator.js ***!
   \****************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/symbol/iterator */ 336), __esModule: true };
+	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/symbol/iterator */ 335), __esModule: true };
 
 /***/ },
-/* 336 */
+/* 335 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/fn/symbol/iterator.js ***!
   \*****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(/*! ../../modules/es6.string.iterator */ 337);
-	__webpack_require__(/*! ../../modules/web.dom.iterable */ 350);
-	module.exports = __webpack_require__(/*! ../../modules/_wks-ext */ 354).f('iterator');
+	__webpack_require__(/*! ../../modules/es6.string.iterator */ 336);
+	__webpack_require__(/*! ../../modules/web.dom.iterable */ 349);
+	module.exports = __webpack_require__(/*! ../../modules/_wks-ext */ 353).f('iterator');
 
 /***/ },
-/* 337 */
+/* 336 */
 /*!**************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es6.string.iterator.js ***!
   \**************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var $at  = __webpack_require__(/*! ./_string-at */ 338)(true);
+	var $at  = __webpack_require__(/*! ./_string-at */ 337)(true);
 	
 	// 21.1.3.27 String.prototype[@@iterator]()
-	__webpack_require__(/*! ./_iter-define */ 339)(String, 'String', function(iterated){
+	__webpack_require__(/*! ./_iter-define */ 338)(String, 'String', function(iterated){
 	  this._t = String(iterated); // target
 	  this._i = 0;                // next index
 	// 21.1.5.2.1 %StringIteratorPrototype%.next()
@@ -40435,14 +40319,14 @@ var RDFaAnnotator =
 	});
 
 /***/ },
-/* 338 */
+/* 337 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_string-at.js ***!
   \*****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var toInteger = __webpack_require__(/*! ./_to-integer */ 323)
-	  , defined   = __webpack_require__(/*! ./_defined */ 320);
+	var toInteger = __webpack_require__(/*! ./_to-integer */ 322)
+	  , defined   = __webpack_require__(/*! ./_defined */ 319);
 	// true  -> String#at
 	// false -> String#codePointAt
 	module.exports = function(TO_STRING){
@@ -40460,23 +40344,23 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 339 */
+/* 338 */
 /*!*******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_iter-define.js ***!
   \*******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var LIBRARY        = __webpack_require__(/*! ./_library */ 340)
-	  , $export        = __webpack_require__(/*! ./_export */ 298)
-	  , redefine       = __webpack_require__(/*! ./_redefine */ 341)
-	  , hide           = __webpack_require__(/*! ./_hide */ 303)
-	  , has            = __webpack_require__(/*! ./_has */ 316)
-	  , Iterators      = __webpack_require__(/*! ./_iterators */ 342)
-	  , $iterCreate    = __webpack_require__(/*! ./_iter-create */ 343)
-	  , setToStringTag = __webpack_require__(/*! ./_set-to-string-tag */ 347)
-	  , getPrototypeOf = __webpack_require__(/*! ./_object-gpo */ 349)
-	  , ITERATOR       = __webpack_require__(/*! ./_wks */ 348)('iterator')
+	var LIBRARY        = __webpack_require__(/*! ./_library */ 339)
+	  , $export        = __webpack_require__(/*! ./_export */ 297)
+	  , redefine       = __webpack_require__(/*! ./_redefine */ 340)
+	  , hide           = __webpack_require__(/*! ./_hide */ 302)
+	  , has            = __webpack_require__(/*! ./_has */ 315)
+	  , Iterators      = __webpack_require__(/*! ./_iterators */ 341)
+	  , $iterCreate    = __webpack_require__(/*! ./_iter-create */ 342)
+	  , setToStringTag = __webpack_require__(/*! ./_set-to-string-tag */ 346)
+	  , getPrototypeOf = __webpack_require__(/*! ./_object-gpo */ 348)
+	  , ITERATOR       = __webpack_require__(/*! ./_wks */ 347)('iterator')
 	  , BUGGY          = !([].keys && 'next' in [].keys()) // Safari has buggy iterators w/o `next`
 	  , FF_ITERATOR    = '@@iterator'
 	  , KEYS           = 'keys'
@@ -40538,7 +40422,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 340 */
+/* 339 */
 /*!***************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_library.js ***!
   \***************************************************************/
@@ -40547,16 +40431,16 @@ var RDFaAnnotator =
 	module.exports = true;
 
 /***/ },
-/* 341 */
+/* 340 */
 /*!****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_redefine.js ***!
   \****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(/*! ./_hide */ 303);
+	module.exports = __webpack_require__(/*! ./_hide */ 302);
 
 /***/ },
-/* 342 */
+/* 341 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_iterators.js ***!
   \*****************************************************************/
@@ -40565,20 +40449,20 @@ var RDFaAnnotator =
 	module.exports = {};
 
 /***/ },
-/* 343 */
+/* 342 */
 /*!*******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_iter-create.js ***!
   \*******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var create         = __webpack_require__(/*! ./_object-create */ 344)
-	  , descriptor     = __webpack_require__(/*! ./_property-desc */ 312)
-	  , setToStringTag = __webpack_require__(/*! ./_set-to-string-tag */ 347)
+	var create         = __webpack_require__(/*! ./_object-create */ 343)
+	  , descriptor     = __webpack_require__(/*! ./_property-desc */ 311)
+	  , setToStringTag = __webpack_require__(/*! ./_set-to-string-tag */ 346)
 	  , IteratorPrototype = {};
 	
 	// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-	__webpack_require__(/*! ./_hide */ 303)(IteratorPrototype, __webpack_require__(/*! ./_wks */ 348)('iterator'), function(){ return this; });
+	__webpack_require__(/*! ./_hide */ 302)(IteratorPrototype, __webpack_require__(/*! ./_wks */ 347)('iterator'), function(){ return this; });
 	
 	module.exports = function(Constructor, NAME, next){
 	  Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
@@ -40586,30 +40470,30 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 344 */
+/* 343 */
 /*!*********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-create.js ***!
   \*********************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-	var anObject    = __webpack_require__(/*! ./_an-object */ 305)
-	  , dPs         = __webpack_require__(/*! ./_object-dps */ 345)
-	  , enumBugKeys = __webpack_require__(/*! ./_enum-bug-keys */ 328)
-	  , IE_PROTO    = __webpack_require__(/*! ./_shared-key */ 325)('IE_PROTO')
+	var anObject    = __webpack_require__(/*! ./_an-object */ 304)
+	  , dPs         = __webpack_require__(/*! ./_object-dps */ 344)
+	  , enumBugKeys = __webpack_require__(/*! ./_enum-bug-keys */ 327)
+	  , IE_PROTO    = __webpack_require__(/*! ./_shared-key */ 324)('IE_PROTO')
 	  , Empty       = function(){ /* empty */ }
 	  , PROTOTYPE   = 'prototype';
 	
 	// Create object with fake `null` prototype: use iframe Object with cleared prototype
 	var createDict = function(){
 	  // Thrash, waste and sodomy: IE GC bug
-	  var iframe = __webpack_require__(/*! ./_dom-create */ 310)('iframe')
+	  var iframe = __webpack_require__(/*! ./_dom-create */ 309)('iframe')
 	    , i      = enumBugKeys.length
 	    , lt     = '<'
 	    , gt     = '>'
 	    , iframeDocument;
 	  iframe.style.display = 'none';
-	  __webpack_require__(/*! ./_html */ 346).appendChild(iframe);
+	  __webpack_require__(/*! ./_html */ 345).appendChild(iframe);
 	  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
 	  // createDict = iframe.contentWindow.Object;
 	  // html.removeChild(iframe);
@@ -40636,17 +40520,17 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 345 */
+/* 344 */
 /*!******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-dps.js ***!
   \******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var dP       = __webpack_require__(/*! ./_object-dp */ 304)
-	  , anObject = __webpack_require__(/*! ./_an-object */ 305)
-	  , getKeys  = __webpack_require__(/*! ./_object-keys */ 314);
+	var dP       = __webpack_require__(/*! ./_object-dp */ 303)
+	  , anObject = __webpack_require__(/*! ./_an-object */ 304)
+	  , getKeys  = __webpack_require__(/*! ./_object-keys */ 313);
 	
-	module.exports = __webpack_require__(/*! ./_descriptors */ 308) ? Object.defineProperties : function defineProperties(O, Properties){
+	module.exports = __webpack_require__(/*! ./_descriptors */ 307) ? Object.defineProperties : function defineProperties(O, Properties){
 	  anObject(O);
 	  var keys   = getKeys(Properties)
 	    , length = keys.length
@@ -40657,39 +40541,39 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 346 */
+/* 345 */
 /*!************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_html.js ***!
   \************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(/*! ./_global */ 299).document && document.documentElement;
+	module.exports = __webpack_require__(/*! ./_global */ 298).document && document.documentElement;
 
 /***/ },
-/* 347 */
+/* 346 */
 /*!*************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_set-to-string-tag.js ***!
   \*************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var def = __webpack_require__(/*! ./_object-dp */ 304).f
-	  , has = __webpack_require__(/*! ./_has */ 316)
-	  , TAG = __webpack_require__(/*! ./_wks */ 348)('toStringTag');
+	var def = __webpack_require__(/*! ./_object-dp */ 303).f
+	  , has = __webpack_require__(/*! ./_has */ 315)
+	  , TAG = __webpack_require__(/*! ./_wks */ 347)('toStringTag');
 	
 	module.exports = function(it, tag, stat){
 	  if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
 	};
 
 /***/ },
-/* 348 */
+/* 347 */
 /*!***********************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_wks.js ***!
   \***********************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var store      = __webpack_require__(/*! ./_shared */ 326)('wks')
-	  , uid        = __webpack_require__(/*! ./_uid */ 327)
-	  , Symbol     = __webpack_require__(/*! ./_global */ 299).Symbol
+	var store      = __webpack_require__(/*! ./_shared */ 325)('wks')
+	  , uid        = __webpack_require__(/*! ./_uid */ 326)
+	  , Symbol     = __webpack_require__(/*! ./_global */ 298).Symbol
 	  , USE_SYMBOL = typeof Symbol == 'function';
 	
 	var $exports = module.exports = function(name){
@@ -40700,16 +40584,16 @@ var RDFaAnnotator =
 	$exports.store = store;
 
 /***/ },
-/* 349 */
+/* 348 */
 /*!******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-gpo.js ***!
   \******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
-	var has         = __webpack_require__(/*! ./_has */ 316)
-	  , toObject    = __webpack_require__(/*! ./_to-object */ 331)
-	  , IE_PROTO    = __webpack_require__(/*! ./_shared-key */ 325)('IE_PROTO')
+	var has         = __webpack_require__(/*! ./_has */ 315)
+	  , toObject    = __webpack_require__(/*! ./_to-object */ 330)
+	  , IE_PROTO    = __webpack_require__(/*! ./_shared-key */ 324)('IE_PROTO')
 	  , ObjectProto = Object.prototype;
 	
 	module.exports = Object.getPrototypeOf || function(O){
@@ -40721,17 +40605,17 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 350 */
+/* 349 */
 /*!***********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/web.dom.iterable.js ***!
   \***********************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(/*! ./es6.array.iterator */ 351);
-	var global        = __webpack_require__(/*! ./_global */ 299)
-	  , hide          = __webpack_require__(/*! ./_hide */ 303)
-	  , Iterators     = __webpack_require__(/*! ./_iterators */ 342)
-	  , TO_STRING_TAG = __webpack_require__(/*! ./_wks */ 348)('toStringTag');
+	__webpack_require__(/*! ./es6.array.iterator */ 350);
+	var global        = __webpack_require__(/*! ./_global */ 298)
+	  , hide          = __webpack_require__(/*! ./_hide */ 302)
+	  , Iterators     = __webpack_require__(/*! ./_iterators */ 341)
+	  , TO_STRING_TAG = __webpack_require__(/*! ./_wks */ 347)('toStringTag');
 	
 	for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], i = 0; i < 5; i++){
 	  var NAME       = collections[i]
@@ -40742,23 +40626,23 @@ var RDFaAnnotator =
 	}
 
 /***/ },
-/* 351 */
+/* 350 */
 /*!*************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es6.array.iterator.js ***!
   \*************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var addToUnscopables = __webpack_require__(/*! ./_add-to-unscopables */ 352)
-	  , step             = __webpack_require__(/*! ./_iter-step */ 353)
-	  , Iterators        = __webpack_require__(/*! ./_iterators */ 342)
-	  , toIObject        = __webpack_require__(/*! ./_to-iobject */ 317);
+	var addToUnscopables = __webpack_require__(/*! ./_add-to-unscopables */ 351)
+	  , step             = __webpack_require__(/*! ./_iter-step */ 352)
+	  , Iterators        = __webpack_require__(/*! ./_iterators */ 341)
+	  , toIObject        = __webpack_require__(/*! ./_to-iobject */ 316);
 	
 	// 22.1.3.4 Array.prototype.entries()
 	// 22.1.3.13 Array.prototype.keys()
 	// 22.1.3.29 Array.prototype.values()
 	// 22.1.3.30 Array.prototype[@@iterator]()
-	module.exports = __webpack_require__(/*! ./_iter-define */ 339)(Array, 'Array', function(iterated, kind){
+	module.exports = __webpack_require__(/*! ./_iter-define */ 338)(Array, 'Array', function(iterated, kind){
 	  this._t = toIObject(iterated); // target
 	  this._i = 0;                   // next index
 	  this._k = kind;                // kind
@@ -40784,7 +40668,7 @@ var RDFaAnnotator =
 	addToUnscopables('entries');
 
 /***/ },
-/* 352 */
+/* 351 */
 /*!**************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_add-to-unscopables.js ***!
   \**************************************************************************/
@@ -40793,7 +40677,7 @@ var RDFaAnnotator =
 	module.exports = function(){ /* empty */ };
 
 /***/ },
-/* 353 */
+/* 352 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_iter-step.js ***!
   \*****************************************************************/
@@ -40804,38 +40688,38 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 354 */
+/* 353 */
 /*!***************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_wks-ext.js ***!
   \***************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	exports.f = __webpack_require__(/*! ./_wks */ 348);
+	exports.f = __webpack_require__(/*! ./_wks */ 347);
 
 /***/ },
-/* 355 */
+/* 354 */
 /*!*******************************************!*\
   !*** ./~/babel-runtime/core-js/symbol.js ***!
   \*******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/symbol */ 356), __esModule: true };
+	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/symbol */ 355), __esModule: true };
 
 /***/ },
-/* 356 */
+/* 355 */
 /*!**************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/fn/symbol/index.js ***!
   \**************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(/*! ../../modules/es6.symbol */ 357);
-	__webpack_require__(/*! ../../modules/es6.object.to-string */ 366);
-	__webpack_require__(/*! ../../modules/es7.symbol.async-iterator */ 367);
-	__webpack_require__(/*! ../../modules/es7.symbol.observable */ 368);
-	module.exports = __webpack_require__(/*! ../../modules/_core */ 300).Symbol;
+	__webpack_require__(/*! ../../modules/es6.symbol */ 356);
+	__webpack_require__(/*! ../../modules/es6.object.to-string */ 365);
+	__webpack_require__(/*! ../../modules/es7.symbol.async-iterator */ 366);
+	__webpack_require__(/*! ../../modules/es7.symbol.observable */ 367);
+	module.exports = __webpack_require__(/*! ../../modules/_core */ 299).Symbol;
 
 /***/ },
-/* 357 */
+/* 356 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es6.symbol.js ***!
   \*****************************************************************/
@@ -40843,31 +40727,31 @@ var RDFaAnnotator =
 
 	'use strict';
 	// ECMAScript 6 symbols shim
-	var global         = __webpack_require__(/*! ./_global */ 299)
-	  , has            = __webpack_require__(/*! ./_has */ 316)
-	  , DESCRIPTORS    = __webpack_require__(/*! ./_descriptors */ 308)
-	  , $export        = __webpack_require__(/*! ./_export */ 298)
-	  , redefine       = __webpack_require__(/*! ./_redefine */ 341)
-	  , META           = __webpack_require__(/*! ./_meta */ 358).KEY
-	  , $fails         = __webpack_require__(/*! ./_fails */ 309)
-	  , shared         = __webpack_require__(/*! ./_shared */ 326)
-	  , setToStringTag = __webpack_require__(/*! ./_set-to-string-tag */ 347)
-	  , uid            = __webpack_require__(/*! ./_uid */ 327)
-	  , wks            = __webpack_require__(/*! ./_wks */ 348)
-	  , wksExt         = __webpack_require__(/*! ./_wks-ext */ 354)
-	  , wksDefine      = __webpack_require__(/*! ./_wks-define */ 359)
-	  , keyOf          = __webpack_require__(/*! ./_keyof */ 360)
-	  , enumKeys       = __webpack_require__(/*! ./_enum-keys */ 361)
-	  , isArray        = __webpack_require__(/*! ./_is-array */ 362)
-	  , anObject       = __webpack_require__(/*! ./_an-object */ 305)
-	  , toIObject      = __webpack_require__(/*! ./_to-iobject */ 317)
-	  , toPrimitive    = __webpack_require__(/*! ./_to-primitive */ 311)
-	  , createDesc     = __webpack_require__(/*! ./_property-desc */ 312)
-	  , _create        = __webpack_require__(/*! ./_object-create */ 344)
-	  , gOPNExt        = __webpack_require__(/*! ./_object-gopn-ext */ 363)
-	  , $GOPD          = __webpack_require__(/*! ./_object-gopd */ 365)
-	  , $DP            = __webpack_require__(/*! ./_object-dp */ 304)
-	  , $keys          = __webpack_require__(/*! ./_object-keys */ 314)
+	var global         = __webpack_require__(/*! ./_global */ 298)
+	  , has            = __webpack_require__(/*! ./_has */ 315)
+	  , DESCRIPTORS    = __webpack_require__(/*! ./_descriptors */ 307)
+	  , $export        = __webpack_require__(/*! ./_export */ 297)
+	  , redefine       = __webpack_require__(/*! ./_redefine */ 340)
+	  , META           = __webpack_require__(/*! ./_meta */ 357).KEY
+	  , $fails         = __webpack_require__(/*! ./_fails */ 308)
+	  , shared         = __webpack_require__(/*! ./_shared */ 325)
+	  , setToStringTag = __webpack_require__(/*! ./_set-to-string-tag */ 346)
+	  , uid            = __webpack_require__(/*! ./_uid */ 326)
+	  , wks            = __webpack_require__(/*! ./_wks */ 347)
+	  , wksExt         = __webpack_require__(/*! ./_wks-ext */ 353)
+	  , wksDefine      = __webpack_require__(/*! ./_wks-define */ 358)
+	  , keyOf          = __webpack_require__(/*! ./_keyof */ 359)
+	  , enumKeys       = __webpack_require__(/*! ./_enum-keys */ 360)
+	  , isArray        = __webpack_require__(/*! ./_is-array */ 361)
+	  , anObject       = __webpack_require__(/*! ./_an-object */ 304)
+	  , toIObject      = __webpack_require__(/*! ./_to-iobject */ 316)
+	  , toPrimitive    = __webpack_require__(/*! ./_to-primitive */ 310)
+	  , createDesc     = __webpack_require__(/*! ./_property-desc */ 311)
+	  , _create        = __webpack_require__(/*! ./_object-create */ 343)
+	  , gOPNExt        = __webpack_require__(/*! ./_object-gopn-ext */ 362)
+	  , $GOPD          = __webpack_require__(/*! ./_object-gopd */ 364)
+	  , $DP            = __webpack_require__(/*! ./_object-dp */ 303)
+	  , $keys          = __webpack_require__(/*! ./_object-keys */ 313)
 	  , gOPD           = $GOPD.f
 	  , dP             = $DP.f
 	  , gOPN           = gOPNExt.f
@@ -40990,11 +40874,11 @@ var RDFaAnnotator =
 	
 	  $GOPD.f = $getOwnPropertyDescriptor;
 	  $DP.f   = $defineProperty;
-	  __webpack_require__(/*! ./_object-gopn */ 364).f = gOPNExt.f = $getOwnPropertyNames;
-	  __webpack_require__(/*! ./_object-pie */ 330).f  = $propertyIsEnumerable;
-	  __webpack_require__(/*! ./_object-gops */ 329).f = $getOwnPropertySymbols;
+	  __webpack_require__(/*! ./_object-gopn */ 363).f = gOPNExt.f = $getOwnPropertyNames;
+	  __webpack_require__(/*! ./_object-pie */ 329).f  = $propertyIsEnumerable;
+	  __webpack_require__(/*! ./_object-gops */ 328).f = $getOwnPropertySymbols;
 	
-	  if(DESCRIPTORS && !__webpack_require__(/*! ./_library */ 340)){
+	  if(DESCRIPTORS && !__webpack_require__(/*! ./_library */ 339)){
 	    redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
 	  }
 	
@@ -41069,7 +40953,7 @@ var RDFaAnnotator =
 	});
 	
 	// 19.4.3.4 Symbol.prototype[@@toPrimitive](hint)
-	$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(/*! ./_hide */ 303)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
+	$Symbol[PROTOTYPE][TO_PRIMITIVE] || __webpack_require__(/*! ./_hide */ 302)($Symbol[PROTOTYPE], TO_PRIMITIVE, $Symbol[PROTOTYPE].valueOf);
 	// 19.4.3.5 Symbol.prototype[@@toStringTag]
 	setToStringTag($Symbol, 'Symbol');
 	// 20.2.1.9 Math[@@toStringTag]
@@ -41078,21 +40962,21 @@ var RDFaAnnotator =
 	setToStringTag(global.JSON, 'JSON', true);
 
 /***/ },
-/* 358 */
+/* 357 */
 /*!************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_meta.js ***!
   \************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var META     = __webpack_require__(/*! ./_uid */ 327)('meta')
-	  , isObject = __webpack_require__(/*! ./_is-object */ 306)
-	  , has      = __webpack_require__(/*! ./_has */ 316)
-	  , setDesc  = __webpack_require__(/*! ./_object-dp */ 304).f
+	var META     = __webpack_require__(/*! ./_uid */ 326)('meta')
+	  , isObject = __webpack_require__(/*! ./_is-object */ 305)
+	  , has      = __webpack_require__(/*! ./_has */ 315)
+	  , setDesc  = __webpack_require__(/*! ./_object-dp */ 303).f
 	  , id       = 0;
 	var isExtensible = Object.isExtensible || function(){
 	  return true;
 	};
-	var FREEZE = !__webpack_require__(/*! ./_fails */ 309)(function(){
+	var FREEZE = !__webpack_require__(/*! ./_fails */ 308)(function(){
 	  return isExtensible(Object.preventExtensions({}));
 	});
 	var setMeta = function(it){
@@ -41139,31 +41023,31 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 359 */
+/* 358 */
 /*!******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_wks-define.js ***!
   \******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var global         = __webpack_require__(/*! ./_global */ 299)
-	  , core           = __webpack_require__(/*! ./_core */ 300)
-	  , LIBRARY        = __webpack_require__(/*! ./_library */ 340)
-	  , wksExt         = __webpack_require__(/*! ./_wks-ext */ 354)
-	  , defineProperty = __webpack_require__(/*! ./_object-dp */ 304).f;
+	var global         = __webpack_require__(/*! ./_global */ 298)
+	  , core           = __webpack_require__(/*! ./_core */ 299)
+	  , LIBRARY        = __webpack_require__(/*! ./_library */ 339)
+	  , wksExt         = __webpack_require__(/*! ./_wks-ext */ 353)
+	  , defineProperty = __webpack_require__(/*! ./_object-dp */ 303).f;
 	module.exports = function(name){
 	  var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
 	  if(name.charAt(0) != '_' && !(name in $Symbol))defineProperty($Symbol, name, {value: wksExt.f(name)});
 	};
 
 /***/ },
-/* 360 */
+/* 359 */
 /*!*************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_keyof.js ***!
   \*************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var getKeys   = __webpack_require__(/*! ./_object-keys */ 314)
-	  , toIObject = __webpack_require__(/*! ./_to-iobject */ 317);
+	var getKeys   = __webpack_require__(/*! ./_object-keys */ 313)
+	  , toIObject = __webpack_require__(/*! ./_to-iobject */ 316);
 	module.exports = function(object, el){
 	  var O      = toIObject(object)
 	    , keys   = getKeys(O)
@@ -41174,16 +41058,16 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 361 */
+/* 360 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_enum-keys.js ***!
   \*****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// all enumerable object keys, includes symbols
-	var getKeys = __webpack_require__(/*! ./_object-keys */ 314)
-	  , gOPS    = __webpack_require__(/*! ./_object-gops */ 329)
-	  , pIE     = __webpack_require__(/*! ./_object-pie */ 330);
+	var getKeys = __webpack_require__(/*! ./_object-keys */ 313)
+	  , gOPS    = __webpack_require__(/*! ./_object-gops */ 328)
+	  , pIE     = __webpack_require__(/*! ./_object-pie */ 329);
 	module.exports = function(it){
 	  var result     = getKeys(it)
 	    , getSymbols = gOPS.f;
@@ -41197,28 +41081,28 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 362 */
+/* 361 */
 /*!****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_is-array.js ***!
   \****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// 7.2.2 IsArray(argument)
-	var cof = __webpack_require__(/*! ./_cof */ 319);
+	var cof = __webpack_require__(/*! ./_cof */ 318);
 	module.exports = Array.isArray || function isArray(arg){
 	  return cof(arg) == 'Array';
 	};
 
 /***/ },
-/* 363 */
+/* 362 */
 /*!***********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-gopn-ext.js ***!
   \***********************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// fallback for IE11 buggy Object.getOwnPropertyNames with iframe and window
-	var toIObject = __webpack_require__(/*! ./_to-iobject */ 317)
-	  , gOPN      = __webpack_require__(/*! ./_object-gopn */ 364).f
+	var toIObject = __webpack_require__(/*! ./_to-iobject */ 316)
+	  , gOPN      = __webpack_require__(/*! ./_object-gopn */ 363).f
 	  , toString  = {}.toString;
 	
 	var windowNames = typeof window == 'object' && window && Object.getOwnPropertyNames
@@ -41238,36 +41122,36 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 364 */
+/* 363 */
 /*!*******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-gopn.js ***!
   \*******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// 19.1.2.7 / 15.2.3.4 Object.getOwnPropertyNames(O)
-	var $keys      = __webpack_require__(/*! ./_object-keys-internal */ 315)
-	  , hiddenKeys = __webpack_require__(/*! ./_enum-bug-keys */ 328).concat('length', 'prototype');
+	var $keys      = __webpack_require__(/*! ./_object-keys-internal */ 314)
+	  , hiddenKeys = __webpack_require__(/*! ./_enum-bug-keys */ 327).concat('length', 'prototype');
 	
 	exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O){
 	  return $keys(O, hiddenKeys);
 	};
 
 /***/ },
-/* 365 */
+/* 364 */
 /*!*******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-gopd.js ***!
   \*******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var pIE            = __webpack_require__(/*! ./_object-pie */ 330)
-	  , createDesc     = __webpack_require__(/*! ./_property-desc */ 312)
-	  , toIObject      = __webpack_require__(/*! ./_to-iobject */ 317)
-	  , toPrimitive    = __webpack_require__(/*! ./_to-primitive */ 311)
-	  , has            = __webpack_require__(/*! ./_has */ 316)
-	  , IE8_DOM_DEFINE = __webpack_require__(/*! ./_ie8-dom-define */ 307)
+	var pIE            = __webpack_require__(/*! ./_object-pie */ 329)
+	  , createDesc     = __webpack_require__(/*! ./_property-desc */ 311)
+	  , toIObject      = __webpack_require__(/*! ./_to-iobject */ 316)
+	  , toPrimitive    = __webpack_require__(/*! ./_to-primitive */ 310)
+	  , has            = __webpack_require__(/*! ./_has */ 315)
+	  , IE8_DOM_DEFINE = __webpack_require__(/*! ./_ie8-dom-define */ 306)
 	  , gOPD           = Object.getOwnPropertyDescriptor;
 	
-	exports.f = __webpack_require__(/*! ./_descriptors */ 308) ? gOPD : function getOwnPropertyDescriptor(O, P){
+	exports.f = __webpack_require__(/*! ./_descriptors */ 307) ? gOPD : function getOwnPropertyDescriptor(O, P){
 	  O = toIObject(O);
 	  P = toPrimitive(P, true);
 	  if(IE8_DOM_DEFINE)try {
@@ -41277,7 +41161,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 366 */
+/* 365 */
 /*!***************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es6.object.to-string.js ***!
   \***************************************************************************/
@@ -41286,25 +41170,25 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 367 */
+/* 366 */
 /*!********************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es7.symbol.async-iterator.js ***!
   \********************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(/*! ./_wks-define */ 359)('asyncIterator');
+	__webpack_require__(/*! ./_wks-define */ 358)('asyncIterator');
 
 /***/ },
-/* 368 */
+/* 367 */
 /*!****************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es7.symbol.observable.js ***!
   \****************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(/*! ./_wks-define */ 359)('observable');
+	__webpack_require__(/*! ./_wks-define */ 358)('observable');
 
 /***/ },
-/* 369 */
+/* 368 */
 /*!*********************************************!*\
   !*** ./~/babel-runtime/helpers/inherits.js ***!
   \*********************************************/
@@ -41314,15 +41198,15 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _setPrototypeOf = __webpack_require__(/*! ../core-js/object/set-prototype-of */ 370);
+	var _setPrototypeOf = __webpack_require__(/*! ../core-js/object/set-prototype-of */ 369);
 	
 	var _setPrototypeOf2 = _interopRequireDefault(_setPrototypeOf);
 	
-	var _create = __webpack_require__(/*! ../core-js/object/create */ 374);
+	var _create = __webpack_require__(/*! ../core-js/object/create */ 373);
 	
 	var _create2 = _interopRequireDefault(_create);
 	
-	var _typeof2 = __webpack_require__(/*! ../helpers/typeof */ 334);
+	var _typeof2 = __webpack_require__(/*! ../helpers/typeof */ 333);
 	
 	var _typeof3 = _interopRequireDefault(_typeof2);
 	
@@ -41345,37 +41229,37 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 370 */
+/* 369 */
 /*!************************************************************!*\
   !*** ./~/babel-runtime/core-js/object/set-prototype-of.js ***!
   \************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/object/set-prototype-of */ 371), __esModule: true };
+	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/object/set-prototype-of */ 370), __esModule: true };
 
 /***/ },
-/* 371 */
+/* 370 */
 /*!*************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/fn/object/set-prototype-of.js ***!
   \*************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(/*! ../../modules/es6.object.set-prototype-of */ 372);
-	module.exports = __webpack_require__(/*! ../../modules/_core */ 300).Object.setPrototypeOf;
+	__webpack_require__(/*! ../../modules/es6.object.set-prototype-of */ 371);
+	module.exports = __webpack_require__(/*! ../../modules/_core */ 299).Object.setPrototypeOf;
 
 /***/ },
-/* 372 */
+/* 371 */
 /*!**********************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es6.object.set-prototype-of.js ***!
   \**********************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// 19.1.3.19 Object.setPrototypeOf(O, proto)
-	var $export = __webpack_require__(/*! ./_export */ 298);
-	$export($export.S, 'Object', {setPrototypeOf: __webpack_require__(/*! ./_set-proto */ 373).set});
+	var $export = __webpack_require__(/*! ./_export */ 297);
+	$export($export.S, 'Object', {setPrototypeOf: __webpack_require__(/*! ./_set-proto */ 372).set});
 
 /***/ },
-/* 373 */
+/* 372 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_set-proto.js ***!
   \*****************************************************************/
@@ -41383,8 +41267,8 @@ var RDFaAnnotator =
 
 	// Works with __proto__ only. Old v8 can't work with null proto objects.
 	/* eslint-disable no-proto */
-	var isObject = __webpack_require__(/*! ./_is-object */ 306)
-	  , anObject = __webpack_require__(/*! ./_an-object */ 305);
+	var isObject = __webpack_require__(/*! ./_is-object */ 305)
+	  , anObject = __webpack_require__(/*! ./_an-object */ 304);
 	var check = function(O, proto){
 	  anObject(O);
 	  if(!isObject(proto) && proto !== null)throw TypeError(proto + ": can't set as prototype!");
@@ -41393,7 +41277,7 @@ var RDFaAnnotator =
 	  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
 	    function(test, buggy, set){
 	      try {
-	        set = __webpack_require__(/*! ./_ctx */ 301)(Function.call, __webpack_require__(/*! ./_object-gopd */ 365).f(Object.prototype, '__proto__').set, 2);
+	        set = __webpack_require__(/*! ./_ctx */ 300)(Function.call, __webpack_require__(/*! ./_object-gopd */ 364).f(Object.prototype, '__proto__').set, 2);
 	        set(test, []);
 	        buggy = !(test instanceof Array);
 	      } catch(e){ buggy = true; }
@@ -41408,40 +41292,40 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 374 */
+/* 373 */
 /*!**************************************************!*\
   !*** ./~/babel-runtime/core-js/object/create.js ***!
   \**************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/object/create */ 375), __esModule: true };
+	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/object/create */ 374), __esModule: true };
 
 /***/ },
-/* 375 */
+/* 374 */
 /*!***************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/fn/object/create.js ***!
   \***************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(/*! ../../modules/es6.object.create */ 376);
-	var $Object = __webpack_require__(/*! ../../modules/_core */ 300).Object;
+	__webpack_require__(/*! ../../modules/es6.object.create */ 375);
+	var $Object = __webpack_require__(/*! ../../modules/_core */ 299).Object;
 	module.exports = function create(P, D){
 	  return $Object.create(P, D);
 	};
 
 /***/ },
-/* 376 */
+/* 375 */
 /*!************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es6.object.create.js ***!
   \************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var $export = __webpack_require__(/*! ./_export */ 298)
+	var $export = __webpack_require__(/*! ./_export */ 297)
 	// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
-	$export($export.S, 'Object', {create: __webpack_require__(/*! ./_object-create */ 344)});
+	$export($export.S, 'Object', {create: __webpack_require__(/*! ./_object-create */ 343)});
 
 /***/ },
-/* 377 */
+/* 376 */
 /*!*********************************************!*\
   !*** ./~/react-bootstrap/lib/PanelGroup.js ***!
   \*********************************************/
@@ -41451,31 +41335,31 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _assign = __webpack_require__(/*! babel-runtime/core-js/object/assign */ 295);
+	var _assign = __webpack_require__(/*! babel-runtime/core-js/object/assign */ 294);
 	
 	var _assign2 = _interopRequireDefault(_assign);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -41483,13 +41367,13 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -41596,7 +41480,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 378 */
+/* 377 */
 /*!************************************************************!*\
   !*** ./~/babel-runtime/helpers/objectWithoutProperties.js ***!
   \************************************************************/
@@ -41619,7 +41503,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 379 */
+/* 378 */
 /*!*******************************!*\
   !*** ./~/classnames/index.js ***!
   \*******************************/
@@ -41676,7 +41560,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 380 */
+/* 379 */
 /*!*******************************************************!*\
   !*** ./~/react-bootstrap/lib/utils/bootstrapUtils.js ***!
   \*******************************************************/
@@ -41687,11 +41571,11 @@ var RDFaAnnotator =
 	exports.__esModule = true;
 	exports._curry = exports.bsSizes = exports.bsStyles = exports.bsClass = undefined;
 	
-	var _entries = __webpack_require__(/*! babel-runtime/core-js/object/entries */ 381);
+	var _entries = __webpack_require__(/*! babel-runtime/core-js/object/entries */ 380);
 	
 	var _entries2 = _interopRequireDefault(_entries);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
@@ -41707,7 +41591,7 @@ var RDFaAnnotator =
 	
 	var _react = __webpack_require__(/*! react */ 1);
 	
-	var _StyleConfig = __webpack_require__(/*! ./StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./StyleConfig */ 384);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -41898,34 +41782,34 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../../process/browser.js */ 3)))
 
 /***/ },
-/* 381 */
+/* 380 */
 /*!***************************************************!*\
   !*** ./~/babel-runtime/core-js/object/entries.js ***!
   \***************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/object/entries */ 382), __esModule: true };
+	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/object/entries */ 381), __esModule: true };
 
 /***/ },
-/* 382 */
+/* 381 */
 /*!****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/fn/object/entries.js ***!
   \****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(/*! ../../modules/es7.object.entries */ 383);
-	module.exports = __webpack_require__(/*! ../../modules/_core */ 300).Object.entries;
+	__webpack_require__(/*! ../../modules/es7.object.entries */ 382);
+	module.exports = __webpack_require__(/*! ../../modules/_core */ 299).Object.entries;
 
 /***/ },
-/* 383 */
+/* 382 */
 /*!*************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es7.object.entries.js ***!
   \*************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// https://github.com/tc39/proposal-object-values-entries
-	var $export  = __webpack_require__(/*! ./_export */ 298)
-	  , $entries = __webpack_require__(/*! ./_object-to-array */ 384)(true);
+	var $export  = __webpack_require__(/*! ./_export */ 297)
+	  , $entries = __webpack_require__(/*! ./_object-to-array */ 383)(true);
 	
 	$export($export.S, 'Object', {
 	  entries: function entries(it){
@@ -41934,15 +41818,15 @@ var RDFaAnnotator =
 	});
 
 /***/ },
-/* 384 */
+/* 383 */
 /*!***********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_object-to-array.js ***!
   \***********************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var getKeys   = __webpack_require__(/*! ./_object-keys */ 314)
-	  , toIObject = __webpack_require__(/*! ./_to-iobject */ 317)
-	  , isEnum    = __webpack_require__(/*! ./_object-pie */ 330).f;
+	var getKeys   = __webpack_require__(/*! ./_object-keys */ 313)
+	  , toIObject = __webpack_require__(/*! ./_to-iobject */ 316)
+	  , isEnum    = __webpack_require__(/*! ./_object-pie */ 329).f;
 	module.exports = function(isEntries){
 	  return function(it){
 	    var O      = toIObject(it)
@@ -41958,7 +41842,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 385 */
+/* 384 */
 /*!****************************************************!*\
   !*** ./~/react-bootstrap/lib/utils/StyleConfig.js ***!
   \****************************************************/
@@ -42001,7 +41885,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 386 */
+/* 385 */
 /*!**************************************************************!*\
   !*** ./~/react-bootstrap/lib/utils/createChainedFunction.js ***!
   \**************************************************************/
@@ -42050,7 +41934,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 387 */
+/* 386 */
 /*!***************************************************************!*\
   !*** ./~/react-bootstrap/lib/utils/ValidComponentChildren.js ***!
   \***************************************************************/
@@ -42250,7 +42134,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 388 */
+/* 387 */
 /*!****************************************!*\
   !*** ./~/react-bootstrap/lib/Alert.js ***!
   \****************************************/
@@ -42260,31 +42144,31 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 389);
+	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 388);
 	
 	var _values2 = _interopRequireDefault(_values);
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -42292,9 +42176,9 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -42384,34 +42268,34 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 389 */
+/* 388 */
 /*!**************************************************!*\
   !*** ./~/babel-runtime/core-js/object/values.js ***!
   \**************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/object/values */ 390), __esModule: true };
+	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/object/values */ 389), __esModule: true };
 
 /***/ },
-/* 390 */
+/* 389 */
 /*!***************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/fn/object/values.js ***!
   \***************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(/*! ../../modules/es7.object.values */ 391);
-	module.exports = __webpack_require__(/*! ../../modules/_core */ 300).Object.values;
+	__webpack_require__(/*! ../../modules/es7.object.values */ 390);
+	module.exports = __webpack_require__(/*! ../../modules/_core */ 299).Object.values;
 
 /***/ },
-/* 391 */
+/* 390 */
 /*!************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es7.object.values.js ***!
   \************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// https://github.com/tc39/proposal-object-values-entries
-	var $export = __webpack_require__(/*! ./_export */ 298)
-	  , $values = __webpack_require__(/*! ./_object-to-array */ 384)(false);
+	var $export = __webpack_require__(/*! ./_export */ 297)
+	  , $values = __webpack_require__(/*! ./_object-to-array */ 383)(false);
 	
 	$export($export.S, 'Object', {
 	  values: function values(it){
@@ -42420,7 +42304,7 @@ var RDFaAnnotator =
 	});
 
 /***/ },
-/* 392 */
+/* 391 */
 /*!****************************************!*\
   !*** ./~/react-bootstrap/lib/Badge.js ***!
   \****************************************/
@@ -42430,27 +42314,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -42458,7 +42342,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -42533,7 +42417,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 393 */
+/* 392 */
 /*!*********************************************!*\
   !*** ./~/react-bootstrap/lib/Breadcrumb.js ***!
   \*********************************************/
@@ -42543,27 +42427,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -42571,11 +42455,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _BreadcrumbItem = __webpack_require__(/*! ./BreadcrumbItem */ 394);
+	var _BreadcrumbItem = __webpack_require__(/*! ./BreadcrumbItem */ 393);
 	
 	var _BreadcrumbItem2 = _interopRequireDefault(_BreadcrumbItem);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -42614,7 +42498,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 394 */
+/* 393 */
 /*!*************************************************!*\
   !*** ./~/react-bootstrap/lib/BreadcrumbItem.js ***!
   \*************************************************/
@@ -42624,27 +42508,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -42652,7 +42536,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 395);
+	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 394);
 	
 	var _SafeAnchor2 = _interopRequireDefault(_SafeAnchor);
 	
@@ -42719,7 +42603,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 395 */
+/* 394 */
 /*!*********************************************!*\
   !*** ./~/react-bootstrap/lib/SafeAnchor.js ***!
   \*********************************************/
@@ -42729,23 +42613,23 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
@@ -42753,7 +42637,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
@@ -42854,7 +42738,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 396 */
+/* 395 */
 /*!***********************************************!*\
   !*** ./~/react-prop-types/lib/elementType.js ***!
   \***********************************************/
@@ -42870,7 +42754,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _createChainableTypeChecker = __webpack_require__(/*! ./utils/createChainableTypeChecker */ 397);
+	var _createChainableTypeChecker = __webpack_require__(/*! ./utils/createChainableTypeChecker */ 396);
 	
 	var _createChainableTypeChecker2 = _interopRequireDefault(_createChainableTypeChecker);
 	
@@ -42894,7 +42778,7 @@ var RDFaAnnotator =
 	exports.default = (0, _createChainableTypeChecker2.default)(elementType);
 
 /***/ },
-/* 397 */
+/* 396 */
 /*!********************************************************************!*\
   !*** ./~/react-prop-types/lib/utils/createChainableTypeChecker.js ***!
   \********************************************************************/
@@ -42942,7 +42826,7 @@ var RDFaAnnotator =
 	}
 
 /***/ },
-/* 398 */
+/* 397 */
 /*!*****************************************!*\
   !*** ./~/react-bootstrap/lib/Button.js ***!
   \*****************************************/
@@ -42952,31 +42836,31 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 389);
+	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 388);
 	
 	var _values2 = _interopRequireDefault(_values);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -42984,15 +42868,15 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
-	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 395);
+	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 394);
 	
 	var _SafeAnchor2 = _interopRequireDefault(_SafeAnchor);
 	
@@ -43079,7 +42963,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 399 */
+/* 398 */
 /*!**********************************************!*\
   !*** ./~/react-bootstrap/lib/ButtonGroup.js ***!
   \**********************************************/
@@ -43089,27 +42973,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -43117,15 +43001,15 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _all = __webpack_require__(/*! react-prop-types/lib/all */ 400);
+	var _all = __webpack_require__(/*! react-prop-types/lib/all */ 399);
 	
 	var _all2 = _interopRequireDefault(_all);
 	
-	var _Button = __webpack_require__(/*! ./Button */ 398);
+	var _Button = __webpack_require__(/*! ./Button */ 397);
 	
 	var _Button2 = _interopRequireDefault(_Button);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -43189,7 +43073,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 400 */
+/* 399 */
 /*!***************************************!*\
   !*** ./~/react-prop-types/lib/all.js ***!
   \***************************************/
@@ -43200,7 +43084,7 @@ var RDFaAnnotator =
 	exports.__esModule = true;
 	exports.default = all;
 	
-	var _createChainableTypeChecker = __webpack_require__(/*! ./utils/createChainableTypeChecker */ 397);
+	var _createChainableTypeChecker = __webpack_require__(/*! ./utils/createChainableTypeChecker */ 396);
 	
 	var _createChainableTypeChecker2 = _interopRequireDefault(_createChainableTypeChecker);
 	
@@ -43236,7 +43120,7 @@ var RDFaAnnotator =
 	}
 
 /***/ },
-/* 401 */
+/* 400 */
 /*!************************************************!*\
   !*** ./~/react-bootstrap/lib/ButtonToolbar.js ***!
   \************************************************/
@@ -43246,27 +43130,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -43274,11 +43158,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Button = __webpack_require__(/*! ./Button */ 398);
+	var _Button = __webpack_require__(/*! ./Button */ 397);
 	
 	var _Button2 = _interopRequireDefault(_Button);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -43314,7 +43198,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 402 */
+/* 401 */
 /*!*******************************************!*\
   !*** ./~/react-bootstrap/lib/Carousel.js ***!
   \*******************************************/
@@ -43324,27 +43208,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -43352,25 +43236,25 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _CarouselCaption = __webpack_require__(/*! ./CarouselCaption */ 403);
+	var _CarouselCaption = __webpack_require__(/*! ./CarouselCaption */ 402);
 	
 	var _CarouselCaption2 = _interopRequireDefault(_CarouselCaption);
 	
-	var _CarouselItem = __webpack_require__(/*! ./CarouselItem */ 404);
+	var _CarouselItem = __webpack_require__(/*! ./CarouselItem */ 403);
 	
 	var _CarouselItem2 = _interopRequireDefault(_CarouselItem);
 	
-	var _Glyphicon = __webpack_require__(/*! ./Glyphicon */ 406);
+	var _Glyphicon = __webpack_require__(/*! ./Glyphicon */ 405);
 	
 	var _Glyphicon2 = _interopRequireDefault(_Glyphicon);
 	
-	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 395);
+	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 394);
 	
 	var _SafeAnchor2 = _interopRequireDefault(_SafeAnchor);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -43775,7 +43659,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 403 */
+/* 402 */
 /*!**************************************************!*\
   !*** ./~/react-bootstrap/lib/CarouselCaption.js ***!
   \**************************************************/
@@ -43785,27 +43669,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -43813,11 +43697,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -43864,7 +43748,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 404 */
+/* 403 */
 /*!***********************************************!*\
   !*** ./~/react-bootstrap/lib/CarouselItem.js ***!
   \***********************************************/
@@ -43874,27 +43758,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -43906,7 +43790,7 @@ var RDFaAnnotator =
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _TransitionEvents = __webpack_require__(/*! ./utils/TransitionEvents */ 405);
+	var _TransitionEvents = __webpack_require__(/*! ./utils/TransitionEvents */ 404);
 	
 	var _TransitionEvents2 = _interopRequireDefault(_TransitionEvents);
 	
@@ -44035,7 +43919,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 405 */
+/* 404 */
 /*!*********************************************************!*\
   !*** ./~/react-bootstrap/lib/utils/TransitionEvents.js ***!
   \*********************************************************/
@@ -44156,7 +44040,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 406 */
+/* 405 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/Glyphicon.js ***!
   \********************************************/
@@ -44166,27 +44050,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -44194,7 +44078,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -44241,7 +44125,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 407 */
+/* 406 */
 /*!*******************************************!*\
   !*** ./~/react-bootstrap/lib/Checkbox.js ***!
   \*******************************************/
@@ -44251,27 +44135,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -44279,11 +44163,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _warning = __webpack_require__(/*! warning */ 408);
+	var _warning = __webpack_require__(/*! warning */ 407);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -44385,7 +44269,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ },
-/* 408 */
+/* 407 */
 /*!******************************!*\
   !*** ./~/warning/browser.js ***!
   \******************************/
@@ -44455,7 +44339,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../process/browser.js */ 3)))
 
 /***/ },
-/* 409 */
+/* 408 */
 /*!*******************************************!*\
   !*** ./~/react-bootstrap/lib/Clearfix.js ***!
   \*******************************************/
@@ -44465,27 +44349,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -44493,17 +44377,17 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _capitalize = __webpack_require__(/*! ./utils/capitalize */ 410);
+	var _capitalize = __webpack_require__(/*! ./utils/capitalize */ 409);
 	
 	var _capitalize2 = _interopRequireDefault(_capitalize);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -44592,7 +44476,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 410 */
+/* 409 */
 /*!***************************************************!*\
   !*** ./~/react-bootstrap/lib/utils/capitalize.js ***!
   \***************************************************/
@@ -44608,7 +44492,7 @@ var RDFaAnnotator =
 	module.exports = exports["default"];
 
 /***/ },
-/* 411 */
+/* 410 */
 /*!***********************************************!*\
   !*** ./~/react-bootstrap/lib/ControlLabel.js ***!
   \***********************************************/
@@ -44618,27 +44502,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -44646,11 +44530,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _warning = __webpack_require__(/*! warning */ 408);
+	var _warning = __webpack_require__(/*! warning */ 407);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -44717,7 +44601,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ },
-/* 412 */
+/* 411 */
 /*!**************************************!*\
   !*** ./~/react-bootstrap/lib/Col.js ***!
   \**************************************/
@@ -44727,27 +44611,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -44755,13 +44639,13 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -44993,7 +44877,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 413 */
+/* 412 */
 /*!*******************************************!*\
   !*** ./~/react-bootstrap/lib/Collapse.js ***!
   \*******************************************/
@@ -45003,31 +44887,31 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _style = __webpack_require__(/*! dom-helpers/style */ 414);
+	var _style = __webpack_require__(/*! dom-helpers/style */ 413);
 	
 	var _style2 = _interopRequireDefault(_style);
 	
@@ -45035,15 +44919,15 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Transition = __webpack_require__(/*! react-overlays/lib/Transition */ 422);
+	var _Transition = __webpack_require__(/*! react-overlays/lib/Transition */ 421);
 	
 	var _Transition2 = _interopRequireDefault(_Transition);
 	
-	var _capitalize = __webpack_require__(/*! ./utils/capitalize */ 410);
+	var _capitalize = __webpack_require__(/*! ./utils/capitalize */ 409);
 	
 	var _capitalize2 = _interopRequireDefault(_capitalize);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
@@ -45258,7 +45142,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 414 */
+/* 413 */
 /*!**************************************!*\
   !*** ./~/dom-helpers/style/index.js ***!
   \**************************************/
@@ -45266,10 +45150,10 @@ var RDFaAnnotator =
 
 	'use strict';
 	
-	var camelize = __webpack_require__(/*! ../util/camelizeStyle */ 415),
-	    hyphenate = __webpack_require__(/*! ../util/hyphenateStyle */ 417),
-	    _getComputedStyle = __webpack_require__(/*! ./getComputedStyle */ 419),
-	    removeStyle = __webpack_require__(/*! ./removeStyle */ 421);
+	var camelize = __webpack_require__(/*! ../util/camelizeStyle */ 414),
+	    hyphenate = __webpack_require__(/*! ../util/hyphenateStyle */ 416),
+	    _getComputedStyle = __webpack_require__(/*! ./getComputedStyle */ 418),
+	    removeStyle = __webpack_require__(/*! ./removeStyle */ 420);
 	
 	var has = Object.prototype.hasOwnProperty;
 	
@@ -45290,7 +45174,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 415 */
+/* 414 */
 /*!*********************************************!*\
   !*** ./~/dom-helpers/util/camelizeStyle.js ***!
   \*********************************************/
@@ -45303,7 +45187,7 @@ var RDFaAnnotator =
 	 */
 	
 	'use strict';
-	var camelize = __webpack_require__(/*! ./camelize */ 416);
+	var camelize = __webpack_require__(/*! ./camelize */ 415);
 	var msPattern = /^-ms-/;
 	
 	module.exports = function camelizeStyleName(string) {
@@ -45311,7 +45195,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 416 */
+/* 415 */
 /*!****************************************!*\
   !*** ./~/dom-helpers/util/camelize.js ***!
   \****************************************/
@@ -45328,7 +45212,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 417 */
+/* 416 */
 /*!**********************************************!*\
   !*** ./~/dom-helpers/util/hyphenateStyle.js ***!
   \**********************************************/
@@ -45342,7 +45226,7 @@ var RDFaAnnotator =
 	
 	"use strict";
 	
-	var hyphenate = __webpack_require__(/*! ./hyphenate */ 418);
+	var hyphenate = __webpack_require__(/*! ./hyphenate */ 417);
 	var msPattern = /^ms-/;
 	
 	module.exports = function hyphenateStyleName(string) {
@@ -45350,7 +45234,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 418 */
+/* 417 */
 /*!*****************************************!*\
   !*** ./~/dom-helpers/util/hyphenate.js ***!
   \*****************************************/
@@ -45365,7 +45249,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 419 */
+/* 418 */
 /*!*************************************************!*\
   !*** ./~/dom-helpers/style/getComputedStyle.js ***!
   \*************************************************/
@@ -45373,9 +45257,9 @@ var RDFaAnnotator =
 
 	'use strict';
 	
-	var babelHelpers = __webpack_require__(/*! ../util/babelHelpers.js */ 420);
+	var babelHelpers = __webpack_require__(/*! ../util/babelHelpers.js */ 419);
 	
-	var _utilCamelizeStyle = __webpack_require__(/*! ../util/camelizeStyle */ 415);
+	var _utilCamelizeStyle = __webpack_require__(/*! ../util/camelizeStyle */ 414);
 	
 	var _utilCamelizeStyle2 = babelHelpers.interopRequireDefault(_utilCamelizeStyle);
 	
@@ -45421,7 +45305,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 420 */
+/* 419 */
 /*!********************************************!*\
   !*** ./~/dom-helpers/util/babelHelpers.js ***!
   \********************************************/
@@ -45460,7 +45344,7 @@ var RDFaAnnotator =
 	})
 
 /***/ },
-/* 421 */
+/* 420 */
 /*!********************************************!*\
   !*** ./~/dom-helpers/style/removeStyle.js ***!
   \********************************************/
@@ -45473,7 +45357,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 422 */
+/* 421 */
 /*!********************************************!*\
   !*** ./~/react-overlays/lib/Transition.js ***!
   \********************************************/
@@ -45498,15 +45382,15 @@ var RDFaAnnotator =
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _properties = __webpack_require__(/*! dom-helpers/transition/properties */ 423);
+	var _properties = __webpack_require__(/*! dom-helpers/transition/properties */ 422);
 	
 	var _properties2 = _interopRequireDefault(_properties);
 	
-	var _on = __webpack_require__(/*! dom-helpers/events/on */ 425);
+	var _on = __webpack_require__(/*! dom-helpers/events/on */ 424);
 	
 	var _on2 = _interopRequireDefault(_on);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -45844,14 +45728,14 @@ var RDFaAnnotator =
 	exports.default = Transition;
 
 /***/ },
-/* 423 */
+/* 422 */
 /*!************************************************!*\
   !*** ./~/dom-helpers/transition/properties.js ***!
   \************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var canUseDOM = __webpack_require__(/*! ../util/inDOM */ 424);
+	var canUseDOM = __webpack_require__(/*! ../util/inDOM */ 423);
 	
 	var has = Object.prototype.hasOwnProperty,
 	    transform = 'transform',
@@ -45907,7 +45791,7 @@ var RDFaAnnotator =
 	}
 
 /***/ },
-/* 424 */
+/* 423 */
 /*!*************************************!*\
   !*** ./~/dom-helpers/util/inDOM.js ***!
   \*************************************/
@@ -45917,14 +45801,14 @@ var RDFaAnnotator =
 	module.exports = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
 
 /***/ },
-/* 425 */
+/* 424 */
 /*!************************************!*\
   !*** ./~/dom-helpers/events/on.js ***!
   \************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var canUseDOM = __webpack_require__(/*! ../util/inDOM */ 424);
+	var canUseDOM = __webpack_require__(/*! ../util/inDOM */ 423);
 	var on = function on() {};
 	
 	if (canUseDOM) {
@@ -45941,7 +45825,7 @@ var RDFaAnnotator =
 	module.exports = on;
 
 /***/ },
-/* 426 */
+/* 425 */
 /*!*******************************************!*\
   !*** ./~/react-bootstrap/lib/Dropdown.js ***!
   \*******************************************/
@@ -45951,39 +45835,39 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _activeElement = __webpack_require__(/*! dom-helpers/activeElement */ 427);
+	var _activeElement = __webpack_require__(/*! dom-helpers/activeElement */ 426);
 	
 	var _activeElement2 = _interopRequireDefault(_activeElement);
 	
-	var _contains = __webpack_require__(/*! dom-helpers/query/contains */ 429);
+	var _contains = __webpack_require__(/*! dom-helpers/query/contains */ 428);
 	
 	var _contains2 = _interopRequireDefault(_contains);
 	
-	var _keycode = __webpack_require__(/*! keycode */ 430);
+	var _keycode = __webpack_require__(/*! keycode */ 429);
 	
 	var _keycode2 = _interopRequireDefault(_keycode);
 	
@@ -45995,47 +45879,47 @@ var RDFaAnnotator =
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _all = __webpack_require__(/*! react-prop-types/lib/all */ 400);
+	var _all = __webpack_require__(/*! react-prop-types/lib/all */ 399);
 	
 	var _all2 = _interopRequireDefault(_all);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _isRequiredForA11y = __webpack_require__(/*! react-prop-types/lib/isRequiredForA11y */ 431);
+	var _isRequiredForA11y = __webpack_require__(/*! react-prop-types/lib/isRequiredForA11y */ 430);
 	
 	var _isRequiredForA11y2 = _interopRequireDefault(_isRequiredForA11y);
 	
-	var _uncontrollable = __webpack_require__(/*! uncontrollable */ 432);
+	var _uncontrollable = __webpack_require__(/*! uncontrollable */ 431);
 	
 	var _uncontrollable2 = _interopRequireDefault(_uncontrollable);
 	
-	var _warning = __webpack_require__(/*! warning */ 408);
+	var _warning = __webpack_require__(/*! warning */ 407);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _ButtonGroup = __webpack_require__(/*! ./ButtonGroup */ 399);
+	var _ButtonGroup = __webpack_require__(/*! ./ButtonGroup */ 398);
 	
 	var _ButtonGroup2 = _interopRequireDefault(_ButtonGroup);
 	
-	var _DropdownMenu = __webpack_require__(/*! ./DropdownMenu */ 435);
+	var _DropdownMenu = __webpack_require__(/*! ./DropdownMenu */ 434);
 	
 	var _DropdownMenu2 = _interopRequireDefault(_DropdownMenu);
 	
-	var _DropdownToggle = __webpack_require__(/*! ./DropdownToggle */ 449);
+	var _DropdownToggle = __webpack_require__(/*! ./DropdownToggle */ 448);
 	
 	var _DropdownToggle2 = _interopRequireDefault(_DropdownToggle);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
-	var _PropTypes = __webpack_require__(/*! ./utils/PropTypes */ 450);
+	var _PropTypes = __webpack_require__(/*! ./utils/PropTypes */ 449);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -46371,7 +46255,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ },
-/* 427 */
+/* 426 */
 /*!****************************************!*\
   !*** ./~/dom-helpers/activeElement.js ***!
   \****************************************/
@@ -46379,7 +46263,7 @@ var RDFaAnnotator =
 
 	'use strict';
 	
-	var babelHelpers = __webpack_require__(/*! ./util/babelHelpers.js */ 420);
+	var babelHelpers = __webpack_require__(/*! ./util/babelHelpers.js */ 419);
 	
 	exports.__esModule = true;
 	
@@ -46388,7 +46272,7 @@ var RDFaAnnotator =
 	 */
 	exports['default'] = activeElement;
 	
-	var _ownerDocument = __webpack_require__(/*! ./ownerDocument */ 428);
+	var _ownerDocument = __webpack_require__(/*! ./ownerDocument */ 427);
 	
 	var _ownerDocument2 = babelHelpers.interopRequireDefault(_ownerDocument);
 	
@@ -46403,7 +46287,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 428 */
+/* 427 */
 /*!****************************************!*\
   !*** ./~/dom-helpers/ownerDocument.js ***!
   \****************************************/
@@ -46421,14 +46305,14 @@ var RDFaAnnotator =
 	module.exports = exports["default"];
 
 /***/ },
-/* 429 */
+/* 428 */
 /*!*****************************************!*\
   !*** ./~/dom-helpers/query/contains.js ***!
   \*****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var canUseDOM = __webpack_require__(/*! ../util/inDOM */ 424);
+	var canUseDOM = __webpack_require__(/*! ../util/inDOM */ 423);
 	
 	var contains = (function () {
 	  var root = canUseDOM && document.documentElement;
@@ -46449,7 +46333,7 @@ var RDFaAnnotator =
 	module.exports = contains;
 
 /***/ },
-/* 430 */
+/* 429 */
 /*!****************************!*\
   !*** ./~/keycode/index.js ***!
   \****************************/
@@ -46604,7 +46488,7 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 431 */
+/* 430 */
 /*!*****************************************************!*\
   !*** ./~/react-prop-types/lib/isRequiredForA11y.js ***!
   \*****************************************************/
@@ -46632,7 +46516,7 @@ var RDFaAnnotator =
 	}
 
 /***/ },
-/* 432 */
+/* 431 */
 /*!***********************************!*\
   !*** ./~/uncontrollable/index.js ***!
   \***********************************/
@@ -46642,7 +46526,7 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _createUncontrollable = __webpack_require__(/*! ./createUncontrollable */ 433);
+	var _createUncontrollable = __webpack_require__(/*! ./createUncontrollable */ 432);
 	
 	var _createUncontrollable2 = _interopRequireDefault(_createUncontrollable);
 	
@@ -46671,7 +46555,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 433 */
+/* 432 */
 /*!**************************************************!*\
   !*** ./~/uncontrollable/createUncontrollable.js ***!
   \**************************************************/
@@ -46693,7 +46577,7 @@ var RDFaAnnotator =
 	
 	var _invariant2 = _interopRequireDefault(_invariant);
 	
-	var _utils = __webpack_require__(/*! ./utils */ 434);
+	var _utils = __webpack_require__(/*! ./utils */ 433);
 	
 	var utils = _interopRequireWildcard(_utils);
 	
@@ -46843,7 +46727,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 434 */
+/* 433 */
 /*!***********************************!*\
   !*** ./~/uncontrollable/utils.js ***!
   \***********************************/
@@ -46968,7 +46852,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../process/browser.js */ 3)))
 
 /***/ },
-/* 435 */
+/* 434 */
 /*!***********************************************!*\
   !*** ./~/react-bootstrap/lib/DropdownMenu.js ***!
   \***********************************************/
@@ -46978,35 +46862,35 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _from = __webpack_require__(/*! babel-runtime/core-js/array/from */ 436);
+	var _from = __webpack_require__(/*! babel-runtime/core-js/array/from */ 435);
 	
 	var _from2 = _interopRequireDefault(_from);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _keycode = __webpack_require__(/*! keycode */ 430);
+	var _keycode = __webpack_require__(/*! keycode */ 429);
 	
 	var _keycode2 = _interopRequireDefault(_keycode);
 	
@@ -47018,17 +46902,17 @@ var RDFaAnnotator =
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _RootCloseWrapper = __webpack_require__(/*! react-overlays/lib/RootCloseWrapper */ 445);
+	var _RootCloseWrapper = __webpack_require__(/*! react-overlays/lib/RootCloseWrapper */ 444);
 	
 	var _RootCloseWrapper2 = _interopRequireDefault(_RootCloseWrapper);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -47175,43 +47059,43 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 436 */
+/* 435 */
 /*!***********************************************!*\
   !*** ./~/babel-runtime/core-js/array/from.js ***!
   \***********************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/array/from */ 437), __esModule: true };
+	module.exports = { "default": __webpack_require__(/*! core-js/library/fn/array/from */ 436), __esModule: true };
 
 /***/ },
-/* 437 */
+/* 436 */
 /*!************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/fn/array/from.js ***!
   \************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	__webpack_require__(/*! ../../modules/es6.string.iterator */ 337);
-	__webpack_require__(/*! ../../modules/es6.array.from */ 438);
-	module.exports = __webpack_require__(/*! ../../modules/_core */ 300).Array.from;
+	__webpack_require__(/*! ../../modules/es6.string.iterator */ 336);
+	__webpack_require__(/*! ../../modules/es6.array.from */ 437);
+	module.exports = __webpack_require__(/*! ../../modules/_core */ 299).Array.from;
 
 /***/ },
-/* 438 */
+/* 437 */
 /*!*********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/es6.array.from.js ***!
   \*********************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var ctx            = __webpack_require__(/*! ./_ctx */ 301)
-	  , $export        = __webpack_require__(/*! ./_export */ 298)
-	  , toObject       = __webpack_require__(/*! ./_to-object */ 331)
-	  , call           = __webpack_require__(/*! ./_iter-call */ 439)
-	  , isArrayIter    = __webpack_require__(/*! ./_is-array-iter */ 440)
-	  , toLength       = __webpack_require__(/*! ./_to-length */ 322)
-	  , createProperty = __webpack_require__(/*! ./_create-property */ 441)
-	  , getIterFn      = __webpack_require__(/*! ./core.get-iterator-method */ 442);
+	var ctx            = __webpack_require__(/*! ./_ctx */ 300)
+	  , $export        = __webpack_require__(/*! ./_export */ 297)
+	  , toObject       = __webpack_require__(/*! ./_to-object */ 330)
+	  , call           = __webpack_require__(/*! ./_iter-call */ 438)
+	  , isArrayIter    = __webpack_require__(/*! ./_is-array-iter */ 439)
+	  , toLength       = __webpack_require__(/*! ./_to-length */ 321)
+	  , createProperty = __webpack_require__(/*! ./_create-property */ 440)
+	  , getIterFn      = __webpack_require__(/*! ./core.get-iterator-method */ 441);
 	
-	$export($export.S + $export.F * !__webpack_require__(/*! ./_iter-detect */ 444)(function(iter){ Array.from(iter); }), 'Array', {
+	$export($export.S + $export.F * !__webpack_require__(/*! ./_iter-detect */ 443)(function(iter){ Array.from(iter); }), 'Array', {
 	  // 22.1.2.1 Array.from(arrayLike, mapfn = undefined, thisArg = undefined)
 	  from: function from(arrayLike/*, mapfn = undefined, thisArg = undefined*/){
 	    var O       = toObject(arrayLike)
@@ -47241,14 +47125,14 @@ var RDFaAnnotator =
 
 
 /***/ },
-/* 439 */
+/* 438 */
 /*!*****************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_iter-call.js ***!
   \*****************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// call something on iterator step with safe closing on error
-	var anObject = __webpack_require__(/*! ./_an-object */ 305);
+	var anObject = __webpack_require__(/*! ./_an-object */ 304);
 	module.exports = function(iterator, fn, value, entries){
 	  try {
 	    return entries ? fn(anObject(value)[0], value[1]) : fn(value);
@@ -47261,15 +47145,15 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 440 */
+/* 439 */
 /*!*********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_is-array-iter.js ***!
   \*********************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// check on default Array iterator
-	var Iterators  = __webpack_require__(/*! ./_iterators */ 342)
-	  , ITERATOR   = __webpack_require__(/*! ./_wks */ 348)('iterator')
+	var Iterators  = __webpack_require__(/*! ./_iterators */ 341)
+	  , ITERATOR   = __webpack_require__(/*! ./_wks */ 347)('iterator')
 	  , ArrayProto = Array.prototype;
 	
 	module.exports = function(it){
@@ -47277,15 +47161,15 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 441 */
+/* 440 */
 /*!***********************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_create-property.js ***!
   \***********************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var $defineProperty = __webpack_require__(/*! ./_object-dp */ 304)
-	  , createDesc      = __webpack_require__(/*! ./_property-desc */ 312);
+	var $defineProperty = __webpack_require__(/*! ./_object-dp */ 303)
+	  , createDesc      = __webpack_require__(/*! ./_property-desc */ 311);
 	
 	module.exports = function(object, index, value){
 	  if(index in object)$defineProperty.f(object, index, createDesc(0, value));
@@ -47293,31 +47177,31 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 442 */
+/* 441 */
 /*!*******************************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/core.get-iterator-method.js ***!
   \*******************************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var classof   = __webpack_require__(/*! ./_classof */ 443)
-	  , ITERATOR  = __webpack_require__(/*! ./_wks */ 348)('iterator')
-	  , Iterators = __webpack_require__(/*! ./_iterators */ 342);
-	module.exports = __webpack_require__(/*! ./_core */ 300).getIteratorMethod = function(it){
+	var classof   = __webpack_require__(/*! ./_classof */ 442)
+	  , ITERATOR  = __webpack_require__(/*! ./_wks */ 347)('iterator')
+	  , Iterators = __webpack_require__(/*! ./_iterators */ 341);
+	module.exports = __webpack_require__(/*! ./_core */ 299).getIteratorMethod = function(it){
 	  if(it != undefined)return it[ITERATOR]
 	    || it['@@iterator']
 	    || Iterators[classof(it)];
 	};
 
 /***/ },
-/* 443 */
+/* 442 */
 /*!***************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_classof.js ***!
   \***************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	// getting tag from 19.1.3.6 Object.prototype.toString()
-	var cof = __webpack_require__(/*! ./_cof */ 319)
-	  , TAG = __webpack_require__(/*! ./_wks */ 348)('toStringTag')
+	var cof = __webpack_require__(/*! ./_cof */ 318)
+	  , TAG = __webpack_require__(/*! ./_wks */ 347)('toStringTag')
 	  // ES3 wrong here
 	  , ARG = cof(function(){ return arguments; }()) == 'Arguments';
 	
@@ -47340,13 +47224,13 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 444 */
+/* 443 */
 /*!*******************************************************************!*\
   !*** ./~/babel-runtime/~/core-js/library/modules/_iter-detect.js ***!
   \*******************************************************************/
 /***/ function(module, exports, __webpack_require__) {
 
-	var ITERATOR     = __webpack_require__(/*! ./_wks */ 348)('iterator')
+	var ITERATOR     = __webpack_require__(/*! ./_wks */ 347)('iterator')
 	  , SAFE_CLOSING = false;
 	
 	try {
@@ -47369,7 +47253,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 445 */
+/* 444 */
 /*!**************************************************!*\
   !*** ./~/react-overlays/lib/RootCloseWrapper.js ***!
   \**************************************************/
@@ -47383,7 +47267,7 @@ var RDFaAnnotator =
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _contains = __webpack_require__(/*! dom-helpers/query/contains */ 429);
+	var _contains = __webpack_require__(/*! dom-helpers/query/contains */ 428);
 	
 	var _contains2 = _interopRequireDefault(_contains);
 	
@@ -47395,11 +47279,11 @@ var RDFaAnnotator =
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _addEventListener = __webpack_require__(/*! ./utils/addEventListener */ 446);
+	var _addEventListener = __webpack_require__(/*! ./utils/addEventListener */ 445);
 	
 	var _addEventListener2 = _interopRequireDefault(_addEventListener);
 	
-	var _ownerDocument = __webpack_require__(/*! ./utils/ownerDocument */ 448);
+	var _ownerDocument = __webpack_require__(/*! ./utils/ownerDocument */ 447);
 	
 	var _ownerDocument2 = _interopRequireDefault(_ownerDocument);
 	
@@ -47537,7 +47421,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 446 */
+/* 445 */
 /*!********************************************************!*\
   !*** ./~/react-overlays/lib/utils/addEventListener.js ***!
   \********************************************************/
@@ -47559,11 +47443,11 @@ var RDFaAnnotator =
 	  };
 	};
 	
-	var _on = __webpack_require__(/*! dom-helpers/events/on */ 425);
+	var _on = __webpack_require__(/*! dom-helpers/events/on */ 424);
 	
 	var _on2 = _interopRequireDefault(_on);
 	
-	var _off = __webpack_require__(/*! dom-helpers/events/off */ 447);
+	var _off = __webpack_require__(/*! dom-helpers/events/off */ 446);
 	
 	var _off2 = _interopRequireDefault(_off);
 	
@@ -47572,14 +47456,14 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 447 */
+/* 446 */
 /*!*************************************!*\
   !*** ./~/dom-helpers/events/off.js ***!
   \*************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var canUseDOM = __webpack_require__(/*! ../util/inDOM */ 424);
+	var canUseDOM = __webpack_require__(/*! ../util/inDOM */ 423);
 	var off = function off() {};
 	
 	if (canUseDOM) {
@@ -47597,7 +47481,7 @@ var RDFaAnnotator =
 	module.exports = off;
 
 /***/ },
-/* 448 */
+/* 447 */
 /*!*****************************************************!*\
   !*** ./~/react-overlays/lib/utils/ownerDocument.js ***!
   \*****************************************************/
@@ -47617,7 +47501,7 @@ var RDFaAnnotator =
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _ownerDocument = __webpack_require__(/*! dom-helpers/ownerDocument */ 428);
+	var _ownerDocument = __webpack_require__(/*! dom-helpers/ownerDocument */ 427);
 	
 	var _ownerDocument2 = _interopRequireDefault(_ownerDocument);
 	
@@ -47626,7 +47510,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 449 */
+/* 448 */
 /*!*************************************************!*\
   !*** ./~/react-bootstrap/lib/DropdownToggle.js ***!
   \*************************************************/
@@ -47636,23 +47520,23 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
@@ -47660,19 +47544,19 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _Button = __webpack_require__(/*! ./Button */ 398);
+	var _Button = __webpack_require__(/*! ./Button */ 397);
 	
 	var _Button2 = _interopRequireDefault(_Button);
 	
-	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 395);
+	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 394);
 	
 	var _SafeAnchor2 = _interopRequireDefault(_SafeAnchor);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -47742,7 +47626,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 450 */
+/* 449 */
 /*!**************************************************!*\
   !*** ./~/react-bootstrap/lib/utils/PropTypes.js ***!
   \**************************************************/
@@ -47754,11 +47638,11 @@ var RDFaAnnotator =
 	exports.requiredRoles = requiredRoles;
 	exports.exclusiveRoles = exclusiveRoles;
 	
-	var _createChainableTypeChecker = __webpack_require__(/*! react-prop-types/lib/utils/createChainableTypeChecker */ 397);
+	var _createChainableTypeChecker = __webpack_require__(/*! react-prop-types/lib/utils/createChainableTypeChecker */ 396);
 	
 	var _createChainableTypeChecker2 = _interopRequireDefault(_createChainableTypeChecker);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -47821,7 +47705,7 @@ var RDFaAnnotator =
 	}
 
 /***/ },
-/* 451 */
+/* 450 */
 /*!*************************************************!*\
   !*** ./~/react-bootstrap/lib/DropdownButton.js ***!
   \*************************************************/
@@ -47831,23 +47715,23 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
@@ -47855,11 +47739,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Dropdown = __webpack_require__(/*! ./Dropdown */ 426);
+	var _Dropdown = __webpack_require__(/*! ./Dropdown */ 425);
 	
 	var _Dropdown2 = _interopRequireDefault(_Dropdown);
 	
-	var _splitComponentProps2 = __webpack_require__(/*! ./utils/splitComponentProps */ 452);
+	var _splitComponentProps2 = __webpack_require__(/*! ./utils/splitComponentProps */ 451);
 	
 	var _splitComponentProps3 = _interopRequireDefault(_splitComponentProps2);
 	
@@ -47931,7 +47815,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 452 */
+/* 451 */
 /*!************************************************************!*\
   !*** ./~/react-bootstrap/lib/utils/splitComponentProps.js ***!
   \************************************************************/
@@ -47941,7 +47825,7 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _entries = __webpack_require__(/*! babel-runtime/core-js/object/entries */ 381);
+	var _entries = __webpack_require__(/*! babel-runtime/core-js/object/entries */ 380);
 	
 	var _entries2 = _interopRequireDefault(_entries);
 	
@@ -47971,7 +47855,7 @@ var RDFaAnnotator =
 	module.exports = exports["default"];
 
 /***/ },
-/* 453 */
+/* 452 */
 /*!***************************************!*\
   !*** ./~/react-bootstrap/lib/Fade.js ***!
   \***************************************/
@@ -47981,23 +47865,23 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -48005,7 +47889,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Transition = __webpack_require__(/*! react-overlays/lib/Transition */ 422);
+	var _Transition = __webpack_require__(/*! react-overlays/lib/Transition */ 421);
 	
 	var _Transition2 = _interopRequireDefault(_Transition);
 	
@@ -48094,7 +47978,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 454 */
+/* 453 */
 /*!***************************************!*\
   !*** ./~/react-bootstrap/lib/Form.js ***!
   \***************************************/
@@ -48104,27 +47988,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -48132,11 +48016,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -48195,7 +48079,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 455 */
+/* 454 */
 /*!**********************************************!*\
   !*** ./~/react-bootstrap/lib/FormControl.js ***!
   \**********************************************/
@@ -48205,27 +48089,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -48233,23 +48117,23 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _warning = __webpack_require__(/*! warning */ 408);
+	var _warning = __webpack_require__(/*! warning */ 407);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _FormControlFeedback = __webpack_require__(/*! ./FormControlFeedback */ 456);
+	var _FormControlFeedback = __webpack_require__(/*! ./FormControlFeedback */ 455);
 	
 	var _FormControlFeedback2 = _interopRequireDefault(_FormControlFeedback);
 	
-	var _FormControlStatic = __webpack_require__(/*! ./FormControlStatic */ 457);
+	var _FormControlStatic = __webpack_require__(/*! ./FormControlStatic */ 456);
 	
 	var _FormControlStatic2 = _interopRequireDefault(_FormControlStatic);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -48337,7 +48221,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ },
-/* 456 */
+/* 455 */
 /*!******************************************************!*\
   !*** ./~/react-bootstrap/lib/FormControlFeedback.js ***!
   \******************************************************/
@@ -48347,27 +48231,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -48375,11 +48259,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Glyphicon = __webpack_require__(/*! ./Glyphicon */ 406);
+	var _Glyphicon = __webpack_require__(/*! ./Glyphicon */ 405);
 	
 	var _Glyphicon2 = _interopRequireDefault(_Glyphicon);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -48456,7 +48340,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 457 */
+/* 456 */
 /*!****************************************************!*\
   !*** ./~/react-bootstrap/lib/FormControlStatic.js ***!
   \****************************************************/
@@ -48466,27 +48350,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -48494,11 +48378,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -48545,7 +48429,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 458 */
+/* 457 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/FormGroup.js ***!
   \********************************************/
@@ -48555,27 +48439,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -48583,11 +48467,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -48672,7 +48556,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 459 */
+/* 458 */
 /*!***************************************!*\
   !*** ./~/react-bootstrap/lib/Grid.js ***!
   \***************************************/
@@ -48682,27 +48566,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -48710,11 +48594,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -48772,7 +48656,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 460 */
+/* 459 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/HelpBlock.js ***!
   \********************************************/
@@ -48782,27 +48666,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -48810,7 +48694,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -48845,7 +48729,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 461 */
+/* 460 */
 /*!****************************************!*\
   !*** ./~/react-bootstrap/lib/Image.js ***!
   \****************************************/
@@ -48855,27 +48739,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -48883,7 +48767,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -48956,7 +48840,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 462 */
+/* 461 */
 /*!*********************************************!*\
   !*** ./~/react-bootstrap/lib/InputGroup.js ***!
   \*********************************************/
@@ -48966,27 +48850,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -48994,17 +48878,17 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _InputGroupAddon = __webpack_require__(/*! ./InputGroupAddon */ 463);
+	var _InputGroupAddon = __webpack_require__(/*! ./InputGroupAddon */ 462);
 	
 	var _InputGroupAddon2 = _interopRequireDefault(_InputGroupAddon);
 	
-	var _InputGroupButton = __webpack_require__(/*! ./InputGroupButton */ 464);
+	var _InputGroupButton = __webpack_require__(/*! ./InputGroupButton */ 463);
 	
 	var _InputGroupButton2 = _interopRequireDefault(_InputGroupButton);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -49042,7 +48926,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 463 */
+/* 462 */
 /*!**************************************************!*\
   !*** ./~/react-bootstrap/lib/InputGroupAddon.js ***!
   \**************************************************/
@@ -49052,27 +48936,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -49080,7 +48964,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -49115,7 +48999,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 464 */
+/* 463 */
 /*!***************************************************!*\
   !*** ./~/react-bootstrap/lib/InputGroupButton.js ***!
   \***************************************************/
@@ -49125,27 +49009,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -49153,7 +49037,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -49188,7 +49072,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 465 */
+/* 464 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/Jumbotron.js ***!
   \********************************************/
@@ -49198,23 +49082,23 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
@@ -49222,15 +49106,15 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -49277,7 +49161,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 466 */
+/* 465 */
 /*!****************************************!*\
   !*** ./~/react-bootstrap/lib/Label.js ***!
   \****************************************/
@@ -49287,31 +49171,31 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 389);
+	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 388);
 	
 	var _values2 = _interopRequireDefault(_values);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -49319,9 +49203,9 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -49381,7 +49265,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 467 */
+/* 466 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/ListGroup.js ***!
   \********************************************/
@@ -49391,27 +49275,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -49419,17 +49303,17 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _ListGroupItem = __webpack_require__(/*! ./ListGroupItem */ 468);
+	var _ListGroupItem = __webpack_require__(/*! ./ListGroupItem */ 467);
 	
 	var _ListGroupItem2 = _interopRequireDefault(_ListGroupItem);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -49506,7 +49390,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 468 */
+/* 467 */
 /*!************************************************!*\
   !*** ./~/react-bootstrap/lib/ListGroupItem.js ***!
   \************************************************/
@@ -49516,31 +49400,31 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 389);
+	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 388);
 	
 	var _values2 = _interopRequireDefault(_values);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -49548,9 +49432,9 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -49655,7 +49539,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 469 */
+/* 468 */
 /*!****************************************!*\
   !*** ./~/react-bootstrap/lib/Media.js ***!
   \****************************************/
@@ -49665,27 +49549,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -49693,35 +49577,35 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _MediaBody = __webpack_require__(/*! ./MediaBody */ 470);
+	var _MediaBody = __webpack_require__(/*! ./MediaBody */ 469);
 	
 	var _MediaBody2 = _interopRequireDefault(_MediaBody);
 	
-	var _MediaHeading = __webpack_require__(/*! ./MediaHeading */ 471);
+	var _MediaHeading = __webpack_require__(/*! ./MediaHeading */ 470);
 	
 	var _MediaHeading2 = _interopRequireDefault(_MediaHeading);
 	
-	var _MediaLeft = __webpack_require__(/*! ./MediaLeft */ 472);
+	var _MediaLeft = __webpack_require__(/*! ./MediaLeft */ 471);
 	
 	var _MediaLeft2 = _interopRequireDefault(_MediaLeft);
 	
-	var _MediaList = __webpack_require__(/*! ./MediaList */ 473);
+	var _MediaList = __webpack_require__(/*! ./MediaList */ 472);
 	
 	var _MediaList2 = _interopRequireDefault(_MediaList);
 	
-	var _MediaListItem = __webpack_require__(/*! ./MediaListItem */ 474);
+	var _MediaListItem = __webpack_require__(/*! ./MediaListItem */ 473);
 	
 	var _MediaListItem2 = _interopRequireDefault(_MediaListItem);
 	
-	var _MediaRight = __webpack_require__(/*! ./MediaRight */ 475);
+	var _MediaRight = __webpack_require__(/*! ./MediaRight */ 474);
 	
 	var _MediaRight2 = _interopRequireDefault(_MediaRight);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -49775,7 +49659,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 470 */
+/* 469 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/MediaBody.js ***!
   \********************************************/
@@ -49785,27 +49669,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -49813,11 +49697,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -49864,7 +49748,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 471 */
+/* 470 */
 /*!***********************************************!*\
   !*** ./~/react-bootstrap/lib/MediaHeading.js ***!
   \***********************************************/
@@ -49874,27 +49758,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -49902,11 +49786,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -49953,7 +49837,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 472 */
+/* 471 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/MediaLeft.js ***!
   \********************************************/
@@ -49963,27 +49847,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -49991,11 +49875,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Media = __webpack_require__(/*! ./Media */ 469);
+	var _Media = __webpack_require__(/*! ./Media */ 468);
 	
 	var _Media2 = _interopRequireDefault(_Media);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -50045,7 +49929,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 473 */
+/* 472 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/MediaList.js ***!
   \********************************************/
@@ -50055,27 +49939,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -50083,7 +49967,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -50118,7 +50002,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 474 */
+/* 473 */
 /*!************************************************!*\
   !*** ./~/react-bootstrap/lib/MediaListItem.js ***!
   \************************************************/
@@ -50128,27 +50012,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -50156,7 +50040,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -50191,7 +50075,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 475 */
+/* 474 */
 /*!*********************************************!*\
   !*** ./~/react-bootstrap/lib/MediaRight.js ***!
   \*********************************************/
@@ -50201,27 +50085,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -50229,11 +50113,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Media = __webpack_require__(/*! ./Media */ 469);
+	var _Media = __webpack_require__(/*! ./Media */ 468);
 	
 	var _Media2 = _interopRequireDefault(_Media);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -50283,7 +50167,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 476 */
+/* 475 */
 /*!*******************************************!*\
   !*** ./~/react-bootstrap/lib/MenuItem.js ***!
   \*******************************************/
@@ -50293,27 +50177,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -50321,17 +50205,17 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _all = __webpack_require__(/*! react-prop-types/lib/all */ 400);
+	var _all = __webpack_require__(/*! react-prop-types/lib/all */ 399);
 	
 	var _all2 = _interopRequireDefault(_all);
 	
-	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 395);
+	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 394);
 	
 	var _SafeAnchor2 = _interopRequireDefault(_SafeAnchor);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
@@ -50486,7 +50370,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 477 */
+/* 476 */
 /*!****************************************!*\
   !*** ./~/react-bootstrap/lib/Modal.js ***!
   \****************************************/
@@ -50496,43 +50380,43 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _events = __webpack_require__(/*! dom-helpers/events */ 478);
+	var _events = __webpack_require__(/*! dom-helpers/events */ 477);
 	
 	var _events2 = _interopRequireDefault(_events);
 	
-	var _ownerDocument = __webpack_require__(/*! dom-helpers/ownerDocument */ 428);
+	var _ownerDocument = __webpack_require__(/*! dom-helpers/ownerDocument */ 427);
 	
 	var _ownerDocument2 = _interopRequireDefault(_ownerDocument);
 	
-	var _inDOM = __webpack_require__(/*! dom-helpers/util/inDOM */ 424);
+	var _inDOM = __webpack_require__(/*! dom-helpers/util/inDOM */ 423);
 	
 	var _inDOM2 = _interopRequireDefault(_inDOM);
 	
-	var _scrollbarSize = __webpack_require__(/*! dom-helpers/util/scrollbarSize */ 481);
+	var _scrollbarSize = __webpack_require__(/*! dom-helpers/util/scrollbarSize */ 480);
 	
 	var _scrollbarSize2 = _interopRequireDefault(_scrollbarSize);
 	
@@ -50544,53 +50428,53 @@ var RDFaAnnotator =
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _Modal = __webpack_require__(/*! react-overlays/lib/Modal */ 482);
+	var _Modal = __webpack_require__(/*! react-overlays/lib/Modal */ 481);
 	
 	var _Modal2 = _interopRequireDefault(_Modal);
 	
-	var _isOverflowing = __webpack_require__(/*! react-overlays/lib/utils/isOverflowing */ 491);
+	var _isOverflowing = __webpack_require__(/*! react-overlays/lib/utils/isOverflowing */ 490);
 	
 	var _isOverflowing2 = _interopRequireDefault(_isOverflowing);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _Fade = __webpack_require__(/*! ./Fade */ 453);
+	var _Fade = __webpack_require__(/*! ./Fade */ 452);
 	
 	var _Fade2 = _interopRequireDefault(_Fade);
 	
-	var _ModalBody = __webpack_require__(/*! ./ModalBody */ 495);
+	var _ModalBody = __webpack_require__(/*! ./ModalBody */ 494);
 	
 	var _ModalBody2 = _interopRequireDefault(_ModalBody);
 	
-	var _ModalDialog = __webpack_require__(/*! ./ModalDialog */ 496);
+	var _ModalDialog = __webpack_require__(/*! ./ModalDialog */ 495);
 	
 	var _ModalDialog2 = _interopRequireDefault(_ModalDialog);
 	
-	var _ModalFooter = __webpack_require__(/*! ./ModalFooter */ 497);
+	var _ModalFooter = __webpack_require__(/*! ./ModalFooter */ 496);
 	
 	var _ModalFooter2 = _interopRequireDefault(_ModalFooter);
 	
-	var _ModalHeader = __webpack_require__(/*! ./ModalHeader */ 498);
+	var _ModalHeader = __webpack_require__(/*! ./ModalHeader */ 497);
 	
 	var _ModalHeader2 = _interopRequireDefault(_ModalHeader);
 	
-	var _ModalTitle = __webpack_require__(/*! ./ModalTitle */ 499);
+	var _ModalTitle = __webpack_require__(/*! ./ModalTitle */ 498);
 	
 	var _ModalTitle2 = _interopRequireDefault(_ModalTitle);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
-	var _splitComponentProps2 = __webpack_require__(/*! ./utils/splitComponentProps */ 452);
+	var _splitComponentProps2 = __webpack_require__(/*! ./utils/splitComponentProps */ 451);
 	
 	var _splitComponentProps3 = _interopRequireDefault(_splitComponentProps2);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -50837,21 +50721,21 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 478 */
+/* 477 */
 /*!***************************************!*\
   !*** ./~/dom-helpers/events/index.js ***!
   \***************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var on = __webpack_require__(/*! ./on */ 425),
-	    off = __webpack_require__(/*! ./off */ 447),
-	    filter = __webpack_require__(/*! ./filter */ 479);
+	var on = __webpack_require__(/*! ./on */ 424),
+	    off = __webpack_require__(/*! ./off */ 446),
+	    filter = __webpack_require__(/*! ./filter */ 478);
 	
 	module.exports = { on: on, off: off, filter: filter };
 
 /***/ },
-/* 479 */
+/* 478 */
 /*!****************************************!*\
   !*** ./~/dom-helpers/events/filter.js ***!
   \****************************************/
@@ -50859,8 +50743,8 @@ var RDFaAnnotator =
 
 	'use strict';
 	
-	var contains = __webpack_require__(/*! ../query/contains */ 429),
-	    qsa = __webpack_require__(/*! ../query/querySelectorAll */ 480);
+	var contains = __webpack_require__(/*! ../query/contains */ 428),
+	    qsa = __webpack_require__(/*! ../query/querySelectorAll */ 479);
 	
 	module.exports = function (selector, handler) {
 	  return function (e) {
@@ -50875,7 +50759,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 480 */
+/* 479 */
 /*!*************************************************!*\
   !*** ./~/dom-helpers/query/querySelectorAll.js ***!
   \*************************************************/
@@ -50910,7 +50794,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 481 */
+/* 480 */
 /*!*********************************************!*\
   !*** ./~/dom-helpers/util/scrollbarSize.js ***!
   \*********************************************/
@@ -50918,7 +50802,7 @@ var RDFaAnnotator =
 
 	'use strict';
 	
-	var canUseDOM = __webpack_require__(/*! ./inDOM */ 424);
+	var canUseDOM = __webpack_require__(/*! ./inDOM */ 423);
 	
 	var size;
 	
@@ -50943,7 +50827,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 482 */
+/* 481 */
 /*!***************************************!*\
   !*** ./~/react-overlays/lib/Modal.js ***!
   \***************************************/
@@ -50962,51 +50846,51 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _warning = __webpack_require__(/*! warning */ 408);
+	var _warning = __webpack_require__(/*! warning */ 407);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _componentOrElement = __webpack_require__(/*! react-prop-types/lib/componentOrElement */ 483);
+	var _componentOrElement = __webpack_require__(/*! react-prop-types/lib/componentOrElement */ 482);
 	
 	var _componentOrElement2 = _interopRequireDefault(_componentOrElement);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _Portal = __webpack_require__(/*! ./Portal */ 484);
+	var _Portal = __webpack_require__(/*! ./Portal */ 483);
 	
 	var _Portal2 = _interopRequireDefault(_Portal);
 	
-	var _ModalManager = __webpack_require__(/*! ./ModalManager */ 486);
+	var _ModalManager = __webpack_require__(/*! ./ModalManager */ 485);
 	
 	var _ModalManager2 = _interopRequireDefault(_ModalManager);
 	
-	var _ownerDocument = __webpack_require__(/*! ./utils/ownerDocument */ 448);
+	var _ownerDocument = __webpack_require__(/*! ./utils/ownerDocument */ 447);
 	
 	var _ownerDocument2 = _interopRequireDefault(_ownerDocument);
 	
-	var _addEventListener = __webpack_require__(/*! ./utils/addEventListener */ 446);
+	var _addEventListener = __webpack_require__(/*! ./utils/addEventListener */ 445);
 	
 	var _addEventListener2 = _interopRequireDefault(_addEventListener);
 	
-	var _addFocusListener = __webpack_require__(/*! ./utils/addFocusListener */ 494);
+	var _addFocusListener = __webpack_require__(/*! ./utils/addFocusListener */ 493);
 	
 	var _addFocusListener2 = _interopRequireDefault(_addFocusListener);
 	
-	var _inDOM = __webpack_require__(/*! dom-helpers/util/inDOM */ 424);
+	var _inDOM = __webpack_require__(/*! dom-helpers/util/inDOM */ 423);
 	
 	var _inDOM2 = _interopRequireDefault(_inDOM);
 	
-	var _activeElement = __webpack_require__(/*! dom-helpers/activeElement */ 427);
+	var _activeElement = __webpack_require__(/*! dom-helpers/activeElement */ 426);
 	
 	var _activeElement2 = _interopRequireDefault(_activeElement);
 	
-	var _contains = __webpack_require__(/*! dom-helpers/query/contains */ 429);
+	var _contains = __webpack_require__(/*! dom-helpers/query/contains */ 428);
 	
 	var _contains2 = _interopRequireDefault(_contains);
 	
-	var _getContainer = __webpack_require__(/*! ./utils/getContainer */ 485);
+	var _getContainer = __webpack_require__(/*! ./utils/getContainer */ 484);
 	
 	var _getContainer2 = _interopRequireDefault(_getContainer);
 	
@@ -51481,7 +51365,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 483 */
+/* 482 */
 /*!******************************************************!*\
   !*** ./~/react-prop-types/lib/componentOrElement.js ***!
   \******************************************************/
@@ -51497,7 +51381,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _createChainableTypeChecker = __webpack_require__(/*! ./utils/createChainableTypeChecker */ 397);
+	var _createChainableTypeChecker = __webpack_require__(/*! ./utils/createChainableTypeChecker */ 396);
 	
 	var _createChainableTypeChecker2 = _interopRequireDefault(_createChainableTypeChecker);
 	
@@ -51521,7 +51405,7 @@ var RDFaAnnotator =
 	exports.default = (0, _createChainableTypeChecker2.default)(validate);
 
 /***/ },
-/* 484 */
+/* 483 */
 /*!****************************************!*\
   !*** ./~/react-overlays/lib/Portal.js ***!
   \****************************************/
@@ -51541,15 +51425,15 @@ var RDFaAnnotator =
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _componentOrElement = __webpack_require__(/*! react-prop-types/lib/componentOrElement */ 483);
+	var _componentOrElement = __webpack_require__(/*! react-prop-types/lib/componentOrElement */ 482);
 	
 	var _componentOrElement2 = _interopRequireDefault(_componentOrElement);
 	
-	var _ownerDocument = __webpack_require__(/*! ./utils/ownerDocument */ 448);
+	var _ownerDocument = __webpack_require__(/*! ./utils/ownerDocument */ 447);
 	
 	var _ownerDocument2 = _interopRequireDefault(_ownerDocument);
 	
-	var _getContainer = __webpack_require__(/*! ./utils/getContainer */ 485);
+	var _getContainer = __webpack_require__(/*! ./utils/getContainer */ 484);
 	
 	var _getContainer2 = _interopRequireDefault(_getContainer);
 	
@@ -51646,7 +51530,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 485 */
+/* 484 */
 /*!****************************************************!*\
   !*** ./~/react-overlays/lib/utils/getContainer.js ***!
   \****************************************************/
@@ -51672,7 +51556,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 486 */
+/* 485 */
 /*!**********************************************!*\
   !*** ./~/react-overlays/lib/ModalManager.js ***!
   \**********************************************/
@@ -51686,23 +51570,23 @@ var RDFaAnnotator =
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _style = __webpack_require__(/*! dom-helpers/style */ 414);
+	var _style = __webpack_require__(/*! dom-helpers/style */ 413);
 	
 	var _style2 = _interopRequireDefault(_style);
 	
-	var _class = __webpack_require__(/*! dom-helpers/class */ 487);
+	var _class = __webpack_require__(/*! dom-helpers/class */ 486);
 	
 	var _class2 = _interopRequireDefault(_class);
 	
-	var _scrollbarSize = __webpack_require__(/*! dom-helpers/util/scrollbarSize */ 481);
+	var _scrollbarSize = __webpack_require__(/*! dom-helpers/util/scrollbarSize */ 480);
 	
 	var _scrollbarSize2 = _interopRequireDefault(_scrollbarSize);
 	
-	var _isOverflowing = __webpack_require__(/*! ./utils/isOverflowing */ 491);
+	var _isOverflowing = __webpack_require__(/*! ./utils/isOverflowing */ 490);
 	
 	var _isOverflowing2 = _interopRequireDefault(_isOverflowing);
 	
-	var _manageAriaHidden = __webpack_require__(/*! ./utils/manageAriaHidden */ 493);
+	var _manageAriaHidden = __webpack_require__(/*! ./utils/manageAriaHidden */ 492);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
@@ -51867,7 +51751,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 487 */
+/* 486 */
 /*!**************************************!*\
   !*** ./~/dom-helpers/class/index.js ***!
   \**************************************/
@@ -51876,27 +51760,27 @@ var RDFaAnnotator =
 	'use strict';
 	
 	module.exports = {
-	  addClass: __webpack_require__(/*! ./addClass */ 488),
-	  removeClass: __webpack_require__(/*! ./removeClass */ 490),
-	  hasClass: __webpack_require__(/*! ./hasClass */ 489)
+	  addClass: __webpack_require__(/*! ./addClass */ 487),
+	  removeClass: __webpack_require__(/*! ./removeClass */ 489),
+	  hasClass: __webpack_require__(/*! ./hasClass */ 488)
 	};
 
 /***/ },
-/* 488 */
+/* 487 */
 /*!*****************************************!*\
   !*** ./~/dom-helpers/class/addClass.js ***!
   \*****************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var hasClass = __webpack_require__(/*! ./hasClass */ 489);
+	var hasClass = __webpack_require__(/*! ./hasClass */ 488);
 	
 	module.exports = function addClass(element, className) {
 	  if (element.classList) element.classList.add(className);else if (!hasClass(element)) element.className = element.className + ' ' + className;
 	};
 
 /***/ },
-/* 489 */
+/* 488 */
 /*!*****************************************!*\
   !*** ./~/dom-helpers/class/hasClass.js ***!
   \*****************************************/
@@ -51908,7 +51792,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 490 */
+/* 489 */
 /*!********************************************!*\
   !*** ./~/dom-helpers/class/removeClass.js ***!
   \********************************************/
@@ -51921,7 +51805,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 491 */
+/* 490 */
 /*!*****************************************************!*\
   !*** ./~/react-overlays/lib/utils/isOverflowing.js ***!
   \*****************************************************/
@@ -51934,11 +51818,11 @@ var RDFaAnnotator =
 	});
 	exports.default = isOverflowing;
 	
-	var _isWindow = __webpack_require__(/*! dom-helpers/query/isWindow */ 492);
+	var _isWindow = __webpack_require__(/*! dom-helpers/query/isWindow */ 491);
 	
 	var _isWindow2 = _interopRequireDefault(_isWindow);
 	
-	var _ownerDocument = __webpack_require__(/*! dom-helpers/ownerDocument */ 428);
+	var _ownerDocument = __webpack_require__(/*! dom-helpers/ownerDocument */ 427);
 	
 	var _ownerDocument2 = _interopRequireDefault(_ownerDocument);
 	
@@ -51970,7 +51854,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 492 */
+/* 491 */
 /*!*****************************************!*\
   !*** ./~/dom-helpers/query/isWindow.js ***!
   \*****************************************/
@@ -51983,7 +51867,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 493 */
+/* 492 */
 /*!********************************************************!*\
   !*** ./~/react-overlays/lib/utils/manageAriaHidden.js ***!
   \********************************************************/
@@ -52040,7 +51924,7 @@ var RDFaAnnotator =
 	}
 
 /***/ },
-/* 494 */
+/* 493 */
 /*!********************************************************!*\
   !*** ./~/react-overlays/lib/utils/addFocusListener.js ***!
   \********************************************************/
@@ -52079,7 +51963,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 495 */
+/* 494 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/ModalBody.js ***!
   \********************************************/
@@ -52089,27 +51973,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -52117,11 +52001,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -52168,7 +52052,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 496 */
+/* 495 */
 /*!**********************************************!*\
   !*** ./~/react-bootstrap/lib/ModalDialog.js ***!
   \**********************************************/
@@ -52178,27 +52062,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -52206,9 +52090,9 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -52276,7 +52160,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 497 */
+/* 496 */
 /*!**********************************************!*\
   !*** ./~/react-bootstrap/lib/ModalFooter.js ***!
   \**********************************************/
@@ -52286,27 +52170,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -52314,11 +52198,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -52365,7 +52249,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 498 */
+/* 497 */
 /*!**********************************************!*\
   !*** ./~/react-bootstrap/lib/ModalHeader.js ***!
   \**********************************************/
@@ -52375,27 +52259,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -52403,9 +52287,9 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
@@ -52505,7 +52389,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 499 */
+/* 498 */
 /*!*********************************************!*\
   !*** ./~/react-bootstrap/lib/ModalTitle.js ***!
   \*********************************************/
@@ -52515,27 +52399,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -52543,11 +52427,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -52594,7 +52478,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 500 */
+/* 499 */
 /*!**************************************!*\
   !*** ./~/react-bootstrap/lib/Nav.js ***!
   \**************************************/
@@ -52604,31 +52488,31 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
-	var _keycode = __webpack_require__(/*! keycode */ 430);
+	var _keycode = __webpack_require__(/*! keycode */ 429);
 	
 	var _keycode2 = _interopRequireDefault(_keycode);
 	
@@ -52640,21 +52524,21 @@ var RDFaAnnotator =
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _all = __webpack_require__(/*! react-prop-types/lib/all */ 400);
+	var _all = __webpack_require__(/*! react-prop-types/lib/all */ 399);
 	
 	var _all2 = _interopRequireDefault(_all);
 	
-	var _warning = __webpack_require__(/*! warning */ 408);
+	var _warning = __webpack_require__(/*! warning */ 407);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -53001,7 +52885,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ },
-/* 501 */
+/* 500 */
 /*!*****************************************!*\
   !*** ./~/react-bootstrap/lib/Navbar.js ***!
   \*****************************************/
@@ -53011,27 +52895,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -53039,39 +52923,39 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _uncontrollable = __webpack_require__(/*! uncontrollable */ 432);
+	var _uncontrollable = __webpack_require__(/*! uncontrollable */ 431);
 	
 	var _uncontrollable2 = _interopRequireDefault(_uncontrollable);
 	
-	var _Grid = __webpack_require__(/*! ./Grid */ 459);
+	var _Grid = __webpack_require__(/*! ./Grid */ 458);
 	
 	var _Grid2 = _interopRequireDefault(_Grid);
 	
-	var _NavbarBrand = __webpack_require__(/*! ./NavbarBrand */ 502);
+	var _NavbarBrand = __webpack_require__(/*! ./NavbarBrand */ 501);
 	
 	var _NavbarBrand2 = _interopRequireDefault(_NavbarBrand);
 	
-	var _NavbarCollapse = __webpack_require__(/*! ./NavbarCollapse */ 503);
+	var _NavbarCollapse = __webpack_require__(/*! ./NavbarCollapse */ 502);
 	
 	var _NavbarCollapse2 = _interopRequireDefault(_NavbarCollapse);
 	
-	var _NavbarHeader = __webpack_require__(/*! ./NavbarHeader */ 504);
+	var _NavbarHeader = __webpack_require__(/*! ./NavbarHeader */ 503);
 	
 	var _NavbarHeader2 = _interopRequireDefault(_NavbarHeader);
 	
-	var _NavbarToggle = __webpack_require__(/*! ./NavbarToggle */ 505);
+	var _NavbarToggle = __webpack_require__(/*! ./NavbarToggle */ 504);
 	
 	var _NavbarToggle2 = _interopRequireDefault(_NavbarToggle);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
@@ -53335,7 +53219,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 502 */
+/* 501 */
 /*!**********************************************!*\
   !*** ./~/react-bootstrap/lib/NavbarBrand.js ***!
   \**********************************************/
@@ -53345,27 +53229,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -53373,7 +53257,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -53423,7 +53307,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 503 */
+/* 502 */
 /*!*************************************************!*\
   !*** ./~/react-bootstrap/lib/NavbarCollapse.js ***!
   \*************************************************/
@@ -53433,23 +53317,23 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
@@ -53457,11 +53341,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Collapse = __webpack_require__(/*! ./Collapse */ 413);
+	var _Collapse = __webpack_require__(/*! ./Collapse */ 412);
 	
 	var _Collapse2 = _interopRequireDefault(_Collapse);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -53509,7 +53393,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 504 */
+/* 503 */
 /*!***********************************************!*\
   !*** ./~/react-bootstrap/lib/NavbarHeader.js ***!
   \***********************************************/
@@ -53519,27 +53403,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -53547,7 +53431,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -53586,7 +53470,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 505 */
+/* 504 */
 /*!***********************************************!*\
   !*** ./~/react-bootstrap/lib/NavbarToggle.js ***!
   \***********************************************/
@@ -53596,27 +53480,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -53624,9 +53508,9 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
@@ -53704,7 +53588,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 506 */
+/* 505 */
 /*!**********************************************!*\
   !*** ./~/react-bootstrap/lib/NavDropdown.js ***!
   \**********************************************/
@@ -53714,27 +53598,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -53742,15 +53626,15 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Dropdown = __webpack_require__(/*! ./Dropdown */ 426);
+	var _Dropdown = __webpack_require__(/*! ./Dropdown */ 425);
 	
 	var _Dropdown2 = _interopRequireDefault(_Dropdown);
 	
-	var _splitComponentProps2 = __webpack_require__(/*! ./utils/splitComponentProps */ 452);
+	var _splitComponentProps2 = __webpack_require__(/*! ./utils/splitComponentProps */ 451);
 	
 	var _splitComponentProps3 = _interopRequireDefault(_splitComponentProps2);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -53853,7 +53737,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 507 */
+/* 506 */
 /*!******************************************!*\
   !*** ./~/react-bootstrap/lib/NavItem.js ***!
   \******************************************/
@@ -53863,27 +53747,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -53891,11 +53775,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 395);
+	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 394);
 	
 	var _SafeAnchor2 = _interopRequireDefault(_SafeAnchor);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
@@ -53987,7 +53871,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 508 */
+/* 507 */
 /*!******************************************!*\
   !*** ./~/react-bootstrap/lib/Overlay.js ***!
   \******************************************/
@@ -53997,27 +53881,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -54025,15 +53909,15 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Overlay = __webpack_require__(/*! react-overlays/lib/Overlay */ 509);
+	var _Overlay = __webpack_require__(/*! react-overlays/lib/Overlay */ 508);
 	
 	var _Overlay2 = _interopRequireDefault(_Overlay);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _Fade = __webpack_require__(/*! ./Fade */ 453);
+	var _Fade = __webpack_require__(/*! ./Fade */ 452);
 	
 	var _Fade2 = _interopRequireDefault(_Fade);
 	
@@ -54149,7 +54033,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 509 */
+/* 508 */
 /*!*****************************************!*\
   !*** ./~/react-overlays/lib/Overlay.js ***!
   \*****************************************/
@@ -54169,19 +54053,19 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Portal = __webpack_require__(/*! ./Portal */ 484);
+	var _Portal = __webpack_require__(/*! ./Portal */ 483);
 	
 	var _Portal2 = _interopRequireDefault(_Portal);
 	
-	var _Position = __webpack_require__(/*! ./Position */ 510);
+	var _Position = __webpack_require__(/*! ./Position */ 509);
 	
 	var _Position2 = _interopRequireDefault(_Position);
 	
-	var _RootCloseWrapper = __webpack_require__(/*! ./RootCloseWrapper */ 445);
+	var _RootCloseWrapper = __webpack_require__(/*! ./RootCloseWrapper */ 444);
 	
 	var _RootCloseWrapper2 = _interopRequireDefault(_RootCloseWrapper);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
@@ -54385,7 +54269,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 510 */
+/* 509 */
 /*!******************************************!*\
   !*** ./~/react-overlays/lib/Position.js ***!
   \******************************************/
@@ -54401,7 +54285,7 @@ var RDFaAnnotator =
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -54413,19 +54297,19 @@ var RDFaAnnotator =
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _componentOrElement = __webpack_require__(/*! react-prop-types/lib/componentOrElement */ 483);
+	var _componentOrElement = __webpack_require__(/*! react-prop-types/lib/componentOrElement */ 482);
 	
 	var _componentOrElement2 = _interopRequireDefault(_componentOrElement);
 	
-	var _calculatePosition = __webpack_require__(/*! ./utils/calculatePosition */ 511);
+	var _calculatePosition = __webpack_require__(/*! ./utils/calculatePosition */ 510);
 	
 	var _calculatePosition2 = _interopRequireDefault(_calculatePosition);
 	
-	var _getContainer = __webpack_require__(/*! ./utils/getContainer */ 485);
+	var _getContainer = __webpack_require__(/*! ./utils/getContainer */ 484);
 	
 	var _getContainer2 = _interopRequireDefault(_getContainer);
 	
-	var _ownerDocument = __webpack_require__(/*! ./utils/ownerDocument */ 448);
+	var _ownerDocument = __webpack_require__(/*! ./utils/ownerDocument */ 447);
 	
 	var _ownerDocument2 = _interopRequireDefault(_ownerDocument);
 	
@@ -54604,7 +54488,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 511 */
+/* 510 */
 /*!*********************************************************!*\
   !*** ./~/react-overlays/lib/utils/calculatePosition.js ***!
   \*********************************************************/
@@ -54617,19 +54501,19 @@ var RDFaAnnotator =
 	});
 	exports.default = calculatePosition;
 	
-	var _offset = __webpack_require__(/*! dom-helpers/query/offset */ 512);
+	var _offset = __webpack_require__(/*! dom-helpers/query/offset */ 511);
 	
 	var _offset2 = _interopRequireDefault(_offset);
 	
-	var _position = __webpack_require__(/*! dom-helpers/query/position */ 513);
+	var _position = __webpack_require__(/*! dom-helpers/query/position */ 512);
 	
 	var _position2 = _interopRequireDefault(_position);
 	
-	var _scrollTop = __webpack_require__(/*! dom-helpers/query/scrollTop */ 515);
+	var _scrollTop = __webpack_require__(/*! dom-helpers/query/scrollTop */ 514);
 	
 	var _scrollTop2 = _interopRequireDefault(_scrollTop);
 	
-	var _ownerDocument = __webpack_require__(/*! ./ownerDocument */ 448);
+	var _ownerDocument = __webpack_require__(/*! ./ownerDocument */ 447);
 	
 	var _ownerDocument2 = _interopRequireDefault(_ownerDocument);
 	
@@ -54741,16 +54625,16 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 512 */
+/* 511 */
 /*!***************************************!*\
   !*** ./~/dom-helpers/query/offset.js ***!
   \***************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var contains = __webpack_require__(/*! ./contains */ 429),
-	    getWindow = __webpack_require__(/*! ./isWindow */ 492),
-	    ownerDocument = __webpack_require__(/*! ../ownerDocument */ 428);
+	var contains = __webpack_require__(/*! ./contains */ 428),
+	    getWindow = __webpack_require__(/*! ./isWindow */ 491),
+	    ownerDocument = __webpack_require__(/*! ../ownerDocument */ 427);
 	
 	module.exports = function offset(node) {
 	  var doc = ownerDocument(node),
@@ -54779,7 +54663,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 513 */
+/* 512 */
 /*!*****************************************!*\
   !*** ./~/dom-helpers/query/position.js ***!
   \*****************************************/
@@ -54787,28 +54671,28 @@ var RDFaAnnotator =
 
 	'use strict';
 	
-	var babelHelpers = __webpack_require__(/*! ../util/babelHelpers.js */ 420);
+	var babelHelpers = __webpack_require__(/*! ../util/babelHelpers.js */ 419);
 	
 	exports.__esModule = true;
 	exports['default'] = position;
 	
-	var _offset = __webpack_require__(/*! ./offset */ 512);
+	var _offset = __webpack_require__(/*! ./offset */ 511);
 	
 	var _offset2 = babelHelpers.interopRequireDefault(_offset);
 	
-	var _offsetParent = __webpack_require__(/*! ./offsetParent */ 514);
+	var _offsetParent = __webpack_require__(/*! ./offsetParent */ 513);
 	
 	var _offsetParent2 = babelHelpers.interopRequireDefault(_offsetParent);
 	
-	var _scrollTop = __webpack_require__(/*! ./scrollTop */ 515);
+	var _scrollTop = __webpack_require__(/*! ./scrollTop */ 514);
 	
 	var _scrollTop2 = babelHelpers.interopRequireDefault(_scrollTop);
 	
-	var _scrollLeft = __webpack_require__(/*! ./scrollLeft */ 516);
+	var _scrollLeft = __webpack_require__(/*! ./scrollLeft */ 515);
 	
 	var _scrollLeft2 = babelHelpers.interopRequireDefault(_scrollLeft);
 	
-	var _style = __webpack_require__(/*! ../style */ 414);
+	var _style = __webpack_require__(/*! ../style */ 413);
 	
 	var _style2 = babelHelpers.interopRequireDefault(_style);
 	
@@ -54844,7 +54728,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 514 */
+/* 513 */
 /*!*********************************************!*\
   !*** ./~/dom-helpers/query/offsetParent.js ***!
   \*********************************************/
@@ -54852,16 +54736,16 @@ var RDFaAnnotator =
 
 	'use strict';
 	
-	var babelHelpers = __webpack_require__(/*! ../util/babelHelpers.js */ 420);
+	var babelHelpers = __webpack_require__(/*! ../util/babelHelpers.js */ 419);
 	
 	exports.__esModule = true;
 	exports['default'] = offsetParent;
 	
-	var _ownerDocument = __webpack_require__(/*! ../ownerDocument */ 428);
+	var _ownerDocument = __webpack_require__(/*! ../ownerDocument */ 427);
 	
 	var _ownerDocument2 = babelHelpers.interopRequireDefault(_ownerDocument);
 	
-	var _style = __webpack_require__(/*! ../style */ 414);
+	var _style = __webpack_require__(/*! ../style */ 413);
 	
 	var _style2 = babelHelpers.interopRequireDefault(_style);
 	
@@ -54883,14 +54767,14 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 515 */
+/* 514 */
 /*!******************************************!*\
   !*** ./~/dom-helpers/query/scrollTop.js ***!
   \******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var getWindow = __webpack_require__(/*! ./isWindow */ 492);
+	var getWindow = __webpack_require__(/*! ./isWindow */ 491);
 	
 	module.exports = function scrollTop(node, val) {
 	  var win = getWindow(node);
@@ -54901,14 +54785,14 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 516 */
+/* 515 */
 /*!*******************************************!*\
   !*** ./~/dom-helpers/query/scrollLeft.js ***!
   \*******************************************/
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
-	var getWindow = __webpack_require__(/*! ./isWindow */ 492);
+	var getWindow = __webpack_require__(/*! ./isWindow */ 491);
 	
 	module.exports = function scrollTop(node, val) {
 	  var win = getWindow(node);
@@ -54919,7 +54803,7 @@ var RDFaAnnotator =
 	};
 
 /***/ },
-/* 517 */
+/* 516 */
 /*!*************************************************!*\
   !*** ./~/react-bootstrap/lib/OverlayTrigger.js ***!
   \*************************************************/
@@ -54929,27 +54813,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _contains = __webpack_require__(/*! dom-helpers/query/contains */ 429);
+	var _contains = __webpack_require__(/*! dom-helpers/query/contains */ 428);
 	
 	var _contains2 = _interopRequireDefault(_contains);
 	
@@ -54961,15 +54845,15 @@ var RDFaAnnotator =
 	
 	var _reactDom2 = _interopRequireDefault(_reactDom);
 	
-	var _warning = __webpack_require__(/*! warning */ 408);
+	var _warning = __webpack_require__(/*! warning */ 407);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _Overlay = __webpack_require__(/*! ./Overlay */ 508);
+	var _Overlay = __webpack_require__(/*! ./Overlay */ 507);
 	
 	var _Overlay2 = _interopRequireDefault(_Overlay);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
@@ -55274,7 +55158,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ },
-/* 518 */
+/* 517 */
 /*!*********************************************!*\
   !*** ./~/react-bootstrap/lib/PageHeader.js ***!
   \*********************************************/
@@ -55284,27 +55168,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -55312,7 +55196,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -55356,7 +55240,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 519 */
+/* 518 */
 /*!*******************************************!*\
   !*** ./~/react-bootstrap/lib/PageItem.js ***!
   \*******************************************/
@@ -55366,11 +55250,11 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _PagerItem = __webpack_require__(/*! ./PagerItem */ 520);
+	var _PagerItem = __webpack_require__(/*! ./PagerItem */ 519);
 	
 	var _PagerItem2 = _interopRequireDefault(_PagerItem);
 	
-	var _deprecationWarning = __webpack_require__(/*! ./utils/deprecationWarning */ 521);
+	var _deprecationWarning = __webpack_require__(/*! ./utils/deprecationWarning */ 520);
 	
 	var _deprecationWarning2 = _interopRequireDefault(_deprecationWarning);
 	
@@ -55380,7 +55264,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 520 */
+/* 519 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/PagerItem.js ***!
   \********************************************/
@@ -55390,27 +55274,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -55418,11 +55302,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 395);
+	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 394);
 	
 	var _SafeAnchor2 = _interopRequireDefault(_SafeAnchor);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
@@ -55512,7 +55396,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 521 */
+/* 520 */
 /*!***********************************************************!*\
   !*** ./~/react-bootstrap/lib/utils/deprecationWarning.js ***!
   \***********************************************************/
@@ -55522,25 +55406,25 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _typeof2 = __webpack_require__(/*! babel-runtime/helpers/typeof */ 334);
+	var _typeof2 = __webpack_require__(/*! babel-runtime/helpers/typeof */ 333);
 	
 	var _typeof3 = _interopRequireDefault(_typeof2);
 	
 	exports._resetWarned = _resetWarned;
 	
-	var _warning = __webpack_require__(/*! warning */ 408);
+	var _warning = __webpack_require__(/*! warning */ 407);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
@@ -55607,7 +55491,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../../process/browser.js */ 3)))
 
 /***/ },
-/* 522 */
+/* 521 */
 /*!****************************************!*\
   !*** ./~/react-bootstrap/lib/Pager.js ***!
   \****************************************/
@@ -55617,27 +55501,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -55645,17 +55529,17 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _PagerItem = __webpack_require__(/*! ./PagerItem */ 520);
+	var _PagerItem = __webpack_require__(/*! ./PagerItem */ 519);
 	
 	var _PagerItem2 = _interopRequireDefault(_PagerItem);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -55710,7 +55594,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 523 */
+/* 522 */
 /*!*********************************************!*\
   !*** ./~/react-bootstrap/lib/Pagination.js ***!
   \*********************************************/
@@ -55720,27 +55604,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -55748,15 +55632,15 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _PaginationButton = __webpack_require__(/*! ./PaginationButton */ 524);
+	var _PaginationButton = __webpack_require__(/*! ./PaginationButton */ 523);
 	
 	var _PaginationButton2 = _interopRequireDefault(_PaginationButton);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -56017,7 +55901,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 524 */
+/* 523 */
 /*!***************************************************!*\
   !*** ./~/react-bootstrap/lib/PaginationButton.js ***!
   \***************************************************/
@@ -56027,27 +55911,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -56055,15 +55939,15 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 395);
+	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 394);
 	
 	var _SafeAnchor2 = _interopRequireDefault(_SafeAnchor);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
@@ -56158,7 +56042,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 525 */
+/* 524 */
 /*!****************************************!*\
   !*** ./~/react-bootstrap/lib/Panel.js ***!
   \****************************************/
@@ -56168,31 +56052,31 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 389);
+	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 388);
 	
 	var _values2 = _interopRequireDefault(_values);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -56200,13 +56084,13 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Collapse = __webpack_require__(/*! ./Collapse */ 413);
+	var _Collapse = __webpack_require__(/*! ./Collapse */ 412);
 	
 	var _Collapse2 = _interopRequireDefault(_Collapse);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -56426,7 +56310,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 526 */
+/* 525 */
 /*!******************************************!*\
   !*** ./~/react-bootstrap/lib/Popover.js ***!
   \******************************************/
@@ -56436,27 +56320,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -56464,11 +56348,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _isRequiredForA11y = __webpack_require__(/*! react-prop-types/lib/isRequiredForA11y */ 431);
+	var _isRequiredForA11y = __webpack_require__(/*! react-prop-types/lib/isRequiredForA11y */ 430);
 	
 	var _isRequiredForA11y2 = _interopRequireDefault(_isRequiredForA11y);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -56584,7 +56468,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 527 */
+/* 526 */
 /*!**********************************************!*\
   !*** ./~/react-bootstrap/lib/ProgressBar.js ***!
   \**********************************************/
@@ -56594,31 +56478,31 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 389);
+	var _values = __webpack_require__(/*! babel-runtime/core-js/object/values */ 388);
 	
 	var _values2 = _interopRequireDefault(_values);
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -56626,11 +56510,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -56791,7 +56675,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 528 */
+/* 527 */
 /*!****************************************!*\
   !*** ./~/react-bootstrap/lib/Radio.js ***!
   \****************************************/
@@ -56801,27 +56685,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -56829,11 +56713,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _warning = __webpack_require__(/*! warning */ 408);
+	var _warning = __webpack_require__(/*! warning */ 407);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -56935,7 +56819,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ },
-/* 529 */
+/* 528 */
 /*!**************************************************!*\
   !*** ./~/react-bootstrap/lib/ResponsiveEmbed.js ***!
   \**************************************************/
@@ -56945,27 +56829,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -56973,11 +56857,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _warning = __webpack_require__(/*! warning */ 408);
+	var _warning = __webpack_require__(/*! warning */ 407);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -57050,7 +56934,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ },
-/* 530 */
+/* 529 */
 /*!**************************************!*\
   !*** ./~/react-bootstrap/lib/Row.js ***!
   \**************************************/
@@ -57060,27 +56944,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -57088,11 +56972,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -57139,7 +57023,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 531 */
+/* 530 */
 /*!**********************************************!*\
   !*** ./~/react-bootstrap/lib/SplitButton.js ***!
   \**********************************************/
@@ -57149,23 +57033,23 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
@@ -57173,19 +57057,19 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _Button = __webpack_require__(/*! ./Button */ 398);
+	var _Button = __webpack_require__(/*! ./Button */ 397);
 	
 	var _Button2 = _interopRequireDefault(_Button);
 	
-	var _Dropdown = __webpack_require__(/*! ./Dropdown */ 426);
+	var _Dropdown = __webpack_require__(/*! ./Dropdown */ 425);
 	
 	var _Dropdown2 = _interopRequireDefault(_Dropdown);
 	
-	var _SplitToggle = __webpack_require__(/*! ./SplitToggle */ 532);
+	var _SplitToggle = __webpack_require__(/*! ./SplitToggle */ 531);
 	
 	var _SplitToggle2 = _interopRequireDefault(_SplitToggle);
 	
-	var _splitComponentProps2 = __webpack_require__(/*! ./utils/splitComponentProps */ 452);
+	var _splitComponentProps2 = __webpack_require__(/*! ./utils/splitComponentProps */ 451);
 	
 	var _splitComponentProps3 = _interopRequireDefault(_splitComponentProps2);
 	
@@ -57274,7 +57158,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 532 */
+/* 531 */
 /*!**********************************************!*\
   !*** ./~/react-bootstrap/lib/SplitToggle.js ***!
   \**********************************************/
@@ -57284,19 +57168,19 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
@@ -57304,7 +57188,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _DropdownToggle = __webpack_require__(/*! ./DropdownToggle */ 449);
+	var _DropdownToggle = __webpack_require__(/*! ./DropdownToggle */ 448);
 	
 	var _DropdownToggle2 = _interopRequireDefault(_DropdownToggle);
 	
@@ -57334,7 +57218,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 533 */
+/* 532 */
 /*!**************************************!*\
   !*** ./~/react-bootstrap/lib/Tab.js ***!
   \**************************************/
@@ -57344,19 +57228,19 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
@@ -57364,15 +57248,15 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _TabContainer = __webpack_require__(/*! ./TabContainer */ 534);
+	var _TabContainer = __webpack_require__(/*! ./TabContainer */ 533);
 	
 	var _TabContainer2 = _interopRequireDefault(_TabContainer);
 	
-	var _TabContent = __webpack_require__(/*! ./TabContent */ 535);
+	var _TabContent = __webpack_require__(/*! ./TabContent */ 534);
 	
 	var _TabContent2 = _interopRequireDefault(_TabContent);
 	
-	var _TabPane = __webpack_require__(/*! ./TabPane */ 536);
+	var _TabPane = __webpack_require__(/*! ./TabPane */ 535);
 	
 	var _TabPane2 = _interopRequireDefault(_TabPane);
 	
@@ -57422,7 +57306,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 534 */
+/* 533 */
 /*!***********************************************!*\
   !*** ./~/react-bootstrap/lib/TabContainer.js ***!
   \***********************************************/
@@ -57432,19 +57316,19 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
@@ -57452,7 +57336,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _uncontrollable = __webpack_require__(/*! uncontrollable */ 432);
+	var _uncontrollable = __webpack_require__(/*! uncontrollable */ 431);
 	
 	var _uncontrollable2 = _interopRequireDefault(_uncontrollable);
 	
@@ -57581,7 +57465,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 535 */
+/* 534 */
 /*!*********************************************!*\
   !*** ./~/react-bootstrap/lib/TabContent.js ***!
   \*********************************************/
@@ -57591,27 +57475,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -57619,11 +57503,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -57794,7 +57678,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 536 */
+/* 535 */
 /*!******************************************!*\
   !*** ./~/react-bootstrap/lib/TabPane.js ***!
   \******************************************/
@@ -57804,27 +57688,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -57832,21 +57716,21 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 396);
+	var _elementType = __webpack_require__(/*! react-prop-types/lib/elementType */ 395);
 	
 	var _elementType2 = _interopRequireDefault(_elementType);
 	
-	var _warning = __webpack_require__(/*! warning */ 408);
+	var _warning = __webpack_require__(/*! warning */ 407);
 	
 	var _warning2 = _interopRequireDefault(_warning);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 386);
+	var _createChainedFunction = __webpack_require__(/*! ./utils/createChainedFunction */ 385);
 	
 	var _createChainedFunction2 = _interopRequireDefault(_createChainedFunction);
 	
-	var _Fade = __webpack_require__(/*! ./Fade */ 453);
+	var _Fade = __webpack_require__(/*! ./Fade */ 452);
 	
 	var _Fade2 = _interopRequireDefault(_Fade);
 	
@@ -58110,7 +57994,7 @@ var RDFaAnnotator =
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(/*! ./../../process/browser.js */ 3)))
 
 /***/ },
-/* 537 */
+/* 536 */
 /*!****************************************!*\
   !*** ./~/react-bootstrap/lib/Table.js ***!
   \****************************************/
@@ -58120,27 +58004,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -58148,7 +58032,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -58219,7 +58103,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 538 */
+/* 537 */
 /*!***************************************!*\
   !*** ./~/react-bootstrap/lib/Tabs.js ***!
   \***************************************/
@@ -58229,23 +58113,23 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
@@ -58253,33 +58137,33 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _isRequiredForA11y = __webpack_require__(/*! react-prop-types/lib/isRequiredForA11y */ 431);
+	var _isRequiredForA11y = __webpack_require__(/*! react-prop-types/lib/isRequiredForA11y */ 430);
 	
 	var _isRequiredForA11y2 = _interopRequireDefault(_isRequiredForA11y);
 	
-	var _uncontrollable = __webpack_require__(/*! uncontrollable */ 432);
+	var _uncontrollable = __webpack_require__(/*! uncontrollable */ 431);
 	
 	var _uncontrollable2 = _interopRequireDefault(_uncontrollable);
 	
-	var _Nav = __webpack_require__(/*! ./Nav */ 500);
+	var _Nav = __webpack_require__(/*! ./Nav */ 499);
 	
 	var _Nav2 = _interopRequireDefault(_Nav);
 	
-	var _NavItem = __webpack_require__(/*! ./NavItem */ 507);
+	var _NavItem = __webpack_require__(/*! ./NavItem */ 506);
 	
 	var _NavItem2 = _interopRequireDefault(_NavItem);
 	
-	var _TabContainer = __webpack_require__(/*! ./TabContainer */ 534);
+	var _TabContainer = __webpack_require__(/*! ./TabContainer */ 533);
 	
 	var _TabContainer2 = _interopRequireDefault(_TabContainer);
 	
-	var _TabContent = __webpack_require__(/*! ./TabContent */ 535);
+	var _TabContent = __webpack_require__(/*! ./TabContent */ 534);
 	
 	var _TabContent2 = _interopRequireDefault(_TabContent);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 387);
+	var _ValidComponentChildren = __webpack_require__(/*! ./utils/ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren2 = _interopRequireDefault(_ValidComponentChildren);
 	
@@ -58430,7 +58314,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 539 */
+/* 538 */
 /*!********************************************!*\
   !*** ./~/react-bootstrap/lib/Thumbnail.js ***!
   \********************************************/
@@ -58440,27 +58324,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -58468,11 +58352,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 395);
+	var _SafeAnchor = __webpack_require__(/*! ./SafeAnchor */ 394);
 	
 	var _SafeAnchor2 = _interopRequireDefault(_SafeAnchor);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -58528,7 +58412,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 540 */
+/* 539 */
 /*!******************************************!*\
   !*** ./~/react-bootstrap/lib/Tooltip.js ***!
   \******************************************/
@@ -58538,27 +58422,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends3 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends4 = _interopRequireDefault(_extends3);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -58566,11 +58450,11 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _isRequiredForA11y = __webpack_require__(/*! react-prop-types/lib/isRequiredForA11y */ 431);
+	var _isRequiredForA11y = __webpack_require__(/*! react-prop-types/lib/isRequiredForA11y */ 430);
 	
 	var _isRequiredForA11y2 = _interopRequireDefault(_isRequiredForA11y);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -58674,7 +58558,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 541 */
+/* 540 */
 /*!***************************************!*\
   !*** ./~/react-bootstrap/lib/Well.js ***!
   \***************************************/
@@ -58684,27 +58568,27 @@ var RDFaAnnotator =
 	
 	exports.__esModule = true;
 	
-	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 294);
+	var _extends2 = __webpack_require__(/*! babel-runtime/helpers/extends */ 293);
 	
 	var _extends3 = _interopRequireDefault(_extends2);
 	
-	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 378);
+	var _objectWithoutProperties2 = __webpack_require__(/*! babel-runtime/helpers/objectWithoutProperties */ 377);
 	
 	var _objectWithoutProperties3 = _interopRequireDefault(_objectWithoutProperties2);
 	
-	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 332);
+	var _classCallCheck2 = __webpack_require__(/*! babel-runtime/helpers/classCallCheck */ 331);
 	
 	var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
 	
-	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 333);
+	var _possibleConstructorReturn2 = __webpack_require__(/*! babel-runtime/helpers/possibleConstructorReturn */ 332);
 	
 	var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
 	
-	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 369);
+	var _inherits2 = __webpack_require__(/*! babel-runtime/helpers/inherits */ 368);
 	
 	var _inherits3 = _interopRequireDefault(_inherits2);
 	
-	var _classnames = __webpack_require__(/*! classnames */ 379);
+	var _classnames = __webpack_require__(/*! classnames */ 378);
 	
 	var _classnames2 = _interopRequireDefault(_classnames);
 	
@@ -58712,9 +58596,9 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 380);
+	var _bootstrapUtils = __webpack_require__(/*! ./utils/bootstrapUtils */ 379);
 	
-	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 385);
+	var _StyleConfig = __webpack_require__(/*! ./utils/StyleConfig */ 384);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
@@ -58749,7 +58633,7 @@ var RDFaAnnotator =
 	module.exports = exports['default'];
 
 /***/ },
-/* 542 */
+/* 541 */
 /*!**********************************************!*\
   !*** ./~/react-bootstrap/lib/utils/index.js ***!
   \**********************************************/
@@ -58760,15 +58644,15 @@ var RDFaAnnotator =
 	exports.__esModule = true;
 	exports.ValidComponentChildren = exports.createChainedFunction = exports.bootstrapUtils = undefined;
 	
-	var _bootstrapUtils2 = __webpack_require__(/*! ./bootstrapUtils */ 380);
+	var _bootstrapUtils2 = __webpack_require__(/*! ./bootstrapUtils */ 379);
 	
 	var _bootstrapUtils = _interopRequireWildcard(_bootstrapUtils2);
 	
-	var _createChainedFunction2 = __webpack_require__(/*! ./createChainedFunction */ 386);
+	var _createChainedFunction2 = __webpack_require__(/*! ./createChainedFunction */ 385);
 	
 	var _createChainedFunction3 = _interopRequireDefault(_createChainedFunction2);
 	
-	var _ValidComponentChildren2 = __webpack_require__(/*! ./ValidComponentChildren */ 387);
+	var _ValidComponentChildren2 = __webpack_require__(/*! ./ValidComponentChildren */ 386);
 	
 	var _ValidComponentChildren3 = _interopRequireDefault(_ValidComponentChildren2);
 	
@@ -58781,7 +58665,7 @@ var RDFaAnnotator =
 	exports.ValidComponentChildren = _ValidComponentChildren3['default'];
 
 /***/ },
-/* 543 */
+/* 542 */
 /*!*****************************************************!*\
   !*** ./src/components/annotation/CandidateList.jsx ***!
   \*****************************************************/
@@ -58800,7 +58684,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _CandidateTarget = __webpack_require__(/*! ./CandidateTarget.jsx */ 544);
+	var _CandidateTarget = __webpack_require__(/*! ./CandidateTarget.jsx */ 543);
 	
 	var _CandidateTarget2 = _interopRequireDefault(_CandidateTarget);
 	
@@ -58918,7 +58802,7 @@ var RDFaAnnotator =
 	exports.default = CandidateList;
 
 /***/ },
-/* 544 */
+/* 543 */
 /*!*******************************************************!*\
   !*** ./src/components/annotation/CandidateTarget.jsx ***!
   \*******************************************************/
@@ -58997,7 +58881,7 @@ var RDFaAnnotator =
 	exports.default = CandidateTarget;
 
 /***/ },
-/* 545 */
+/* 544 */
 /*!****************************************************!*\
   !*** ./src/components/annotation/SelectedList.jsx ***!
   \****************************************************/
@@ -59016,7 +58900,7 @@ var RDFaAnnotator =
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _CandidateTarget = __webpack_require__(/*! ./CandidateTarget.jsx */ 544);
+	var _CandidateTarget = __webpack_require__(/*! ./CandidateTarget.jsx */ 543);
 	
 	var _CandidateTarget2 = _interopRequireDefault(_CandidateTarget);
 	
@@ -59085,7 +58969,7 @@ var RDFaAnnotator =
 	exports.default = SelectedList;
 
 /***/ },
-/* 546 */
+/* 545 */
 /*!********************************!*\
   !*** ./src/util/TargetUtil.js ***!
   \********************************/
@@ -59113,15 +58997,15 @@ var RDFaAnnotator =
 	    value: true
 	});
 	
-	var _DOMUtil = __webpack_require__(/*! ./DOMUtil.js */ 288);
+	var _DOMUtil = __webpack_require__(/*! ./DOMUtil.js */ 287);
 	
 	var _DOMUtil2 = _interopRequireDefault(_DOMUtil);
 	
-	var _RDFaUtil = __webpack_require__(/*! ./RDFaUtil.js */ 248);
+	var _RDFaUtil = __webpack_require__(/*! ./RDFaUtil.js */ 247);
 	
 	var _RDFaUtil2 = _interopRequireDefault(_RDFaUtil);
 	
-	var _SelectionUtil = __webpack_require__(/*! ./SelectionUtil.js */ 290);
+	var _SelectionUtil = __webpack_require__(/*! ./SelectionUtil.js */ 289);
 	
 	var _SelectionUtil2 = _interopRequireDefault(_SelectionUtil);
 	
@@ -59223,7 +59107,7 @@ var RDFaAnnotator =
 	    // Return all potential annotation targets.
 	    // Annotation targets are elements containing
 	    // or contained in the selected passage.
-	    getCandidateRDFaTargets: function getCandidateRDFaTargets() {
+	    getCandidateRDFaTargets: function getCandidateRDFaTargets(defaultTargets) {
 	        var selection = _SelectionUtil2.default.getStartEndSelection();
 	        var ancestors = _DOMUtil2.default.findCommonAncestors(selection.startNode, selection.endNode);
 	        selection.containerNode = ancestors[ancestors.length - 1];
@@ -59235,6 +59119,10 @@ var RDFaAnnotator =
 	        if (selection.startOffset) {
 	            var container = biggerNodes[biggerNodes.length - 1];
 	            highlighted = TargetUtil.findHighlighted(container, selection);
+	        } else {
+	            wholeNodes = wholeNodes.filter(function (resource) {
+	                return defaultTargets.includes(resource.label);
+	            });
 	        }
 	        return { wholeNodes: wholeNodes, highlighted: highlighted };
 	    },
@@ -59344,7 +59232,7 @@ var RDFaAnnotator =
 	exports.default = TargetUtil;
 
 /***/ },
-/* 547 */
+/* 546 */
 /*!*************************************!*\
   !*** ./src/components/LoginBox.jsx ***!
   \*************************************/
@@ -59526,6 +59414,101 @@ var RDFaAnnotator =
 	}(_react2.default.Component);
 	
 	exports.default = LoginBox;
+
+/***/ },
+/* 547 */
+/*!***************************************!*\
+  !*** ./src/rdfa-annotation-config.js ***!
+  \***************************************/
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	var config = {
+	    "id": "text-annotation",
+	    "name": "Basic Text Annotation",
+	    "type": "annotation",
+	    "description": "Select and annotate text",
+	    "services": {
+	        "AnnotationServer": {
+	            "api": "http://localhost:3000/api"
+	        },
+	        "GTAA": {
+	            "api": "http://openskos.beeldengeluid.nl/api/autocomplete/",
+	            "params": {
+	                "lang": "nl"
+	            }
+	        },
+	        "DBpedia": {
+	            "api": "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString="
+	        }
+	    },
+	    "annotationSupport": {
+	        "currentQuery": {
+	            "modes": ["bookmark"]
+	        },
+	        "singleItem": {
+	            "modes": ["bookmark"]
+	        },
+	        "mediaObject": {
+	            "modes": ["classify", "comment", "link"]
+	        },
+	        "mediaSegment": {
+	            "modes": ["classify", "comment", "link"]
+	        },
+	        "annotation": {
+	            "modes": ["comment"]
+	        }
+	    },
+	    "annotationModes": {
+	        "classify": {
+	            "vocabularies": ["DBpedia", "GTAA"],
+	            "type": "classification",
+	            "purpose": "classifying",
+	            "format": "text/plain"
+	        },
+	        "link": {
+	            "apis": [{ "name": "wikidata" }, { "name": "europeana" }],
+	            "type": "link",
+	            "purpose": "linking",
+	            "format": "text/plain"
+	        },
+	        "bookmark": {
+	            "type": "bookmark",
+	            "purpose": "bookmarking"
+	        },
+	        "comment": {
+	            "type": "comment",
+	            "purpose": "commenting",
+	            "format": "text/plain"
+	        },
+	        "correct": {
+	            "type": "correction",
+	            "purpose": "correcting",
+	            "format": "text/plain"
+	        },
+	        "transcribe": {
+	            "type": "transcription",
+	            "purpose": "transcribing",
+	            "format": "text/plain"
+	        }
+	    },
+	    "candidateTypes": ["resource", "annotation"],
+	    "tasks": [{
+	        "task": "tagging",
+	        "placeholder": "Add one or more tags",
+	        "label": "Tagging"
+	    }, {
+	        "taskname": "describing",
+	        "placeholder": "Add a description",
+	        "tasklabel": "Describing"
+	    }]
+	};
+	
+	exports.default = config;
 
 /***/ }
 /******/ ]);
