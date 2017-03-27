@@ -110,6 +110,7 @@ export default class AnnotationViewer extends React.Component {
                 <TargetSelector
                     prepareAnnotation={this.prepareAnnotation.bind(this)}
                     annotations={this.state.annotations}
+                    defaultTargets={this.props.config.defaults.target}
                     /> : null
             }
                 <AnnotationList

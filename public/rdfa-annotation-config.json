@@ -74,6 +74,9 @@
 		}
 	},
 	"candidateTypes": ["resource", "annotation"],
+	"defaults": {
+		"target": ["ParagraphInLetter", "Note", "LocationNote", "SourceNote"]
+	},
 	"tasks": [
 		{
 			"task": "tagging",

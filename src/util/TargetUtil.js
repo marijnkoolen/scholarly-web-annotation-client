@@ -117,7 +117,7 @@ const TargetUtil = {
     // Return all potential annotation targets.
     // Annotation targets are elements containing
     // or contained in the selected passage.
-    getCandidateRDFaTargets : function() {
+    getCandidateRDFaTargets : function(defaultTargets) {
         var selection = SelectionUtil.getStartEndSelection();
         var ancestors = DOMUtil.findCommonAncestors(selection.startNode, selection.endNode);
         selection.containerNode = ancestors[ancestors.length - 1];
@@ -129,6 +129,11 @@ const TargetUtil = {
         if (selection.startOffset) {
             let container = biggerNodes[biggerNodes.length - 1];
             highlighted = TargetUtil.findHighlighted(container, selection);
+        }
+        else {
+            wholeNodes = wholeNodes.filter((resource) => {
+                return defaultTargets.includes(resource.label);
+            });
         }
         return {wholeNodes: wholeNodes, highlighted: highlighted};
     },
