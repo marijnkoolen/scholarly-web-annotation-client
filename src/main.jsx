@@ -20,7 +20,7 @@ export class RDFaAnnotator {
         AnnotationActions.setServerAddress(configuration.services.AnnotationServer.api);
     }
 
-    addAnnotationViewer(clientConfiguration) {
+    addAnnotationViewer() {
         var observerTargets = document.getElementsByClassName("annotation-target-observer");
         this.startObserver(observerTargets);
         this.setAnnotationAttributes(observerTargets);
@@ -34,16 +34,6 @@ export class RDFaAnnotator {
 
     getDefaultConfiguration() {
         return defaultConfig;
-    }
-
-    overrideConfiguration(configuration) {
-        AppAnnotationStore.bind("configure-client", handleConfiguration.bind(this));
-        AnnotationActions.configureClient("set", "api", "http://localhost:3000/api");
-        this.clientConfiguration = configuration;
-    }
-
-    handleConfiguration(config) {
-        console.log(config.message + ": " + config.data);
     }
 
     setAnnotationAttributes(observerTargets) {
