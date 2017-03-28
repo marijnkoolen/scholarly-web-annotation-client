@@ -217,6 +217,11 @@ const RDFaUtil = {
         var maps = {};
         RDFaUtil.getTopRDFaNodes(document.body).forEach((rdfaResourceNode) => {
             let map = this.buildResourceMap(rdfaResourceNode);
+            map.source = {
+                location: window.location.href,
+                origin: window.location.origin,
+                pathname: window.location.pathname
+            }
             maps[map.about] = map;
         });
         return maps;
