@@ -47,10 +47,10 @@ export default class AnnotationViewer extends React.Component {
     loadResources() {
         if (this.resourcesChanged()) {// if resources on display change, then ...
             this.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
-            this.maps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
+            this.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
         }
-        console.log(this.maps);
-        AnnotationActions.registerResources(this.maps);
+        console.log(this.resourceMaps);
+        AnnotationActions.registerResources(this.resourceMaps);
     }
     resourcesChanged() {
         let topResources = RDFaUtil.getTopRDFaResources(document.body);
@@ -125,7 +125,7 @@ export default class AnnotationViewer extends React.Component {
                     hideAnnotationForm={this.hideAnnotationForm.bind(this)}
                     editAnnotation={this.state.currentAnnotation}
                     currentUser={this.state.user}
-                    annotationModes={this.props.config.annotationModes}
+                    annotationTasks={this.props.config.annotationTasks}
                     services={this.props.config.services}
                 />
             </div>

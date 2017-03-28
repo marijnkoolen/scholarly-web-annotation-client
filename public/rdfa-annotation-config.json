@@ -34,28 +34,19 @@
 			"modes" : ["comment"]
 		}
 	},
-	"annotationModes" : {
-		"classify" : {
-			"vocabularies" : [
-				"DBpedia",
-				"GTAA"
-			],
-			"type": "classification",
-			"purpose": "classifying",
-			"format": "text/plain"
-		},
-		"link" : {
-			"apis" : [
-				{"name" : "wikidata"},
-				{"name" : "europeana"}
-			],
-			"type": "link",
-			"purpose": "linking",
-			"format": "text/plain"
-		},
+	"annotationTasks" : {
 		"bookmark" : {
 			"type": "bookmark",
 			"purpose": "bookmarking"
+		},
+		"classify" : {
+			"type": "classification",
+			"purpose": "classifying",
+			"format": "text/plain",
+			"vocabularies" : [
+				"DBpedia",
+				"GTAA"
+			]
 		},
 		"comment" : {
 			"type": "comment",
@@ -67,26 +58,28 @@
 			"purpose": "correcting",
 			"format": "text/plain"
 		},
+		"link" : {
+			"type": "link",
+			"purpose": "linking",
+			"format": "text/plain",
+			"apis" : [
+				{"name" : "wikidata"},
+				{"name" : "europeana"}
+			]
+		},
+		"tag": {
+			"type": "tag",
+			"purpose": "tagging",
+			"format": "text/plain",
+			"specifies": "classify"
+		},
 		"transcribe" : {
 			"type": "transcription",
 			"purpose": "transcribing",
 			"format": "text/plain"
 		}
 	},
-	"candidateTypes": ["resource", "annotation"],
 	"defaults": {
 		"target": ["ParagraphInLetter", "Note", "LocationNote", "SourceNote"]
-	},
-	"tasks": [
-		{
-			"task": "tagging",
-			"placeholder": "Add one or more tags",
-			"label": "Tagging"
-		},
-		{
-			"taskname": "describing",
-			"placeholder": "Add a description",
-			"tasklabel": "Describing"
-		}
-	]
+	}
 }

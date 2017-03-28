@@ -28,7 +28,6 @@ class LoginBox extends React.Component {
             this.setState({showLoginModal: true});
         }
         else {
-            console.log("logging out");
             this.setState({
                 user: null,
                 loggedIn: false,

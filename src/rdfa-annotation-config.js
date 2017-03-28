@@ -34,7 +34,7 @@ const config = {
             "modes" : ["comment"]
         }
     },
-    "annotationModes" : {
+    "annotationTasks" : {
         "classify" : {
             "vocabularies" : [
                 "DBpedia",
@@ -72,20 +72,7 @@ const config = {
             "purpose": "transcribing",
             "format": "text/plain"
         }
-    },
-    "candidateTypes": ["resource", "annotation"],
-    "tasks": [
-        {
-            "task": "tagging",
-            "placeholder": "Add one or more tags",
-            "label": "Tagging"
-        },
-        {
-            "taskname": "describing",
-            "placeholder": "Add a description",
-            "tasklabel": "Describing"
-        }
-    ]
+    }
 }
 
 export default config;

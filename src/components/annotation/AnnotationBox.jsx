@@ -46,7 +46,7 @@ class AnnotationBox extends React.Component {
                         <AnnotationCreator
                             editAnnotation={this.props.editAnnotation}
                             currentUser={this.props.currentUser}
-                            annotationModes={this.props.annotationModes}
+                            annotationTasks={this.props.annotationTasks}
                             services={this.props.services}
                             hideAnnotationForm={this.onHide.bind(this)}
                         />
