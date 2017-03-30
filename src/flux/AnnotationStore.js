@@ -83,12 +83,22 @@ class AnnotationStore {
     registerResources(maps) {
         console.log(maps);
         Object.keys(maps).forEach((resourceId, index) => {
-            AnnotationAPI.registerResource(resourceId, maps[resourceId], (error, data) => {
+            // check if server knows about resource
+            AnnotationAPI.checkResource(resourceId, (error, data) => {
                 if (error)
                     return null;
+                if (data && index === Object.keys(maps).length -1)
+                        this.trigger('registered-resources', Object.keys(maps));
+                else if (data)
+                    return null;
+                // register if server doesn't know resource
+                AnnotationAPI.registerResource(maps[resourceId], (error, data) => {
+                    if (error)
+                        return null;
 
-                if (index === Object.keys(maps).length -1)
-                    this.trigger('registered-resources', Object.keys(maps));
+                    if (index === Object.keys(maps).length -1)
+                        this.trigger('registered-resources', Object.keys(maps));
+                });
             });
         });
     }
