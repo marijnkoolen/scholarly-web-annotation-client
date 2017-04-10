@@ -22,7 +22,7 @@ const AnnotationAPI = {
         if (!this.annotationServer)
             callback(serverNotSet(), null);
         // default is POSTing a new annotation
-        var url = this.annotationServer + '/annotation';
+        var url = this.annotationServer + '/annotations';
         var method = 'POST';
         var status = null;
 
@@ -125,7 +125,7 @@ const AnnotationAPI = {
             let error = new TypeError("resource ID should be string");
             return callback(error, null);
         }
-        let url = this.annotationServer + '/annotations/target/' + targetId;
+        let url = this.annotationServer + '/resources/' + targetId + '/annotations';
         fetch(url, {
             method: "GET",
             cache: 'no-cache',
