@@ -49,7 +49,6 @@ export default class AnnotationViewer extends React.Component {
             this.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
             this.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
         }
-        console.log(this.resourceMaps);
         AnnotationActions.registerResources(this.resourceMaps);
     }
     resourcesChanged() {
