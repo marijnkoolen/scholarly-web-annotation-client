@@ -222,13 +222,13 @@ const RDFaUtil = {
                 origin: window.location.origin,
                 pathname: window.location.pathname
             }
-            maps[map.about] = map;
+            maps[map.id] = map;
         });
         return maps;
     },
 
     buildResourceMap : function(rdfaResourceNode) {
-        var resourceMap = RDFaUtil.getRDFaAttributes(rdfaResourceNode);
+        var resourceMap = RDFaUtil.makeRDFaAttributeMap(rdfaResourceNode);
         RDFaUtil.getRDFaSubresources(rdfaResourceNode).forEach((subresourceNode) => {
             var subresourceMap = RDFaUtil.buildResourceMap(subresourceNode);
             let property = subresourceMap.property;
@@ -237,6 +237,22 @@ const RDFaUtil = {
             resourceMap[property].push(subresourceMap);
         })
         return resourceMap;
+    },
+
+    makeRDFaAttributeMap : function(rdfaResourceNode) {
+        let attrs = RDFaUtil.getRDFaAttributes(rdfaResourceNode);
+        var map = {};
+        Object.keys(attrs).forEach((name) => {
+            if (name === "typeof")
+                map["type"] = attrs[name];
+            else if (name === "resource" || name === "about")
+                map["id"] = attrs[name];
+            else if (name === "vocab" && attrs[name].includes("#"))
+                map[name] = attrs[name].replace(/#$/,"");
+            else
+                map[name] = attrs[name];
+        });
+        return map;
     },
 
     getRDFaSubresources : function(node) {
