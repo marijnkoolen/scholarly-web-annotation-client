@@ -22226,15 +22226,16 @@ var RDFaAnnotator =
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
 	            _AnnotationStore2.default.bind('edit-annotation', this.editAnnotation.bind(this));
-	            _AnnotationStore2.default.bind('save-annotation', this.reloadAnnotations.bind(this));
-	            _AnnotationStore2.default.bind('change-target', this.reloadAnnotations.bind(this));
-	            _AnnotationStore2.default.bind('del-annotation', this.reloadAnnotations.bind(this));
-	            _AnnotationStore2.default.bind('load-annotations', this.loadAnnotations.bind(this));
+	            _AnnotationStore2.default.bind('saved-annotation', this.loadAnnotations.bind(this));
+	            _AnnotationStore2.default.bind('changed-target', this.loadAnnotations.bind(this));
+	            _AnnotationStore2.default.bind('deleted-annotation', this.loadAnnotations.bind(this));
+	            _AnnotationStore2.default.bind('loaded-annotations', this.indexAnnotations.bind(this));
 	
 	            _AnnotationStore2.default.bind('load-resources', this.loadResources.bind(this));
 	
 	            _AnnotationStore2.default.bind('login-user', this.setUser.bind(this));
 	            _AnnotationStore2.default.bind('logout-user', this.setUser.bind(this));
+	            _AnnotationStore2.default.bind('registered-resources', this.loadAnnotations.bind(this));
 	
 	            this.loadResources();
 	        }
@@ -22242,11 +22243,11 @@ var RDFaAnnotator =
 	        key: 'loadResources',
 	        value: function loadResources() {
 	            if (this.resourcesChanged()) {
-	                // if other resources on display...
+	                // if resources on display change, then ...
 	                this.resourceIndex = _RDFaUtil2.default.indexRDFaResources(); // ... refresh index
-	                this.maps = _RDFaUtil2.default.buildResourcesMaps(); // .. rebuild maps
+	                this.resourceMaps = _RDFaUtil2.default.buildResourcesMaps(); // .. rebuild maps
 	            }
-	            _AnnotationActions2.default.load(this.topResources);
+	            _AnnotationActions2.default.registerResources(this.resourceMaps);
 	        }
 	    }, {
 	        key: 'resourcesChanged',
@@ -22267,8 +22268,9 @@ var RDFaAnnotator =
 	            return false;
 	        }
 	    }, {
-	        key: 'loadAnnotations',
-	        value: function loadAnnotations(annotations) {
+	        key: 'indexAnnotations',
+	        value: function indexAnnotations(annotations) {
+	            console.log(annotations);
 	            var component = this;
 	            component.annotationIndex = {}; // always start with an empty index
 	            annotations.forEach(function (annotation) {
@@ -22277,8 +22279,8 @@ var RDFaAnnotator =
 	            component.setState({ annotations: annotations }); // add tp state AFTER indexing
 	        }
 	    }, {
-	        key: 'reloadAnnotations',
-	        value: function reloadAnnotations() {
+	        key: 'loadAnnotations',
+	        value: function loadAnnotations() {
 	            _AnnotationActions2.default.load(this.topResources);
 	        }
 	    }, {
@@ -22341,7 +22343,7 @@ var RDFaAnnotator =
 	                        hideAnnotationForm: this.hideAnnotationForm.bind(this),
 	                        editAnnotation: this.state.currentAnnotation,
 	                        currentUser: this.state.user,
-	                        annotationModes: this.props.config.annotationModes,
+	                        annotationTasks: this.props.config.annotationTasks,
 	                        services: this.props.config.services
 	                    })
 	                )
@@ -22445,7 +22447,7 @@ var RDFaAnnotator =
 	                    _react2.default.createElement(_AnnotationCreator2.default, {
 	                        editAnnotation: this.props.editAnnotation,
 	                        currentUser: this.props.currentUser,
-	                        annotationModes: this.props.annotationModes,
+	                        annotationTasks: this.props.annotationTasks,
 	                        services: this.props.services,
 	                        hideAnnotationForm: this.onHide.bind(this)
 	                    })
@@ -22521,9 +22523,9 @@ var RDFaAnnotator =
 	            });
 	        }
 	        var activeTab = null;
-	        for (var i = 0; i < Object.keys(_this.props.annotationModes).length; i++) {
-	            if (Object.keys(_this.props.annotationModes)[i] != 'bookmark') {
-	                activeTab = Object.keys(_this.props.annotationModes)[i];
+	        for (var i = 0; i < Object.keys(_this.props.annotationTasks).length; i++) {
+	            if (Object.keys(_this.props.annotationTasks)[i] != 'bookmark') {
+	                activeTab = Object.keys(_this.props.annotationTasks)[i];
 	                break;
 	            }
 	        }
@@ -22561,7 +22563,7 @@ var RDFaAnnotator =
 	        key: 'render',
 	        value: function render() {
 	            //generate the tabs from the configured modes
-	            var tabs = Object.keys(this.props.annotationModes).map(function (mode) {
+	            var tabs = Object.keys(this.props.annotationTasks).map(function (mode) {
 	                if (mode == 'bookmark') {
 	                    return null;
 	                };
@@ -22580,7 +22582,7 @@ var RDFaAnnotator =
 	            }, this);
 	
 	            //generate the content of each tab (a form based on a annotation mode/motivation)
-	            var tabContents = Object.keys(this.props.annotationModes).map(function (mode) {
+	            var tabContents = Object.keys(this.props.annotationTasks).map(function (mode) {
 	                if (mode == 'bookmark') {
 	                    return null;
 	                };
@@ -22589,7 +22591,7 @@ var RDFaAnnotator =
 	                    case 'classify':
 	                        form = _react2.default.createElement(_ClassifyingForm2.default, {
 	                            data: this.state.bodies.classification,
-	                            config: this.props.annotationModes[mode],
+	                            config: this.props.annotationTasks[mode],
 	                            onOutput: this.updateAnnotationBody.bind(this),
 	                            services: this.props.services
 	                        });
@@ -22597,15 +22599,15 @@ var RDFaAnnotator =
 	                    case 'link':
 	                        form = _react2.default.createElement(_LinkingForm2.default, {
 	                            data: this.state.bodies.link,
-	                            config: this.props.annotationModes[mode],
+	                            config: this.props.annotationTasks[mode],
 	                            onOutput: this.updateAnnotationBody.bind(this),
 	                            services: this.props.services
 	                        });
 	                        break;
 	                    default:
 	                        form = _react2.default.createElement(_FreetextForm2.default, {
-	                            data: this.state.bodies[this.props.annotationModes[mode].type],
-	                            config: this.props.annotationModes[mode],
+	                            data: this.state.bodies[this.props.annotationTasks[mode].type],
+	                            config: this.props.annotationTasks[mode],
 	                            onOutput: this.updateAnnotationBody.bind(this)
 	                        });
 	                        break;
@@ -28104,6 +28106,14 @@ var RDFaAnnotator =
 	            eventName: 'set-server-address',
 	            apiURL: apiURL
 	        });
+	    },
+	
+	    registerResources: function registerResources(maps) {
+	        console.log(maps);
+	        _AppDispatcher2.default.dispatch({
+	            eventName: 'register-resources',
+	            maps: maps
+	        });
 	    }
 	
 	};
@@ -28547,13 +28557,13 @@ var RDFaAnnotator =
 	
 	            _AnnotationAPI2.default.getAnnotationsByTargets(resourceIds, function (error, annotations) {
 	                if (error) console.error(resourceIds, error.toString());
-	                _this.trigger('load-annotations', annotations);
+	                _this.trigger('loaded-annotations', annotations);
 	            });
 	        }
 	    }, {
 	        key: 'changeTarget',
 	        value: function changeTarget() {
-	            this.trigger('change-target');
+	            this.trigger('changed-target');
 	        }
 	
 	        //TODO change the name of the event 'change' --> save-annotation
@@ -28567,7 +28577,7 @@ var RDFaAnnotator =
 	                //notify all components that just listen to a single target (e.g. FlexPlayer, FlexImageViewer)
 	                _this2.trigger(annotation.target.source, 'update', data, annotation);
 	                //then notify all components that are interested in all annotations
-	                _this2.trigger('save-annotation', data, annotation);
+	                _this2.trigger('saved-annotation', data, annotation);
 	            });
 	        }
 	    }, {
@@ -28579,7 +28589,7 @@ var RDFaAnnotator =
 	                //notify all components that just listen to a single target (e.g. FlexPlayer, FlexImageViewer)
 	                _this3.trigger(annotation.target.source, 'delete', data, annotation);
 	                //then notify all components that are interested in all annotations
-	                _this3.trigger('del-annotation', data, annotation);
+	                _this3.trigger('deleted-annotation', data, annotation);
 	            });
 	        }
 	    }, {
@@ -28625,6 +28635,26 @@ var RDFaAnnotator =
 	        key: 'logout',
 	        value: function logout(userDetails) {
 	            this.trigger('logout-user', userDetails);
+	        }
+	    }, {
+	        key: 'registerResources',
+	        value: function registerResources(maps) {
+	            var _this5 = this;
+	
+	            console.log(maps);
+	            Object.keys(maps).forEach(function (resourceId, index) {
+	                // check if server knows about resource
+	                _AnnotationAPI2.default.checkResource(resourceId, function (error, data) {
+	                    if (error) return null;
+	                    if (data && index === Object.keys(maps).length - 1) _this5.trigger('registered-resources', Object.keys(maps));else if (data) return null;
+	                    // register if server doesn't know resource
+	                    _AnnotationAPI2.default.registerResource(maps[resourceId], function (error, data) {
+	                        if (error) return null;
+	
+	                        if (index === Object.keys(maps).length - 1) _this5.trigger('registered-resources', Object.keys(maps));
+	                    });
+	                });
+	            });
 	        }
 	    }]);
 	
@@ -28681,6 +28711,10 @@ var RDFaAnnotator =
 	            break;
 	        case 'set-server-address':
 	            AppAnnotationStore.setServerAddress(action.apiURL);
+	            break;
+	        case 'register-resources':
+	            console.log("registering resources");
+	            AppAnnotationStore.registerResources(action.maps);
 	            break;
 	
 	    }
@@ -28781,7 +28815,7 @@ var RDFaAnnotator =
 	    saveAnnotation: function saveAnnotation(annotation, callback) {
 	        if (!this.annotationServer) callback(serverNotSet(), null);
 	        // default is POSTing a new annotation
-	        var url = this.annotationServer + '/annotation';
+	        var url = this.annotationServer + '/annotations';
 	        var method = 'POST';
 	        var status = null;
 	
@@ -28880,7 +28914,8 @@ var RDFaAnnotator =
 	            var error = new TypeError("resource ID should be string");
 	            return callback(error, null);
 	        }
-	        var url = this.annotationServer + '/annotations/target/' + targetId;
+	        var url = this.annotationServer + '/resources/' + targetId + '/annotations';
+	        //let url = this.annotationServer + '/annotations/target/' + targetId;
 	        fetch(url, {
 	            method: "GET",
 	            cache: 'no-cache',
@@ -28955,6 +28990,44 @@ var RDFaAnnotator =
 	        }).catch(function (err) {
 	            console.error(url, err.toString());
 	            return callback(err, null);
+	        });
+	    },
+	
+	    checkResource: function checkResource(resourceId, callback) {
+	        if (!this.annotationServer) callback(serverNotSet(), null);
+	        var url = this.annotationServer + '/resources/' + resourceId;
+	        fetch(url, {
+	            method: "GET",
+	            cache: "no-cache",
+	            mode: "cors"
+	        }).then(function (response) {
+	            return response.json();
+	        }).then(function (data) {
+	            return callback(null, data);
+	        }).catch(function (error) {
+	            console.error(url, err.toString());
+	            return callback(error, null);
+	        });
+	    },
+	
+	    registerResource: function registerResource(resourceMap, callback) {
+	        if (!this.annotationServer) callback(serverNotSet(), null);
+	        var url = this.annotationServer + '/resources';
+	        fetch(url, {
+	            method: "POST",
+	            cache: "no-cache",
+	            mode: "cors",
+	            headers: {
+	                "Content-Type": "application/json"
+	            },
+	            body: JSON.stringify(resourceMap)
+	        }).then(function (response) {
+	            return response.json();
+	        }).then(function (data) {
+	            return callback(null, data);
+	        }).catch(function (error) {
+	            console.error(url, err.toString());
+	            return callback(error, null);
 	        });
 	    }
 	};
@@ -29507,42 +29580,6 @@ var RDFaAnnotator =
 	        };
 	    },
 	
-	    generateRelationAnnotation: function generateRelationAnnotation(relation, resourceIndex) {
-	        var creator = "rdfa-annotation-client";
-	        var annotation = AnnotationUtil.generateW3CAnnotation(creator, []);
-	        annotation.target = {
-	            conformsTo: resourceIndex[relation.target].rdfaVocabulary,
-	            source: relation.target,
-	            type: resourceIndex[relation.target].rdfaType,
-	            value: resourceIndex[relation.target].rdfaProperty
-	        };
-	        annotation.body = {
-	            conformsTo: resourceIndex[relation.body].rdfaVocabulary,
-	            source: relation.body,
-	            type: resourceIndex[relation.body].rdfaType,
-	            value: resourceIndex[relation.body].rdfaProperty
-	        };
-	        annotation.motivation = "linking";
-	        return annotation;
-	    },
-	
-	    isStructureAnnotation: function isStructureAnnotation(annotation, resourceIndex) {
-	        // Structure annotations have "linking" as motivation
-	        if (annotation.motivation !== "linking") return false;
-	        // Structure annotations link two resources that are both in the index
-	        if (!resourceIndex[annotation.target.source] || !resourceIndex[annotation.body.source]) return false;
-	        return true;
-	    },
-	
-	    sortAnnotationTypes: function sortAnnotationTypes(annotations, resourceIndex) {
-	        var display = [];
-	        var structure = [];
-	        annotations.forEach(function (annotation) {
-	            AnnotationUtil.isStructureAnnotation(annotation, resourceIndex) ? structure.push(annotation) : display.push(annotation);
-	        });
-	        return { display: display, structure: structure };
-	    },
-	
 	    /*************************************************************************************
 	     ************************************* W3C MEDIA FRAGMENTS HELPERS ***************
 	    *************************************************************************************/
@@ -29950,13 +29987,18 @@ var RDFaAnnotator =
 	        var maps = {};
 	        RDFaUtil.getTopRDFaNodes(document.body).forEach(function (rdfaResourceNode) {
 	            var map = _this.buildResourceMap(rdfaResourceNode);
-	            maps[map.about] = map;
+	            map.source = {
+	                location: window.location.href,
+	                origin: window.location.origin,
+	                pathname: window.location.pathname
+	            };
+	            maps[map.id] = map;
 	        });
 	        return maps;
 	    },
 	
 	    buildResourceMap: function buildResourceMap(rdfaResourceNode) {
-	        var resourceMap = RDFaUtil.getRDFaAttributes(rdfaResourceNode);
+	        var resourceMap = RDFaUtil.makeRDFaAttributeMap(rdfaResourceNode);
 	        RDFaUtil.getRDFaSubresources(rdfaResourceNode).forEach(function (subresourceNode) {
 	            var subresourceMap = RDFaUtil.buildResourceMap(subresourceNode);
 	            var property = subresourceMap.property;
@@ -29964,6 +30006,15 @@ var RDFaAnnotator =
 	            resourceMap[property].push(subresourceMap);
 	        });
 	        return resourceMap;
+	    },
+	
+	    makeRDFaAttributeMap: function makeRDFaAttributeMap(rdfaResourceNode) {
+	        var attrs = RDFaUtil.getRDFaAttributes(rdfaResourceNode);
+	        var map = {};
+	        Object.keys(attrs).forEach(function (name) {
+	            if (name === "typeof") map["type"] = attrs[name];else if (name === "resource" || name === "about") map["id"] = attrs[name];else if (name === "vocab" && attrs[name].includes("#")) map[name] = attrs[name].replace(/#$/, "");else map[name] = attrs[name];
+	        });
+	        return map;
 	    },
 	
 	    getRDFaSubresources: function getRDFaSubresources(node) {
@@ -59304,7 +59355,6 @@ var RDFaAnnotator =
 	            if (!this.state.loggedIn) {
 	                this.setState({ showLoginModal: true });
 	            } else {
-	                console.log("logging out");
 	                this.setState({
 	                    user: null,
 	                    loggedIn: false,
@@ -59463,7 +59513,7 @@ var RDFaAnnotator =
 	            "modes": ["comment"]
 	        }
 	    },
-	    "annotationModes": {
+	    "annotationTasks": {
 	        "classify": {
 	            "vocabularies": ["DBpedia", "GTAA"],
 	            "type": "classification",
@@ -59495,17 +59545,7 @@ var RDFaAnnotator =
 	            "purpose": "transcribing",
 	            "format": "text/plain"
 	        }
-	    },
-	    "candidateTypes": ["resource", "annotation"],
-	    "tasks": [{
-	        "task": "tagging",
-	        "placeholder": "Add one or more tags",
-	        "label": "Tagging"
-	    }, {
-	        "taskname": "describing",
-	        "placeholder": "Add a description",
-	        "tasklabel": "Describing"
-	    }]
+	    }
 	};
 	
 	exports.default = config;

@@ -1,749 +1,145 @@
 [
     {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:001bb064-efa7-487c-b396-8a662c7b3d03",
-        "motivation": "linking",
         "type": "Annotation",
-        "created": "2017-03-20T15:08:12.144153+00:00",
+        "motivation": null,
+        "id": "urn:uuid:8b2061c0-718e-453c-882f-5056f674070e",
         "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:0f8a8f3d-f3f0-4ed0-ad6f-fe06e5e00201",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T15:08:25.746816+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:4aecbbd7-d107-49b0-9b89-c644d7678768",
-        "motivation": "linking",
-        "created": "2017-03-20T11:26:27.511968+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
         "target": [
             {
+                "type": "Text",
                 "selector": null,
-                "source": "urn:vangogh:testletter.locationnote",
-                "type": "Text"
+                "source": "urn:vangogh:testletter.locationnote"
             }
         ],
-        "id": "urn:uuid:542c7389-f870-43d4-8bcc-d221834f3bef",
-        "motivation": null,
-        "created": "2017-03-20T11:26:27.511274+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
         "body": [
             {
-                "id": "http://dbpedia.org/resource/Location_identifier",
-                "purpose": "classifying",
                 "value": "Location identifier",
                 "type": "classification",
+                "purpose": "classifying",
+                "id": "http://dbpedia.org/resource/Location_identifier",
                 "vocabulary": "DBpedia"
             }
         ],
-        "creator": "marijn"
+        "creator": "marijn",
+        "created": "2017-03-28T09:59:14.792165+00:00"
     },
     {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:5fabec28-b7cc-49fd-9827-ad42a43ea234",
-        "motivation": "linking",
         "type": "Annotation",
-        "created": "2017-03-20T14:30:42.425582+00:00",
+        "motivation": null,
+        "id": "urn:uuid:fc5b4f91-5fdd-4d22-a4b6-80d0abfbbbef",
         "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:2373130d-8df5-489a-a3dc-d0d0cb758926",
-        "motivation": "linking",
-        "created": "2017-03-20T11:26:27.511834+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Sender",
-            "source": "urn:vangogh:testletter.sender",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:e5211fa3-6c9b-4755-93bb-af2e26c0c509",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T11:26:27.511563+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:066da27d-2c42-41ed-a94f-597e75a1b3b6",
-        "motivation": "linking",
-        "created": "2017-03-20T11:26:27.511768+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Date",
-            "source": "urn:vangogh:testletter.date",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "id": "urn:uuid:626ba162-7fba-4efe-83da-08a22ee0ccd0",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T15:00:22.329353+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "ParagraphInLetter",
-            "source": "urn:vangogh:testletter:p.5",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:bda16f2a-d0fc-4fc9-a114-9a4d5e14816a",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T14:41:29.587810+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:a6287621-84ed-45c3-9921-9a0c0f5b7339",
-        "motivation": "linking",
-        "created": "2017-03-20T11:26:27.512303+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:6fae8966-f51b-4b1c-a1f6-64f63a0224a1",
-        "motivation": "linking",
-        "created": "2017-03-20T11:26:27.512171+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:fbc1d26c-5478-418e-bb93-c379f1f33c72",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T15:00:22.338455+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "id": "urn:uuid:a1fdbc20-4f4d-4002-8d50-472ef31f3a29",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T15:05:54.290759+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "ParagraphInLetter",
-            "source": "urn:vangogh:testletter:p.5",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:192c80bb-8e54-4259-b5af-995e36d39eb9",
-        "motivation": "linking",
-        "created": "2017-03-20T11:26:27.511494+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Receiver",
-            "source": "urn:vangogh:testletter.receiver",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
         "target": [
             {
+                "type": "Text",
                 "selector": [
                     {
-                        "start": 82,
-                        "end": 92,
-                        "type": "TextPositionSelector"
+                        "type": "TextPositionSelector",
+                        "end": 86,
+                        "start": 76
                     },
                     {
-                        "prefix": "delingen naar Oister",
-                        "suffix": "eren is het harddrav",
-                        "exact": "wijk. Gist",
-                        "type": "TextQuoteSelector"
+                        "type": "TextQuoteSelector",
+                        "exact": "Oisterwijk",
+                        "suffix": ". Gisteren is het ha",
+                        "prefix": "je wandelingen naar "
                     }
                 ],
-                "source": "urn:vangogh:testletter:p.5",
-                "type": "Text"
+                "source": "urn:vangogh:testletter:p.5"
             }
         ],
-        "id": "urn:uuid:7132df1f-4903-4964-be64-bf59002aa6ec",
-        "motivation": null,
-        "type": "Annotation",
-        "created": "2017-03-22T08:48:04.187473+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
         "body": [
             {
-                "purpose": "commenting",
-                "value": "Test to see if IgnorableElement text is ignored",
-                "type": "comment",
-                "format": "text/plain"
+                "value": "Oisterwijk",
+                "type": "classification",
+                "purpose": "classifying",
+                "id": "http://dbpedia.org/resource/Oisterwijk",
+                "vocabulary": "DBpedia"
             }
         ],
-        "creator": "marijn"
+        "creator": "marijn",
+        "created": "2017-03-28T12:14:16.714168+00:00"
     },
     {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "id": "urn:uuid:d00b4a3d-c357-474b-aa7d-b28b47a453fb",
-        "motivation": "linking",
         "type": "Annotation",
-        "created": "2017-03-20T15:08:25.738396+00:00",
+        "motivation": "classifying",
+        "id": "urn:uuid:b39d87f3-fb3f-4d8a-9db7-758e07ced5bb",
         "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "ParagraphInLetter",
-            "source": "urn:vangogh:testletter:p.5",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:cc5ddd39-b102-4ce2-a661-68a90a5c2f9b",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T15:05:54.300679+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:57378cff-3b7c-4822-903d-c72387501fd2",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T11:26:27.511423+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "id": "urn:uuid:fa76bf41-64d4-4b9c-af17-3cc2844c50f7",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T14:30:42.417145+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "ParagraphInLetter",
-            "source": "urn:vangogh:testletter:p.5",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:f6c1e47b-5a41-4a20-9ef5-6d968f6f860f",
-        "motivation": "linking",
-        "created": "2017-03-20T11:26:27.512369+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
         "target": [
             {
+                "type": "Text",
                 "selector": null,
-                "source": "urn:vangogh:testletter.sender",
-                "type": "Text"
+                "source": "urn:vangogh:testletter.sender"
             }
         ],
-        "id": "urn:uuid:89d9e678-8a2b-4e91-9c06-666c380deed7",
-        "motivation": "classifying",
-        "created": "2017-03-20T11:26:27.512103+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
         "body": [
             {
-                "id": "http://dbpedia.org/resource/Vincent_van_Gogh",
-                "purpose": "classifying",
                 "value": "Vincent van Gogh",
                 "type": "classification",
+                "purpose": "classifying",
+                "id": "http://dbpedia.org/resource/Vincent_van_Gogh",
                 "vocabulary": "DBpedia"
             }
         ],
-        "creator": "marijn"
+        "creator": "marijn",
+        "created": "2017-03-28T09:59:14.794526+00:00"
     },
     {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:b9073b42-10f7-40f6-80be-5c18f38b68f4",
-        "motivation": "linking",
         "type": "Annotation",
-        "created": "2017-03-20T14:47:05.784059+00:00",
+        "motivation": null,
+        "id": "urn:uuid:166f57b9-7cf2-4d08-b3c1-bd54a76acd3f",
         "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "id": "urn:uuid:89abf34c-dc91-4083-965e-669c7d280fbd",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T14:41:29.577432+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "ParagraphInLetter",
-            "source": "urn:vangogh:testletter:p.5",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "id": "urn:uuid:ea017645-c00b-44b3-b392-0d34ec63a13a",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T14:59:04.450666+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "ParagraphInLetter",
-            "source": "urn:vangogh:testletter:p.5",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:ddc7149a-bd91-43eb-9c66-77699127e810",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T11:26:27.511180+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
         "target": [
             {
-                "selector": null,
-                "source": "urn:vangogh:testletter.receiver",
-                "type": "Text"
+                "type": "Text",
+                "selector": [
+                    {
+                        "type": "TextPositionSelector",
+                        "end": 92,
+                        "start": 82
+                    },
+                    {
+                        "suffix": "eren is het harddrav",
+                        "exact": "wijk. Gist",
+                        "type": "TextQuoteSelector",
+                        "prefix": "delingen naar Oister"
+                    }
+                ],
+                "source": "urn:vangogh:testletter:p.5"
             }
         ],
-        "id": "urn:uuid:b96cbb0f-ef5f-4b55-b7cc-ef66ea9222c0",
-        "motivation": null,
-        "created": "2017-03-20T11:26:27.512036+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
         "body": [
             {
-                "id": "http://dbpedia.org/resource/Theo_van_Gogh_(art_dealer)",
-                "purpose": "classifying",
+                "value": "Test to see if IgnorableElement text is ignored",
+                "type": "comment",
+                "format": "text/plain",
+                "purpose": "commenting"
+            }
+        ],
+        "creator": "marijn",
+        "created": "2017-03-28T09:59:14.793757+00:00"
+    },
+    {
+        "type": "Annotation",
+        "motivation": null,
+        "id": "urn:uuid:444d802e-ef2d-4ac6-b953-c4830ae16cdf",
+        "@context": "http://www.w3.org/ns/anno.jsonld",
+        "target": [
+            {
+                "type": "Text",
+                "selector": null,
+                "source": "urn:vangogh:testletter.receiver"
+            }
+        ],
+        "body": [
+            {
                 "value": "Theo van Gogh (art dealer)",
                 "type": "classification",
+                "purpose": "classifying",
+                "id": "http://dbpedia.org/resource/Theo_van_Gogh_(art_dealer)",
                 "vocabulary": "DBpedia"
             }
         ],
-        "creator": "marijn"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "id": "urn:uuid:9de776c3-4d12-4d7d-bffd-443dc5b175b1",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T14:47:05.774542+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "ParagraphInLetter",
-            "source": "urn:vangogh:testletter:p.5",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:da4953a2-39c1-43d0-b78e-6087d1c50ca5",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T14:59:04.457697+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:1b0026ba-0585-4ab6-8bc5-ed6be3898881",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T11:26:27.511350+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:250a8113-ecd7-4c68-a732-94e0c7898cca",
-        "motivation": "linking",
-        "created": "2017-03-20T11:26:27.444835+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "LocationNote",
-            "source": "urn:vangogh:testletter.locationnote",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "id": "urn:uuid:fd1449a2-bcb6-412c-b373-c81ba55d8265",
-        "motivation": "linking",
-        "created": "2017-03-20T11:26:27.512238+00:00",
-        "type": "Annotation",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "ParagraphInLetter",
-            "source": "urn:vangogh:testletter:p.3",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "id": "urn:uuid:7b94205f-7620-46f4-a12e-814a0cebd91a",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T15:08:12.137715+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "ParagraphInLetter",
-            "source": "urn:vangogh:testletter:p.5",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "id": "urn:uuid:bf50192d-15d4-41a8-8155-b65a784d33a0",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T14:36:21.207260+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "ParagraphInLetter",
-            "source": "urn:vangogh:testletter:p.5",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:6f63b6a3-8dec-4e77-a08b-03c29f704c66",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T14:36:21.213177+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
-    },
-    {
-        "target": {
-            "type": "Correspondence",
-            "source": "urn:vangogh:correspondence",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "isPartOf"
-        },
-        "id": "urn:uuid:4f2b69ea-e098-4f0c-9fc2-deb1ee71664d",
-        "motivation": "linking",
-        "type": "Annotation",
-        "created": "2017-03-20T11:26:27.511900+00:00",
-        "@context": "http://www.w3.org/ns/anno.jsonld",
-        "body": {
-            "type": "Letter",
-            "source": "urn:vangogh:testletter",
-            "conformsTo": "http://localhost:3000/vocabularies/vangoghontology.ttl#",
-            "value": "hasPart"
-        },
-        "creator": "rdfa-annotation-client"
+        "creator": "marijn",
+        "created": "2017-03-28T09:59:14.795134+00:00"
     }
 ]
