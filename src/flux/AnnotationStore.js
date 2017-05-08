@@ -1,5 +1,4 @@
 import MicroEvent from 'microevent';
-import AnnotationAPI from '../api/AnnotationAPI';
 import AppDispatcher from './AppDispatcher';
 
 //See: https://github.com/jeromeetienne/microevent.js
@@ -7,20 +6,8 @@ import AppDispatcher from './AppDispatcher';
 
 class AnnotationStore {
 
-    getServerAddress() {
-        return AnnotationAPI.getServerAddress();
-    }
-
-    setServerAddress(apiURL) {
-        return AnnotationAPI.setServerAddress(apiURL);
-    }
-
-    loadAnnotations(resourceIds) {
-        AnnotationAPI.getAnnotationsByTargets(resourceIds, (error, annotations) => {
-            if (error)
-                console.error(resourceIds, error.toString());
-            this.trigger('loaded-annotations', annotations);
-        });
+    loadAnnotations(annotations) {
+        this.trigger('loaded-annotations', annotations);
     }
 
     changeTarget() {
@@ -29,21 +16,19 @@ class AnnotationStore {
 
     //TODO change the name of the event 'change' --> save-annotation
     save(annotation) {
-        AnnotationAPI.saveAnnotation(annotation, (data) => {
-            //notify all components that just listen to a single target (e.g. FlexPlayer, FlexImageViewer)
-            this.trigger(annotation.target.source, 'update', data, annotation);
-            //then notify all components that are interested in all annotations
-            this.trigger('saved-annotation', data, annotation);
-        });
+        console.log(annotation);
+        //notify all components that just listen to a single target
+        this.trigger(annotation.target.source, 'update', annotation);
+        //then notify all components that are interested in all annotations
+        this.trigger('load-annotations');
     }
 
     delete(annotation) {
-        AnnotationAPI.deleteAnnotation(annotation, (data, annotation) => {
-            //notify all components that just listen to a single target (e.g. FlexPlayer, FlexImageViewer)
-            this.trigger(annotation.target.source, 'delete', data, annotation);
-            //then notify all components that are interested in all annotations
-            this.trigger('deleted-annotation', data, annotation);
-        });
+        console.log(annotation);
+        //notify all components that just listen to a single target
+        this.trigger(annotation.target.source, 'delete', annotation);
+        //then notify all components that are interested in all annotations
+        this.trigger('load-annotations');
     }
 
     activate(annotation) {
@@ -66,41 +51,16 @@ class AnnotationStore {
         this.trigger('reload-annotations');
     }
 
-    loadResources() {
-        this.trigger('load-resources');
+    loadResources(topResources, resourceIndex, resourceMaps) {
+        this.trigger('load-resources', topResources, resourceIndex, resourceMaps);
     }
 
     login(userDetails) {
-        AnnotationAPI.login(userDetails, (response) => {
-            this.trigger('login-user', response);
-        });
+        this.trigger('login-user', userDetails);
     }
 
     logout(userDetails) {
         this.trigger('logout-user', userDetails);
-    }
-
-    registerResources(maps) {
-        console.log(maps);
-        Object.keys(maps).forEach((resourceId, index) => {
-            // check if server knows about resource
-            AnnotationAPI.checkResource(resourceId, (error, data) => {
-                if (error)
-                    return null;
-                if (data && index === Object.keys(maps).length -1)
-                        this.trigger('registered-resources', Object.keys(maps));
-                else if (data)
-                    return null;
-                // register if server doesn't know resource
-                AnnotationAPI.registerResource(maps[resourceId], (error, data) => {
-                    if (error)
-                        return null;
-
-                    if (index === Object.keys(maps).length -1)
-                        this.trigger('registered-resources', Object.keys(maps));
-                });
-            });
-        });
     }
 
 }
@@ -115,10 +75,11 @@ AppDispatcher.register( function( action ) {
     switch(action.eventName) {
 
         case 'save-annotation':
-            AppAnnotationStore.save(action.annotation, action.callback);
+            console.log(action);
+            AppAnnotationStore.save(action.annotation);
             break;
         case 'delete-annotation':
-            AppAnnotationStore.delete(action.annotation, action.callback);
+            AppAnnotationStore.delete(action.annotation);
             break;
         case 'activate-annotation':
             AppAnnotationStore.activate(action.annotation, action.callback);
@@ -136,13 +97,13 @@ AppDispatcher.register( function( action ) {
             AppAnnotationStore.changeTarget(action.annotationTarget);
             break;
         case 'load-annotations':
-            AppAnnotationStore.loadAnnotations(action.resourceIds, action.callback);
+            AppAnnotationStore.loadAnnotations(action.annotations, action.callback);
             break;
         case 'reload-annotations':
             AppAnnotationStore.reloadAnnotations();
             break;
         case 'load-resources':
-            AppAnnotationStore.loadResources();
+            AppAnnotationStore.loadResources(action.topResources, action.resourceIndex, action.resourceMaps);
             break;
         case 'login-user':
             AppAnnotationStore.login(action.userDetails);
