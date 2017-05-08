@@ -18,6 +18,7 @@ export class RDFaAnnotator {
             configuration = defaultConfig; // use default if no configuration is given
         this.clientConfiguration = configuration;
         AnnotationActions.setServerAddress(configuration.services.AnnotationServer.api);
+        this.topResources = RDFaUtil.getTopRDFaResources(document.body);
     }
 
     addAnnotationViewer() {
@@ -64,16 +65,32 @@ export class RDFaAnnotator {
             // if something in the observer nodes changes ...
             // set unselectable and whole element attributes
             this.setAnnotationAttributes(observerTargets);
-            // trigger reload of annotations based on updated DOM
-            AnnotationActions.reload();
+            // check if there are new resources
+            if (this.resourcesChanged())
+                AnnotationActions.loadResources(); // trigger reload of annotations
         });
 
-        var observerConfig = { childList: true, attributes: false, subtree: true };
+        var observerConfig = { childList: true, attributes: true, subtree: true };
 
         for (var index = 0; index < observerTargets.length; index++) {
             observer.observe(observerTargets[index], observerConfig);
         }
 
+    }
+
+    resourcesChanged() {
+        let topResources = RDFaUtil.getTopRDFaResources(document.body);
+        if (this.listsAreEqual(topResources, this.topResources))
+            return false;
+        this.topResources = topResources; // update register resources list
+        return true;
+    }
+
+    listsAreEqual(list1, list2) {
+        if (list1.every(id => list2.includes(id)) &&
+                list2.every(id => list1.includes(id)))
+            return true;
+        return false;
     }
 
 }
