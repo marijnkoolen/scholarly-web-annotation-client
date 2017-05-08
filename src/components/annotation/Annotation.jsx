@@ -79,7 +79,7 @@ class Annotation extends React.Component {
         return null;
     }
     getTargetRangeText(node, start, end) {
-        RDFaUtil.setRDFaSelectionRange(node, start, end);
+        SelectionUtil.setRDFaSelectionRange(node, start, end);
         var selection = window.document.getSelection();
         var text = selection.toString();
         selection.removeAllRanges();

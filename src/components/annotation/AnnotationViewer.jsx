@@ -25,13 +25,14 @@ export default class AnnotationViewer extends React.Component {
         this.lookupIdentifier = this.lookupIdentifier.bind(this);
         this.topResources = [];
         this.state = {
+            annotations: [],
             showAnnotationModal: false,
             user: null,
         };
     }
     componentDidMount() {
         AppAnnotationStore.bind('edit-annotation', this.editAnnotation.bind(this));
-        AppAnnotationStore.bind('saved-annotation', this.loadAnnotations.bind(this));
+        AppAnnotationStore.bind('load-annotations', this.loadAnnotations.bind(this));
         AppAnnotationStore.bind('changed-target', this.loadAnnotations.bind(this));
         AppAnnotationStore.bind('deleted-annotation', this.loadAnnotations.bind(this));
         AppAnnotationStore.bind('loaded-annotations', this.indexAnnotations.bind(this));
@@ -40,29 +41,14 @@ export default class AnnotationViewer extends React.Component {
 
         AppAnnotationStore.bind('login-user', this.setUser.bind(this));
         AppAnnotationStore.bind('logout-user', this.setUser.bind(this));
-        AppAnnotationStore.bind('registered-resources', this.loadAnnotations.bind(this));
 
-        this.loadResources();
+        AnnotationActions.loadResources();
     }
-    loadResources() {
-        if (this.resourcesChanged()) {// if resources on display change, then ...
-            this.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
-            this.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
-        }
-        AnnotationActions.registerResources(this.resourceMaps);
-    }
-    resourcesChanged() {
-        let topResources = RDFaUtil.getTopRDFaResources(document.body);
-        if (this.listsAreEqual(topResources, this.topResources))
-            return false;
-        this.topResources = topResources; // update register resources list
-        return true;
-    }
-    listsAreEqual(list1, list2) {
-        if (list1.every(id => list2.includes(id)) &&
-                list2.every(id => list1.includes(id)))
-            return true;
-        return false;
+    loadResources(topResources, resourceIndex, resourceMaps) {
+        this.resourceIndex = resourceIndex;
+        this.resourceMaps = resourceMaps;
+        this.topResources = topResources;
+        AnnotationActions.loadAnnotations(this.topResources);
     }
     indexAnnotations(annotations) {
         let component = this;
@@ -73,7 +59,7 @@ export default class AnnotationViewer extends React.Component {
         component.setState({annotations: annotations}); // add tp state AFTER indexing
     }
     loadAnnotations() {
-        AnnotationActions.load(this.topResources);
+        AnnotationActions.loadAnnotations(this.topResources);
     }
     lookupIdentifier(sourceId) {
         var source = { type: null, data: null }; // for IDs to external resources

@@ -40,7 +40,6 @@ class AnnotationCreator extends React.Component {
         this.setState({bodies: bodies});
     }
 
-    //TODO this function looks like it could be more optimized
     gatherDataAndSave() {
         let component = this;
         var annotation = this.props.editAnnotation;
