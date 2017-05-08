@@ -50,6 +50,9 @@ class ClassifyingForm extends React.Component {
         }
     }
 
+	toggleDefault(index) {
+		AnnotationActions.toggleDefault(cs[index]);
+	}
     removeClassification(index) {
         var cs = this.state.data;
         if(cs) {
@@ -201,6 +204,9 @@ class ClassifyingForm extends React.Component {
                     {c.value}
                     <i className="glyphicon glyphicon-remove interactive"
                         onClick={this.removeClassification.bind(this, index)}>
+                    </i>
+                    <i className="glyphicon glyphicon-star-empty interactive"
+                        onClick={this.toggleDefault.bind(this, index)}>
                     </i>
                     &nbsp;
                 </span>
