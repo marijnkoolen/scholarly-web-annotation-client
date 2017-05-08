@@ -4,11 +4,11 @@ import RDFaUtil from '../util/RDFaUtil.js';
 
 const AnnotationActions = {
 
-    getOwnServerAddress() {
+    getServerAddress() {
         return AnnotationAPI.getServerAddress();
     },
 
-    setOwnServerAddress(apiURL) {
+    setServerAddress(apiURL) {
         return AnnotationAPI.setServerAddress(apiURL);
     },
 
@@ -110,19 +110,6 @@ const AnnotationActions = {
         AppDispatcher.dispatch({
             eventName: 'logout-user',
             userDetails: null
-        });
-    },
-
-    getServerAddress : function() {
-        AppDispatcher.dispatch({
-            eventName: 'get-server-address'
-        });
-    },
-
-    setServerAddress : function(apiURL) {
-        AppDispatcher.dispatch({
-            eventName: 'set-server-address',
-            apiURL: apiURL
         });
     },
 
