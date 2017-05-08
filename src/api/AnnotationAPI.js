@@ -68,9 +68,10 @@ const AnnotationAPI = {
         }).then(function(response) {
             return response.json();
         }).then(function(data) {
-            callback(data);
+            callback(null, data);
         }).catch(function(error) {
             console.error(url, error.toString());
+            callback(error, null);
         });
     },
 
@@ -173,7 +174,6 @@ const AnnotationAPI = {
             let error = Error("annotation MUST have an id property");
             callback(error, null);
         }
-        console.log('deleting via API ' + serverAPI);
         let url = this.annotationServer + '/annotations/annotation/' + annotation.id;
         fetch(url, {
             method: "DELETE",
@@ -208,6 +208,7 @@ const AnnotationAPI = {
     },
 
     checkResource : function(resourceId, callback) {
+        var status = null;
         if (!this.annotationServer)
             callback(serverNotSet(), null);
         let url = this.annotationServer + '/resources/' + resourceId;
@@ -216,8 +217,16 @@ const AnnotationAPI = {
             cache: "no-cache",
             mode: "cors"
         }).then(function(response) {
+            status = response.status;
             return response.json();
         }).then(function(data) {
+            if (status !== 200){
+                let error = {
+                    status: status,
+                    message: data.message
+                }
+                return callback(error, null);
+            }
             return callback(null, data);
         }).catch(function(error) {
             console.error(url, err.toString());
