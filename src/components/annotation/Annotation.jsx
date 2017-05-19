@@ -37,7 +37,7 @@ class Annotation extends React.Component {
         var targetId = AnnotationUtil.extractTargetIdentifier(target);
         if (!targetId) // target is not loaded in browser window
             return [];
-        var source = component.props.lookupIdentifier(targetId);
+        var source = AnnotationActions.lookupIdentifier(targetId);
         if (source.type === "resource")
             return [component.makeTargetRange(target, source.data.domNode)];
         var targetRanges = [];
@@ -54,7 +54,7 @@ class Annotation extends React.Component {
             node: node
         }
         let textPosition = AnnotationUtil.getTextPositionSelector(target);
-        if (textPosition && textPosition.start) {
+        if (textPosition && textPosition.start !== undefined) {
             targetRange.start = textPosition.start;
             targetRange.end = textPosition.end;
         }
@@ -146,7 +146,7 @@ class Annotation extends React.Component {
             bodyCount++;
             return (
                 <div key={bodyCount}>
-                    <span>Body: </span>
+                    <span></span>
                     <span
                         className="label label-success"
                         >{body.purpose}</span>
@@ -158,7 +158,7 @@ class Annotation extends React.Component {
         var targetCount = 0;
         var targets = AnnotationUtil.extractTargets(annotation).map(function(target) {
             targetCount++;
-            let source = component.props.lookupIdentifier(AnnotationUtil.extractTargetIdentifier(target));
+            let source = AnnotationActions.lookupIdentifier(AnnotationUtil.extractTargetIdentifier(target));
             var text = "";
             var label;
             if (source.type === "resource") {
@@ -170,7 +170,7 @@ class Annotation extends React.Component {
                 label = source.data.rdfaType;
                 return (
                     <div key={targetCount}>
-                        <span>Target: </span>
+                        <span></span>
                         <span
                             className="label label-info"
                             >{label}</span>
@@ -185,7 +185,7 @@ class Annotation extends React.Component {
                 let text = body.value;
                 return (
                     <div key={targetCount}>
-                        <span>Target: </span>
+                        <span></span>
                         <span
                             className="label label-success"
                             >{label}</span>
@@ -254,8 +254,8 @@ class Annotation extends React.Component {
                         {timestamp}&nbsp;
                         (created by: {annotation.creator})
                     </abbr>
-                    {bodies}
                     {targets}
+                    {bodies}
                     <br/>
                 </div>
                 {options}
