@@ -30,6 +30,7 @@ export default class TargetSelector extends React.Component {
     }
     selectCandidates() {
         var candidateResources = TargetUtil.getCandidateRDFaTargets(this.props.defaultTargets);
+        console.log(candidateResources);
         // find annotations overlapping with candidate resources
         var candidateAnnotations = TargetUtil.selectCandidateAnnotations(this.props.annotations, candidateResources.highlighted);
         this.setState({
@@ -56,6 +57,7 @@ export default class TargetSelector extends React.Component {
     }
     annotateTargets() {
         this.closeSelectorModal();
+        console.log(this.state.selected);
         this.props.prepareAnnotation(this.state.selected);
     }
     render() {
