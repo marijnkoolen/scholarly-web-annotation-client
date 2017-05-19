@@ -20,7 +20,7 @@ const AnnotationAPI = {
 
     saveAnnotation : function(annotation, callback) {
         if (!this.annotationServer)
-            callback(serverNotSet(), null);
+            return callback(serverNotSet(), null);
         // default is POSTing a new annotation
         var url = this.annotationServer + '/annotations';
         var method = 'POST';
