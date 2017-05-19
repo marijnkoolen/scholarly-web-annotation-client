@@ -51,8 +51,12 @@ class AnnotationStore {
         this.trigger('reload-annotations');
     }
 
-    loadResources(topResources, resourceIndex, resourceMaps) {
-        this.trigger('load-resources', topResources, resourceIndex, resourceMaps);
+    loadResources(topResources, resourceMaps) {
+        this.trigger('load-resources', topResources, resourceMaps);
+    }
+
+    loadCollections(collections) {
+        this.trigger('load-collections', collections);
     }
 
     login(userDetails) {
@@ -75,7 +79,6 @@ AppDispatcher.register( function( action ) {
     switch(action.eventName) {
 
         case 'save-annotation':
-            console.log(action);
             AppAnnotationStore.save(action.annotation);
             break;
         case 'delete-annotation':
@@ -103,7 +106,10 @@ AppDispatcher.register( function( action ) {
             AppAnnotationStore.reloadAnnotations();
             break;
         case 'load-resources':
-            AppAnnotationStore.loadResources(action.topResources, action.resourceIndex, action.resourceMaps);
+            AppAnnotationStore.loadResources(action.topResources, action.resourceMaps);
+            break;
+        case 'load-collections':
+            AppAnnotationStore.loadCollections(action.collections, action.callback);
             break;
         case 'login-user':
             AppAnnotationStore.login(action.userDetails);
@@ -118,7 +124,6 @@ AppDispatcher.register( function( action ) {
             AppAnnotationStore.setServerAddress(action.apiURL);
             break;
         case 'register-resources':
-            console.log("registering resources");
             AppAnnotationStore.registerResources(action.maps);
             break;
 

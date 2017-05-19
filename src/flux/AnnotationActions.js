@@ -12,8 +12,23 @@ const AnnotationActions = {
         return AnnotationAPI.setServerAddress(apiURL);
     },
 
+    annotationIndex : {},
+    resourceIndex : {},
+    topResources : [],
+
+    lookupIdentifier(sourceId) {
+        var source = { type: null, data: null }; // for IDs to external resources
+        if (AnnotationActions.annotationIndex.hasOwnProperty(sourceId))
+            source = { type: "annotation", data: AnnotationActions.annotationIndex[sourceId] };
+        else if (AnnotationActions.resourceIndex.hasOwnProperty(sourceId))
+            source = { type: "resource", data: AnnotationActions.resourceIndex[sourceId] };
+        return source;
+    },
+
     save : function(annotation) {
+        console.log(annotation);
         AnnotationAPI.saveAnnotation(annotation, (error, data) => {
+            console.log(data);
             AppDispatcher.dispatch({
                 eventName: 'save-annotation',
                 annotation: data
@@ -23,6 +38,7 @@ const AnnotationActions = {
 
     delete : function(annotation) {
         AnnotationAPI.deleteAnnotation(annotation, (error, data) => {
+            console.log(data);
             AppDispatcher.dispatch({
                 eventName: 'delete-annotation',
                 annotation: data
@@ -66,10 +82,15 @@ const AnnotationActions = {
     },
 
     loadAnnotations: function(resourceIds) {
-        console.log(resourceIds);
+        if (resourceIds === undefined)
+            resourceIds = this.topResources;
         AnnotationAPI.getAnnotationsByTargets(resourceIds, (error, annotations) => {
             if (error)
                 console.error(resourceIds, error.toString());
+
+            annotations.forEach(function(annotation) {
+                AnnotationActions.annotationIndex[annotation.id] = annotation;
+            });
             AppDispatcher.dispatch({
                 eventName: 'load-annotations',
                 annotations: annotations
@@ -84,17 +105,17 @@ const AnnotationActions = {
     },
 
     loadResources: function() {
-        console.log("loading resources");
-        let topResources = RDFaUtil.getTopRDFaResources(document.body);
-        let resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
-        let resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
-        this.registerResources(resourceMaps);
+        this.topResources = RDFaUtil.getTopRDFaResources(document.body);
+        this.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
+        this.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
+        this.registerResources(this.resourceMaps);
         AppDispatcher.dispatch({
             eventName: 'load-resources',
-            topResources: topResources,
-            resourceIndex: resourceIndex,
-            resourceMaps: resourceMaps
+            topResources: this.topResources,
+            resourceMaps: this.resourceMaps
         });
+        console.log('loadAnnotations');
+        this.loadAnnotations(this.topResources);
     },
 
     login : function(userDetails) {
@@ -114,7 +135,6 @@ const AnnotationActions = {
     },
 
     registerResources : function(maps) {
-        console.log("registering resources");
         if (Object.keys(maps).length === 0)
             return null;
         Object.keys(maps).forEach((resourceId, index) => {
