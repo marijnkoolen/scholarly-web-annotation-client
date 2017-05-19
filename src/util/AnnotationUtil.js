@@ -112,7 +112,7 @@ const AnnotationUtil = {
     },
 
     makeTextQuoteSelector : function(params) {
-        if(params.prefix && params.suffix && params.text) {
+        if(params.prefix !== undefined && params.suffix !== undefined && params.text !== undefined) {
             return {
                 "type": "TextQuoteSelector",
                 "prefix": params.prefix,
@@ -124,7 +124,7 @@ const AnnotationUtil = {
     },
 
     makeTextPositionSelector : function(params) {
-        if(params.start && params.end) {
+        if(params.start !== undefined && params.end !== undefined) {
             return {
                 "type": "TextPositionSelector",
                 "start": params.start,

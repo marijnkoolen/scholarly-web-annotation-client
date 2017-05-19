@@ -126,7 +126,7 @@ const TargetUtil = {
         let smallerNodes = TargetUtil.getRDFaCandidates(selectionNodes);
         var wholeNodes = biggerNodes.concat(smallerNodes);
         var highlighted = null;
-        if (selection.startOffset) {
+        if (selection.startOffset !== undefined) {
             let container = biggerNodes[biggerNodes.length - 1];
             highlighted = TargetUtil.findHighlighted(container, selection);
         }

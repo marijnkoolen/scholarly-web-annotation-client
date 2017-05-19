@@ -124,6 +124,8 @@ const SelectionUtil = {
         }
         let position = selection.anchorNode.compareDocumentPosition(selection.focusNode);
         let backwards = position & Node.DOCUMENT_POSITION_PRECEDING;
+        if (position === 0 && selection.anchorOffset > selection.focusOffset)
+            backwards = 1;
         return {
             startNode: backwards ? selection.focusNode : selection.anchorNode,
             startOffset: backwards ? selection.focusOffset : selection.anchorOffset,
