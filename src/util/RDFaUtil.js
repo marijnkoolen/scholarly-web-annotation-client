@@ -6,7 +6,8 @@ import DOMUtil from './DOMUtil.js';
 import StringUtil from './StringUtil.js';
 
 // RDFa property names
-let RDFaAttrs = ["about", "content", "datatype", "href", "property", "rel", "resource", "rev", "src", "typeof", "vocab"];
+//let RDFaAttrs = ["about", "content", "datatype", "href", "property", "rel", "resource", "rev", "src", "typeof", "vocab"];
+let RDFaAttrs = ["about", "property", "resource", "typeof", "vocab"];
 
 const RDFaUtil = {
     /*
@@ -243,8 +244,11 @@ const RDFaUtil = {
         let attrs = RDFaUtil.getRDFaAttributes(rdfaResourceNode);
         var map = {};
         Object.keys(attrs).forEach((name) => {
-            if (name === "typeof")
+            if (name === "typeof") {
                 map["type"] = attrs[name];
+                if (attrs[name].indexOf(" ") >= 0)
+                    map["type"] = attrs[name].split(" ");
+            }
             else if (name === "resource" || name === "about")
                 map["id"] = attrs[name];
             else if (name === "vocab" && attrs[name].includes("#"))
