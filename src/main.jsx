@@ -3,7 +3,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AnnotationViewer from './components/annotation/AnnotationViewer.jsx';
+import AnnotationClient from './components/AnnotationClient.jsx';
 import RDFaUtil from './util/RDFaUtil.js';
 import SelectionUtil from './util/SelectionUtil.js';
 import DOMUtil from './util/DOMUtil.js';
@@ -21,12 +21,12 @@ export class RDFaAnnotator {
         this.topResources = RDFaUtil.getTopRDFaResources(document.body);
     }
 
-    addAnnotationViewer() {
+    addAnnotationClient() {
         var observerTargets = document.getElementsByClassName("annotation-target-observer");
         this.startObserver(observerTargets);
         this.setAnnotationAttributes(observerTargets);
         ReactDOM.render(
-            <AnnotationViewer
+            <AnnotationClient
                 config={this.clientConfiguration}
             />,
             document.getElementById('annotation-viewer')

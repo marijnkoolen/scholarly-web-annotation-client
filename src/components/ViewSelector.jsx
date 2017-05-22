@@ -2,9 +2,9 @@
 'use strict'
 
 import React from 'react';
-import AnnotationUtil from './../../util/AnnotationUtil.js';
-import AppAnnotationStore from './../../flux/AnnotationStore';
-import AnnotationActions from '../../flux/AnnotationActions.js';
+import AnnotationUtil from './../util/AnnotationUtil.js';
+import AppAnnotationStore from './../flux/AnnotationStore';
+import AnnotationActions from '../flux/AnnotationActions.js';
 
 export default class ViewSelector extends React.Component {
 	constructor(props) {

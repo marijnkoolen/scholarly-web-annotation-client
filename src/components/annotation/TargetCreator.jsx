@@ -6,7 +6,6 @@ import { Modal } from 'react-bootstrap';
 import CandidateList from './CandidateList.jsx';
 import SelectedList from './SelectedList.jsx';
 import TargetUtil from './../../util/TargetUtil.js';
-import AnnotationUtil from './../../util/AnnotationUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
 
 export default class TargetSelector extends React.Component {
@@ -15,28 +14,19 @@ export default class TargetSelector extends React.Component {
         this.addToSelected = this.addToSelected.bind(this);
         this.removeFromSelected = this.removeFromSelected.bind(this);
         this.state = {
-            showAnnotationBox: false,
-            showSelectorModal: false,
             selected: [],
-            candidateResources: {},
-            candidateAnnotations: [],
             annotations: [],
             activeType: "resource",
             candidateTypes: ["resource", "annotation"],
         };
     }
-    closeSelectorModal() {
-        this.setState({showSelectorModal: false});
-    }
     selectCandidates() {
         var candidateResources = TargetUtil.getCandidateRDFaTargets(this.props.defaultTargets);
-        console.log(candidateResources);
         // find annotations overlapping with candidate resources
         var candidateAnnotations = TargetUtil.selectCandidateAnnotations(this.props.annotations, candidateResources.highlighted);
         this.setState({
             candidateAnnotations: candidateAnnotations,
             candidateResources: candidateResources,
-            showSelectorModal: true,
             selected: []
         });
     }
@@ -56,9 +46,7 @@ export default class TargetSelector extends React.Component {
         }
     }
     annotateTargets() {
-        this.closeSelectorModal();
-        console.log(this.state.selected);
-        this.props.prepareAnnotation(this.state.selected);
+        this.props.createAnnotation(this.state.selected);
     }
     render() {
         //generate the tabs from the configured modes
@@ -77,9 +65,9 @@ export default class TargetSelector extends React.Component {
         }, this)
 
         var tabContents = this.state.candidateTypes.map(function(candidateType) {
-            var candidates = this.state.candidateResources;
+            var candidates = this.props.candidateResources;
             if (candidateType === "annotation") {
-                candidates = this.state.candidateAnnotations;
+                candidates = this.props.candidateAnnotations;
             }
             return (
                 <div
@@ -97,17 +85,15 @@ export default class TargetSelector extends React.Component {
         }, this);
 
         return (
-            <div className="TargetSelector">
-                <button onClick={this.selectCandidates.bind(this)}>Make annotation</button>
-                <Modal show={this.state.showSelectorModal} onHide={this.closeSelectorModal.bind(this)}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>Select Annotation Targets</Modal.Title>
+            <div className="TargetCreator">
+                    <div className="TargetCreator-header">
+                        <h3>Select Annotation Targets</h3>
                         <SelectedList
                             candidates={this.state.selected}
                             removeFromSelected={this.removeFromSelected.bind(this)}
                             />
-                    </Modal.Header>
-                    <Modal.Body>
+                    </div>
+                    <div>
                         <h4>Candidate Targets</h4>
                         <ul className="nav nav-tabs">
                             {tabs}
@@ -115,12 +101,10 @@ export default class TargetSelector extends React.Component {
                         <div className="tab-content">
                             {tabContents}
                         </div>
-                    </Modal.Body>
-                    <Modal.Footer>
+                    </div>
+                    <div>
                         <button onClick={this.annotateTargets.bind(this)}>Annotate</button>
-                        <button onClick={this.closeSelectorModal.bind(this)}>Close</button>
-                    </Modal.Footer>
-                </Modal>
+                    </div>
             </div>
         )
     }

@@ -8,37 +8,33 @@
 
 'use strict'
 
-import AnnotationCreator from './AnnotationCreator.jsx';
-import AnnotationList from './AnnotationList.jsx';
+import CollectionCreator from './CollectionCreator.jsx';
+import CollectionList from './CollectionList.jsx';
 import React from 'react';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import AppAnnotationStore from './../../flux/AnnotationStore';
 import AnnotationActions from '../../flux/AnnotationActions.js';
 
-export default class AnnotationViewer extends React.Component {
+export default class CollectionViewer extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            view: "annotations",
+            collections: []
         };
     }
     componentDidMount() {
-        console.log("loading resources");
-        AnnotationActions.loadResources();
+        console.log("loading collections");
     }
     render() {
         return (
-        <div className="annotationViewer">
-            <AnnotationCreator
-                currentUser={this.props.currentUser}
-                config={this.props.config}
+        <div className="collectionViewer">
+            <CollectionCreator
             />
-            <AnnotationList
-                currentUser={this.props.currentUser}
-                config={this.props.config}
+            <CollectionList
             />
         </div>
         );
     }
 }
+
 
