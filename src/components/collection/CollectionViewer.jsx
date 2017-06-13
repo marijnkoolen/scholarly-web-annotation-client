@@ -29,8 +29,12 @@ export default class CollectionViewer extends React.Component {
         return (
         <div className="collectionViewer">
             <CollectionCreator
+                currentUser={this.props.currentUser}
+                config={this.props.config}
             />
             <CollectionList
+                currentUser={this.props.currentUser}
+                config={this.props.config}
             />
         </div>
         );
