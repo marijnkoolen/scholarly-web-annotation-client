@@ -2,6 +2,7 @@
 
 import React from 'react';
 import AnnotationActions from './../../flux/AnnotationActions.js';
+import AppCollectionStore from '../../flux/CollectionStore.js';
 import FlexModal from './../FlexModal';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
@@ -102,8 +103,11 @@ class Annotation extends React.Component {
     }
     editTarget(annotation) {
         // ask for adding, changing or removing target
-        // if target is resource, allow new text selection
+        // if target is resource, allow new resource selection
         // if target is annotation, allow new annotation selection
+    }
+    editAnnotationBody(annotation) {
+        AnnotationActions.edit(annotation);
     }
     copyAnnotation(annotation) {
         let confirm = window.confirm("Are you sure you want to copy this annotation?");
@@ -111,9 +115,6 @@ class Annotation extends React.Component {
             AnnotationActions.copy(annotation);
             // TODO: implement copying of annotation
         }
-    }
-    editAnnotationBody(annotation) {
-        AnnotationActions.edit(annotation);
     }
     deleteAnnotation(annotation) {
         let confirm = window.confirm("Are you sure you want to delete this annotation?");

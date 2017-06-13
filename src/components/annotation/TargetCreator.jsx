@@ -20,16 +20,6 @@ export default class TargetSelector extends React.Component {
             candidateTypes: ["resource", "annotation"],
         };
     }
-    selectCandidates() {
-        var candidateResources = TargetUtil.getCandidateRDFaTargets(this.props.defaultTargets);
-        // find annotations overlapping with candidate resources
-        var candidateAnnotations = TargetUtil.selectCandidateAnnotations(this.props.annotations, candidateResources.highlighted);
-        this.setState({
-            candidateAnnotations: candidateAnnotations,
-            candidateResources: candidateResources,
-            selected: []
-        });
-    }
     addToSelected(candidate) {
         var selected = this.state.selected;
         if (selected.indexOf(candidate) === -1) {
@@ -91,7 +81,7 @@ export default class TargetSelector extends React.Component {
                         <SelectedList
                             candidates={this.state.selected}
                             removeFromSelected={this.removeFromSelected.bind(this)}
-                            />
+                        />
                     </div>
                     <div>
                         <h4>Candidate Targets</h4>

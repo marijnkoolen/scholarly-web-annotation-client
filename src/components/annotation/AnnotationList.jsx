@@ -17,8 +17,6 @@ class AnnotationList extends React.Component {
         AppAnnotationStore.bind('load-annotations', this.loadAnnotations.bind(this));
         AppAnnotationStore.bind('changed-target', this.loadAnnotations.bind(this));
         AppAnnotationStore.bind('deleted-annotation', this.loadAnnotations.bind(this));
-        console.log("mounted");
-        console.log(this.props.currentUser);
     }
     loadAnnotations() {
         AnnotationActions.loadAnnotations();

@@ -31,8 +31,12 @@ class BodyCreator extends React.Component {
         this.state = {
             activeTab : activeTab,
             bodies: bodies,
+            defaultCollection: null,
         }
     }
+
+	componentDidMount() {
+	}
 
     closeSelectorModal() {
         this.setState({showSelectorModal: false});
