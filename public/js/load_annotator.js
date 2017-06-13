@@ -3,7 +3,7 @@ document.onreadystatechange = function () {
 		console.log("document ready!");
 		loadConfig((error, config) => {
 			rdfaAnnotator = new RDFaAnnotator.RDFaAnnotator(config);
-			rdfaAnnotator.addAnnotationViewer();
+			rdfaAnnotator.addAnnotationClient();
 		});
 	}
 }
