@@ -39,6 +39,7 @@ export default class AnnotationClient extends React.Component {
         this.setState({view: viewMode});
     }
     render() {
+        let component = this;
         let annotationViewer = (
             <AnnotationViewer
                 currentUser={this.state.user}
@@ -60,27 +61,56 @@ export default class AnnotationClient extends React.Component {
             />
         )
         */
-        var viewer = null;
-        if (this.state.view === "annotations")
-            viewer = annotationViewer;
-        else if (this.state.view === "collections")
-            viewer = collectionViewer;
-        else if (this.state.view === "resources")
-            viewer = resourceViewer;
+        let itemTypes = ["annotations", "collections", "resources"];
+        var viewer;
+        let viewerTabContents = itemTypes.map((itemType) => {
+            if (itemType === "annotations")
+                viewer = annotationViewer;
+            if (itemType === "collections")
+                viewer = collectionViewer;
+            if (itemType === "resources")
+                viewer = resourceViewer;
+            return (
+                <div
+                    key={itemType + '__tab_content'}
+                    id={itemType}
+                    className={this.state.view === itemType ? 'tab-pane active' : 'tab-pane'}>
+                    {viewer}
+                </div>
+            )
+        });
+        const viewerTabs = itemTypes.map((itemType) => {
+            return (
+                <li
+                    key={itemType + '__tab_option'}
+                    className={component.state.view === itemType ? 'active' : ''}
+                >
+                    <a data-toggle="tab" href={'#' + itemType}>
+                        {itemType}
+                    </a>
+                </li>
+            )
+        });
+
         return (
-        <div className="annotationClient">
-            <h1>Annotation Client</h1>
-            <LoginBox
-                user={this.state.user}
-            />
-            <div>
-                <ViewSelector
-                    currentMode={this.state.view}
-                    handleViewChange={this.handleViewChange.bind(this)}
+            <div className="annotationClient">
+                <h1>Annotation Client</h1>
+                <LoginBox
+                    user={this.state.user}
+                />
+                <div>
+                    <ViewSelector
+                        currentMode={this.state.view}
+                        handleViewChange={this.handleViewChange.bind(this)}
                     />
-                {viewer}
+                    <ul className="nav nav-tabs">
+                        {viewerTabs}
+                    </ul>
+                    <div className="tab-content">
+                        {viewerTabContents}
+                    </div>
+                </div>
             </div>
-        </div>
         );
     }
 }
