@@ -26,9 +26,7 @@ const AnnotationActions = {
     },
 
     save : function(annotation) {
-        console.log(annotation);
         AnnotationAPI.saveAnnotation(annotation, (error, data) => {
-            console.log(data);
             AppDispatcher.dispatch({
                 eventName: 'save-annotation',
                 annotation: data
@@ -38,7 +36,6 @@ const AnnotationActions = {
 
     delete : function(annotation) {
         AnnotationAPI.deleteAnnotation(annotation, (error, data) => {
-            console.log(data);
             AppDispatcher.dispatch({
                 eventName: 'delete-annotation',
                 annotation: data
@@ -114,7 +111,6 @@ const AnnotationActions = {
             topResources: this.topResources,
             resourceMaps: this.resourceMaps
         });
-        console.log('loadAnnotations');
         this.loadAnnotations(this.topResources);
     },
 
