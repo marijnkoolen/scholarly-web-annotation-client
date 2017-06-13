@@ -18,13 +18,34 @@ const AnnotationAPI = {
         return this.annotationServer;
     },
 
-    saveAnnotation : function(annotation, callback) {
+    makeRequest : function(url, options, callback) {
         if (!this.annotationServer)
-            return callback(serverNotSet(), null);
+            callback(serverNotSet(), null);
+        var status = null;
+        options.cache = 'no-cache';
+        options.mode = 'cors';
+        fetch(url, options).then(function(response) {
+            status = response.status;
+            return response.json();
+        }).then(function(data) {
+            if (status !== 200){
+                let error = {
+                    status: status,
+                    message: data.message
+                }
+                return callback(error, null);
+            }
+            return callback(null, data);
+        }).catch(function(error) {
+            console.error(url, error.toString());
+            return callback(err, null);
+        });
+    },
+
+    saveAnnotation : function(annotation, callback) {
         // default is POSTing a new annotation
         var url = this.annotationServer + '/annotations';
         var method = 'POST';
-        var status = null;
 
         // if annotation already has an id, it's an update, so PUT
         if(annotation.id) {
@@ -32,118 +53,58 @@ const AnnotationAPI = {
             method = 'PUT';
         }
 
-        fetch(url, {
+        let options = {
             method: method,
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(annotation)
-        }).then(function(response) {
-            status = response.status;
-            return response.json();
-        }).then(function(data) {
-            if (status !== 200){
-                let error = {
-                    status: status,
-                    message: data.message
-                }
-                return callback(error, null);
-            }
-            return callback(null, data);
-        }).catch(function(error) {
-            return callback(error, null);
+        }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
         });
     },
 
     login : function(userDetails, callback) {
-        if (!this.annotationServer)
-            callback(serverNotSet(), null);
         var url = this.annotationServer + "/login";
-        fetch(url, {
+        let options = {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify(userDetails)
-        }).then(function(response) {
-            return response.json();
-        }).then(function(data) {
-            callback(null, data);
-        }).catch(function(error) {
-            console.error(url, error.toString());
-            callback(error, null);
+        }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
         });
     },
 
     getAnnotationById : function(annotationId, callback) {
-        if (!this.annotationServer)
-            callback(serverNotSet(), null);
         var status = null;
         let url = this.annotationServer + '/annotations/annotation/' + annotationId;
-        fetch(url, {
-            method: "GET",
-            cache: 'no-cache',
-            mode: 'cors'
-        }).then(function(response) {
-            status = response.status;
-            return response.json();
-        }).then(function(data) {
-            if (status !== 200){
-                let error = {
-                    status: status,
-                    message: data.message
-                }
-                return callback(error, null);
-            }
-            return callback(null, data);
-        }).catch(function(err) {
-            return callback(err, null);
+        let options = { method: "GET" };
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
         });
     },
 
     getAnnotations : function(callback) {
-        if (!this.annotationServer)
-            callback(serverNotSet(), null);
         let url = this.annotationServer + '/annotations';
-        fetch(url, {
-            method: "GET",
-            cache: 'no-cache',
-            mode: 'cors'
-        }).then(function(response) {
-            return response.json();
-        }).then(function(data) {
-            return callback(null, data);
-        }).catch(function(err) {
-            console.error(url, err.toString());
-            return callback(err, null)
+        let options = { method: "GET" }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
         });
     },
 
     getAnnotationsByTarget : function(targetId, callback) {
-        if (!this.annotationServer)
-            callback(serverNotSet(), null);
         if (typeof(targetId) !== "string") {
             let error = new TypeError("resource ID should be string");
             return callback(error, null);
         }
         let url = this.annotationServer + '/resources/' + targetId + '/annotations';
-        fetch(url, {
-            method: "GET",
-            cache: 'no-cache',
-            mode: 'cors'
-        }).then(function(response) {
-            return response.json();
-        }).then(function(data) {
-            return callback(null, data);
-        }).catch(function(err) {
-            console.error(url, err.toString());
-            return callback(err, null);
+        let options = { method: "GET" }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
         });
     },
 
     getAnnotationsByTargets : function(targetIds, callback) {
-        if (!this.annotationServer)
-            callback(serverNotSet(), null);
         var annotations = [];
         var ids = [];
         targetIds.forEach(function(targetId, targetIndex) {
@@ -168,92 +129,94 @@ const AnnotationAPI = {
     },
 
     deleteAnnotation : function (annotation, callback) {
-        if (!this.annotationServer)
-            callback(serverNotSet(), null);
         if(!annotation.id) {
             let error = Error("annotation MUST have an id property");
             callback(error, null);
         }
         let url = this.annotationServer + '/annotations/annotation/' + annotation.id;
-        fetch(url, {
-            method: "DELETE",
-            cache: 'no-cache',
-            mode: 'cors'
-        }).then(function(response) {
-            return response.json();
-        }).then(function(data) {
-            return callback(null, data);
-        }).catch(function(err) {
-            console.error(url, err.toString());
-            return callback(err, null);
+        let options = { method: "DELETE" }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
         });
     },
 
     deleteAnnotationById : function (annotationId, callback) {
-        if (!this.annotationServer)
-            callback(serverNotSet(), null);
         let url = this.annotationServer + '/annotations/annotation/' + annotationId;
-        fetch(url, {
-            method: "DELETE",
-            cache: 'no-cache',
-            mode: 'cors'
-        }).then(function(response) {
-            return response.json();
-        }).then(function(data) {
-            return callback(null, data);
-        }).catch(function(err) {
-            console.error(url, err.toString());
-            return callback(err, null);
+        let options = { method: "DELETE" }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
+        });
+    },
+
+    getCollections : function(callback) {
+        let url = this.annotationServer + '/collections';
+        let options = { method: "GET" }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
+        });
+    },
+
+    saveCollection : function(collection, callback) {
+        var status = null;
+        let url = this.annotationServer + '/collections';
+        let method = 'POST';
+
+        // if annotation already has an id, it's an update, so PUT
+        if(collection.id) {
+            url = this.annotationServer + '/collections/' + collection.id;
+            method = 'PUT';
+        }
+
+        var options = {
+            method: method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(collection),
+        }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
+        });
+    },
+
+    deleteCollection : function (collection, callback) {
+        if(!collection.id) {
+            let error = Error("collection MUST have an id property");
+            callback(error, null);
+        }
+        let url = this.annotationServer + '/collections/' + collection.id;
+        let options = { method: "DELETE" }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
+        });
+    },
+
+    addAnnotation : function (collectionId, annotationId, callback) {
+        console.log("adding annotation");
+        let url = this.annotationServer + '/collections/' + collectionId + '/add/' + annotationId;
+        let options = { method: "GET" };
+        this.makeRequest(url, options, (error, data) => {
+            console.log(error);
+            console.log(data);
+            return callback(error, data);
         });
     },
 
     checkResource : function(resourceId, callback) {
-        var status = null;
-        if (!this.annotationServer)
-            callback(serverNotSet(), null);
         let url = this.annotationServer + '/resources/' + resourceId;
-        fetch(url, {
-            method: "GET",
-            cache: "no-cache",
-            mode: "cors"
-        }).then(function(response) {
-            status = response.status;
-            return response.json();
-        }).then(function(data) {
-            if (status !== 200){
-                let error = {
-                    status: status,
-                    message: data.message
-                }
-                return callback(error, null);
-            }
-            return callback(null, data);
-        }).catch(function(error) {
-            console.error(url, err.toString());
-            return callback(error, null);
+        let options = { method: "GET" }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
         });
-
     },
 
     registerResource : function(resourceMap, callback) {
-        if (!this.annotationServer)
-            callback(serverNotSet(), null);
         let url = this.annotationServer + '/resources';
-        fetch(url, {
+        var options = {
             method: "POST",
-            cache: "no-cache",
-            mode: "cors",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(resourceMap)
-        }).then(function(response) {
-            return response.json();
-        }).then(function(data) {
-            return callback(null, data);
-        }).catch(function(error) {
-            console.error(url, err.toString());
-            return callback(error, null);
+        }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
         });
     }
 }
