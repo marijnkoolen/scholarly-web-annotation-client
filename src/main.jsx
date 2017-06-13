@@ -9,6 +9,7 @@ import SelectionUtil from './util/SelectionUtil.js';
 import DOMUtil from './util/DOMUtil.js';
 import defaultConfig from './rdfa-annotation-config.js';
 import AnnotationActions from './flux/AnnotationActions.js';
+import CollectionActions from './flux/CollectionActions.js';
 import AppAnnotationStore from './flux/AnnotationStore.js';
 
 export class RDFaAnnotator {
@@ -18,6 +19,7 @@ export class RDFaAnnotator {
             configuration = defaultConfig; // use default if no configuration is given
         this.clientConfiguration = configuration;
         AnnotationActions.setServerAddress(configuration.services.AnnotationServer.api);
+        CollectionActions.setServerAddress(configuration.services.AnnotationServer.api);
         this.topResources = RDFaUtil.getTopRDFaResources(document.body);
     }
 
