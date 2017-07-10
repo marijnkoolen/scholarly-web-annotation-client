@@ -35,9 +35,6 @@ export default class AnnotationClient extends React.Component {
     setUser(user) {
         this.setState({user: user});
     }
-    handleViewChange(viewMode) {
-        this.setState({view: viewMode});
-    }
     render() {
         let component = this;
         let annotationViewer = (
@@ -99,10 +96,6 @@ export default class AnnotationClient extends React.Component {
                     user={this.state.user}
                 />
                 <div>
-                    <ViewSelector
-                        currentMode={this.state.view}
-                        handleViewChange={this.handleViewChange.bind(this)}
-                    />
                     <ul className="nav nav-tabs">
                         {viewerTabs}
                     </ul>

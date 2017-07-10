@@ -99,7 +99,7 @@ class LoginBox extends React.Component {
                                 onChange={this.handleUsernameChange.bind(this)}
                             />
                             &nbsp;
-                            <input type="submit" value="Login" />
+                            <input className="btn btn-default" type="submit" value="Login" />
                             <span className="label label-danger">
                                 {this.state.warning}
                             </span>

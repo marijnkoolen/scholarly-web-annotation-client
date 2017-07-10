@@ -31,7 +31,7 @@ class FlexModal extends React.Component {
                             {this.props.children}
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                            <button type="button" className="btn btn-default" data-dismiss="modal">Cancel</button>
                         </div>
                     </div>
                 </div>
