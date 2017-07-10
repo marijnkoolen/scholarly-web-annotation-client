@@ -156,6 +156,22 @@ const AnnotationAPI = {
         });
     },
 
+    getCollection : function(collectionId, callback) {
+        let url = this.annotationServer + '/collections/' + collectionId;
+        let options = { method: "GET" }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
+        });
+    },
+
+    getCollectionPage : function(pageId, callback) {
+        let url = this.annotationServer + '/pages/' + pageId;
+        let options = { method: "GET" }
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
+        });
+    },
+
     saveCollection : function(collection, callback) {
         var status = null;
         let url = this.annotationServer + '/collections';
@@ -189,13 +205,18 @@ const AnnotationAPI = {
         });
     },
 
-    addAnnotation : function (collectionId, annotationId, callback) {
-        console.log("adding annotation");
-        let url = this.annotationServer + '/collections/' + collectionId + '/add/' + annotationId;
-        let options = { method: "GET" };
+    addAnnotation : function (collectionId, annotation, callback) {
+        let url = this.annotationServer + '/collections/' + collectionId + '/aannotations/';
+        let options = { method: "POST" };
         this.makeRequest(url, options, (error, data) => {
-            console.log(error);
-            console.log(data);
+            return callback(error, data);
+        });
+    },
+
+    removeAnnotation : function (collectionId, annotationId, callback) {
+        let url = this.annotationServer + '/collections/' + collectionId + '/annotations/' + annotationId;
+        let options = { method: "DELETE" };
+        this.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
     },
