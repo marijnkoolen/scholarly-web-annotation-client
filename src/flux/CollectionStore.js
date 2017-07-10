@@ -24,6 +24,12 @@ AppDispatcher.register( function( action ) {
         case 'loaded-collections':
             AppCollectionStore.defaultTrigger(action.eventName, action.collections);
             break;
+        case 'loaded-collection':
+            AppCollectionStore.defaultTrigger(action.eventName, action.collection);
+            break;
+        case 'loaded-page':
+            AppCollectionStore.defaultTrigger(action.eventName, action.page);
+            break;
         case 'saved-collection':
             AppCollectionStore.defaultTrigger(action.eventName, action.collection);
             break;
@@ -36,7 +42,7 @@ AppDispatcher.register( function( action ) {
         case 'default-collection':
             AppCollectionStore.defaultTrigger(action.eventName, action.collection);
             break;
-        case 'edit-collection-label':
+        case 'edit-collection':
             AppCollectionStore.defaultTrigger(action.eventName, action.collection);
             break;
 

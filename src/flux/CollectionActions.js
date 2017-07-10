@@ -40,9 +40,9 @@ const CollectionActions = {
         console.log(collection);
     },
 
-    editLabel(collection) {
+    editCollection(collection) {
         AppDispatcher.dispatch({
-            eventName: 'edit-collection-label',
+            eventName: 'edit-collection',
             collection: collection
         });
     },
@@ -68,10 +68,28 @@ const CollectionActions = {
 
     getCollection(collectionId) {
         console.log(collectionId);
+        AnnotationAPI.getCollection(collectionId, (error, collection) => {
+            if (error)
+                return null;
+
+            AppDispatcher.dispatch({
+                eventName: 'loaded-collection',
+                collection: collection,
+            });
+        });
     },
 
     getCollectionPage(collectionPageId) {
         console.log(collectionPageId);
+        AnnotationAPI.getCollectionPage(collectionPageId, (error, page) => {
+            if (error)
+                return null;
+
+            AppDispatcher.dispatch({
+                eventName: 'loaded-page',
+                page: page,
+            });
+        });
     },
 
     addAnnotation(collectionId, annotationId) {
@@ -84,7 +102,19 @@ const CollectionActions = {
                 page: pageId,
             });
         });
-    }
+    },
+
+    removeAnnotation(collectionId, annotationId) {
+        AnnotationAPI.removeAnnotation(collectionId, annotationId, (error, pageId) => {
+            if (error)
+                return null;
+
+            AppDispatcher.dispatch({
+                eventName: 'updated-collection',
+                page: pageId,
+            });
+        });
+    },
 
 }
 
