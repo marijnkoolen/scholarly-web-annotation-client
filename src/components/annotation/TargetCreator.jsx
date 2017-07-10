@@ -76,25 +76,25 @@ export default class TargetSelector extends React.Component {
 
         return (
             <div className="TargetCreator">
-                    <div className="TargetCreator-header">
-                        <h3>Select Annotation Targets</h3>
-                        <SelectedList
-                            candidates={this.state.selected}
-                            removeFromSelected={this.removeFromSelected.bind(this)}
-                        />
+                <div className="TargetCreator-header">
+                    <h3>Select Annotation Targets</h3>
+                    <SelectedList
+                        candidates={this.state.selected}
+                        removeFromSelected={this.removeFromSelected.bind(this)}
+                    />
+                </div>
+                <div>
+                    <h4>Candidate Targets</h4>
+                    <ul className="nav nav-tabs">
+                        {tabs}
+                    </ul>
+                    <div className="tab-content">
+                        {tabContents}
                     </div>
-                    <div>
-                        <h4>Candidate Targets</h4>
-                        <ul className="nav nav-tabs">
-                            {tabs}
-                        </ul>
-                        <div className="tab-content">
-                            {tabContents}
-                        </div>
-                    </div>
-                    <div>
-                        <button onClick={this.annotateTargets.bind(this)}>Annotate</button>
-                    </div>
+                </div>
+                <div>
+                    <button onClick={this.annotateTargets.bind(this)}>Annotate</button>
+                </div>
             </div>
         )
     }

@@ -76,7 +76,7 @@ class AnnotationCreator extends React.Component {
         return (
             <div>
                 {this.props.currentUser ?
-                    <button onClick={this.selectCandidates.bind(this)}>Make annotation</button>
+                    <button className="btn btn-default" onClick={this.selectCandidates.bind(this)}>Make annotation</button>
                     : null
                 }
                 {this.state.showModal ?

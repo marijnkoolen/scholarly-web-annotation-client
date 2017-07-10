@@ -22,12 +22,8 @@ export default class Collection extends React.Component {
         return allowed;
     }
 
-    editLabel() {
-        CollectionActions.editLabel(this.props.collection);
-    }
-
-    editContent() {
-        // show list of annotations
+    editCollection() {
+        CollectionActions.editCollection(this.props.collection);
     }
 
     copyCollection() {
@@ -68,7 +64,7 @@ export default class Collection extends React.Component {
             return (
                 <span>
                     <i className="label label-info"
-                        onClick={() => {component.editLabel()}}>
+                        onClick={() => {component.editCollection()}}>
                         edit label
                     </i>
                     &nbsp;

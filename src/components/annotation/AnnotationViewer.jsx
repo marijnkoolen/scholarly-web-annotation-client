@@ -23,7 +23,6 @@ export default class AnnotationViewer extends React.Component {
         };
     }
     componentDidMount() {
-        console.log("loading resources");
         AnnotationActions.loadResources();
     }
     render() {
