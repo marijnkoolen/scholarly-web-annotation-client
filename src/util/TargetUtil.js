@@ -19,6 +19,8 @@
 import DOMUtil from './DOMUtil.js';
 import RDFaUtil from './RDFaUtil.js';
 import SelectionUtil from './SelectionUtil.js';
+import AnnotationUtil from './AnnotationUtil.js';
+import AnnotationActions from '../flux/AnnotationActions.js';
 
 const TargetUtil = {
 
@@ -249,6 +251,80 @@ const TargetUtil = {
     mapMimeType : function(mimeType) {
         return TargetUtil.mimeTypeMap[mimeType];
     },
+
+    mapTargetsToRanges : function(annotation) {
+        var targetRanges = [];
+        AnnotationUtil.extractTargets(annotation).forEach((target) => {
+            if (target.type === "Text") {
+                let annotationTargetRanges = TargetUtil.getTargetRanges(target)
+                targetRanges = targetRanges.concat(annotationTargetRanges);
+            }
+        });
+        return targetRanges;
+    },
+
+    /*
+     * A getTargetResources parses a single annotation target
+     * and returns any resources that are the leaves of the
+     * annotation chain (if there are annotations on annotations).
+     * Target resources that are not indexed are ignored.
+     */
+    getTargetRanges : function(target) {
+        var targetId = AnnotationUtil.extractTargetIdentifier(target);
+        if (!targetId) // target is not loaded in browser window
+            return [];
+        var source = AnnotationActions.lookupIdentifier(targetId);
+        if (source.type === "resource")
+            return [TargetUtil.makeTargetRange(target, source.data.domNode)];
+        var targetRanges = [];
+        AnnotationUtil.extractTargets(source.data).forEach((annotationTarget) => {
+            var annotationRanges = TargetUtil.getTargetRanges(annotationTarget);
+            targetRanges = targetRanges.concat(annotationRanges);
+        });
+        return targetRanges;
+    },
+
+    makeTargetRange(target, node) {
+        var targetRange = {
+            start: 0,
+            end: -1,
+            node: node
+        }
+        let textPosition = AnnotationUtil.getTextPositionSelector(target);
+        if (textPosition && textPosition.start !== undefined) {
+            targetRange.start = textPosition.start;
+            targetRange.end = textPosition.end;
+        }
+        return targetRange;
+    },
+
+    getTargetText(target, resource) {
+        // if whole resource is the target,
+        // return the text content of the correspondign node
+        if (!target.selector)
+            return resource.data.text;
+        var selector = target.selector;
+        if (target.selector.refinedBy)
+            selector = target.selector.refinedBy;
+        // if there are multiple selectors, pick any selector since they are alternatives
+        selector = Array.isArray(selector) ? selector[0] : selector;
+        if (!selector.type)
+            return null;
+        if (selector.type === "TextQuoteSelector")
+            return selector.exact;
+        if (selector.type === "TextPositionSelector")
+            return TargetUtil.getTargetRangeText(resource.data.domNode, selector.start, selector.end);
+        return null;
+    },
+
+    getTargetRangeText(node, start, end) {
+        SelectionUtil.setRDFaSelectionRange(node, start, end);
+        var selection = window.document.getSelection();
+        var text = selection.toString();
+        selection.removeAllRanges();
+        return text;
+    },
+
 }
 
 export default TargetUtil;
