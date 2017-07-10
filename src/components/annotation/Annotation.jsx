@@ -5,8 +5,8 @@ import AnnotationActions from './../../flux/AnnotationActions.js';
 import AppCollectionStore from '../../flux/CollectionStore.js';
 import FlexModal from './../FlexModal';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
-import RDFaUtil from './../../util/RDFaUtil.js';
 import SelectionUtil from './../../util/SelectionUtil.js';
+import TargetUtil from './../../util/TargetUtil.js';
 
 class Annotation extends React.Component {
     constructor(props) {
@@ -16,78 +16,7 @@ class Annotation extends React.Component {
         }
     }
     componentDidMount() {
-        this.setState({targetRanges: this.mapTargetsToRanges()});
-    }
-    mapTargetsToRanges() {
-        let component = this;
-        var targetRanges = [];
-        AnnotationUtil.extractTargets(this.props.annotation).forEach((target) => {
-            let annotationTargetRanges = component.getTargetRanges(target)
-            targetRanges = targetRanges.concat(annotationTargetRanges);
-        });
-        return targetRanges;
-    }
-    /*
-     * A getTargetResources parses a single annotation target
-     * and returns any resources that are the leaves of the
-     * annotation chain (if there are annotations on annotations).
-     * Target resources that are not indexed are ignored.
-     */
-    getTargetRanges(target) {
-        let component = this;
-        var targetId = AnnotationUtil.extractTargetIdentifier(target);
-        if (!targetId) // target is not loaded in browser window
-            return [];
-        var source = AnnotationActions.lookupIdentifier(targetId);
-        if (source.type === "resource")
-            return [component.makeTargetRange(target, source.data.domNode)];
-        var targetRanges = [];
-        AnnotationUtil.extractTargets(source.data).forEach((annotationTarget) => {
-            var annotationRanges = component.getTargetRanges(annotationTarget);
-            targetRanges = targetRanges.concat(annotationRanges);
-        });
-        return targetRanges;
-    }
-    makeTargetRange(target, node) {
-        var targetRange = {
-            start: 0,
-            end: -1,
-            node: node
-        }
-        let textPosition = AnnotationUtil.getTextPositionSelector(target);
-        if (textPosition && textPosition.start !== undefined) {
-            targetRange.start = textPosition.start;
-            targetRange.end = textPosition.end;
-        }
-        return targetRange;
-    }
-    getTargetText(target, resource) {
-        // if whole resource is the target,
-        // return the text content of the correspondign node
-        if (!target.selector)
-            return resource.data.text;
-        var selector = target.selector;
-        if (target.selector.refinedBy)
-            selector = target.selector.refinedBy;
-        // if there are multiple selectors, pick any selector since they are alternatives
-        selector = Array.isArray(selector) ? selector[0] : selector;
-        if (!selector.type)
-            return null;
-        if (selector.type === "TextQuoteSelector")
-            return selector.exact;
-        if (selector.type === "TextPositionSelector")
-            return this.getTargetRangeText(resource.data.domNode, selector.start, selector.end);
-        return null;
-    }
-    getTargetRangeText(node, start, end) {
-        SelectionUtil.setRDFaSelectionRange(node, start, end);
-        var selection = window.document.getSelection();
-        var text = selection.toString();
-        selection.removeAllRanges();
-        return text;
-    }
-    targetIsAnnotation(target) {
-        return (source.type === "annotation") ? true : false;
+        this.setState({targetRanges: TargetUtil.mapTargetsToRanges(this.props.annotation)});
     }
     canEdit() {
         return this.props.currentUser && this.props.currentUser.username === this.props.annotation.creator ? true : false;
