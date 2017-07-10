@@ -1,0 +1,109 @@
+@prefix			hi: <http://localhost:3000/vocabularies/genericontology.ttl#> .
+@prefix       foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix       skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix        owl: <http://www.w3.org/2002/07/owl#> .
+@prefix       rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix        rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix       beng: <http://data.beeldengeluid.nl/> .
+@prefix         ma: <http://www.w3.org/ns/ma-ont#>
+
+# Representation in the annotation ontology
+hi:Representation
+	a rdfs:Class;
+	rdfs:label "Representation".
+
+hi:Image
+	a rdfs:Class;
+	rdfs:label "Image representation";
+	rdfs:subClassOf hi:Representation.
+
+hi:Video
+	a rdfs:Class;
+	rdfs:label "Video representation";
+	rdfs:subClassOf hi:Representation.
+
+hi:Audio
+	a rdfs:Class;
+	rdfs:label "Audio representation";
+	rdfs:subClassOf hi:Representation.
+
+hi:Text
+	a rdfs:Class;
+	rdfs:label "Text representation";
+	rdfs:subClassOf hi:Representation.
+
+hi:Data
+	a rdfs:Class;
+	rdfs:label "Data representation";
+	rdfs:subClassOf hi:Representation.
+
+hi:hasRepresentation rdf:type owl:ObjectProperty;
+	rdfs:domain hi:CreativeWork;
+	rdfs:range hi:Representatio;
+	rdfs:label "hasRepresentation";
+	rdfs:comment "Refers to a (digital) representation of this CreativeWork";
+
+
+# B&G generic properties
+beng:Title rdf:type owl:Class ;
+	rdfs:label "Title" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:Summary rdf:type owl:Class ;
+	rdfs:label "Summary" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:Broadcaster rdf:type owl:Class ;
+	rdfs:label "Broadcaster" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:BroadcastDate rdf:type owl:Class ;
+	rdfs:label "Broadcast date" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:Genre rdf:type owl:Class ;
+	rdfs:label "Genre" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+
+# The Creative Works
+beng:Series
+	a rdfs:Class;
+	rdfs:label "B&G Series";
+	rdfs:subClassOf hi:CreativeWork;
+	hi:hasMetadataItem beng:Title;
+	hi:hasMetadataItem beng:Summary;
+	hi:hasMetadataItem beng:Broadcaster;
+	hi:hasMetadataItem beng:Genre.
+
+
+beng:Season
+	a rdfs:Class;
+	rdfs:label "B&G Season";
+	rdfs:subClassOf hi:CreativeWork;
+	hi:isPartOf beng:Series;
+	hi:hasMetadataItem beng:Title;
+	hi:hasMetadataItem beng:Summary;
+	hi:hasMetadataItem beng:Broadcaster;
+	hi:hasMetadataItem beng:Genre.
+
+beng:Program
+	a rdfs:Class;
+	rdfs:label "B&G Program";
+	rdfs:subClassOf hi:CreativeWork;
+	hi:isPartOf beng:Season;
+	hi:hasMetadataItem beng:Title;
+	hi:hasMetadataItem beng:Summary;
+	hi:hasMetadataItem beng:Broadcaster;
+	hi:hasMetadataItem beng:BroadcasterDate;
+	hi:hasMetadataItem beng:Genre;
+	hi:hasRepresentation hi:Representation.
+
+beng:Segment
+	a rdfs:Class;
+	rdfs:label "B&G Segment";
+	rdfs:subClassOf hi:CreativeWork;
+	hi:isPartOf beng:Program;
+	hi:hasMetadataItem beng:Title;
+	hi:hasMetadataItem beng:Summary;
+	hi:hasRepresentation hi:Representation.
