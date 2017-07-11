@@ -42,8 +42,8 @@ export default class CollectionCreator extends React.Component {
         this.setState({page: page});
     }
 
-    fetchPage(pageId) {
-        CollectionActions.getCollectionPage(pageId);
+    fetchPage(collection) {
+        CollectionActions.getCollectionPage(collection.last);
     }
 
     handleChange(event) {
@@ -60,7 +60,7 @@ export default class CollectionCreator extends React.Component {
         var page = null;
         if (collection.label !== undefined)
             this.setState({collectionLabel: collection.label});
-        if (collection.last !== null) {
+        if (collection.last !== undefined && collection.last !== null) {
             page = collection.last;
             CollectionActions.getCollectionPage(collection.last);
         }
@@ -86,12 +86,10 @@ export default class CollectionCreator extends React.Component {
     }
 
     addToCollection(annotation) {
-        console.log("To add:");
-        CollectionActions.addAnnotation(this.state.collection.id, annotation.id);
+        CollectionActions.addAnnotation(this.state.collection.id, annotation);
     }
 
     removeFromCollection(annotation) {
-        console.log("To remove:");
         CollectionActions.removeAnnotation(this.state.collection.id, annotation.id);
     }
 
