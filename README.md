@@ -21,12 +21,14 @@ pip install
 
 ## How to test
 
+You need the run the [Scholarly Web Annotation Server](https://github.com/marijnkoolen/scholarly-web-annotation-server) in the background for the client to function properly.
+
 Start the server:
 ```
 python resource_server.py
 ```
 
-and point your browser to `localhost:3002`
+and point your browser to `localhost:3001`
 
 ## How to modify
 
