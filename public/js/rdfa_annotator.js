@@ -24146,7 +24146,7 @@ var RDFaAnnotator =
 	            return callback(null, data);
 	        }).catch(function (error) {
 	            console.error(url, error.toString());
-	            return callback(err, null);
+	            return callback(error, null);
 	        });
 	    },
 	
@@ -24157,7 +24157,7 @@ var RDFaAnnotator =
 	
 	        // if annotation already has an id, it's an update, so PUT
 	        if (annotation.id) {
-	            url = this.annotationServer + '/annotations/annotation/' + annotation.id;
+	            url = this.annotationServer + '/annotations/' + annotation.id;
 	            method = 'PUT';
 	        }
 	
@@ -24185,7 +24185,7 @@ var RDFaAnnotator =
 	
 	    getAnnotationById: function getAnnotationById(annotationId, callback) {
 	        var status = null;
-	        var url = this.annotationServer + '/annotations/annotation/' + annotationId;
+	        var url = this.annotationServer + '/annotations/' + annotationId;
 	        var options = { method: "GET" };
 	        this.makeRequest(url, options, function (error, data) {
 	            return callback(error, data);
@@ -24240,7 +24240,7 @@ var RDFaAnnotator =
 	            var error = Error("annotation MUST have an id property");
 	            callback(error, null);
 	        }
-	        var url = this.annotationServer + '/annotations/annotation/' + annotation.id;
+	        var url = this.annotationServer + '/annotations/' + annotation.id;
 	        var options = { method: "DELETE" };
 	        this.makeRequest(url, options, function (error, data) {
 	            return callback(error, data);
@@ -24248,7 +24248,7 @@ var RDFaAnnotator =
 	    },
 	
 	    deleteAnnotationById: function deleteAnnotationById(annotationId, callback) {
-	        var url = this.annotationServer + '/annotations/annotation/' + annotationId;
+	        var url = this.annotationServer + '/annotations/' + annotationId;
 	        var options = { method: "DELETE" };
 	        this.makeRequest(url, options, function (error, data) {
 	            return callback(error, data);
@@ -24271,10 +24271,10 @@ var RDFaAnnotator =
 	        });
 	    },
 	
-	    getCollectionPage: function getCollectionPage(pageId, callback) {
-	        var url = this.annotationServer + '/pages/' + pageId;
+	    getCollectionPage: function getCollectionPage(pageURL, callback) {
+	        //let url = this.annotationServer + '/pages/' + pageId;
 	        var options = { method: "GET" };
-	        this.makeRequest(url, options, function (error, data) {
+	        this.makeRequest(pageURL, options, function (error, data) {
 	            return callback(error, data);
 	        });
 	    },
@@ -24313,9 +24313,15 @@ var RDFaAnnotator =
 	    },
 	
 	    addAnnotation: function addAnnotation(collectionId, annotation, callback) {
-	        var url = this.annotationServer + '/collections/' + collectionId + '/aannotations/';
-	        var options = { method: "POST" };
+	        var url = this.annotationServer + '/collections/' + collectionId + '/annotations/';
+	        console.log(annotation);
+	        var options = {
+	            method: "POST",
+	            headers: { "Content-Type": "application/json" },
+	            body: JSON.stringify(annotation)
+	        };
 	        this.makeRequest(url, options, function (error, data) {
+	            console.log(data);
 	            return callback(error, data);
 	        });
 	    },
@@ -61482,7 +61488,7 @@ var RDFaAnnotator =
 	            AppCollectionStore.defaultTrigger(action.eventName, action.collection);
 	            break;
 	        case 'updated-collection':
-	            AppCollectionStore.defaultTrigger(action.eventName, action.page);
+	            AppCollectionStore.defaultTrigger(action.eventName, action.collection);
 	            break;
 	        case 'default-collection':
 	            AppCollectionStore.defaultTrigger(action.eventName, action.collection);
@@ -61687,8 +61693,8 @@ var RDFaAnnotator =
 	        }
 	    }, {
 	        key: 'fetchPage',
-	        value: function fetchPage(pageId) {
-	            _CollectionActions2.default.getCollectionPage(pageId);
+	        value: function fetchPage(collection) {
+	            _CollectionActions2.default.getCollectionPage(collection.last);
 	        }
 	    }, {
 	        key: 'handleChange',
@@ -61708,7 +61714,7 @@ var RDFaAnnotator =
 	        value: function editCollection(collection) {
 	            var page = null;
 	            if (collection.label !== undefined) this.setState({ collectionLabel: collection.label });
-	            if (collection.last !== null) {
+	            if (collection.last !== undefined && collection.last !== null) {
 	                page = collection.last;
 	                _CollectionActions2.default.getCollectionPage(collection.last);
 	            }
@@ -61738,13 +61744,11 @@ var RDFaAnnotator =
 	    }, {
 	        key: 'addToCollection',
 	        value: function addToCollection(annotation) {
-	            console.log("To add:");
-	            _CollectionActions2.default.addAnnotation(this.state.collection.id, annotation.id);
+	            _CollectionActions2.default.addAnnotation(this.state.collection.id, annotation);
 	        }
 	    }, {
 	        key: 'removeFromCollection',
 	        value: function removeFromCollection(annotation) {
-	            console.log("To remove:");
 	            _CollectionActions2.default.removeAnnotation(this.state.collection.id, annotation.id);
 	        }
 	    }, {
@@ -62038,9 +62042,9 @@ var RDFaAnnotator =
 	            });
 	        });
 	    },
-	    getCollectionPage: function getCollectionPage(collectionPageId) {
-	        console.log(collectionPageId);
-	        _AnnotationAPI2.default.getCollectionPage(collectionPageId, function (error, page) {
+	    getCollectionPage: function getCollectionPage(collectionPageURL) {
+	        console.log(collectionPageURL);
+	        _AnnotationAPI2.default.getCollectionPage(collectionPageURL, function (error, page) {
 	            if (error) return null;
 	
 	            _AppDispatcher2.default.dispatch({
@@ -62049,13 +62053,13 @@ var RDFaAnnotator =
 	            });
 	        });
 	    },
-	    addAnnotation: function addAnnotation(collectionId, annotationId) {
-	        _AnnotationAPI2.default.addAnnotation(collectionId, annotationId, function (error, pageId) {
+	    addAnnotation: function addAnnotation(collectionId, annotation) {
+	        _AnnotationAPI2.default.addAnnotation(collectionId, annotation, function (error, collection) {
 	            if (error) return null;
 	
 	            _AppDispatcher2.default.dispatch({
 	                eventName: 'updated-collection',
-	                page: pageId
+	                collection: collection
 	            });
 	        });
 	    },
@@ -62156,11 +62160,11 @@ var RDFaAnnotator =
 	    }, {
 	        key: 'addAnnotation',
 	        value: function addAnnotation(annotation) {
-	            if (this.state.default) _CollectionActions2.default.addAnnotation(this.state.default, annotation.id);
+	            if (this.state.default) _CollectionActions2.default.addAnnotation(this.state.default, annotation);
 	        }
 	    }, {
 	        key: 'getCollections',
-	        value: function getCollections(pageId) {
+	        value: function getCollections() {
 	            _CollectionActions2.default.getCollections();
 	        }
 	    }, {
