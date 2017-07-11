@@ -1,0 +1,97 @@
+<html>
+
+<head>
+	<title>Scholarly annotation web client - B&amp;G AV Example</title>
+
+	<script>
+		var rawData = {{data|tojson}};
+		console.debug(rawData);
+	</script>
+
+</head>
+
+<body>
+
+	<h1>Beeld en Geluid AV test page</h1>
+
+	{% if series %}
+	<div class="annotation-target-observer"
+		vocab="http://localhost:3002/vocabularies/beng_ontology.ttl#"
+		typeof="Series"
+		about="{{series.urn}}">
+
+		<h4>Series: {{series.title}}</h4>
+		<table>
+			<tr>
+				<td>Genre:</td>
+				<td typeof="Genre" property="hasMetadataItem" resource="urn:{{season.id}}:genre">
+					{{series.genre}}
+				</td>
+			</tr>
+		</table>
+
+	</div>
+	{% endif %}
+
+	{% if season %}
+	<div class="annotation-target-observer"
+		vocab="http://localhost:3002/vocabularies/beng_ontology.ttl#"
+		typeof="Season"
+		about="{{season.urn}}">
+
+		<h4>Season: {{season.title}}</h4>
+		<table>
+			<tr>
+				<td typeof="Series" property="isPartOf" resource="urn:{{season.partOf}}">is part of</td>
+				<td>Series: {{season.partOf}}</td>
+			</tr>
+		</table>
+	</div>
+	{% endif %}
+
+	{% if program %}
+	<div class="annotation-target-observer"
+		vocab="http://localhost:3002/vocabularies/beng_ontology.ttl#"
+		typeof="Program"
+		about="{{program.urn}}"
+		>
+		<h3>{{program.title}}</h3>
+
+		{% for r in program.representations %}
+		<video>
+			<source src="{{r.source}}"/>
+		</video>
+		{% endfor %}
+
+		<table>
+			<tr>
+				<td>Summary:</td>
+				<td typeof="Summary" property="hasMetadataItem" resource="urn:{{program.id}}:summary">
+					{{program.summary}}
+				</td>
+			</tr>
+			<tr>
+				<td>Broadcaster:</td>
+				<td typeof="Broadcaster" property="hasMetadataItem" resource="urn:{{program.id}}:broadcaster">
+					{{program.broadcaster}}
+				</td>
+			</tr>
+			<tr>
+				<td typeof="BroadcastDate" property="hasMetadataItem" resource="urn:{{program.id}}:broadcastDate">Broadcast date:</td>
+				<td>{{program.broadcastDate}}</td>
+			</tr>
+			<tr>
+				<td typeof="Genre" property="hasMetadataItem" resource="urn:{{program.id}}:genre">Genre:</td>
+				<td>{{program.genre}}</td>
+			</tr>
+			<tr>
+				<td typeof="Season" property="isPartOf" resource="urn:{{program.partOf}}">is part of</td>
+				<td>Season: {{program.partOf}}</td>
+			</tr>
+		</table>
+	</div>
+	{% endif %}
+
+</body>
+
+</html>
