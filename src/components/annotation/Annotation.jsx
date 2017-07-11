@@ -93,7 +93,7 @@ class Annotation extends React.Component {
             var label;
             if (source.type === "resource") {
                 let selector = AnnotationUtil.getTextQuoteSelector(target);
-                text = selector ? selector.exact : component.getTargetText(target, source);
+                text = selector ? selector.exact : TargetUtil.getTargetText(target, source);
                 if (text.length > 40) {
                     text = text.substr(0, 37) + "...";
                 }

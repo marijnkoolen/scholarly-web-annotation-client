@@ -7,5 +7,5 @@ app.add_url_rule('/', 'root', lambda: app.send_static_file('testletter.html'))
 cors = CORS(app)
 
 if __name__ == '__main__':
-    app.run(port=int(os.environ.get("PORT", 3002)), debug=True)
+    app.run(port=int(os.environ.get("PORT", 3001)), debug=True)
 
