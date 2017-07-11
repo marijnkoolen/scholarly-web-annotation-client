@@ -1,48 +1,14 @@
-@prefix			hi: <http://localhost:3000/vocabularies/genericontology.ttl#> .
+@prefix         hi: <http://localhost:3001/vocabularies/genericontology.ttl#> .
 @prefix       foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix       skos: <http://www.w3.org/2004/02/skos/core#> .
 @prefix        owl: <http://www.w3.org/2002/07/owl#> .
 @prefix       rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix        rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix       beng: <http://data.beeldengeluid.nl/> .
-@prefix         ma: <http://www.w3.org/ns/ma-ont#>
+@prefix         ma: <http://www.w3.org/ns/ma-ont#> .
+<http://localhost:3001/vocabularies/vg> rdf:type owl:Ontology .
 
-# Representation in the annotation ontology
-hi:Representation
-	a rdfs:Class;
-	rdfs:label "Representation".
-
-hi:Image
-	a rdfs:Class;
-	rdfs:label "Image representation";
-	rdfs:subClassOf hi:Representation.
-
-hi:Video
-	a rdfs:Class;
-	rdfs:label "Video representation";
-	rdfs:subClassOf hi:Representation.
-
-hi:Audio
-	a rdfs:Class;
-	rdfs:label "Audio representation";
-	rdfs:subClassOf hi:Representation.
-
-hi:Text
-	a rdfs:Class;
-	rdfs:label "Text representation";
-	rdfs:subClassOf hi:Representation.
-
-hi:Data
-	a rdfs:Class;
-	rdfs:label "Data representation";
-	rdfs:subClassOf hi:Representation.
-
-hi:hasRepresentation rdf:type owl:ObjectProperty;
-	rdfs:domain hi:CreativeWork;
-	rdfs:range hi:Representatio;
-	rdfs:label "hasRepresentation";
-	rdfs:comment "Refers to a (digital) representation of this CreativeWork";
-
+<http://localhost:3001/vocabularies/beng_ontology.ttl>  owl:imports  <http://localhost:3001/vocabularies/genericontology.ttl>.
 
 # B&G generic properties
 beng:Title rdf:type owl:Class ;
@@ -58,7 +24,7 @@ beng:Broadcaster rdf:type owl:Class ;
 	rdfs:subClassOf hi:MetadataItem.
 
 beng:BroadcastDate rdf:type owl:Class ;
-	rdfs:label "Broadcast date" ;
+	rdfs:label "BroadcastDate" ;
 	rdfs:subClassOf hi:MetadataItem.
 
 beng:Genre rdf:type owl:Class ;
@@ -69,7 +35,7 @@ beng:Genre rdf:type owl:Class ;
 # The Creative Works
 beng:Series
 	a rdfs:Class;
-	rdfs:label "B&G Series";
+	rdfs:label "BenG_Series";
 	rdfs:subClassOf hi:CreativeWork;
 	hi:hasMetadataItem beng:Title;
 	hi:hasMetadataItem beng:Summary;
@@ -79,7 +45,7 @@ beng:Series
 
 beng:Season
 	a rdfs:Class;
-	rdfs:label "B&G Season";
+	rdfs:label "BenG_Season";
 	rdfs:subClassOf hi:CreativeWork;
 	hi:isPartOf beng:Series;
 	hi:hasMetadataItem beng:Title;
@@ -89,7 +55,7 @@ beng:Season
 
 beng:Program
 	a rdfs:Class;
-	rdfs:label "B&G Program";
+	rdfs:label "BenG_Program";
 	rdfs:subClassOf hi:CreativeWork;
 	hi:isPartOf beng:Season;
 	hi:hasMetadataItem beng:Title;
@@ -101,7 +67,7 @@ beng:Program
 
 beng:Segment
 	a rdfs:Class;
-	rdfs:label "B&G Segment";
+	rdfs:label "BenG_Segment";
 	rdfs:subClassOf hi:CreativeWork;
 	hi:isPartOf beng:Program;
 	hi:hasMetadataItem beng:Title;
