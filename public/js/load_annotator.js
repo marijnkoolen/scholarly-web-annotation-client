@@ -1,11 +1,10 @@
 document.onreadystatechange = function () {
-	if (document.readyState === "complete") {
-		console.log("document ready!");
-		loadConfig((error, config) => {
-			rdfaAnnotator = new RDFaAnnotator.RDFaAnnotator(config);
-			rdfaAnnotator.addAnnotationClient();
-		});
-	}
+    if (document.readyState === "complete") {
+        loadConfig((error, config) => {
+            rdfaAnnotator = new RDFaAnnotator.RDFaAnnotator(config);
+            rdfaAnnotator.addAnnotationClient();
+        });
+    }
 }
 
 var loadConfig = function(callback) {

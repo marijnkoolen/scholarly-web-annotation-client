@@ -22,4 +22,4 @@ def bengavexample():
 	)
 
 if __name__ == '__main__':
-    app.run(port=int(os.environ.get("PORT", 3002)), debug=True)
+    app.run(port=int(os.environ.get("PORT", 3001)), debug=True)
