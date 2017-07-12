@@ -38,7 +38,7 @@ const AnnotationAPI = {
             return callback(null, data);
         }).catch(function(error) {
             console.error(url, error.toString());
-            return callback(err, null);
+            return callback(error, null);
         });
     },
 
@@ -49,7 +49,7 @@ const AnnotationAPI = {
 
         // if annotation already has an id, it's an update, so PUT
         if(annotation.id) {
-            url = this.annotationServer + '/annotations/annotation/' + annotation.id;
+            url = this.annotationServer + '/annotations/' + annotation.id;
             method = 'PUT';
         }
 
@@ -77,7 +77,7 @@ const AnnotationAPI = {
 
     getAnnotationById : function(annotationId, callback) {
         var status = null;
-        let url = this.annotationServer + '/annotations/annotation/' + annotationId;
+        let url = this.annotationServer + '/annotations/' + annotationId;
         let options = { method: "GET" };
         this.makeRequest(url, options, (error, data) => {
             return callback(error, data);
@@ -133,7 +133,7 @@ const AnnotationAPI = {
             let error = Error("annotation MUST have an id property");
             callback(error, null);
         }
-        let url = this.annotationServer + '/annotations/annotation/' + annotation.id;
+        let url = this.annotationServer + '/annotations/' + annotation.id;
         let options = { method: "DELETE" }
         this.makeRequest(url, options, (error, data) => {
             return callback(error, data);
@@ -141,7 +141,7 @@ const AnnotationAPI = {
     },
 
     deleteAnnotationById : function (annotationId, callback) {
-        let url = this.annotationServer + '/annotations/annotation/' + annotationId;
+        let url = this.annotationServer + '/annotations/' + annotationId;
         let options = { method: "DELETE" }
         this.makeRequest(url, options, (error, data) => {
             return callback(error, data);
@@ -164,10 +164,10 @@ const AnnotationAPI = {
         });
     },
 
-    getCollectionPage : function(pageId, callback) {
-        let url = this.annotationServer + '/pages/' + pageId;
+    getCollectionPage : function(pageURL, callback) {
+        //let url = this.annotationServer + '/pages/' + pageId;
         let options = { method: "GET" }
-        this.makeRequest(url, options, (error, data) => {
+        this.makeRequest(pageURL, options, (error, data) => {
             return callback(error, data);
         });
     },
@@ -206,9 +206,15 @@ const AnnotationAPI = {
     },
 
     addAnnotation : function (collectionId, annotation, callback) {
-        let url = this.annotationServer + '/collections/' + collectionId + '/aannotations/';
-        let options = { method: "POST" };
+        let url = this.annotationServer + '/collections/' + collectionId + '/annotations/';
+        console.log(annotation);
+        let options = {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(annotation),
+        };
         this.makeRequest(url, options, (error, data) => {
+            console.log(data);
             return callback(error, data);
         });
     },

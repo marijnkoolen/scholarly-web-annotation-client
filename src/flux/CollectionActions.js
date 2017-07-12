@@ -79,9 +79,9 @@ const CollectionActions = {
         });
     },
 
-    getCollectionPage(collectionPageId) {
-        console.log(collectionPageId);
-        AnnotationAPI.getCollectionPage(collectionPageId, (error, page) => {
+    getCollectionPage(collectionPageURL) {
+        console.log(collectionPageURL);
+        AnnotationAPI.getCollectionPage(collectionPageURL, (error, page) => {
             if (error)
                 return null;
 
@@ -92,14 +92,14 @@ const CollectionActions = {
         });
     },
 
-    addAnnotation(collectionId, annotationId) {
-        AnnotationAPI.addAnnotation(collectionId, annotationId, (error, pageId) => {
+    addAnnotation(collectionId, annotation) {
+        AnnotationAPI.addAnnotation(collectionId, annotation, (error, collection) => {
             if (error)
                 return null;
 
             AppDispatcher.dispatch({
                 eventName: 'updated-collection',
-                page: pageId,
+				collection: collection
             });
         });
     },
