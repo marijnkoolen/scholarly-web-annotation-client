@@ -19,6 +19,8 @@ Install the required python packages:
 pip install
 ```
 
+For the Image annotation example, make sure to install the [OpenSeadragonSelection](https://github.com/picturae/openseadragonselection) plugin in the `public/js/` folder.
+
 ## How to test
 
 You need the run the [Scholarly Web Annotation Server](https://github.com/marijnkoolen/scholarly-web-annotation-server) in the background for the client to function properly.

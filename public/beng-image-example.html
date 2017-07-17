@@ -1,0 +1,176 @@
+<html>
+
+<head>
+    <title>Scholarly annotation web client - B&amp;G AV Example</title>
+
+    <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet" >
+    <script src="js/jquery-2.2.4.js" ></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./js/rdfa_annotator.js"></script>
+    <script type="text/javascript" src="/scripts/openseadragon/build/openseadragon/openseadragon.min.js"></script>
+    <script type="text/javascript" src="./js/openseadragonselection/dist/openseadragonselection.js"></script>
+    <script>
+        var rawData = {{data|tojson}};
+        console.debug(rawData);
+    </script>
+
+</head>
+
+<body>
+
+    <h1>Beeld en Geluid AV test page</h1>
+
+    {% if series %}
+    <div id="annotation-viewer" style="float: right; ">
+    </div>
+    <div class="annotation-target-observer"
+        vocab="http://localhost:3001/vocabularies/beng_ontology.ttl#"
+        typeof="BenG_Series"
+        about="{{series.urn}}">
+
+        <h4>Series: {{series.title}}</h4>
+        <table>
+            <tr>
+                <td>Genre:</td>
+                <td typeof="Genre" property="hasMetadataItem" resource="urn:{{season.id}}:genre">
+                    {{series.genre}}
+                </td>
+            </tr>
+        </table>
+
+    </div>
+    {% endif %}
+
+    {% if season %}
+    <div class="annotation-target-observer"
+        vocab="http://localhost:3001/vocabularies/beng_ontology.ttl#"
+        typeof="BenG_Season"
+        about="{{season.urn}}">
+
+        <h4>Season: {{season.title}}</h4>
+        <table>
+            <tr>
+                <td typeof="BenG_Series" property="isPartOf" resource="urn:{{season.partOf}}">is part of</td>
+                <td>Series: {{season.partOf}}</td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if program %}
+    <div class="annotation-target-observer"
+        vocab="http://localhost:3001/vocabularies/beng_ontology.ttl#"
+        typeof="BenG_Program"
+        about="{{program.urn}}"
+        >
+        <h3>{{program.title}}</h3>
+
+        <div id="image-viewer" resource="urn:{{program.id}}:thumbnail" typeof="Image" property="hasRepresentation" style="width: 480px; height=320px;"></div>
+
+        <table>
+            <tr>
+                <td>Summary:</td>
+                <td typeof="Summary" property="hasMetadataItem" resource="urn:{{program.id}}:summary">
+                    {{program.summary}}
+                </td>
+            </tr>
+            <tr>
+                <td>Broadcaster:</td>
+                <td typeof="Broadcaster" property="hasMetadataItem" resource="urn:{{program.id}}:broadcaster">
+                    {{program.broadcaster}}
+                </td>
+            </tr>
+            <tr>
+                <td typeof="BroadcastDate" property="hasMetadataItem" resource="urn:{{program.id}}:broadcastDate">Broadcast date:</td>
+                <td>{{program.broadcastDate}}</td>
+            </tr>
+            <tr>
+                <td typeof="Genre" property="hasMetadataItem" resource="urn:{{program.id}}:genre">Genre:</td>
+                <td>{{program.genre}}</td>
+            </tr>
+            <tr>
+                <td typeof="BenG_Season" property="isPartOf" resource="urn:{{program.partOf}}">is part of</td>
+                <td>Season: {{program.partOf}}</td>
+            </tr>
+        </table>
+    </div>
+    {% endif %}
+
+    <script type="text/javascript">
+        document.onreadystatechange = function () {
+            if (document.readyState === "complete") {
+                loadConfig((error, config) => {
+                    rdfaAnnotator = new RDFaAnnotator.RDFaAnnotator(config);
+                    rdfaAnnotator.addAnnotationClient();
+                });
+            }
+        }
+
+        var loadConfig = function(callback) {
+            fetch("beng-annotation-config.json", {
+                method: "GET"
+            }).then(function(response) {
+                return response.json();
+            }).then(function(config) {
+                console.log("loading custom configuration");
+                return callback(null, config);
+            }).catch(function(error) {
+                return callback(error, null);
+            });
+        }
+
+    </script>
+    <script type="text/javascript">
+        var viewer = OpenSeadragon({
+            panHorizontal: false,
+            panVertical: false,
+            defaultZoomLevel: 1,
+            minZoomLevel: 1,
+            maxZoomLevel: 1,
+            id: "image-viewer",
+            prefixUrl: "/js/openseadragon/images/",
+            tileSources: {
+                type: "image",
+                buildPyramid: false,
+                url: "https://i.ytimg.com/vi/8wvJZxpVrdU/maxresdefault.jpg"
+            }
+        });
+        viewer.addHandler('canvas-click', function(target, info) {
+            var rect = viewer.viewport.imageToViewportRectangle(coords.x, coords.y, coords.w, coords.h);
+            if (overlay) {
+                viewer.removeOverlay("runtime-overlay");
+            } else {
+                var elt = document.createElement("div");
+                elt.id = "runtime-overlay";
+                elt.className = "highlight";
+                viewer.addOverlay({
+                    element: elt,
+                    location: rect
+                });
+                console.log("adding overlay");
+            }
+            overlay = !overlay;
+            var webPoint = target.position;
+            var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+            var imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+            console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
+        })
+        var overlay = false;
+        var coords = {};
+        var selection = viewer.selection({
+            returnPixelCoordinates: true,
+            onSelection: (rect) => {
+                coords = {
+                    x: rect.x,
+                    y: rect.y,
+                    w: rect.width,
+                    h: rect.height
+                }
+                let element = rect.eventSource.container.parentElement;
+                rdfaAnnotator.setImageSelection(element, coords);
+            }
+        })
+    </script>
+</body>
+
+</html>

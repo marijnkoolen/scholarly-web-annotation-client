@@ -41,6 +41,7 @@
     "jsx-loader": "^0.13.2",
     "mocha": "^3.2.0",
     "n3": "^0.9.0",
+    "openseadragon": "^2.3.0",
     "rdflib": "^0.13.0",
     "react": "^15.3.2",
     "react-bootstrap": "^0.30.5",
