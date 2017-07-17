@@ -30,7 +30,17 @@ Start the server:
 python resource_server.py
 ```
 
-and point your browser to `localhost:3001`
+### Testing text annotation
+
+Point your browser to `localhost:3001` to try a test letter.
+
+### Testing Image annotation
+
+Point your browser to `localhost:3001/beng-image-example`.
+
+### Testing Video annotation
+
+Point your browser to `localhost:3001/beng-av-example`.
 
 ## How to modify
 
