@@ -15,6 +15,8 @@ import DOMUtil from './DOMUtil.js';
 
 const SelectionUtil = {
 
+    currentSelection : null,
+
     makeEditableAndHighlight : function(colour) {
         var sel = window.getSelection();
         if (sel.rangeCount && sel.getRangeAt) {
@@ -109,31 +111,48 @@ const SelectionUtil = {
         }
     },
 
+    setImageSelection : function(element, coords) {
+        console.log("setting image selection");
+        SelectionUtil.currentSelection = {
+            startNode: element,
+            endNode: element,
+            coords: coords,
+            mimeType: "image"
+        }
+    },
+
+    updateSelection : function() {
+        console.log("setting text selection");
+        var selection = document.getSelection();
+        if (selection.isCollapsed) {
+            let observerNodes = DOMUtil.getObserverNodes();
+            SelectionUtil.currentSelection = {
+                startNode: observerNodes[0],
+                endNode: observerNodes[observerNodes.length - 1],
+                mimeType: "multipart" // TODO: FIX based on actual content
+            }
+        }
+        else {
+            let position = selection.anchorNode.compareDocumentPosition(selection.focusNode);
+            let backwards = position & Node.DOCUMENT_POSITION_PRECEDING;
+            if (position === 0 && selection.anchorOffset > selection.focusOffset)
+                backwards = 1;
+            SelectionUtil.currentSelection = {
+                startNode: backwards ? selection.focusNode : selection.anchorNode,
+                startOffset: backwards ? selection.focusOffset : selection.anchorOffset,
+                endNode: backwards ? selection.anchorNode : selection.focusNode,
+                endOffset: backwards ? selection.anchorOffset : selection.focusOffset,
+                selectionText: selection.toString(),
+                mimeType: "text"
+            };
+        }
+    },
 
     // Find nodes and offsets corresponding to the selection.
     // Start node is always before end node in presentation order
     // regardless of whether selection is done forwards or backwards.
     getStartEndSelection : function() {
-        var selection = document.getSelection();
-        if (selection.isCollapsed) {
-            let observerNodes = DOMUtil.getObserverNodes();
-            return {
-                startNode: observerNodes[0],
-                endNode: observerNodes[observerNodes.length - 1]
-            }
-        }
-        let position = selection.anchorNode.compareDocumentPosition(selection.focusNode);
-        let backwards = position & Node.DOCUMENT_POSITION_PRECEDING;
-        if (position === 0 && selection.anchorOffset > selection.focusOffset)
-            backwards = 1;
-        return {
-            startNode: backwards ? selection.focusNode : selection.anchorNode,
-            startOffset: backwards ? selection.focusOffset : selection.anchorOffset,
-            endNode: backwards ? selection.anchorNode : selection.focusNode,
-            endOffset: backwards ? selection.anchorOffset : selection.focusOffset,
-            selectionText: selection.toString(),
-            mimeType: "text"
-        };
+        return SelectionUtil.currentSelection;
     },
 
     checkSelectionRange : function() {

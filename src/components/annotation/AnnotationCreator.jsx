@@ -33,11 +33,12 @@ class AnnotationCreator extends React.Component {
     }
 
     selectCandidates() {
-        let candidateResources = TargetUtil.getCandidateRDFaTargets(this.props.config.defaults.target);
-        let candidateAnnotations = TargetUtil.selectCandidateAnnotations(this.state.annotations, candidateResources.highlighted);
+        console.log(this.props.config.defaults);
+        let candidates = TargetUtil.getCandidates(this.state.annotations, this.props.config.defaults.target);
         this.setState({
-            candidateAnnotations: candidateAnnotations,
-            candidateResources: candidateResources,
+            candidates: candidates,
+            candidateAnnotations: candidates.annotation,
+            candidateResources: candidates.resource,
             showModal: true,
             creator: "target",
             selected: []
@@ -59,6 +60,7 @@ class AnnotationCreator extends React.Component {
                 createAnnotation={this.createAnnotation.bind(this)}
                 candidateResources={this.state.candidateResources}
                 candidateAnnotations={this.state.candidateAnnotations}
+                candidates={this.state.candidates}
                 annotations={this.state.annotations}
                 defaultTargets={this.props.config.defaults.target}
             />

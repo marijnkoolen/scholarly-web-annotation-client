@@ -26,6 +26,7 @@ export class RDFaAnnotator {
     addAnnotationClient() {
         var observerTargets = document.getElementsByClassName("annotation-target-observer");
         this.startObserver(observerTargets);
+        this.setSelectionListener();
         this.setAnnotationAttributes(observerTargets);
         ReactDOM.render(
             <AnnotationClient
@@ -78,6 +79,16 @@ export class RDFaAnnotator {
             observer.observe(observerTargets[index], observerConfig);
         }
 
+    }
+
+    setSelectionListener() {
+        document.addEventListener("selectionchange", function() {
+            SelectionUtil.updateSelection();
+        });
+    }
+
+    setImageSelection(element, coords) {
+        SelectionUtil.setImageSelection(element, coords);
     }
 
     resourcesChanged() {

@@ -66,11 +66,15 @@ const TargetUtil = {
     },
 
     findHighlighted : function(container, selection) {
-        if (selection.selectionText.length === 0) {
-            return false;
+        if (selection.mimeType === "text") {
+            if (selection.selectionText.length === 0) {
+                return false;
+            }
+            var params = this.makeTextPositionParams(container, selection);
+            this.makeTextQuoteParams(container, params);
+        } else if (selection.mimeType === "image") {
+            var params = selection.coords;
         }
-        var params = this.makeTextPositionParams(container, selection);
-        this.makeTextQuoteParams(container, params);
         return {
             node: container.node,
             mimeType: selection.mimeType,
@@ -106,7 +110,7 @@ const TargetUtil = {
             return {
                 node: node,
                 type: "resource",
-                mimeType: "text",
+                mimeType: "multipart", // TODO - fix based on actual content
                 params: {
                     text: RDFaUtil.getRDFaTextContent(node)
                 },
@@ -117,6 +121,12 @@ const TargetUtil = {
     },
 
     // Return all potential annotation targets.
+    getCandidates : function(annotations, defaultTargets) {
+        let candidateResources = TargetUtil.getCandidateRDFaTargets(defaultTargets);
+        let candidateAnnotations = TargetUtil.selectCandidateAnnotations(annotations, candidateResources.highlighted);
+        return {resource: candidateResources, annotation: candidateAnnotations};
+    },
+
     // Annotation targets are elements containing
     // or contained in the selected passage.
     getCandidateRDFaTargets : function(defaultTargets) {
@@ -128,7 +138,7 @@ const TargetUtil = {
         let smallerNodes = TargetUtil.getRDFaCandidates(selectionNodes);
         var wholeNodes = biggerNodes.concat(smallerNodes);
         var highlighted = null;
-        if (selection.startOffset !== undefined) {
+        if (selection.startOffset !== undefined || selection.coords !== undefined) {
             let container = biggerNodes[biggerNodes.length - 1];
             highlighted = TargetUtil.findHighlighted(container, selection);
         }

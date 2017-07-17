@@ -54,11 +54,8 @@ export default class TargetSelector extends React.Component {
                 )
         }, this)
 
-        var tabContents = this.state.candidateTypes.map(function(candidateType) {
-            var candidates = this.props.candidateResources;
-            if (candidateType === "annotation") {
-                candidates = this.props.candidateAnnotations;
-            }
+        var tabContents = this.state.candidateTypes.map((candidateType) => {
+            var candidates = this.props.candidates[candidateType];
             return (
                 <div
                     key={candidateType + '__tab_content'}
