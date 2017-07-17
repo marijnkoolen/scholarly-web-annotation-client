@@ -26,17 +26,20 @@ hi:CreativeWork rdf:type owl:Class ;
 hi:Representation rdf:type owl:Class ;
 	rdfs:label "Representation" ;
 	rdfs:subClassOf hi:AnnotatableThing .
+hi:TextBearer rdf:type owl:Class ;
+	rdfs:label "TextBearer" ;
+	rdfs:subClassOf hi:AnnotatableThing .
 hi:Text rdf:type owl:Class ;
 	rdfs:label "Text" ;
 	rdfs:subClassOf hi:Representation .
 hi:Video rdf:type owl:Class ;
-	rdfs:label "VideoBearer" ;
+	rdfs:label "Video" ;
 	rdfs:subClassOf hi:Representation .
 hi:Image rdf:type owl:Class ;
-	rdfs:label "ImageBearer" ;
+	rdfs:label "Image" ;
 	rdfs:subClassOf hi:Representation .
 hi:Data rdf:type owl:Class ;
-	rdfs:label "DataBearer" ;
+	rdfs:label "Data" ;
 	rdfs:subClassOf hi:Representation .
 hi:Enrichment rdf:type owl:Class ;
 	rdfs:label "Enrichment" ;
