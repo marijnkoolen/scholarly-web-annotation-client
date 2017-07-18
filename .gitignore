@@ -4,8 +4,8 @@ npm-debug.log
 *.pyc
 
 #ignore generated js
-rdfa_annotator.js
-rdfa_annotator.js.map
+scholarly-web-annotator.js
+scholarly-web-annotator.js.map
 node_modules
 
 # specific ignore
@@ -19,6 +19,8 @@ public/video.html
 
 public/js/delpher_searcher.js
 public/js/delpher_searcher.js.map
+public/js/openseadragon/
+public/js/openseadragonselection/
 
 #never commit real settings
 settings.py
