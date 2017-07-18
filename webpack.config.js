@@ -4,9 +4,9 @@ module.exports = {
     entry: "./src/main.jsx",
     output: {
         path: path.join(__dirname, "public/js"),
-        filename: "rdfa_annotator.js",
+        filename: "scholarly-web-annotator.js",
 		libraryTarget: "var",
-		library: "RDFaAnnotator"
+		library: "ScholarlyWebAnnotator"
     },
 	devtool: 'inline-source-map',
     module: {

@@ -1,5 +1,4 @@
 /*
- *
  * Taken from http://jsfiddle.net/8mdX4/1211/
  * See stackoverflow discussion: http://stackoverflow.com/questions/6240139/highlight-text-range-using-javascript
  * Originally created by Tim Down
@@ -118,6 +117,26 @@ const SelectionUtil = {
             endNode: element,
             coords: coords,
             mimeType: "image"
+        }
+    },
+
+    setAudioSelection : function(element, interval) {
+        console.log("setting audio selection");
+        SelectionUtil.currentSelection = {
+            startNode: element,
+            endNode: element,
+            interval: interval,
+            mimeType: "audio"
+        }
+    },
+
+    setVideoSelection : function(element, interval) {
+        console.log("setting video selection");
+        SelectionUtil.currentSelection = {
+            startNode: element,
+            endNode: element,
+            interval: interval,
+            mimeType: "video"
         }
     },
 

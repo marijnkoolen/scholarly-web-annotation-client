@@ -1,3 +1,10 @@
+/*
+ *
+ * Creators:
+ *   - Marijn Koolen (Huygens ING, Royal Netherlands Academy of Arts and Sciences)
+ *   - Jaap Blom (Netherlands Institute for Sound and Vision)
+ *
+ */
 
 'use strict'
 
@@ -12,7 +19,7 @@ import AnnotationActions from './flux/AnnotationActions.js';
 import CollectionActions from './flux/CollectionActions.js';
 import AppAnnotationStore from './flux/AnnotationStore.js';
 
-export class RDFaAnnotator {
+export class ScholarlyWebAnnotator {
 
     constructor(configuration) {
         if (!configuration)
@@ -89,6 +96,14 @@ export class RDFaAnnotator {
 
     setImageSelection(element, coords) {
         SelectionUtil.setImageSelection(element, coords);
+    }
+
+    setAudioselection(element, interval) {
+        SelectionUtil.setAudioSelection(element, interval);
+    }
+
+    setVideoselection(element, interval) {
+        SelectionUtil.setVideoSelection(element, interval);
     }
 
     resourcesChanged() {
