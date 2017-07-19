@@ -110,18 +110,61 @@ const SelectionUtil = {
         }
     },
 
-    setImageSelection : function(element, coords) {
+    checkDOMElement : (element) => {
+        if (element === undefined)
+            throw Error("argument 'element' is required.")
+        if (!(element instanceof Element) || !document.contains(element))
+            throw Error("element must be a DOM element.")
+        return true;
+    },
+
+    checkRectangle : (rect) => {
+        if (rect === undefined)
+            throw Error("argument 'rect' is required.")
+        if (!(rect instanceof Object))
+            throw Error("rect should be an object with properties: x, y, w, h.");
+        let keys = Object.keys(rect);
+        ["x", "y", "w", "h"].forEach((prop) => {
+            if (!keys.includes(prop))
+                throw Error("rect is missing required property " + prop + ".");
+            if (!Number.isInteger(rect[prop]))
+                throw Error("rect property " + prop + " is not an integer.");
+        });
+        return true;
+    },
+
+    checkInterval : (interval) => {
+        if (interval === undefined)
+            throw Error("argument 'interval' is required.")
+        if (!(interval instanceof Object))
+            throw Error("interval should be an object with properties: start, end.");
+        let keys = Object.keys(interval);
+        ["start", "end"].forEach((prop) => {
+            if (!keys.includes(prop))
+                throw Error("interval is missing required property " + prop + ".");
+            if (!Number.isInteger(interval[prop]))
+                throw Error("interval property " + prop + " is not an integer.");
+        });
+        return true;
+    },
+
+    setImageSelection : function(element, rect) {
         console.log("setting image selection");
+        console.log(rect);
+        SelectionUtil.checkDOMElement(element);
+        SelectionUtil.checkRectangle(rect);
         SelectionUtil.currentSelection = {
             startNode: element,
             endNode: element,
-            coords: coords,
+            rect: rect,
             mimeType: "image"
         }
     },
 
     setAudioSelection : function(element, interval) {
         console.log("setting audio selection");
+        SelectionUtil.checkDOMElement(element);
+        SelectionUtil.checkInterval(interval);
         SelectionUtil.currentSelection = {
             startNode: element,
             endNode: element,
@@ -132,6 +175,8 @@ const SelectionUtil = {
 
     setVideoSelection : function(element, interval) {
         console.log("setting video selection");
+        SelectionUtil.checkDOMElement(element);
+        SelectionUtil.checkInterval(interval);
         SelectionUtil.currentSelection = {
             startNode: element,
             endNode: element,
@@ -170,7 +215,7 @@ const SelectionUtil = {
     // Find nodes and offsets corresponding to the selection.
     // Start node is always before end node in presentation order
     // regardless of whether selection is done forwards or backwards.
-    getStartEndSelection : function() {
+    getCurrentSelection : function() {
         return SelectionUtil.currentSelection;
     },
 
@@ -180,17 +225,17 @@ const SelectionUtil = {
             return null;
         }
         // 2. get start and end nodes of selection in display order
-        var selection = SelectionUtil.getStartEndSelection();
+        var selection = SelectionUtil.getCurrentSelection();
         // 3. if selection start node has SelectWholeElement property
         let startNode = SelectionUtil.selectWholeElement(selection.startNode)
         let endNode = SelectionUtil.selectWholeElement(selection.endNode)
-        if (startNode) {
+        if (selection.startOffset !== undefined && startNode) {
             // move selection to start of start node
             selection.startOffset = 0;
             selection.startNode = startNode;
         }
         // 4. if selection end node has SelectWholeElement property
-        if (endNode) {
+        if (selection.endOffest !== undefined && endNode) {
             // move selection to end of end node
             let textNodes = DOMUtil.getTextNodes(DOMUtil.getDescendants(endNode));
             selection.endNode = textNodes[textNodes.length - 1];
