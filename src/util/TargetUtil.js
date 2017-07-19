@@ -66,14 +66,17 @@ const TargetUtil = {
     },
 
     findHighlighted : function(container, selection) {
+        var params = null;
         if (selection.mimeType === "text") {
             if (selection.selectionText.length === 0) {
                 return false;
             }
-            var params = this.makeTextPositionParams(container, selection);
+            params = this.makeTextPositionParams(container, selection);
             this.makeTextQuoteParams(container, params);
         } else if (selection.mimeType === "image") {
-            var params = selection.coords;
+            if (selection.rect !== undefined) {
+                params = {rect: selection.rect};
+            }
         }
         return {
             node: container.node,
@@ -130,7 +133,7 @@ const TargetUtil = {
     // Annotation targets are elements containing
     // or contained in the selected passage.
     getCandidateRDFaTargets : function(defaultTargets) {
-        var selection = SelectionUtil.getStartEndSelection();
+        var selection = SelectionUtil.getCurrentSelection();
         var ancestors = DOMUtil.findCommonAncestors(selection.startNode, selection.endNode);
         selection.containerNode = ancestors[ancestors.length - 1];
         var biggerNodes = TargetUtil.getRDFaCandidates(ancestors);
@@ -138,7 +141,7 @@ const TargetUtil = {
         let smallerNodes = TargetUtil.getRDFaCandidates(selectionNodes);
         var wholeNodes = biggerNodes.concat(smallerNodes);
         var highlighted = null;
-        if (selection.startOffset !== undefined || selection.coords !== undefined) {
+        if (selection.startOffset !== undefined || selection.rect !== undefined) {
             let container = biggerNodes[biggerNodes.length - 1];
             highlighted = TargetUtil.findHighlighted(container, selection);
         }
@@ -262,40 +265,42 @@ const TargetUtil = {
         return TargetUtil.mimeTypeMap[mimeType];
     },
 
-    mapTargetsToRanges : function(annotation) {
-        var targetRanges = [];
+    mapTargetsToDOMElements : function(annotation) {
+        var domTargets = [];
         AnnotationUtil.extractTargets(annotation).forEach((target) => {
-            if (target.type === "Text") {
-                let annotationTargetRanges = TargetUtil.getTargetRanges(target)
-                targetRanges = targetRanges.concat(annotationTargetRanges);
+            var targetId = AnnotationUtil.extractTargetIdentifier(target);
+            if (!targetId) // target is not loaded in browser window
+                return [];
+            var source = AnnotationActions.lookupIdentifier(targetId);
+            var targetResources = [];
+            if (source.type === "annotation"){
+                AnnotationUtil.extractTargets(source.data).forEach((target) => {
+                    domTargets = domTargets.concat(TargetUtil.mapTargetsToDOMElements(target));
+                });
+            } else {
+                if (target.type === "Text") {
+                    domTargets = domTargets.push(TargetUtil.makeTextRange(target, source.data.domNode));
+                } else if (target.type === "Image") {
+                    domTargets = domTargets.push(TargetUtil.makeImageRegion(target, source.data.domNode));
+                }
             }
         });
-        return targetRanges;
+        return domTargets;
     },
 
-    /*
-     * A getTargetResources parses a single annotation target
-     * and returns any resources that are the leaves of the
-     * annotation chain (if there are annotations on annotations).
-     * Target resources that are not indexed are ignored.
-     */
-    getTargetRanges : function(target) {
-        var targetId = AnnotationUtil.extractTargetIdentifier(target);
-        if (!targetId) // target is not loaded in browser window
-            return [];
-        var source = AnnotationActions.lookupIdentifier(targetId);
-        if (source.type === "resource")
-            return [TargetUtil.makeTargetRange(target, source.data.domNode)];
-        var targetRanges = [];
-        AnnotationUtil.extractTargets(source.data).forEach((annotationTarget) => {
-            var annotationRanges = TargetUtil.getTargetRanges(annotationTarget);
-            targetRanges = targetRanges.concat(annotationRanges);
-        });
-        return targetRanges;
+    makeImageRegion : function(target, node) {
+        var imageRegion = {
+            type: "Image",
+            node: node
+        }
+        if (target.selector !== undefined && target.selector !== null)
+            imageRegion.rect = target.selector.rect
+        return imageRegion;
     },
 
-    makeTargetRange(target, node) {
+    makeTextRange(target, node) {
         var targetRange = {
+            type: "Text",
             start: 0,
             end: -1,
             node: node
