@@ -13,6 +13,11 @@
         var rawData = {{data|tojson}};
         console.debug(rawData);
     </script>
+    <style>
+        .highlight {
+            border: 2px solid red;
+        }
+    </style>
 
 </head>
 
@@ -65,31 +70,32 @@
         >
         <h3>{{program.title}}</h3>
 
-        <div id="image-viewer" resource="urn:{{program.id}}:thumbnail" typeof="Image" property="hasRepresentation" style="width: 480px; height=320px;"></div>
+        <div id="image-viewer1" resource="{{program.urn}}:thumbnail.1" typeof="Image" property="hasRepresentation" style="width: 480px; height=320px;"></div>
+        <div id="image-viewer2" resource="{{program.urn}}:thumbnail.2" typeof="Image" property="hasRepresentation" style="width: 480px; height=320px;"></div>
 
         <table>
             <tr>
                 <td>Summary:</td>
-                <td typeof="Summary" property="hasMetadataItem" resource="urn:{{program.id}}:summary">
+                <td typeof="Summary" property="hasMetadataItem" resource="{{program.urn}}:summary">
                     {{program.summary}}
                 </td>
             </tr>
             <tr>
                 <td>Broadcaster:</td>
-                <td typeof="Broadcaster" property="hasMetadataItem" resource="urn:{{program.id}}:broadcaster">
+                <td typeof="Broadcaster" property="hasMetadataItem" resource="{{program.urn}}:broadcaster">
                     {{program.broadcaster}}
                 </td>
             </tr>
             <tr>
-                <td typeof="BroadcastDate" property="hasMetadataItem" resource="urn:{{program.id}}:broadcastDate">Broadcast date:</td>
+                <td typeof="BroadcastDate" property="hasMetadataItem" resource="{{program.urn}}:broadcastDate">Broadcast date:</td>
                 <td>{{program.broadcastDate}}</td>
             </tr>
             <tr>
-                <td typeof="Genre" property="hasMetadataItem" resource="urn:{{program.id}}:genre">Genre:</td>
+                <td typeof="Genre" property="hasMetadataItem" resource="{{program.urn}}:genre">Genre:</td>
                 <td>{{program.genre}}</td>
             </tr>
             <tr>
-                <td typeof="BenG_Season" property="isPartOf" resource="urn:{{program.partOf}}">is part of</td>
+                <td typeof="BenG_Season" property="isPartOf" resource="{{program.partOf}}">is part of</td>
                 <td>Season: {{program.partOf}}</td>
             </tr>
         </table>
@@ -121,13 +127,15 @@
 
     </script>
     <script type="text/javascript">
-        var viewer = OpenSeadragon({
+        OpenSeadragon.setString('Tooltips.SelectionToggle', 'Toggle selection');
+        OpenSeadragon.setString('Tooltips.SelectionConfirm', 'Confirm selection');
+        var viewer1 = OpenSeadragon({
             panHorizontal: false,
             panVertical: false,
             defaultZoomLevel: 1,
             minZoomLevel: 1,
             maxZoomLevel: 1,
-            id: "image-viewer",
+            id: "image-viewer1",
             prefixUrl: "/js/openseadragon/images/",
             tileSources: {
                 type: "image",
@@ -135,41 +143,85 @@
                 url: "https://i.ytimg.com/vi/8wvJZxpVrdU/maxresdefault.jpg"
             }
         });
-        viewer.addHandler('canvas-click', function(target, info) {
-            var rect = viewer.viewport.imageToViewportRectangle(coords.x, coords.y, coords.w, coords.h);
-            if (overlay) {
-                viewer.removeOverlay("runtime-overlay");
+        var viewer2 = OpenSeadragon({
+            panHorizontal: false,
+            panVertical: false,
+            defaultZoomLevel: 1,
+            minZoomLevel: 1,
+            maxZoomLevel: 1,
+            id: "image-viewer2",
+            prefixUrl: "/js/openseadragon/images/",
+            tileSources: {
+                type: "image",
+                buildPyramid: false,
+                url: "https://i.ytimg.com/vi/mnW3Wm5LnaI/maxresdefault.jpg"
+            }
+        });
+        var overlay1 = false;
+        var overlay2 = false;
+        viewer1.addHandler('toggle-image-annotation-overlay', function(element, coords) {
+            var rect = viewer1.viewport.imageToViewportRectangle(coords.x, coords.y, coords.w, coords.h);
+            if (overlay1) {
+                viewer1.removeOverlay("runtime-overlay");
             } else {
                 var elt = document.createElement("div");
                 elt.id = "runtime-overlay";
                 elt.className = "highlight";
-                viewer.addOverlay({
+                viewer1.addOverlay({
                     element: elt,
                     location: rect
                 });
-                console.log("adding overlay");
+                console.log("adding overlay in viewer 1");
             }
-            overlay = !overlay;
-            var webPoint = target.position;
-            var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
-            var imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
-            console.log(webPoint.toString(), viewportPoint.toString(), imagePoint.toString());
-        })
-        var overlay = false;
-        var coords = {};
-        var selection = viewer.selection({
+            overlay1 = !overlay1;
+        });
+        viewer2.addHandler('toggle-image-annotation-overlay', function(element, coords) {
+            if (element !== document.getElementById("image-viewer2")) {
+                return false;
+            }
+            var rect = viewer2.viewport.imageToViewportRectangle(coords.x, coords.y, coords.w, coords.h);
+            if (overlay2) {
+                viewer2.removeOverlay("runtime-overlay");
+            } else {
+                var elt = document.createElement("div");
+                elt.id = "runtime-overlay";
+                elt.className = "highlight";
+                viewer2.addOverlay({
+                    element: elt,
+                    location: rect
+                });
+                console.log("adding overlay in viewer 2");
+            }
+            overlay2 = !overlay2;
+        });
+        viewer1.selection({
             returnPixelCoordinates: true,
             onSelection: (rect) => {
-                coords = {
+                let coords = {
                     x: rect.x,
                     y: rect.y,
                     w: rect.width,
                     h: rect.height
                 }
                 let element = rect.eventSource.container.parentElement;
-                rdfaAnnotator.setImageSelection(element, coords);
+                console.log("setting image selection");
+                annotator.setImageSelection(element, coords);
             }
-        })
+        });
+        viewer2.selection({
+            returnPixelCoordinates: true,
+            onSelection: (rect) => {
+                let coords = {
+                    x: rect.x,
+                    y: rect.y,
+                    w: rect.width,
+                    h: rect.height
+                }
+                let element = rect.eventSource.container.parentElement;
+                annotator.setImageSelection(element, coords);
+                console.log("setting image selection");
+            }
+        });
     </script>
 </body>
 
