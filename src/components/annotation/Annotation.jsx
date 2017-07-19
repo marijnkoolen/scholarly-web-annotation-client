@@ -16,7 +16,7 @@ class Annotation extends React.Component {
         }
     }
     componentDidMount() {
-        this.setState({targetRanges: TargetUtil.mapTargetsToRanges(this.props.annotation)});
+        this.setState({targetRanges: TargetUtil.mapTargetsToDOMElements(this.props.annotation)});
     }
     canEdit() {
         return this.props.currentUser && this.props.currentUser.username === this.props.annotation.creator ? true : false;
@@ -92,8 +92,11 @@ class Annotation extends React.Component {
             var text = "";
             var label;
             if (source.type === "resource") {
-                let selector = AnnotationUtil.getTextQuoteSelector(target);
-                text = selector ? selector.exact : TargetUtil.getTargetText(target, source);
+                if (target.type === "Text") {
+                    let selector = AnnotationUtil.getTextQuoteSelector(target);
+                    text = selector ? selector.exact : TargetUtil.getTargetText(target, source);
+                } else if (target.type === "Image") {
+                }
                 if (text.length > 40) {
                     text = text.substr(0, 37) + "...";
                 }

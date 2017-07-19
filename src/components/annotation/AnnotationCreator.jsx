@@ -18,7 +18,7 @@ class AnnotationCreator extends React.Component {
         this.state = {
             showModal: null,
             annotations: [],
-            creator: null
+            create: null
         }
     }
 
@@ -33,14 +33,11 @@ class AnnotationCreator extends React.Component {
     }
 
     selectCandidates() {
-        console.log(this.props.config.defaults);
         let candidates = TargetUtil.getCandidates(this.state.annotations, this.props.config.defaults.target);
         this.setState({
             candidates: candidates,
-            candidateAnnotations: candidates.annotation,
-            candidateResources: candidates.resource,
             showModal: true,
-            creator: "target",
+            create: "target",
             selected: []
         });
     }
@@ -48,18 +45,16 @@ class AnnotationCreator extends React.Component {
         this.setState({showModal: false});
     }
     editAnnotationBody(annotation) {
-        this.setState({ editAnnotation: annotation, showModal: true, creator: "body" });
+        this.setState({ editAnnotation: annotation, showModal: true, create: "body" });
     }
     createAnnotation(annotationTargets) {
-        var annotation = AnnotationUtil.generateW3CAnnotation(this.props.currentUser.username, annotationTargets);
+        var annotation = AnnotationUtil.generateW3CAnnotation(annotationTargets, this.props.currentUser.username);
         this.editAnnotationBody(annotation);
     }
     render() {
         let targetCreator = (
             <TargetCreator
                 createAnnotation={this.createAnnotation.bind(this)}
-                candidateResources={this.state.candidateResources}
-                candidateAnnotations={this.state.candidateAnnotations}
                 candidates={this.state.candidates}
                 annotations={this.state.annotations}
                 defaultTargets={this.props.config.defaults.target}
@@ -74,7 +69,7 @@ class AnnotationCreator extends React.Component {
                 hideAnnotationForm={this.onHide.bind(this)}
             />
         )
-        let creator = this.state.creator === "target" ? targetCreator : bodyCreator;
+        let creator = this.state.create === "target" ? targetCreator : bodyCreator;
         return (
             <div>
                 {this.props.currentUser ?

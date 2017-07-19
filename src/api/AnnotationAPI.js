@@ -122,7 +122,9 @@ const AnnotationAPI = {
                     }
                 });
                 if (data === []) {
-                    return callback(null, annotations);
+                    if (targetIndex === targetIds.length - 1) {
+                        return callback(null, annotations);
+                    }
                 }
             });
         });
@@ -207,14 +209,12 @@ const AnnotationAPI = {
 
     addAnnotation : function (collectionId, annotation, callback) {
         let url = this.annotationServer + '/collections/' + collectionId + '/annotations/';
-        console.log(annotation);
         let options = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(annotation),
         };
         this.makeRequest(url, options, (error, data) => {
-            console.log(data);
             return callback(error, data);
         });
     },

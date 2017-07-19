@@ -95,6 +95,7 @@ export class ScholarlyWebAnnotator {
     }
 
     setImageSelection(element, coords) {
+        console.log("setting image selection");
         SelectionUtil.setImageSelection(element, coords);
     }
 
