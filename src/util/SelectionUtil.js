@@ -149,8 +149,6 @@ const SelectionUtil = {
     },
 
     setImageSelection : function(element, rect) {
-        console.log("setting image selection");
-        console.log(rect);
         SelectionUtil.checkDOMElement(element);
         SelectionUtil.checkRectangle(rect);
         SelectionUtil.currentSelection = {
@@ -162,7 +160,6 @@ const SelectionUtil = {
     },
 
     setAudioSelection : function(element, interval) {
-        console.log("setting audio selection");
         SelectionUtil.checkDOMElement(element);
         SelectionUtil.checkInterval(interval);
         SelectionUtil.currentSelection = {
@@ -174,7 +171,6 @@ const SelectionUtil = {
     },
 
     setVideoSelection : function(element, interval) {
-        console.log("setting video selection");
         SelectionUtil.checkDOMElement(element);
         SelectionUtil.checkInterval(interval);
         SelectionUtil.currentSelection = {
@@ -185,8 +181,7 @@ const SelectionUtil = {
         }
     },
 
-    updateSelection : function() {
-        console.log("setting text selection");
+    setDOMSelection : function() {
         var selection = document.getSelection();
         if (selection.isCollapsed) {
             let observerNodes = DOMUtil.getObserverNodes();
@@ -264,6 +259,7 @@ const SelectionUtil = {
         }
         return null;
     },
+
 }
 
 export default SelectionUtil;

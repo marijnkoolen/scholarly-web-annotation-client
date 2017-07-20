@@ -90,7 +90,7 @@ export class ScholarlyWebAnnotator {
 
     setSelectionListener() {
         document.addEventListener("selectionchange", function() {
-            SelectionUtil.updateSelection();
+            SelectionUtil.setDOMSelection();
         });
     }
 

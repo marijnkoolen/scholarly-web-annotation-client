@@ -16,7 +16,7 @@ class Annotation extends React.Component {
         }
     }
     componentDidMount() {
-        this.setState({targetRanges: TargetUtil.mapTargetsToDOMElements(this.props.annotation)});
+        this.setState({targetDOMElements: TargetUtil.mapTargetsToDOMElements(this.props.annotation)});
     }
     canEdit() {
         return this.props.currentUser && this.props.currentUser.username === this.props.annotation.creator ? true : false;
@@ -52,12 +52,7 @@ class Annotation extends React.Component {
         }
     }
     toggleHighlight() {
-        let component = this;
-        this.state.targetRanges.forEach((target) => {
-            component.state.highlighted ?
-                SelectionUtil.selectAndRemoveRange(target.node, target.start, target.end) :
-                SelectionUtil.selectAndHighlightRange(target.node, target.start, target.end);
-        });
+        TargetUtil.toggleHighlight(this.state.targetDOMElements, this.state.highlighted);
         this.setState({highlighted: this.state.highlighted ? false : true});
     }
     computeClass() {
@@ -93,8 +88,7 @@ class Annotation extends React.Component {
             var label;
             if (source.type === "resource") {
                 if (target.type === "Text") {
-                    let selector = AnnotationUtil.getTextQuoteSelector(target);
-                    text = selector ? selector.exact : TargetUtil.getTargetText(target, source);
+                    text = TargetUtil.getTargetText(target, source);
                 } else if (target.type === "Image") {
                 }
                 if (text.length > 40) {
@@ -111,8 +105,7 @@ class Annotation extends React.Component {
                         <span>{text}</span>
                     </div>
                 );
-            }
-            if (source.type === "annotation") {
+            } else if (source.type === "annotation") {
                 let body = AnnotationUtil.extractBodies(source.data)[0];
                 let label = body.type;
                 let text = body.value;
@@ -126,6 +119,8 @@ class Annotation extends React.Component {
                         <span>{text}</span>
                     </div>
                 );
+            } else if (source.type === undefined) {
+                console.error("source.type is not defined, showing content of annotation target and associated indexed source", target, source);
             }
         });
 

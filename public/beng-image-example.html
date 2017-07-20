@@ -129,98 +129,72 @@
     <script type="text/javascript">
         OpenSeadragon.setString('Tooltips.SelectionToggle', 'Toggle selection');
         OpenSeadragon.setString('Tooltips.SelectionConfirm', 'Confirm selection');
-        var viewer1 = OpenSeadragon({
-            panHorizontal: false,
-            panVertical: false,
-            defaultZoomLevel: 1,
-            minZoomLevel: 1,
-            maxZoomLevel: 1,
-            id: "image-viewer1",
-            prefixUrl: "/js/openseadragon/images/",
-            tileSources: {
-                type: "image",
-                buildPyramid: false,
-                url: "https://i.ytimg.com/vi/8wvJZxpVrdU/maxresdefault.jpg"
+
+        var configureViewer = function(id, url) {
+            return {
+                panHorizontal: false,
+                panVertical: false,
+                defaultZoomLevel: 1,
+                minZoomLevel: 1,
+                maxZoomLevel: 1,
+                id: "image-viewer1",
+                prefixUrl: "/js/openseadragon/images/",
+                tileSources: {
+                    type: "image",
+                    buildPyramid: false,
+                    url: "https://i.ytimg.com/vi/8wvJZxpVrdU/maxresdefault.jpg"
+                }
             }
-        });
-        var viewer2 = OpenSeadragon({
-            panHorizontal: false,
-            panVertical: false,
-            defaultZoomLevel: 1,
-            minZoomLevel: 1,
-            maxZoomLevel: 1,
-            id: "image-viewer2",
-            prefixUrl: "/js/openseadragon/images/",
-            tileSources: {
-                type: "image",
-                buildPyramid: false,
-                url: "https://i.ytimg.com/vi/mnW3Wm5LnaI/maxresdefault.jpg"
+        }
+        var toggleOverlay = function(viewer, coords, highlighted) {
+            var rect = viewer.viewport.imageToViewportRectangle(coords.x, coords.y, coords.w, coords.h);
+            if (event.detail.highlighted) {
+                viewer.removeOverlay("runtime-overlay");
+            } else {
+                var elt = document.createElement("div");
+                elt.id = "runtime-overlay";
+                elt.className = "highlight";
+                viewer.addOverlay({
+                    element: elt,
+                    location: rect
+                });
             }
-        });
+        }
+        var handleSelection = function(rect) {
+            let coords = {
+                x: rect.x,
+                y: rect.y,
+                w: rect.width,
+                h: rect.height
+            }
+            let element = rect.eventSource.container.parentElement;
+            console.log("setting image selection");
+            annotator.setImageSelection(element, coords);
+        }
+
+        let imageUrls = ["https://i.ytimg.com/vi/8wvJZxpVrdU/maxresdefault.jpg", "https://i.ytimg.com/vi/mnW3Wm5LnaI/maxresdefault.jpg"];
+
+        var config = configureViewer("image-viewer1", imageUrls[0]);
+        var viewer1 = OpenSeadragon(config);
+        var config = configureViewer("image-viewer2", imageUrls[1]);
+        var viewer2 = OpenSeadragon(config);
         var overlay1 = false;
         var overlay2 = false;
-        viewer1.addHandler('toggle-image-annotation-overlay', function(element, coords) {
-            var rect = viewer1.viewport.imageToViewportRectangle(coords.x, coords.y, coords.w, coords.h);
-            if (overlay1) {
-                viewer1.removeOverlay("runtime-overlay");
-            } else {
-                var elt = document.createElement("div");
-                elt.id = "runtime-overlay";
-                elt.className = "highlight";
-                viewer1.addOverlay({
-                    element: elt,
-                    location: rect
-                });
-                console.log("adding overlay in viewer 1");
-            }
-            overlay1 = !overlay1;
+        var viewer1Element = document.getElementById("image-viewer1");
+        var viewer2Element = document.getElementById("image-viewer2");
+        viewer1Element.addEventListener("toggle-annotation-overlay", function(event) {
+            toggleOverlay(viewer1, event.detail.rect, event.detail.highlighted);
         });
-        viewer2.addHandler('toggle-image-annotation-overlay', function(element, coords) {
-            if (element !== document.getElementById("image-viewer2")) {
-                return false;
-            }
-            var rect = viewer2.viewport.imageToViewportRectangle(coords.x, coords.y, coords.w, coords.h);
-            if (overlay2) {
-                viewer2.removeOverlay("runtime-overlay");
-            } else {
-                var elt = document.createElement("div");
-                elt.id = "runtime-overlay";
-                elt.className = "highlight";
-                viewer2.addOverlay({
-                    element: elt,
-                    location: rect
-                });
-                console.log("adding overlay in viewer 2");
-            }
-            overlay2 = !overlay2;
+        viewer2Element.addEventListener("toggle-annotation-overlay", function(event) {
+            toggleOverlay(viewer2, event.detail.rect, event.detail.highlighted);
         });
         viewer1.selection({
             returnPixelCoordinates: true,
-            onSelection: (rect) => {
-                let coords = {
-                    x: rect.x,
-                    y: rect.y,
-                    w: rect.width,
-                    h: rect.height
-                }
-                let element = rect.eventSource.container.parentElement;
-                console.log("setting image selection");
-                annotator.setImageSelection(element, coords);
-            }
+            onSelection: (rect) => { handleSelection(rect); }
         });
         viewer2.selection({
             returnPixelCoordinates: true,
-            onSelection: (rect) => {
-                let coords = {
-                    x: rect.x,
-                    y: rect.y,
-                    w: rect.width,
-                    h: rect.height
-                }
-                let element = rect.eventSource.container.parentElement;
-                annotator.setImageSelection(element, coords);
-                console.log("setting image selection");
-            }
+            onSelection: (rect) => { handleSelection(rect); }
         });
     </script>
 </body>

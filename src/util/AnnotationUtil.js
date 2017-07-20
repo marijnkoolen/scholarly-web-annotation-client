@@ -189,34 +189,6 @@ const AnnotationUtil = {
         });
     },
 
-    getTextPositionSelector :function(target) {
-        if (!target.selector)
-            return null;
-        if (!target.type || target.type !== "Text")
-            return null;
-        var textPosition = null;
-        let selectors = Array.isArray(target.selector) ? target.selector : [target.selector];
-        selectors.forEach((selector) => {
-            if (selector.type === "TextPositionSelector")
-                textPosition = selector;
-        });
-        return textPosition;
-    },
-
-    getTextQuoteSelector :function(target) {
-        if (!target.selector)
-            return null;
-        if (!target.type || target.type !== "Text")
-            return null;
-        var textQuote = null;
-        let selectors = Array.isArray(target.selector) ? target.selector : [target.selector];
-        selectors.forEach((selector) => {
-            if (selector.type === "TextQuoteSelector")
-                textQuote = selector;
-        });
-        return textQuote;
-    },
-
     /*************************************************************************************
      ************************************* UUID FUNCTIONS ****************************
     *************************************************************************************/

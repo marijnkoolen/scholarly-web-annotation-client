@@ -277,12 +277,14 @@ const TargetUtil = {
                 AnnotationUtil.extractTargets(source.data).forEach((target) => {
                     domTargets = domTargets.concat(TargetUtil.mapTargetsToDOMElements(target));
                 });
-            } else {
+            } else if (source.type === "resource") {
                 if (target.type === "Text") {
-                    domTargets = domTargets.push(TargetUtil.makeTextRange(target, source.data.domNode));
+                    domTargets.push(TargetUtil.makeTextRange(target, source.data.domNode));
                 } else if (target.type === "Image") {
-                    domTargets = domTargets.push(TargetUtil.makeImageRegion(target, source.data.domNode));
+                    domTargets.push(TargetUtil.makeImageRegion(target, source.data.domNode));
                 }
+            } else {
+                console.error("no source type for source:", source);
             }
         });
         return domTargets;
@@ -305,7 +307,7 @@ const TargetUtil = {
             end: -1,
             node: node
         }
-        let textPosition = AnnotationUtil.getTextPositionSelector(target);
+        let textPosition = TargetUtil.getSelectorByType(target, "TextPositionSelector");
         if (textPosition && textPosition.start !== undefined) {
             targetRange.start = textPosition.start;
             targetRange.end = textPosition.end;
@@ -339,6 +341,31 @@ const TargetUtil = {
         selection.removeAllRanges();
         return text;
     },
+
+    toggleHighlight(targetDOMElements, highlighted) {
+        targetDOMElements.forEach((target) => {
+            if (target.type === "Text") {
+                TargetUtil.toggleTextHighlight(target, highlighted);
+            } else if (target.type === "Image") {
+                TargetUtil.toggleImageHighlight(target, highlighted);
+            }
+        });
+    },
+
+    toggleTextHighlight(target, highlighted) {
+        if (highlighted )
+            SelectionUtil.selectAndRemoveRange(target.node, target.start, target.end);
+        else
+            SelectionUtil.selectAndHighlightRange(target.node, target.start, target.end);
+    },
+
+    toggleImageHighlight(target, highlighted) {
+        // trigger toggleOverlay event with target node and rectangle as detail
+        let toggleOverlay = new CustomEvent('toggle-annotation-overlay', {
+            detail: {rect: target.rect, highlighted: highlighted}
+        });
+        target.node.dispatchEvent(toggleOverlay);
+    }
 
 }
 
