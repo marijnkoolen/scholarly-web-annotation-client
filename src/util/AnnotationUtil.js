@@ -9,7 +9,6 @@ const AnnotationUtil = {
 
     //called from components that want to create a new annotation with a proper target
     generateW3CAnnotation : function(annotationTargets, creator) {
-        console.log(annotationTargets);
         if (!AnnotationUtil.hasTargets(annotationTargets))
             throw new Error('Annotation requires an array of annotation targets.');
         if (creator === undefined)
@@ -40,7 +39,7 @@ const AnnotationUtil = {
         if (target.source === undefined)
             throw Error('annotation target requires a source');
         let selector = null;
-        let targetType = AnnotationUtil.determineTargetType(target.mimeType);
+        let targetType = AnnotationUtil.determineTargetType(target);
         if (target.params !== undefined) {
             selector = AnnotationUtil.makeSelector(target.params, targetType);
         }
@@ -51,16 +50,18 @@ const AnnotationUtil = {
         }
     },
 
-    determineTargetType : (mimeType) => {
-        if (mimeType === undefined)
+    determineTargetType : (target) => {
+        if (target.type === "Annotation")
+            return "Annotation"
+        if (target.mimeType === undefined)
             throw Error('annotation target requires a mimetype');
-        if(mimeType.startsWith('video')) {
+        if(target.mimeType.startsWith('video')) {
             return 'Video';
-        } else if(mimeType.startsWith('audio')) {
+        } else if(target.mimeType.startsWith('audio')) {
             return 'Audio';
-        } else if(mimeType.startsWith('image')) {
+        } else if(target.mimeType.startsWith('image')) {
             return 'Image';
-        } else if(mimeType.startsWith('text')) {
+        } else if(target.mimeType.startsWith('text')) {
             return 'Text';
         } else {
             return null;

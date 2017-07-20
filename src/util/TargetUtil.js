@@ -113,7 +113,7 @@ const TargetUtil = {
             return {
                 node: node,
                 type: "resource",
-                mimeType: "multipart", // TODO - fix based on actual content
+                mimeType: "text", // TODO - fix based on actual content
                 params: {
                     text: RDFaUtil.getRDFaTextContent(node)
                 },

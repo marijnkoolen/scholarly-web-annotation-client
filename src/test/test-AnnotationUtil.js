@@ -5,13 +5,13 @@ var fs = require('fs');
 var jsdom = require('jsdom');
 import AnnotationUtil from '../util/AnnotationUtil.js';
 
-describe("AnnotationUtil", function() {
+describe("AnnotationUtil", () => {
 
-    beforeEach(function(done) {
+    beforeEach((done) => {
         return done();
     });
 
-    describe("makeMediaFragmentSelector", function() {
+    describe("makeMediaFragmentSelector", () => {
         it("should return no selector when receiving no parameters", (done) => {
             //let params = null;
             let selector = AnnotationUtil.makeMediaFragmentSelector();
@@ -45,7 +45,7 @@ describe("AnnotationUtil", function() {
         });
     });
 
-    describe("makeTextPositionSelector", function() {
+    describe("makeTextPositionSelector", () => {
         it("should return no selector when receiving no parameters", (done) => {
             let selector = AnnotationUtil.makeTextPositionSelector();
             expect(selector).to.equal(null);
@@ -70,7 +70,7 @@ describe("AnnotationUtil", function() {
 
     });
 
-    describe("makeTextQuoteSelector", function() {
+    describe("makeTextQuoteSelector", () => {
         it("should return no selector when receiving no parameters", (done) => {
             let selector = AnnotationUtil.makeTextQuoteSelector();
             expect(selector).to.equal(null);
@@ -94,7 +94,7 @@ describe("AnnotationUtil", function() {
 
     });
 
-    describe("makeTextSelector", function() {
+    describe("makeTextSelector", () => {
         it("should return no selector when receiving no parameters", (done) => {
             let selector = AnnotationUtil.makeTextSelector();
             expect(selector).to.equal(null);
@@ -146,7 +146,7 @@ describe("AnnotationUtil", function() {
 
     });
 
-    describe("makeSelector", function() {
+    describe("makeSelector", () => {
         it("should return no selector when receiving no target type", (done) => {
             let params = {unknown: 1};
             let selector = AnnotationUtil.makeSelector(params);

@@ -20,7 +20,7 @@ const AnnotationAPI = {
 
     makeRequest : function(url, options, callback) {
         if (!this.annotationServer)
-            callback(serverNotSet(), null);
+            callback(AnnotationAPI.serverNotSet(), null);
         var status = null;
         options.cache = 'no-cache';
         options.mode = 'cors';
