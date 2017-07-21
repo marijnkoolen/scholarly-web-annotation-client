@@ -2,6 +2,15 @@
 'use strict'
 
 const DOMUtil = {
+
+    setObserverNodeClass(observerNodeClass) {
+        this.observerNodeClass = observerNodeClass;
+    },
+
+    getObserverNodes() {
+        return document.getElementsByClassName(this.observerNodeClass);
+    },
+
     /*
     *****************************************
     * functions to trim whitespace usage in *
@@ -20,10 +29,6 @@ const DOMUtil = {
     * DOM element selection functions *
     ***********************************
     */
-
-    getObserverNodes : function() {
-        return document.getElementsByClassName("annotation-target-observer");
-    },
 
     // return all text nodes in a list of nodes
     getTextNodes : function(nodes) {
@@ -86,6 +91,48 @@ const DOMUtil = {
         // return elements from lowest common ancestor upwards
         return startAncestors.slice(0, startAncestors.indexOf(currNode)+1);
     },
+
+    determineNodeMimeType : (node) => {
+        var mimetype = null;
+        // 1. ignore non-element, non-text nodes
+        if (node.nodeType !== 3 && node.nodeType !== 1)
+            return null;
+        // 2. check if node has children
+        if (!node.hasChildren()) {
+            // options:
+            switch(node.nodeName) {
+
+                case "#text":
+                    mimetype = "text";
+                    break;
+                case "CANVAS":
+                    mimetype = "image";
+                    break;
+                case "IMG":
+                    mimetype = "image";
+                    break;
+                case "VIDEO":
+                    mimetype = "image";
+                    break;
+                default:
+                    mimetype = "text";
+                    break;
+            }
+
+
+            // 2. img
+            // 3. video
+            // 4. canvas
+            // 5. empty => text
+            return {node: node, mimetype: mimetype}
+        } else {
+            node.forEach((childNode) => {
+                childMimeType = DOMUtil.determineNodeMimeType(childNode);
+            })
+        }
+        // 2a. if has children, determine mimetype of children
+        // 2
+    }
 
 }
 

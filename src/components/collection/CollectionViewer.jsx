@@ -23,7 +23,6 @@ export default class CollectionViewer extends React.Component {
         };
     }
     componentDidMount() {
-        console.log("loading collections");
     }
     render() {
         return (

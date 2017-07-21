@@ -22,35 +22,47 @@ import AppAnnotationStore from './flux/AnnotationStore.js';
 export class ScholarlyWebAnnotator {
 
     constructor(configuration) {
-        if (!configuration)
-            configuration = defaultConfig; // use default if no configuration is given
-        this.clientConfiguration = configuration;
-        AnnotationActions.setServerAddress(configuration.services.AnnotationServer.api);
-        CollectionActions.setServerAddress(configuration.services.AnnotationServer.api);
-        this.topResources = RDFaUtil.getTopRDFaResources(document.body);
+        this.clientConfig = defaultConfig;
+        this.configureClient(configuration);
     }
 
     addAnnotationClient() {
-        var observerTargets = document.getElementsByClassName("annotation-target-observer");
-        this.startObserver(observerTargets);
-        this.setSelectionListener();
-        this.setAnnotationAttributes(observerTargets);
         ReactDOM.render(
             <AnnotationClient
-                config={this.clientConfiguration}
+                config={this.clientConfig}
             />,
             document.getElementById('annotation-viewer')
         );
     }
 
-    getDefaultConfiguration() {
-        return defaultConfig;
+    overrideDefaultConfiguration(configuration) {
+        Object.keys(configuration).forEach((property) => {
+            this.clientConfig[property] = configuration[property];
+        });
     }
 
-    setAnnotationAttributes(observerTargets) {
-        for (var index = 0; index < observerTargets.length; index++) {
-            this.setSelectWholeElement(observerTargets[index]);
-            this.setUnselectable(observerTargets[index]);
+    configureClient(configuration) {
+        if (configuration)
+            this.overrideDefaultConfiguration(configuration);
+        AnnotationActions.setServerAddress(this.clientConfig.services.AnnotationServer.api);
+        CollectionActions.setServerAddress(this.clientConfig.services.AnnotationServer.api);
+        this.configureObservers();
+        this.topResources = RDFaUtil.getTopRDFaResources();
+    }
+
+    configureObservers() {
+        DOMUtil.setObserverNodeClass(this.clientConfig.targetObserverClass);
+        this.observerNodes = DOMUtil.getObserverNodes();
+        RDFaUtil.setObserverNodes(this.observerNodes);
+        this.startObserver();
+        this.setSelectionListener();
+        this.setAnnotationAttributes();
+    }
+
+    setAnnotationAttributes() {
+        for (var index = 0; index < this.observerNodes.length; index++) {
+            this.setSelectWholeElement(this.observerNodes[index]);
+            this.setUnselectable(this.observerNodes[index]);
         }
     }
 
@@ -69,12 +81,11 @@ export class ScholarlyWebAnnotator {
         });
     }
 
-    startObserver(observerTargets) {
+    startObserver() {
         var observer = new MutationObserver((mutations) => {
-            var observerTargets = document.getElementsByClassName("annotation-target-observer");
-            // if something in the observer nodes changes ...
+            // if something in the observer nodes changes,
             // set unselectable and whole element attributes
-            this.setAnnotationAttributes(observerTargets);
+            this.setAnnotationAttributes(this.observerNodes);
             // check if there are new resources
             if (this.resourcesChanged())
                 AnnotationActions.loadResources(); // trigger reload of annotations
@@ -82,8 +93,8 @@ export class ScholarlyWebAnnotator {
 
         var observerConfig = { childList: true, attributes: true, subtree: true };
 
-        for (var index = 0; index < observerTargets.length; index++) {
-            observer.observe(observerTargets[index], observerConfig);
+        for (var index = 0; index < this.observerNodes.length; index++) {
+            observer.observe(this.observerNodes[index], observerConfig);
         }
 
     }
@@ -95,7 +106,6 @@ export class ScholarlyWebAnnotator {
     }
 
     setImageSelection(element, coords) {
-        console.log("setting image selection");
         SelectionUtil.setImageSelection(element, coords);
     }
 
@@ -108,7 +118,7 @@ export class ScholarlyWebAnnotator {
     }
 
     resourcesChanged() {
-        let topResources = RDFaUtil.getTopRDFaResources(document.body);
+        let topResources = RDFaUtil.getTopRDFaResources();
         if (this.listsAreEqual(topResources, this.topResources))
             return false;
         this.topResources = topResources; // update register resources list

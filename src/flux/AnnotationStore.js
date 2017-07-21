@@ -6,6 +6,14 @@ import AppDispatcher from './AppDispatcher';
 
 class AnnotationStore {
 
+    setTargetObserverClass() {
+        return this.clientConfiguration.targetObserverClass;
+    }
+
+    getTargetObserverClass() {
+        return this.clientConfiguration.targetObserverClass;
+    }
+
     loadAnnotations(annotations) {
         this.trigger('loaded-annotations', annotations);
     }

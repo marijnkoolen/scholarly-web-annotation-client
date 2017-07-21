@@ -102,7 +102,7 @@ const AnnotationActions = {
     },
 
     loadResources: function() {
-        this.topResources = RDFaUtil.getTopRDFaResources(document.body);
+        this.topResources = RDFaUtil.getTopRDFaResources();
         this.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
         this.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
         this.registerResources(this.resourceMaps);
