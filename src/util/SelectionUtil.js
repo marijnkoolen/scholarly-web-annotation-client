@@ -142,10 +142,32 @@ const SelectionUtil = {
         ["start", "end"].forEach((prop) => {
             if (!keys.includes(prop))
                 throw Error("interval is missing required property " + prop + ".");
-            if (!Number.isInteger(interval[prop]))
-                throw Error("interval property " + prop + " is not an integer.");
+            if (Number.isNaN(interval[prop]))
+                throw Error("interval property " + prop + " is not a number.");
+            //if (!Number.isInteger(interval[prop]))
+            //    interval[prop] = parseInt(interval[prop]);
         });
         return true;
+    },
+
+    setSelection : function(element, selection, mimeType) {
+        SelectionUtil.checkDOMElement(element);
+        SelectionUtil.currentSelection = {
+            startNode: element,
+            endNode: element,
+            mimeType: mimeType
+        };
+        let baseType = mimeType.split("/")[0];
+        console.log("currentSelection", SelectionUtil.currentSelection);
+        if (!selection) {
+            return true;
+        } else if (mimeType.startsWith('video') || mimeType.startsWith('audio')) {
+            SelectionUtil.checkInterval(selection);
+            SelectionUtil.currentSelection.interval = selection;
+        } else if (mimeType.startsWith('image')) {
+            SelectionUtil.checkRectangle(selection);
+            SelectionUtil.currentSelection.rect = selection;
+        }
     },
 
     setImageSelection : function(element, rect) {
@@ -211,6 +233,8 @@ const SelectionUtil = {
     // Start node is always before end node in presentation order
     // regardless of whether selection is done forwards or backwards.
     getCurrentSelection : function() {
+        if (!SelectionUtil.currentSelection)
+            SelectionUtil.setDOMSelection();
         return SelectionUtil.currentSelection;
     },
 

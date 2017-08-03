@@ -36,10 +36,10 @@ describe("AnnotationUtil", () => {
         });
 
         it("should return a MediaFragments selector with interval params when receiving video annotation parameters", (done) => {
-            let params = {start: 1, end: 1};
+            let params = {interval: {start: 1, end: 1}};
             let selector = AnnotationUtil.makeMediaFragmentSelector(params);
             expect(selector.type).to.equal("FragmentSelector");
-            let urlParam = '#t=' + params.start + ',' + params.end;
+            let urlParam = '#t=' + params.interval.start + ',' + params.interval.end;
             expect(selector.value).to.equal(urlParam);
             return done();
         });
@@ -52,10 +52,16 @@ describe("AnnotationUtil", () => {
             return done();
         });
 
-        it("should return no selector when receiving unknown parameters", (done) => {
+        it("should throw an error when receiving unknown parameters", (done) => {
             let params = {unknown: 1};
-            let selector = AnnotationUtil.makeTextPositionSelector(params);
-            expect(selector).to.equal(null);
+            let error = null;
+            try {
+                let selector = AnnotationUtil.makeTextPositionSelector(params);
+            }
+            catch(err) {
+                error = err;
+            }
+            expect(error.message).to.include("should contain property start");
             return done();
         });
 
@@ -77,18 +83,24 @@ describe("AnnotationUtil", () => {
             return done();
         });
 
-        it("should return no selector when receiving unknown parameters", (done) => {
+        it("should throw an error when receiving unknown parameters", (done) => {
             let params = {unknown: 1};
-            let selector = AnnotationUtil.makeTextQuoteSelector(params);
-            expect(selector).to.equal(null);
+            let error = null;
+            try {
+                let selector = AnnotationUtil.makeTextQuoteSelector(params);
+            }
+            catch(err) {
+                error = err;
+            }
+            expect(error.message).to.include("should contain property exact");
             return done();
         });
 
         it("should return a TextQuote selector when receiving text quote parameters", (done) => {
-            let params = {text: "some text", prefix: "a prefix to ", suffix: ", followed by a suffix"};
+            let params = {exact: "some text", prefix: "a prefix to ", suffix: ", followed by a suffix"};
             let selector = AnnotationUtil.makeTextQuoteSelector(params);
             expect(selector.type).to.equal("TextQuoteSelector");
-            expect(selector.exact).to.equal(params.text);
+            expect(selector.exact).to.equal(params.exact);
             return done();
         });
 
@@ -110,8 +122,10 @@ describe("AnnotationUtil", () => {
 
         it("should return a TextPosition selector when receiving text position parameters", (done) => {
             let params = {
-                start: 1,
-                end: 1
+                position: {
+                    start: 1,
+                    end: 1
+                }
             };
             let selector = AnnotationUtil.makeTextSelector(params);
             expect(selector.type).to.equal("TextPositionSelector");
@@ -120,9 +134,11 @@ describe("AnnotationUtil", () => {
 
         it("should return a TextQuote selector when receiving text quote parameters", (done) => {
             let params = {
-                text: "some text",
-                prefix: "a prefix to ",
-                suffix: ", followed by a suffix"
+                quote: {
+                    exact: "some text",
+                    prefix: "a prefix to ",
+                    suffix: ", followed by a suffix"
+                }
             };
             let selector = AnnotationUtil.makeTextSelector(params);
             expect(selector.type).to.equal("TextQuoteSelector");
@@ -131,11 +147,15 @@ describe("AnnotationUtil", () => {
 
         it("should return an array with TextPosition and TextQuote selectors when receiving text position and qoute parameters", (done) => {
             let params = {
-                start: 1,
-                end: 1,
-                text: "some text",
-                prefix: "a prefix to ",
-                suffix: ", followed by a suffix"
+                position: {
+                    start: 1,
+                    end: 1,
+                },
+                quote: {
+                    exact: "some text",
+                    prefix: "a prefix to ",
+                    suffix: ", followed by a suffix"
+                }
             };
             let selector = AnnotationUtil.makeTextSelector(params);
             expect(Array.isArray(selector));
@@ -171,8 +191,10 @@ describe("AnnotationUtil", () => {
 
         it("should return a TextPosition selector when receiving text position parameters", (done) => {
             let params = {
-                start: 1,
-                end: 2
+                position: {
+                    start: 1,
+                    end: 2
+                }
             };
             let targetType = "Text";
             let selector = AnnotationUtil.makeSelector(params, targetType);
@@ -182,8 +204,10 @@ describe("AnnotationUtil", () => {
 
         it("should return a FragmentSelector when receiving time interval parameters", (done) => {
             let params = {
-                start: 1,
-                end: 2
+                interval: {
+                    start: 1,
+                    end: 2
+                }
             };
             let targetType = "Video";
             let selector = AnnotationUtil.makeSelector(params, targetType);
@@ -261,13 +285,13 @@ describe("AnnotationUtil", () => {
             done();
         });
 
-        it("should return an annotation when receiving a valid text target", (done) => {
+        it("should return an annotation when receiving a valid text target with parameters", (done) => {
             var creator = "testuser";
             let annotationTargets = [
                 {
                     mimeType: "text",
                     source: "urn:vangogh:testletter",
-                    params: { start: 1, end: 2 }
+                    params: {position: { start: 1, end: 2 }}
                 }
             ];
             let annotation = AnnotationUtil.generateW3CAnnotation(annotationTargets, creator);

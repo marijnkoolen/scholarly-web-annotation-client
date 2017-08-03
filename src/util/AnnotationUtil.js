@@ -1,5 +1,7 @@
 //aims to implement https://www.w3.org/TR/annotation-model
 
+import SelectionUtil from './SelectionUtil.js';
+
 const AnnotationUtil = {
 
 
@@ -75,7 +77,7 @@ const AnnotationUtil = {
     makeSelector : function(params, targetType) {
         if (targetType === "Text") {
             return AnnotationUtil.makeTextSelector(params);
-        } else if (["Image", "Audio", "Video"].includes(targetType)){
+        } else if (["Audio", "Image", "Video"].includes(targetType)) {
             return AnnotationUtil.makeMediaFragmentSelector(params);
         } else {
             return null;
@@ -85,13 +87,17 @@ const AnnotationUtil = {
     makeMediaFragmentSelector : function(params) {
         if (params === undefined)
             return null;
-        if(params.start && params.end && params.start != -1 && params.end != -1) {
+        if (params.interval !== undefined) {
+            SelectionUtil.checkInterval(params.interval);
             return {
                 type: "FragmentSelector",
                 conformsTo: "http://www.w3.org/TR/media-frags/",
-                value: '#t=' + params.start + ',' + params.end
+                value: '#t=' + params.interval.start + ',' + params.interval.end,
+                interval: params.interval
             }
-        } else if(params.rect) {
+
+        } else if (params.rect !== undefined) {
+            SelectionUtil.checkRectangle(params.rect);
             return {
                 type: "FragmentSelector",
                 conformsTo: "http://www.w3.org/TR/media-frags/",
@@ -103,9 +109,13 @@ const AnnotationUtil = {
         }
     },
 
+
+
     makeTextSelector : function(params) {
-        let textPositionSelector = AnnotationUtil.makeTextPositionSelector(params);
-        let textQuoteSelector = AnnotationUtil.makeTextQuoteSelector(params);
+        if (params === undefined || (!params.position && !params.quote))
+            return null;
+        let textPositionSelector = AnnotationUtil.makeTextPositionSelector(params.position);
+        let textQuoteSelector = AnnotationUtil.makeTextQuoteSelector(params.quote);
         if (textPositionSelector && textQuoteSelector) {
             return [textPositionSelector, textQuoteSelector];
         } else if (textPositionSelector) {
@@ -116,28 +126,38 @@ const AnnotationUtil = {
         return null;
     },
 
-    makeTextQuoteSelector : function(params) {
-        if (params === undefined)
+    makeTextQuoteSelector : function(quote) {
+        if (quote === undefined)
             return null;
-        if(params.prefix !== undefined && params.suffix !== undefined && params.text !== undefined) {
+        if (!quote.exact)
+            throw new Error('text quote parameters should contain property exact');
+        if (!quote.suffix)
+            throw new Error('text quote parameters should contain property suffix');
+        if (!quote.prefix)
+            throw new Error('text quote parameters should contain property prefix');
+        if(quote.prefix !== undefined && quote.suffix !== undefined && quote.exact !== undefined) {
             return {
                 "type": "TextQuoteSelector",
-                "prefix": params.prefix,
-                "suffix": params.suffix,
-                "exact": params.text
+                "prefix": quote.prefix,
+                "suffix": quote.suffix,
+                "exact": quote.exact
             }
         }
         return null;
     },
 
-    makeTextPositionSelector : function(params) {
-        if (params === undefined)
+    makeTextPositionSelector : function(position) {
+        if (!position)
             return null;
-        if(params.start !== undefined && params.end !== undefined) {
+        if (!position.start)
+            throw new Error('text position parameters should contain property start');
+        if (!position.end)
+            throw new Error('text position parameters should contain property end');
+        if(position.start !== undefined && position.end !== undefined) {
             return {
                 "type": "TextPositionSelector",
-                "start": params.start,
-                "end": params.end,
+                "start": position.start,
+                "end": position.end,
             }
         }
         return null;

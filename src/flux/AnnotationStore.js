@@ -51,6 +51,10 @@ class AnnotationStore {
         this.trigger('edit-annotation', annotation);
     }
 
+    createAnnotation(annotationTargets) {
+        this.trigger('create-annotation', annotationTargets);
+    }
+
     set(annotation) {
         this.trigger('set-annotation', annotation);
     }
@@ -101,6 +105,9 @@ AppDispatcher.register( function( action ) {
             break;
         case 'edit-annotation':
             AppAnnotationStore.edit(action.annotation, action.callback);
+            break;
+        case 'create-annotation':
+            AppAnnotationStore.createAnnotation(action.annotationTargets, action.callback);
             break;
         case 'set-annotation':
             AppAnnotationStore.set(action.annotation, action.callback);

@@ -163,7 +163,6 @@ const RDFaUtil = {
                     console.log(error);
                 else {
                     let annotatableThings = VocabularyUtil.listAnnotatableThings();
-                    //console.log(annotatableThings);
                 }
             });
         });

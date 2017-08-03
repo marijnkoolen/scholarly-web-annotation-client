@@ -12,6 +12,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import AnnotationClient from './components/AnnotationClient.jsx';
 import RDFaUtil from './util/RDFaUtil.js';
+import TargetUtil from './util/TargetUtil.js';
 import SelectionUtil from './util/SelectionUtil.js';
 import DOMUtil from './util/DOMUtil.js';
 import defaultConfig from './rdfa-annotation-config.js';
@@ -26,12 +27,12 @@ export class ScholarlyWebAnnotator {
         this.configureClient(configuration);
     }
 
-    addAnnotationClient() {
+    addAnnotationClient(element) {
         ReactDOM.render(
             <AnnotationClient
                 config={this.clientConfig}
             />,
-            document.getElementById('annotation-viewer')
+            element
         );
     }
 
@@ -103,6 +104,25 @@ export class ScholarlyWebAnnotator {
         document.addEventListener("selectionchange", function() {
             SelectionUtil.setDOMSelection();
         });
+    }
+
+    setSelection(element, selection, mimeType) {
+        SelectionUtil.setSelection(element, selection, mimeType);
+    }
+
+    annotateSelection(data) {
+        try {
+            SelectionUtil.setSelection(data.element, data.selection, data.mimeType);
+            let candidateTargets = TargetUtil.getCandidateRDFaTargets();
+            if (candidateTargets.highlighted) {
+                AnnotationActions.createAnnotation([candidateTargets.highlighted]);
+            } else {
+                AnnotationActions.createAnnotation(candidateTargets.wholeNodes);
+            }
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 
     setImageSelection(element, coords) {

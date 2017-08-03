@@ -67,16 +67,20 @@ const TargetUtil = {
 
     findHighlighted : function(container, selection) {
         var params = null;
-        if (selection.mimeType === "text") {
-            if (selection.selectionText.length === 0) {
-                return false;
+        if (selection.mimeType.startsWith("text")) {
+            if (selection.selectionText.length > 0) {
+                params = this.makeTextSelectors(container, selection);
             }
-            params = this.makeTextPositionParams(container, selection);
-            this.makeTextQuoteParams(container, params);
-        } else if (selection.mimeType === "image") {
+        } else if (selection.mimeType.startsWith("image")) {
             if (selection.rect !== undefined) {
                 params = {rect: selection.rect};
             }
+        } else if (selection.mimeType.startsWith("audio") || selection.mimeType.startsWith("video")) {
+            if (selection.interval !== undefined) {
+                params = {interval: selection.interval};
+            }
+        } else {
+            console.error("Selection has unknown mimetype:", selection);
         }
         return {
             node: container.node,
@@ -88,22 +92,33 @@ const TargetUtil = {
         }
     },
 
-    makeTextPositionParams : function(container, selection) {
+    makeTextSelectors : function(container, selection) {
         var startNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.startNode);
         var endNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.endNode);
+        selection.startContainerOffset = startNodeOffset + selection.startOffset;
+        selection.endContainerOffset = endNodeOffset + selection.endOffset;
         return {
-            start: startNodeOffset + selection.startOffset,
-            end: endNodeOffset + selection.endOffset
+            position: this.makeTextPositionParams(container, selection),
+            quote: this.makeTextQuoteParams(container, selection)
         }
     },
 
-    makeTextQuoteParams : function(container, params) {
+    makeTextPositionParams : function(container, selection) {
+        return {
+            start: selection.startContainerOffset,
+            end: selection.endContainerOffset
+        }
+    },
+
+    makeTextQuoteParams : function(container, selection) {
         let textContent = RDFaUtil.getRDFaTextContent(container.node);
-        let maxPrefix = params.start >= 20 ? 20 : params.start;
-        let selectionLength = params.end - params.start;
-        params.text = textContent.substr(params.start, selectionLength);
-        params.prefix = textContent.substr(params.start - maxPrefix, maxPrefix);
-        params.suffix = textContent.substr(params.end, 20);
+        let maxPrefix = selection.startContainerOffset >= 20 ? 20 : selection.startContainerOffset;
+        let selectionLength = selection.endContainerOffset - selection.startContainerOffset;
+        return {
+            exact: textContent.substr(selection.startContainerOffset, selectionLength),
+            prefix: textContent.substr(selection.startContainerOffset - maxPrefix, maxPrefix),
+            suffix: textContent.substr(selection.endContainerOffset, 20)
+        }
     },
 
     // given a list of nodes, select all RDFa enriched nodes
@@ -141,11 +156,11 @@ const TargetUtil = {
         let smallerNodes = TargetUtil.getRDFaCandidates(selectionNodes);
         var wholeNodes = biggerNodes.concat(smallerNodes);
         var highlighted = null;
-        if (selection.startOffset !== undefined || selection.rect !== undefined) {
+        if (selection.startOffset !== undefined || selection.rect !== undefined || selection.interval !== undefined) {
             let container = biggerNodes[biggerNodes.length - 1];
             highlighted = TargetUtil.findHighlighted(container, selection);
         }
-        else {
+        else if (defaultTargets !== undefined && Array.isArray(defaultTargets)){
             wholeNodes = wholeNodes.filter((resource) => {
                 return defaultTargets.includes(resource.label);
             });

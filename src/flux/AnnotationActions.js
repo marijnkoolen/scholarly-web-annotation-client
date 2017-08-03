@@ -57,6 +57,13 @@ const AnnotationActions = {
         });
     },
 
+    createAnnotation : function(annotationTargets) { //is the annotation always on the same page?
+        AppDispatcher.dispatch({
+            eventName: 'create-annotation',
+            annotationTargets: annotationTargets
+        });
+    },
+
     set : function(annotation) { //is the annotation always on the same page?
         AppDispatcher.dispatch({
             eventName: 'set-annotation',
