@@ -1,8 +1,5 @@
 {
-    "id" : "text-annotation",
-    "name" : "Basic Text Annotation",
-    "type" : "annotation",
-    "description" : "Select and annotate text",
+    "targetObserverClass": "annotation-target-observer",
     "services" : {
         "AnnotationServer": {
             "api": "http://localhost:3000/api"

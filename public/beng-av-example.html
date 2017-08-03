@@ -7,6 +7,7 @@
     <script src="js/jquery-2.2.4.js" ></script>
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="./js/scholarly-web-annotator.js"></script>
+    <script src="https://use.fontawesome.com/e4f568e41e.js"></script>
     <script>
         var rawData = {{data|tojson}};
         console.debug(rawData);
@@ -103,7 +104,8 @@
             if (document.readyState === "complete") {
                 loadConfig((error, config) => {
                     annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config);
-                    annotator.addAnnotationClient();
+                    var viewerElement = document.getElementById('annotation-viewer');
+                    annotator.addAnnotationClient(viewerElement);
                 });
             }
         }

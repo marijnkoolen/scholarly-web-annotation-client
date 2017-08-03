@@ -2,7 +2,8 @@ document.onreadystatechange = function () {
     if (document.readyState === "complete") {
         loadConfig((error, config) => {
             annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config);
-            annotator.addAnnotationClient();
+            var viewerElement = document.getElementById('annotation-viewer');
+            annotator.addAnnotationClient(viewerElement);
         });
     }
 }
