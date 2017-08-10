@@ -7,6 +7,8 @@ import FlexModal from './../FlexModal';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import SelectionUtil from './../../util/SelectionUtil.js';
 import TargetUtil from './../../util/TargetUtil.js';
+import TimeUtil from '../../util/TimeUtil';
+import RDFaUtil from '../../util/RDFaUtil';
 
 class Annotation extends React.Component {
     constructor(props) {
@@ -30,7 +32,7 @@ class Annotation extends React.Component {
         // TODO: implement permission check (what should permission check be?)
         return allowed;
     }
-    editTarget(annotation) {
+    editAnnotationTarget(annotation) {
         // ask for adding, changing or removing target
         // if target is resource, allow new resource selection
         // if target is annotation, allow new annotation selection
@@ -62,6 +64,16 @@ class Annotation extends React.Component {
         return className;
     }
 
+    onMouseOverHandler(crumb) {
+        //console.log("over");
+        crumb.node.style.border = "1px solid red";
+    }
+
+    onMouseOutHandler(crumb) {
+        //console.log("out");
+        crumb.node.style.border = "";
+    }
+
     render() {
         let component = this;
         let annotation = component.props.annotation;
@@ -90,18 +102,54 @@ class Annotation extends React.Component {
                 if (target.type === "Text") {
                     text = TargetUtil.getTargetText(target, source);
                 } else if (target.type === "Image") {
+                    let rect = target.selector.rect;
+                    console.log(rect);
+                    let topLeft = rect.x + ',' + rect.y;
+                    let bottomRight = rect.x + rect.w + ',' + (rect.y + rect.h);
+                    text = (
+                        <span>
+                            {'[' + topLeft + ' - ' + bottomRight + ']'}
+                        </span>
+                    )
+                } else if (target.type === "Video") {
+                    let segment = target.selector.interval;
+                    text = (
+                        <span>
+                            {'[' + TimeUtil.formatTime(segment.start) + ' - ' + TimeUtil.formatTime(segment.end) + ']'}
+                        </span>
+                    );
                 }
                 if (text.length > 40) {
                     text = text.substr(0, 37) + "...";
                 }
                 label = source.data.rdfaType;
+                let breadcrumb = RDFaUtil.createBreadcrumb(source.data.rdfaResource);
+                let labelcrumb = breadcrumb.map((crumb, index) => {
+                    let next = " > ";
+                    if (!index)
+                        next = "";
+                    return (
+                        <span key={"crumb" + index}
+                            onMouseOver={component.onMouseOverHandler.bind(this, crumb)}
+                            onMouseOut={component.onMouseOutHandler.bind(this, crumb)}
+                        >
+                            <span title={crumb.property}>
+                            {next}
+                            </span>
+                            <span
+                                className="label label-info"
+                                title={"Identifier: " + crumb.id}
+                            >
+                               {crumb.label}
+                            </span>
+                            &nbsp;
+                        </span>
+                    )
+                })
                 return (
                     <div key={targetCount}>
-                        <span></span>
-                        <span
-                            className="label label-info"
-                            >{label}</span>
-                        &nbsp;
+                        {labelcrumb}
+                        <br/>
                         <span>{text}</span>
                     </div>
                 );
