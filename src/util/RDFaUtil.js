@@ -4,6 +4,8 @@
 import VocabularyUtil from './VocabularyUtil.js';
 import DOMUtil from './DOMUtil.js';
 import StringUtil from './StringUtil.js';
+import AnnotationActions from './../flux/AnnotationActions.js';
+
 
 // RDFa property names
 //let RDFaAttrs = ["about", "content", "datatype", "href", "property", "rel", "resource", "rev", "src", "typeof", "vocab"];
@@ -167,6 +169,33 @@ const RDFaUtil = {
             });
         });
 
+    },
+
+    createBreadcrumb(resourceId) {
+        var rootFound = false;
+        var breadcrumb = {};
+        var labelcrumb = [];
+        breadcrumb[resourceId] = {id: resourceId};
+        while (!rootFound) {
+            let source = AnnotationActions.lookupIdentifier(resourceId);
+            breadcrumb[source.data.rdfaResource].type = source.data.rdfaType;
+            labelcrumb.unshift({
+                id: source.data.rdfaResource,
+                node: source.data.domNode,
+                property: source.data.rdfaProperty,
+                label: source.data.rdfaType
+            });
+            if (source !== undefined && source.data.rdfaParent) {
+                var val = {id: source.data.rdfaParent};
+                val[source.data.rdfaProperty] = breadcrumb[source.data.rdfaResource];
+                breadcrumb[source.data.rdfaParent] = val;
+                delete breadcrumb[source.data.rdfaResource];
+                resourceId = source.data.rdfaParent;
+            } else {
+                rootFound = true;
+            }
+        }
+        return labelcrumb;
     },
 
     makeIndexEntry(node, vocabulary) {

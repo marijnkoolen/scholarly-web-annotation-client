@@ -53,7 +53,7 @@ const AnnotationUtil = {
     },
 
     determineTargetType : (target) => {
-        if (target.type === "Annotation")
+        if (target.type === "annotation")
             return "Annotation"
         if (target.mimeType === undefined)
             throw Error('annotation target requires a mimetype');
