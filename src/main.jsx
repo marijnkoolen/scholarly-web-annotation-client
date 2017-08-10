@@ -106,6 +106,10 @@ export class ScholarlyWebAnnotator {
         });
     }
 
+    setAnnotationListener(element) {
+        AnnotationActions.addListenerElement(element);
+    }
+
     setSelection(element, selection, mimeType) {
         SelectionUtil.setSelection(element, selection, mimeType);
     }
@@ -135,6 +139,10 @@ export class ScholarlyWebAnnotator {
 
     setVideoselection(element, interval) {
         SelectionUtil.setVideoSelection(element, interval);
+    }
+
+    getAnnotations(resourceId) {
+        return AnnotationActions.lookupAnnotationsByTarget(resourceId);
     }
 
     resourcesChanged() {
