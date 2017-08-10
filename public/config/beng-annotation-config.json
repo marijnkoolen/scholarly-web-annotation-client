@@ -1,8 +1,4 @@
 {
-    "id" : "text-annotation",
-    "name" : "Basic Text Annotation",
-    "type" : "annotation",
-    "description" : "Select and annotate text",
     "targetObserverClass": "annotation-target-observer",
     "services" : {
         "AnnotationServer": {
@@ -81,6 +77,7 @@
         }
     },
     "defaults": {
-        "target": ["ParagraphInLetter", "Note", "LocationNote", "SourceNote"]
+        "target": ["BenG_Program", "BenG_Season", "BenG_Series", "Genre", "Movie", "Title", "Summary", "Broadcaster", "BroadcastDate"]
     }
 }
+

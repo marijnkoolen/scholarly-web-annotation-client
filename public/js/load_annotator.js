@@ -9,7 +9,7 @@ document.onreadystatechange = function () {
 }
 
 var loadConfig = function(callback) {
-    fetch("letter-annotation-config.json", {
+    fetch("config/van-gogh-annotation-config.json", {
         method: "GET"
     }).then(function(response) {
         return response.json();

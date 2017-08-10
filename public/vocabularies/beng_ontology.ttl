@@ -31,6 +31,22 @@ beng:Genre rdf:type owl:Class ;
 	rdfs:label "Genre" ;
 	rdfs:subClassOf hi:MetadataItem.
 
+beng:Date rdf:type owl:Class ;
+	rdfs:label "Date" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:Description rdf:type owl:Class ;
+	rdfs:label "Description" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:Identifier rdf:type owl:Class ;
+	rdfs:label "Identifier" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:InCollection rdf:type owl:Class ;
+	rdfs:label "InCollection" ;
+	rdfs:subClassOf hi:MetadataItem.
+
 
 # The Creative Works
 beng:Series
@@ -63,6 +79,10 @@ beng:Program
 	hi:hasMetadataItem beng:Broadcaster;
 	hi:hasMetadataItem beng:BroadcasterDate;
 	hi:hasMetadataItem beng:Genre;
+	hi:hasMetadataItem beng:Date;
+	hi:hasMetadataItem beng:Description;
+	hi:hasMetadataItem beng:Identifier;
+	hi:hasMetadataItem beng:InCollection;
 	hi:hasRepresentation hi:Representation.
 
 beng:Segment
@@ -73,3 +93,16 @@ beng:Segment
 	hi:hasMetadataItem beng:Title;
 	hi:hasMetadataItem beng:Summary;
 	hi:hasRepresentation hi:Representation.
+
+# for EYE movies
+beng:Movie
+	a rdfs:Class;
+	rdfs:label "Movie";
+	rdfs:subClassOf hi:CreativeWork;
+	hi:hasMetadataItem beng:Title;
+	hi:hasMetadataItem beng:Date;
+	hi:hasMetadataItem beng:Description;
+	hi:hasMetadataItem beng:Identifier;
+	hi:hasMetadataItem beng:InCollection;
+	hi:hasRepresentation hi:Representation.
+

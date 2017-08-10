@@ -77,7 +77,6 @@
         }
     },
     "defaults": {
-        "target": ["BenG_Program", "BenG_Season", "BenG_Series", "Genre", "Title", "Summary", "Broadcaster", "BroadcastDate"]
+        "target": ["ParagraphInLetter", "Note", "LocationNote", "SourceNote"]
     }
 }
-
