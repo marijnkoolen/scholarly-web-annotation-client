@@ -121,7 +121,7 @@ const AnnotationAPI = {
                         return callback(null, annotations);
                     }
                 });
-                if (data === []) {
+                if (data.length === 0) {
                     if (targetIndex === targetIds.length - 1) {
                         return callback(null, annotations);
                     }
