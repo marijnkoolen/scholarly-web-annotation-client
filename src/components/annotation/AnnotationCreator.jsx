@@ -25,6 +25,7 @@ class AnnotationCreator extends React.Component {
     componentDidMount() {
         AppAnnotationStore.bind('loaded-annotations', this.setAnnotations.bind(this));
         AppAnnotationStore.bind('create-annotation', this.createAnnotation.bind(this));
+        AppAnnotationStore.bind('edit-annotation', this.editAnnotationBody.bind(this));
     }
     setAnnotations(annotations) {
         this.setState({annotations: annotations});
