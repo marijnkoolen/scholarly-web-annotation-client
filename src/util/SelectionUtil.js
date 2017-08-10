@@ -157,8 +157,6 @@ const SelectionUtil = {
             endNode: element,
             mimeType: mimeType
         };
-        let baseType = mimeType.split("/")[0];
-        console.log("currentSelection", SelectionUtil.currentSelection);
         if (!selection) {
             return true;
         } else if (mimeType.startsWith('video') || mimeType.startsWith('audio')) {

@@ -288,15 +288,24 @@ const TargetUtil = {
                 return [];
             var source = AnnotationActions.lookupIdentifier(targetId);
             var targetResources = [];
-            if (source.type === "annotation"){
+
+            if (source.type === undefined) {
+                console.error("source information for target " + targetId + " should have a type:", source);
+            } else if (source.type === "annotation"){
                 AnnotationUtil.extractTargets(source.data).forEach((target) => {
-                    domTargets = domTargets.concat(TargetUtil.mapTargetsToDOMElements(target));
+                    domTargets = domTargets.concat(TargetUtil.mapTargetsToDOMElements(source.data));
                 });
             } else if (source.type === "resource") {
-                if (target.type === "Text") {
+                if (target.type === undefined) {
+                    console.error("Target should have a type property:", target);
+                } else if (target.type === "Text") {
                     domTargets.push(TargetUtil.makeTextRange(target, source.data.domNode));
                 } else if (target.type === "Image") {
                     domTargets.push(TargetUtil.makeImageRegion(target, source.data.domNode));
+                } else if (target.type === "Video" || target.type === "Audio") {
+                    domTargets.push(TargetUtil.makeTemporalSegment(target, source.data.domNode));
+                } else {
+                    console.error("Unknown target type", target);
                 }
             } else {
                 console.error("no source type for source:", source);
@@ -330,6 +339,16 @@ const TargetUtil = {
         return targetRange;
     },
 
+    makeTemporalSegment : function(target, node) {
+        var segment = {
+            type: target.type,
+            node: node
+        }
+        if (target.selector !== undefined && target.selector !== null)
+            segment.interval = target.selector.interval
+        return segment;
+    },
+
     getTargetText(target, resource) {
         // if whole resource is the target,
         // return the text content of the correspondign node
@@ -359,10 +378,18 @@ const TargetUtil = {
 
     toggleHighlight(targetDOMElements, highlighted) {
         targetDOMElements.forEach((target) => {
-            if (target.type === "Text") {
+            if (target.type === undefined) {
+                console.error("Target should have a type:", target);
+            } else if (target.type === "Text") {
                 TargetUtil.toggleTextHighlight(target, highlighted);
+            } else if (target.type === "Audio") {
+                TargetUtil.toggleAudioHighlight(target, highlighted);
             } else if (target.type === "Image") {
                 TargetUtil.toggleImageHighlight(target, highlighted);
+            } else if (target.type === "Video") {
+                TargetUtil.toggleVideoHighlight(target, highlighted);
+            } else {
+                console.error("Unknown target type:", target);
             }
         });
     },
@@ -378,6 +405,14 @@ const TargetUtil = {
         // trigger toggleOverlay event with target node and rectangle as detail
         let toggleOverlay = new CustomEvent('toggle-annotation-overlay', {
             detail: {rect: target.rect, highlighted: highlighted}
+        });
+        target.node.dispatchEvent(toggleOverlay);
+    },
+
+    toggleVideoHighlight(target, started) {
+        // trigger toggleOverlay event with target node and rectangle as detail
+        let toggleOverlay = new CustomEvent('play-video-segment', {
+            detail: {interval: target.interval, started: started}
         });
         target.node.dispatchEvent(toggleOverlay);
     }
