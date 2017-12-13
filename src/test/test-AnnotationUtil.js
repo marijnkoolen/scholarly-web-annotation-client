@@ -217,6 +217,110 @@ describe("AnnotationUtil", () => {
 
     });
 
+    describe("hasSubresources", () => {
+
+        it("should return false when receiving no data", (done) => {
+            let status = AnnotationUtil.hasSubresources();
+            expect(status).to.equal(false);
+            return done();
+        });
+
+        it("should return false when receiving a non-array", (done) => {
+            let status = AnnotationUtil.hasSubresources("some string");
+            expect(status).to.equal(false);
+            return done();
+        });
+
+        it("should return false when receiving an empty array", (done) => {
+            let status = AnnotationUtil.hasSubresources([]);
+            expect(status).to.equal(false);
+            return done();
+        });
+
+        it("should return false when receiving an array of non-objects", (done) => {
+            let status = AnnotationUtil.hasSubresources(["string"]);
+            expect(status).to.equal(false);
+            return done();
+        });
+
+        it("should return false when receiving an array of non-breadcrumb objects", (done) => {
+            let status = AnnotationUtil.hasSubresources([{id: 12, type: "Annotation"}]);
+            expect(status).to.equal(false);
+            return done();
+        });
+
+        it("should return true when receiving an array of valid breadcrumb objects", (done) => {
+            let status = AnnotationUtil.hasSubresources([{id: 12, type: "Annotation", property: "hasPart"}]);
+            expect(status).to.equal(true);
+            return done();
+        });
+
+        it("should return true when receiving an array of valid breadcrumb objects with additional properties", (done) => {
+            let breadcrumb = {id: 12, type: "Annotation", property: "hasPart", node: "node"};
+            let status = AnnotationUtil.hasSubresources([breadcrumb]);
+            expect(status).to.equal(true);
+            return done();
+        });
+    });
+
+    describe("makeNestedPIDSelector", () => {
+
+        it("should throw an error when receiving no data", (done) => {
+            var error = null;
+            try {
+                AnnotationUtil.makeNestedPIDSelector();
+            }
+            catch(err) {
+                error = err;
+            }
+            expect(error).to.not.equal(null);
+            expect(error.message).to.equal("makeNestedPIDSelector requires a breadcrumb trail");
+            return done();
+        });
+
+        it("should return a selector when receiving a valid breadcrumb trail", (done) => {
+            let breadcrumbs = [
+                {id: 1, type: "Correspondence", property: "isPartOf", node: "node"},
+                {id: 2, type: "Letter", property: "hasPart", node: "node"},
+                {id: 3, type: "Translation", property: "hasTranslation", node: "node"},
+            ];
+            let selector = AnnotationUtil.makeNestedPIDSelector(breadcrumbs);
+            expect(selector.type).to.equal("NestedPIDSelector");
+            expect(selector.value).to.exist;
+            expect(selector.value[0].type).to.equal("Correspondence");
+            return done();
+        })
+    });
+
+    describe("makeSubresourceSelector", () => {
+
+        it("should throw an error when receiving no data", (done) => {
+            var error = null;
+            try {
+                AnnotationUtil.makeSubresourceSelector();
+            }
+            catch(err) {
+                error = err;
+            }
+            expect(error).to.not.equal(null);
+            expect(error.message).to.equal("makeSubresourceSelector requires a breadcrumb trail");
+            return done();
+        });
+
+        it("should return a selector when receiving a valid breadcrumb trail", (done) => {
+            let breadcrumbs = [
+                {id: 1, type: "Correspondence", property: "isPartOf", node: "node"},
+                {id: 2, type: "Letter", property: "hasPart", node: "node"},
+                {id: 3, type: "Translation", property: "hasTranslation", node: "node"}
+            ];
+            let selector = AnnotationUtil.makeSubresourceSelector(breadcrumbs);
+            expect(selector.type).to.equal("SubresourceSelector");
+            expect(selector.value).to.exist;
+            expect(selector.value.type).to.equal("Correspondence");
+            return done();
+        })
+    });
+
     describe("generateW3CAnnotation", () => {
 
         it("should throw an error when receiving no data", (done) => {
@@ -227,7 +331,7 @@ describe("AnnotationUtil", () => {
             catch (err) {
                 error = err;
             }
-            expect(error.message).to.equal("Annotation requires an array of annotation targets.");
+            expect(error.message).to.equal("Annotation requires a non-empty array of annotation targets.");
             done();
         });
 
@@ -240,7 +344,7 @@ describe("AnnotationUtil", () => {
             catch (err) {
                 error = err;
             }
-            expect(error.message).to.equal("Annotation requires an array of annotation targets.");
+            expect(error.message).to.equal("Annotation requires a non-empty array of annotation targets.");
             done();
         });
 
@@ -253,7 +357,7 @@ describe("AnnotationUtil", () => {
             catch (err) {
                 error = err;
             }
-            expect(error.message).to.equal("Annotation requires an array of annotation targets.");
+            expect(error.message).to.equal("Annotation requires a non-empty array of annotation targets.");
             done();
         });
 
@@ -267,6 +371,44 @@ describe("AnnotationUtil", () => {
                 error = err;
             }
             expect(error.message).to.equal("Annotation requires a creator object.");
+            done();
+        });
+
+        it("should throw an error when receiving a target without mimetype", (done) => {
+            var creator = "testuser";
+            var error = null;
+            let annotationTargets = [
+                {
+                    source: "urn:vangogh:testletter:page.1",
+                    params: { rect: { x: 18, y: 23, w: 100, h: 150 } }
+                }
+            ];
+            try {
+                AnnotationUtil.generateW3CAnnotation(annotationTargets, creator);
+            }
+            catch (err) {
+                error = err
+            }
+            expect(error.message).to.equal('annotation target requires a mimetype');
+            done();
+        });
+
+        it("should throw an error when receiving a target without source", (done) => {
+            var creator = "testuser";
+            var error = null;
+            let annotationTargets = [
+                {
+                    mimeType: "image",
+                    params: { rect: { x: 18, y: 23, w: 100, h: 150 } }
+                }
+            ];
+            try {
+                AnnotationUtil.generateW3CAnnotation(annotationTargets, creator);
+            }
+            catch (err) {
+                error = err
+            }
+            expect(error.message).to.equal('annotation target requires a source');
             done();
         });
 
@@ -317,41 +459,28 @@ describe("AnnotationUtil", () => {
             done();
         });
 
-        it("should throw an error when receiving a target without mimetype", (done) => {
+        it("should return an annotation when receiving a breadcrum trail target", (done) => {
             var creator = "testuser";
-            var error = null;
-            let annotationTargets = [
-                {
-                    source: "urn:vangogh:testletter:page.1",
-                    params: { rect: { x: 18, y: 23, w: 100, h: 150 } }
-                }
+            let breadcrumbs = [
+                {id: "urn:vangogh:correspondence", type: "Correspondence", property: "isPartOf", node: "node"},
+                {id: "urn:vangogh:testletter", type: "Letter", property: "hasPart", node: "node"},
+                {id: "urn:vangogh:testletter:page.1", type: "TextBearer", property: "isCarriedOn", node: "node"}
             ];
-            try {
-                AnnotationUtil.generateW3CAnnotation(annotationTargets, creator);
-            }
-            catch (err) {
-                error = err
-            }
-            expect(error.message).to.equal('annotation target requires a mimetype');
-            done();
-        });
-
-        it("should throw an error when receiving a target without source", (done) => {
-            var creator = "testuser";
-            var error = null;
             let annotationTargets = [
                 {
                     mimeType: "image",
-                    params: { rect: { x: 18, y: 23, w: 100, h: 150 } }
+                    source: "urn:vangogh:testletter",
+                    params: {
+                        breadcrumbs: breadcrumbs,
+                        rect: { x: 18, y: 23, w: 100, h: 150 }
+                    }
                 }
             ];
-            try {
-                AnnotationUtil.generateW3CAnnotation(annotationTargets, creator);
-            }
-            catch (err) {
-                error = err
-            }
-            expect(error.message).to.equal('annotation target requires a source');
+            let annotation = AnnotationUtil.generateW3CAnnotation(annotationTargets, creator);
+            expect(annotation.type).to.equal("Annotation");
+            expect(annotation.target[0].type).to.equal("Image");
+            expect(annotation.target[0].selector.type).to.equal("NestedPIDSelector");
+            expect(annotation.target[0].selector.refinedBy.type).to.equal("FragmentSelector");
             done();
         });
     });
