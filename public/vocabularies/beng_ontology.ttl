@@ -11,6 +11,9 @@
 <http://localhost:3001/vocabularies/beng_ontology.ttl>  owl:imports  <http://localhost:3001/vocabularies/genericontology.ttl>.
 
 # B&G generic properties
+beng:Collection rdf:type owl:Class ;
+	rdfs:label "Collection" .
+
 beng:Title rdf:type owl:Class ;
 	rdfs:label "Title" ;
 	rdfs:subClassOf hi:MetadataItem.
@@ -106,3 +109,10 @@ beng:Movie
 	hi:hasMetadataItem beng:InCollection;
 	hi:hasRepresentation hi:Representation.
 
+# Relations
+beng:hasItem rdf:type owl:ObjectProperty ;
+	rdfs:domain beng:Collection;
+	rdfs:range hi:CreativeWork;
+	rdfs:label "hasItem" ;
+	rdfs:comment "Indicates that a collection contains a creative work";
+	rdfs:subPropertyOf hi:includes.
