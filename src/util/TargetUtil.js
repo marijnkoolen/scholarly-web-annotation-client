@@ -57,7 +57,7 @@ const TargetUtil = {
     findNodeOffsetInContainer : function(container, targetNode) {
         let descendants = RDFaUtil.getNotIgnoreDescendants(container);
         let precedingNodes = descendants.slice(0, descendants.indexOf(targetNode));
-        let textNodes = DOMUtil.getTextNodes(precedingNodes);
+        let textNodes = DOMUtil.filterTextNodes(precedingNodes);
         var targetOffset = 0;
         textNodes.forEach(function(node) {
             targetOffset += node.textContent.length;
@@ -82,6 +82,7 @@ const TargetUtil = {
         } else {
             console.error("Selection has unknown mimetype:", selection);
         }
+        params.breadcrumbs = RDFaUtil.createBreadcrumbTrail(container.source);
         return {
             node: container.node,
             mimeType: selection.mimeType,
@@ -125,15 +126,17 @@ const TargetUtil = {
     // and return as candidate annotation targets
     getRDFaCandidates : function(nodes) {
         return RDFaUtil.selectRDFaNodes(nodes).map(function(node) {
+            let resourceId = RDFaUtil.getRDFaResource(node);
             return {
                 node: node,
                 type: "resource",
                 mimeType: "text", // TODO - fix based on actual content
                 params: {
-                    text: RDFaUtil.getRDFaTextContent(node)
+                    breadcrumbs: RDFaUtil.createBreadcrumbTrail(resourceId),
+                    text: RDFaUtil.getRDFaTextContent(node),
                 },
                 label: node.getAttribute("typeof"),
-                source: node.hasAttribute("resource") ? node.getAttribute("resource") : node.getAttribute("about")
+                source: resourceId
             }
         });
     },
@@ -149,6 +152,7 @@ const TargetUtil = {
     // or contained in the selected passage.
     getCandidateRDFaTargets : function(defaultTargets) {
         var selection = SelectionUtil.getCurrentSelection();
+        console.log(selection);
         var ancestors = DOMUtil.findCommonAncestors(selection.startNode, selection.endNode);
         selection.containerNode = ancestors[ancestors.length - 1];
         var biggerNodes = TargetUtil.getRDFaCandidates(ancestors);
@@ -319,8 +323,10 @@ const TargetUtil = {
             type: "Image",
             node: node
         }
-        if (target.selector !== undefined && target.selector !== null)
-            imageRegion.rect = target.selector.rect
+        if (target.selector !== undefined && target.selector !== null) {
+            let mediaFragment = TargetUtil.getTargetMediaFragment(target);
+            imageRegion.rect = mediaFragment.rect
+        }
         return imageRegion;
     },
 
@@ -344,8 +350,10 @@ const TargetUtil = {
             type: target.type,
             node: node
         }
-        if (target.selector !== undefined && target.selector !== null)
-            segment.interval = target.selector.interval
+        if (target.selector !== undefined && target.selector !== null) {
+            let mediaFragment = TargetUtil.getTargetMediaFragment(target);
+            segment.interval = mediaFragment.interval
+        }
         return segment;
     },
 
@@ -374,6 +382,16 @@ const TargetUtil = {
         var text = selection.toString();
         selection.removeAllRanges();
         return text;
+    },
+
+    getTargetMediaFragment(target) {
+        if (typeof(target) === "string")
+            return null;
+        if (target.selector && target.selector.type === "FragmentSelector") {
+                return target.selector;
+        } else if (target.selector.refinedBy && target.selector.refinedBy.type === "FragmentSelector") {
+            return target.selector.refinedBy;
+        }
     },
 
     toggleHighlight(targetDOMElements, highlighted) {
