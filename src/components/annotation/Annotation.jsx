@@ -65,12 +65,10 @@ class Annotation extends React.Component {
     }
 
     onMouseOverHandler(crumb) {
-        //console.log("over");
         crumb.node.style.border = "1px solid red";
     }
 
     onMouseOutHandler(crumb) {
-        //console.log("out");
         crumb.node.style.border = "";
     }
 
@@ -102,17 +100,18 @@ class Annotation extends React.Component {
                 if (target.type === "Text") {
                     text = TargetUtil.getTargetText(target, source);
                 } else if (target.type === "Image") {
-                    let rect = target.selector.rect;
-                    console.log(rect);
-                    let topLeft = rect.x + ',' + rect.y;
-                    let bottomRight = rect.x + rect.w + ',' + (rect.y + rect.h);
+                    let selector = TargetUtil.getTargetMediaFragment(target);
+                    let rect = selector.rect;
+                    let topLeft = selector.rect.x + ',' + selector.rect.y;
+                    let bottomRight = selector.rect.x + selector.rect.w + ',' + (selector.rect.y + selector.rect.h);
                     text = (
                         <span>
                             {'[' + topLeft + ' - ' + bottomRight + ']'}
                         </span>
                     )
                 } else if (target.type === "Video") {
-                    let segment = target.selector.interval;
+                    let selector = TargetUtil.getTargetMediaFragment(target);
+                    let segment = selector.interval;
                     text = (
                         <span>
                             {'[' + TimeUtil.formatTime(segment.start) + ' - ' + TimeUtil.formatTime(segment.end) + ']'}
@@ -123,8 +122,8 @@ class Annotation extends React.Component {
                     text = text.substr(0, 37) + "...";
                 }
                 label = source.data.rdfaType;
-                let breadcrumb = RDFaUtil.createBreadcrumb(source.data.rdfaResource);
-                let labelcrumb = breadcrumb.map((crumb, index) => {
+                let breadcrumbs = RDFaUtil.createBreadcrumbTrail(source.data.rdfaResource);
+                let breadcrumbLabels = breadcrumbs.map((crumb, index) => {
                     let next = " > ";
                     if (!index)
                         next = "";
@@ -140,7 +139,7 @@ class Annotation extends React.Component {
                                 className="label label-info"
                                 title={"Identifier: " + crumb.id}
                             >
-                               {crumb.label}
+                               {crumb.type}
                             </span>
                             &nbsp;
                         </span>
@@ -148,7 +147,7 @@ class Annotation extends React.Component {
                 })
                 return (
                     <div key={targetCount}>
-                        {labelcrumb}
+                        {breadcrumbLabels}
                         <br/>
                         <span>{text}</span>
                     </div>
