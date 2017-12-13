@@ -12,7 +12,7 @@ const AnnotationUtil = {
     //called from components that want to create a new annotation with a proper target
     generateW3CAnnotation : function(annotationTargets, creator) {
         if (!AnnotationUtil.hasTargets(annotationTargets))
-            throw new Error('Annotation requires an array of annotation targets.');
+            throw new Error('Annotation requires a non-empty array of annotation targets.');
         if (creator === undefined)
             throw new Error('Annotation requires a creator object.')
         let targetList = annotationTargets.map(function(annotationTarget) {
@@ -71,10 +71,84 @@ const AnnotationUtil = {
     },
 
     /*************************************************************************************
+     ************************************* W3C Subresource HELPERS ***************
+    *************************************************************************************/
+
+    makeNestedPIDSelector : function(breadcrumbTrail) {
+        if (!AnnotationUtil.hasSubresources(breadcrumbTrail)) {
+            throw new Error('makeNestedPIDSelector requires a breadcrumb trail');
+        }
+        let nestedPIDList = breadcrumbTrail.map((breadcrumb) => {
+            return {
+                id: breadcrumb.id,
+                property: breadcrumb.property,
+                type: breadcrumb.type
+            }
+        });
+        return {
+            type: "NestedPIDSelector",
+            value: nestedPIDList
+        };
+    },
+
+    makeSubresourceSelector : function(breadcrumbTrail) {
+        if (!AnnotationUtil.hasSubresources(breadcrumbTrail)) {
+            throw new Error('makeSubresourceSelector requires a breadcrumb trail');
+        }
+        return {
+            type: "SubresourceSelector",
+            value: AnnotationUtil.makeSubresourceBranch(breadcrumbTrail)
+        }
+    },
+
+    makeSubresourceBranch : (breadcrumbTrail) => {
+        let top = breadcrumbTrail.shift();
+        var branch = {
+            id: top.id,
+            type: top.type,
+        }
+        if (top.property)
+            branch.property = top.property;
+        if (breadcrumbTrail.length)
+            branch.subresource = AnnotationUtil.makeSubresourceBranch(breadcrumbTrail);
+        return branch;
+    },
+
+    hasSubresources : (breadcrumbTrail) => {
+        if (breadcrumbTrail === undefined)
+            return false;
+        if (!Array.isArray(breadcrumbTrail))
+            return false;
+        if (breadcrumbTrail.length === 0)
+            return false;
+        return breadcrumbTrail.every((breadcrumb) => {
+            if (typeof(breadcrumb) !== "object")
+                return false;
+            let requiredProperties = ["id", "type", "property"];
+            return requiredProperties.every((property) => {
+
+                return Object.keys(breadcrumb).includes(property);
+            });
+        });
+    },
+
+    /*************************************************************************************
      ************************************* W3C MEDIA FRAGMENTS HELPERS ***************
     *************************************************************************************/
 
     makeSelector : function(params, targetType) {
+        console.log(params);
+        if (params.breadcrumbs !== undefined) {
+            var selector = AnnotationUtil.makeNestedPIDSelector(params.breadcrumbs);
+            if (targetType)
+                selector.refinedBy = AnnotationUtil.makeMimeSelector(params, targetType);
+            return selector;
+        } else {
+            return AnnotationUtil.makeMimeSelector(params, targetType);
+        }
+    },
+
+    makeMimeSelector : function(params, targetType) {
         if (targetType === "Text") {
             return AnnotationUtil.makeTextSelector(params);
         } else if (["Audio", "Image", "Video"].includes(targetType)) {
