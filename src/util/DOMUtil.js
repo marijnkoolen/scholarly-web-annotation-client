@@ -1,6 +1,8 @@
 
 'use strict'
 
+import StringUtil from './StringUtil.js';
+
 const DOMUtil = {
 
     setObserverNodeClass(observerNodeClass) {
@@ -24,14 +26,68 @@ const DOMUtil = {
         return cStyle.display;
     },
 
+    getTextNodeDisplayOffset : function (textNode) {
+        var displayText = textNode.textContent;
+        let parentDisplayType = DOMUtil.getDisplayType(textNode.parentNode);
+        if (parentDisplayType === "inline") {
+            return 0;
+        } else {
+            if (textNode === textNode.parentNode.firstChild) {
+                displayText = displayText.trimLeft();
+            } else {
+                displayText = StringUtil.collapseLeftWhitespace(displayText);
+            }
+            return textNode.textContent.length - displayText.length;
+        }
+        return 0;
+    },
+
+    getTextNodeDisplayText : function (textNode) {
+        var displayText = textNode.textContent;
+        let parentDisplayType = DOMUtil.getDisplayType(textNode.parentNode);
+        if (parentDisplayType === "block") {
+            if (textNode === textNode.parentNode.firstChild) {
+                displayText = displayText.trimLeft();
+            } else {
+                displayText = StringUtil.collapseLeftWhitespace(displayText);
+            }
+            if (textNode === textNode.parentNode.lastChild) {
+                displayText = displayText.trimRight();
+            } else {
+                displayText = StringUtil.collapseRightWhitespace(displayText);
+            }
+        }
+        return displayText;
+    },
+
     /*
     ***********************************
     * DOM element selection functions *
     ***********************************
     */
 
+    getPreviousTextNode : (textNode) => {
+        var previousTextNode = null;
+        var parentNode = textNode.parentNode;
+        var parentTextNodes = DOMUtil.getTextNodes(parentNode);
+        while (parentNode !== document && parentTextNodes.indexOf(textNode) === 0) {
+            parentNode = parentNode.parentNode;
+            parentTextNodes = DOMUtil.getTextNodes(parentNode);
+        }
+        if (parentTextNodes.indexOf(textNode) === 0)
+            return null;
+        return parentTextNodes[parentTextNodes.indexOf(textNode)-1]
+    },
+
+    // return all text nodes contained within a node
+    getTextNodes : function(node) {
+        return DOMUtil.getDescendants(node).filter(function(node) {
+            return node.nodeType === window.Node.TEXT_NODE;
+        });
+    },
+
     // return all text nodes in a list of nodes
-    getTextNodes : function(nodes) {
+    filterTextNodes : function(nodes) {
         return nodes.filter(function(node) {
             return node.nodeType === window.Node.TEXT_NODE;
         });
@@ -112,18 +168,12 @@ const DOMUtil = {
                     mimetype = "image";
                     break;
                 case "VIDEO":
-                    mimetype = "image";
+                    mimetype = "video";
                     break;
                 default:
                     mimetype = "text";
                     break;
             }
-
-
-            // 2. img
-            // 3. video
-            // 4. canvas
-            // 5. empty => text
             return {node: node, mimetype: mimetype}
         } else {
             node.forEach((childNode) => {
