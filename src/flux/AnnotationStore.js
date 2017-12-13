@@ -35,8 +35,6 @@ class AnnotationStore {
 
     delete(annotation) {
         console.log(annotation);
-        //notify all components that just listen to a single target
-        this.trigger(annotation.target.source, 'delete', annotation);
         //then notify all components that are interested in all annotations
         this.trigger('load-annotations');
         // then notify all components that are interested in the deleted annotation

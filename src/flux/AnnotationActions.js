@@ -142,7 +142,6 @@ const AnnotationActions = {
         this.topResources = RDFaUtil.getTopRDFaResources();
         this.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
         this.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
-        this.registerResources(this.resourceMaps);
         AppDispatcher.dispatch({
             eventName: 'load-resources',
             topResources: this.topResources,
