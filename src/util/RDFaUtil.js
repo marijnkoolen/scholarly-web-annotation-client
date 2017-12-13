@@ -111,11 +111,14 @@ const RDFaUtil = {
             if (childNode.nodeType === window.Node.TEXT_NODE) {
                 // deal with surrounding whitespace of child nodes
                 // based on browser behaviour
-                childTextContent = StringUtil.collapse(childNode.textContent);
+                childTextContent = DOMUtil.getTextNodeDisplayText(childNode);
+                /*
+                childTextContent = StringUtil.collapseWhitespace(childNode.textContent);
                 if (textContent === "" && DOMUtil.getDisplayType(node) === "block")
                     childTextContent = childTextContent.trimLeft();
                 if (childNode === node.lastChild && DOMUtil.getDisplayType(node) === "block")
                     childTextContent = childTextContent.trimRight();
+                */
             }
             else if (childNode.nodeType === window.Node.ELEMENT_NODE) {
                 childTextContent = RDFaUtil.getRDFaTextContent(childNode);
@@ -128,6 +131,10 @@ const RDFaUtil = {
             textContent += childTextContent;
         });
         return textContent;
+    },
+
+    getRDFaResource : (node) => {
+        return node.hasAttribute("resource") ? node.getAttribute("resource") : node.getAttribute("about")
     },
 
 
@@ -162,7 +169,7 @@ const RDFaUtil = {
             let attrs = RDFaUtil.getRDFaAttributes(topRDFaNode);
             VocabularyUtil.getVocabulary(attrs.vocab, function(error) {
                 if (error)
-                    console.log(error);
+                    console.error(error);
                 else {
                     let annotatableThings = VocabularyUtil.listAnnotatableThings();
                 }
@@ -171,7 +178,7 @@ const RDFaUtil = {
 
     },
 
-    createBreadcrumb(resourceId) {
+    createBreadcrumbTrail(resourceId) {
         var rootFound = false;
         var breadcrumb = {};
         var labelcrumb = [];
@@ -183,7 +190,7 @@ const RDFaUtil = {
                 id: source.data.rdfaResource,
                 node: source.data.domNode,
                 property: source.data.rdfaProperty,
-                label: source.data.rdfaType
+                type: source.data.rdfaType
             });
             if (source !== undefined && source.data.rdfaParent) {
                 var val = {id: source.data.rdfaParent};

@@ -80,9 +80,12 @@ const SelectionUtil = {
             var charCount = 0, endCharCount;
 
             for (var i = 0, textNode; textNode = textNodes[i]; i++) {
-                endCharCount = charCount + textNode.length;
+                // offset of display text w.r.t underlying text content (e.g. removed leading whitespace)
+                let displayOffset = DOMUtil.getTextNodeDisplayOffset(textNode);
+                let displayText = DOMUtil.getTextNodeDisplayText(textNode);
+                endCharCount = charCount + displayText.length;
                 if (!foundStart && start >= charCount && (start < endCharCount || (start === endCharCount && i <= textNodes.length))) {
-                    range.setStart(textNode, start - charCount);
+                    range.setStart(textNode, start - charCount + displayOffset);
                     foundStart = true;
                 }
                 if (foundStart && end === -1) {
@@ -91,7 +94,7 @@ const SelectionUtil = {
                     break;
                 }
                 else if (foundStart && end !== -1 && end <= endCharCount) {
-                    range.setEnd(textNode, end - charCount);
+                    range.setEnd(textNode, end - charCount + displayOffset);
                     break;
                 }
                 charCount = endCharCount;
@@ -216,15 +219,36 @@ const SelectionUtil = {
             let backwards = position & Node.DOCUMENT_POSITION_PRECEDING;
             if (position === 0 && selection.anchorOffset > selection.focusOffset)
                 backwards = 1;
+            var focusOffset = SelectionUtil.getTrimmedOffset(selection.focusNode, selection.focusOffset);
+            var anchorOffset = SelectionUtil.getTrimmedOffset(selection.anchorNode, selection.anchorOffset);
             SelectionUtil.currentSelection = {
                 startNode: backwards ? selection.focusNode : selection.anchorNode,
-                startOffset: backwards ? selection.focusOffset : selection.anchorOffset,
+                startOffset: backwards ? focusOffset : anchorOffset,
                 endNode: backwards ? selection.anchorNode : selection.focusNode,
-                endOffset: backwards ? selection.anchorOffset : selection.focusOffset,
+                endOffset: backwards ? anchorOffset : focusOffset,
                 selectionText: selection.toString(),
                 mimeType: "text"
             };
         }
+        let endParent = SelectionUtil.currentSelection.endNode.parentNode;
+        if (RDFaUtil.isRDFaIgnoreNode(endParent)) {
+            let prevNode = DOMUtil.getPreviousTextNode(SelectionUtil.currentSelection.endNode);
+            SelectionUtil.currentSelection.endNode = prevNode;
+            SelectionUtil.currentSelection.endOffset = prevNode.length;
+            SelectionUtil.adjustSelection(SelectionUtil.currentSelection);
+            selection = document.getSelection();
+            SelectionUtil.currentSelection.selectionText = selection.toString();
+        }
+    },
+
+    getTrimmedOffset : function(node, offset) {
+        if (node.nodeType === window.Node.TEXT_NODE && offset > 0) {
+            let textContent = node.textContent;
+            if (offset > 0)
+                offset -= DOMUtil.getTextNodeDisplayOffset(node);
+            //offset -= textContent.length - textContent.trimLeft().length;
+        }
+        return offset;
     },
 
     // Find nodes and offsets corresponding to the selection.
@@ -252,22 +276,26 @@ const SelectionUtil = {
             selection.startNode = startNode;
         }
         // 4. if selection end node has SelectWholeElement property
-        if (selection.endOffest !== undefined && endNode) {
+        if (selection.endOffset !== undefined && endNode) {
             // move selection to end of end node
-            let textNodes = DOMUtil.getTextNodes(DOMUtil.getDescendants(endNode));
+            let textNodes = DOMUtil.getTextNodes(endNode);
             selection.endNode = textNodes[textNodes.length - 1];
             selection.endOffset = selection.endNode.length;
         }
         // 5. if start and/or end nodes have SelectWholeElement property,
         // make sure the offsets are set properly
         if (startNode || endNode){
-            var range = document.createRange();
-            range.setStart(selection.startNode, selection.startOffset);
-            range.setEnd(selection.endNode, selection.endOffset);
-            var sel = document.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
+            SelectionUtil.adjustSelection(selection);
         }
+    },
+
+    adjustSelection : (selection) => {
+        var range = document.createRange();
+        range.setStart(selection.startNode, selection.startOffset);
+        range.setEnd(selection.endNode, selection.endOffset);
+        var sel = document.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
     },
 
     selectWholeElement : function(node) {
