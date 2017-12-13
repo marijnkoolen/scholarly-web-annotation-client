@@ -141,7 +141,7 @@ describe('AnnotationAPI', () => {
         it('should return an error after GETting deleted annotation', (done) => {
             AnnotationAPI.getAnnotationById(savedAnnotation.id, function(error, data) {
                 expect(error.status).to.equal(404);
-                expect(error.message).to.equal("There is no annotation with ID " + savedAnnotation.id);
+                expect(error.message).to.equal("Annotation with id " + savedAnnotation.id + " does not exist");
                 done();
             });
         });
