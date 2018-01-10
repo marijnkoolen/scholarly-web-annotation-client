@@ -63,18 +63,6 @@ const AnnotationAPI = {
         });
     },
 
-    login : function(userDetails, callback) {
-        var url = this.annotationServer + "/login";
-        let options = {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(userDetails)
-        }
-        this.makeRequest(url, options, (error, data) => {
-            return callback(error, data);
-        });
-    },
-
     getAnnotationById : function(annotationId, callback) {
         var status = null;
         let url = this.annotationServer + '/annotations/' + annotationId;
@@ -222,6 +210,18 @@ const AnnotationAPI = {
     removeAnnotation : function (collectionId, annotationId, callback) {
         let url = this.annotationServer + '/collections/' + collectionId + '/annotations/' + annotationId;
         let options = { method: "DELETE" };
+        this.makeRequest(url, options, (error, data) => {
+            return callback(error, data);
+        });
+    },
+
+    login : function(userDetails, callback) {
+        var url = this.annotationServer + "/login";
+        let options = {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(userDetails)
+        }
         this.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
