@@ -2,7 +2,12 @@
 
 Javascript annotation client for RDFa enriched web resources based on the W3C Web Annotation standard. This client is developed by the [Netherlands Institute for Sound and Vision](http://labs.beeldengeluid.nl/) and [Huygens ING](https://www.huygens.knaw.nl/?lang=en) for the research infrastructure project [CLARIAH](https://www.clariah.nl/en/). It is being developed in tandem with the [Scholarly Web Annotation Server](https://github.com/marijnkoolen/scholarly-web-annotation-server).
 
-## Use
+[Embedding the Scholarly Web Annotation Client](#embed)
+[Using the Scholarly Web Annotation Client](#use)
+[Modifying the Scholarly Web Annotation Client](#develop)
+
+<a name=”embed”></a>
+## Embedding the Scholary Web Annotation Client
 
 ### Loading Client Dependencies
 
@@ -105,29 +110,7 @@ annotator.addAnnotationClient(viewerElement); // insert client in the DOM
 
 ### A complete example
 
-`index.html`:
-
-```xhtml
-<html>
-    <head>
-        <script src=”https://code.jquery.com/jquery-2.2.4.js”></script>
-        <script src=”https://code.jquery.com/ui/1.12.1/jquery-ui.js”></script>
-        <script src=”http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js”></script>
-        <link rel=”stylesheet” href=”http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css”>
-    </head>
-    <body>
-        <div class=”annotation-target-observer”>
-            <div typeof=”Letter” resource=”urn:vangogh:letter001” vocab=”http://boot.huygens.knaw.nl/annotate/vangoghontology.ttl”>
-                <p typeof=”Paragraphinletter” resource=”urn:vangogh:letter001:p.1” property=”hasPart”>Text of the first paragraph.</p>
-                <p typeof=”Paragraphinletter” resource=”urn:vangogh:letter001:p.2” property=”hasPart”>Text of the second paragraph.</p>
-            </div>
-        </div>
-        <div class=”annotation-viewer”></div>
-        <script src=”./scholarly-web-annotator.js”></script>
-        <script src=”./load_annotator.js”></script>
-    </body>
-</html>
-```
+Here is a complete example to demonstrate how you can setup a web page with an RDFa-enriched resource and a fully-configured annotation client. This example assumes four files sitting in the same web directory that is served over HTTP: the SWA client library (`scholarly-web-annotation-client.js`), a configuration file (`annotator_config.js`), a loading script to configure and embed the client (`load_annotator.js`) and an HTML file with the RDFa-enriched resource (`index.html`).
 
 `annotator_config.js`:
 
@@ -223,8 +206,44 @@ var loadConfig = function(callback) {
 
 ```
 
+Finally, create an HTML file that loads the dependencies, the SWA client library and the loading script.
 
-## Development
+`index.html`:
+
+```xhtml
+<html>
+    <head>
+        <script src=”https://code.jquery.com/jquery-2.2.4.js”></script>
+        <script src=”https://code.jquery.com/ui/1.12.1/jquery-ui.js”></script>
+        <script src=”http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js”></script>
+        <link rel=”stylesheet” href=”http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css”>
+    </head>
+    <body>
+        <div class=”annotation-target-observer”>
+            <div typeof=”Letter” resource=”urn:vangogh:letter001” vocab=”http://boot.huygens.knaw.nl/annotate/vangoghontology.ttl”>
+                <p typeof=”Paragraphinletter” resource=”urn:vangogh:letter001:p.1” property=”hasPart”>Text of the first paragraph.</p>
+                <p typeof=”Paragraphinletter” resource=”urn:vangogh:letter001:p.2” property=”hasPart”>Text of the second paragraph.</p>
+            </div>
+        </div>
+        <div class=”annotation-viewer”></div>
+        <script src=”./scholarly-web-annotator.js”></script>
+        <script src=”./load_annotator.js”></script>
+    </body>
+</html>
+```
+
+
+<a name=”use”></a>
+## Using the Scholary Web Annotation Client
+
+Once you have the client up and running, as well as a SWA server, you can start annotating.
+
+Below are screenshots demonstrating how to use the client.
+
+![Image not found](docs/screenshots/swa-plain-view.png)
+
+<a name=”develop”></a>
+## Modifying the Scholarly Web Annotation Client
 
 ### How to install
 
