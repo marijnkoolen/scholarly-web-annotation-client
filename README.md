@@ -2,9 +2,9 @@
 
 The Scholarly Web Annotation (SWA) client is a Javascript annotation client for RDFa enriched web resources based on the W3C Web Annotation standard. This client is developed by the [Netherlands Institute for Sound and Vision](http://labs.beeldengeluid.nl/) and [Huygens ING](https://www.huygens.knaw.nl/?lang=en) for the research infrastructure project [CLARIAH](https://www.clariah.nl/en/). It is being developed in tandem with the [Scholarly Web Annotation Server](https://github.com/marijnkoolen/scholarly-web-annotation-server).
 
-+ [Embedding the SWA Client](#embed)
++ [Embedding the SWA Client](#embedding-the-swa-client)
 + [Using the SWA Client](#using-the-swa-client)
-+ [Modifying the SWA Client](#develop)
++ [Modifying the SWA Client](#modifying-the-swa-client)
 
 <a name=”embed”></a>
 ## Embedding the SWA Client
