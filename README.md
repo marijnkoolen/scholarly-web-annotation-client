@@ -1,13 +1,13 @@
 # Scholarly Web Annotation Client
 
-Javascript annotation client for RDFa enriched web resources based on the W3C Web Annotation standard. This client is developed by the [Netherlands Institute for Sound and Vision](http://labs.beeldengeluid.nl/) and [Huygens ING](https://www.huygens.knaw.nl/?lang=en) for the research infrastructure project [CLARIAH](https://www.clariah.nl/en/). It is being developed in tandem with the [Scholarly Web Annotation Server](https://github.com/marijnkoolen/scholarly-web-annotation-server).
+The Scholarly Web Annotation (SWA) client is a Javascript annotation client for RDFa enriched web resources based on the W3C Web Annotation standard. This client is developed by the [Netherlands Institute for Sound and Vision](http://labs.beeldengeluid.nl/) and [Huygens ING](https://www.huygens.knaw.nl/?lang=en) for the research infrastructure project [CLARIAH](https://www.clariah.nl/en/). It is being developed in tandem with the [Scholarly Web Annotation Server](https://github.com/marijnkoolen/scholarly-web-annotation-server).
 
-+ [Embedding the Scholarly Web Annotation Client](#embed)
-+ [Using the Scholarly Web Annotation Client](#use)
-+ [Modifying the Scholarly Web Annotation Client](#develop)
++ [Embedding the SWA Client](#embed)
++ [Using the SWA Client](#use)
++ [Modifying the SWA Client](#develop)
 
 <a name=”embed”></a>
-## Embedding the Scholary Web Annotation Client
+## Embedding the SWA Client
 
 ### Loading Client Dependencies
 
@@ -234,7 +234,7 @@ Finally, create an HTML file that loads the dependencies, the SWA client library
 
 
 <a name=”use”></a>
-## Using the Scholary Web Annotation Client
+## Using the SWA Client
 
 Once you have the client up and running, as well as a SWA server, you can start annotating.
 
@@ -268,7 +268,7 @@ Below are screenshots demonstrating how to use the client.
 
 
 <a name=”develop”></a>
-## Modifying the Scholarly Web Annotation Client
+## Modifying the SWA Client
 
 ### How to install
 
