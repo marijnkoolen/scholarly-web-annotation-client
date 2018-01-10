@@ -2,9 +2,9 @@
 
 Javascript annotation client for RDFa enriched web resources based on the W3C Web Annotation standard. This client is developed by the [Netherlands Institute for Sound and Vision](http://labs.beeldengeluid.nl/) and [Huygens ING](https://www.huygens.knaw.nl/?lang=en) for the research infrastructure project [CLARIAH](https://www.clariah.nl/en/). It is being developed in tandem with the [Scholarly Web Annotation Server](https://github.com/marijnkoolen/scholarly-web-annotation-server).
 
-[Embedding the Scholarly Web Annotation Client](#embed)
-[Using the Scholarly Web Annotation Client](#use)
-[Modifying the Scholarly Web Annotation Client](#develop)
++ [Embedding the Scholarly Web Annotation Client](#embed)
++ [Using the Scholarly Web Annotation Client](#use)
++ [Modifying the Scholarly Web Annotation Client](#develop)
 
 <a name=”embed”></a>
 ## Embedding the Scholary Web Annotation Client
@@ -241,6 +241,31 @@ Once you have the client up and running, as well as a SWA server, you can start 
 Below are screenshots demonstrating how to use the client.
 
 ![Image not found](docs/screenshots/swa-plain-view.png)
+*Figure 1: the client embedded in a basic web page that is enriched with RDFa information describing the various parts of the letter.*
+
+
+![Image not found](docs/screenshots/swa-text-selection-view.png)
+*Figure 2: If you want to annotate some fragment of text of the letter, select it, then click on the `Make annotation` button to bring up the target selection screen.*
+
+
+![Image not found](docs/screenshots/swa-make-annotation-target-view.png)
+*Figure 3: the client lists the highlighted fragment and larger annotatable objects that contain that fragment as potential annotation targets. Clicking on one or more of these targets will select them as targets for a new W3C annotation. Clicking on the `Annotate` button in the bottom left brings you to the annotation body view.*
+
+
+![Image not found](docs/screenshots/swa-make-annotation-body-view.png)
+*Figure 4: In the annotation body view, you can add the content of your annotation. The different types of annotation available at the top are based on the configuration of the client. For classification and linking types that connect to a vocabulary (e.g. DBpedia, Wikidata, Europeana), typing content will bring up suggested terms from the respective vocabularies. You can configure which vocabularies are available (see above). Clicking on `Save` will send the annotation to the annotation server that is specified in the client configuration.*
+
+
+![Image not found](docs/screenshots/swa-highlight-text-annotation-view.png)
+*Figure 5: By clicking on one of the annotations on the right, that annotated part of the letter (the annotation targets) is highlighted. The annotation also shows a breadcrumb trail listing the branch of annotatable objects that this annotation targets. E.g. in the first annotation that targets the text ‘Oisterwijk’ in the fifth paragraph, the objects that contain this text are the ParagraphInLetter, the whole Letter and the entire Correspondence that the letter is part of. The client automatically generates this breadcrumb from analyzing the underlying RDFa information.*
+
+
+![Image not found](docs/screenshots/swa-highlight-image-annotation-view.png)
+*Figure 6: Text annotation works by default. You can also select entire images and videos if they are enriched with RDFa information. It is also possible to annotate Image fragments. For this, you need to provide an image selection library. The SWA client has functionality to listen to image selection events with which you can pass the selected coordinates to the client to annotate that image fragment(s).*
+
+
+
+
 
 <a name=”develop”></a>
 ## Modifying the Scholarly Web Annotation Client
