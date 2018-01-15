@@ -56,7 +56,6 @@ Put the configuration in a JSON object:
         "classify" : {
             "type": "classification",
             "purpose": "classifying",
-            "format": "text/plain",
             "vocabularies" : [
                 "DBpedia"
             ]
@@ -64,17 +63,14 @@ Put the configuration in a JSON object:
         "comment" : {
             "type": "comment",
             "purpose": "commenting",
-            "format": "text/plain"
         },
         "correct" : {
             "type": "correction",
             "purpose": "correcting",
-            "format": "text/plain"
         },
         "link" : {
             "type": "link",
             "purpose": "linking",
-            "format": "text/plain",
             "apis" : [
                 {"name" : "wikidata"},
                 {"name" : "europeana"}
@@ -83,13 +79,11 @@ Put the configuration in a JSON object:
         "tag": {
             "type": "tag",
             "purpose": "tagging",
-            "format": "text/plain",
             "specifies": "classify"
         },
         "transcribe" : {
             "type": "transcription",
             "purpose": "transcribing",
-            "format": "text/plain"
         }
     },
     "defaults": {
@@ -133,7 +127,6 @@ Here is a complete example to demonstrate how you can setup a web page with an R
         "classify" : {
             "type": "classification",
             "purpose": "classifying",
-            "format": "text/plain",
             "vocabularies" : [
                 "DBpedia"
             ]
@@ -141,17 +134,14 @@ Here is a complete example to demonstrate how you can setup a web page with an R
         "comment" : {
             "type": "comment",
             "purpose": "commenting",
-            "format": "text/plain"
         },
         "correct" : {
             "type": "correction",
             "purpose": "correcting",
-            "format": "text/plain"
         },
         "link" : {
             "type": "link",
             "purpose": "linking",
-            "format": "text/plain",
             "apis" : [
                 {"name" : "wikidata"},
                 {"name" : "europeana"}
