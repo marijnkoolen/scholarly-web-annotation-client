@@ -14,7 +14,7 @@ It is possible to extent the AnnotatableThing Ontology with further concepts fro
 
 The screenshots below demonstrate how resources can be described as `CreativeWorks` that are annotatable. 
 
-![Image not found](screenshots/Work-Realisation-Example.jpg | width=400)
+![Image not found](screenshots/Work-Realisation-Example.jpg)
 
 *Figure 1. Example of a digital edition of a Letter by Vincent van Gogh, connected to the FRBRoo concepts of Complex Work, Individual Work, Self-Contained Expression and Expression Fragment.* 
 
