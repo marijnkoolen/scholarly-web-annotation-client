@@ -106,7 +106,7 @@ annotator.addAnnotationClient(viewerElement); // insert client in the DOM
 
 Here is a complete example to demonstrate how you can setup a web page with an RDFa-enriched resource and a fully-configured annotation client. This example assumes four files sitting in the same web directory that is served over HTTP: the SWA client library (`scholarly-web-annotator.js`), a configuration file (`annotator_config.js`), a loading script to configure and embed the client (`load_annotator.js`) and an HTML file with the RDFa-enriched resource (`index.html`).
 
-[scholarly-web-annotator.js](https://raw.githubusercontent.com/CLARIAH/scholarly-web-annotation-client/master/dist/scholarly-web-annotator.js)
+The SWA client library can be found in this repository: `dist/scholarly-web-annotator.js`
 
 `annotator_config.js`:
 
