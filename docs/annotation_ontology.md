@@ -14,7 +14,8 @@ It is possible to extent the AnnotatableThing Ontology with further concepts fro
 
 The screenshots below demonstrate how resources can be described as `CreativeWorks` that are annotatable. 
 
-![Image not found](screenshots/Work-Realisation-Example.jpg)
+![Image not found](screenshots/Work-Realisation-Example.jpg | width=400)
+
 *Figure 1. Example of a digital edition of a Letter by Vincent van Gogh, connected to the FRBRoo concepts of Complex Work, Individual Work, Self-Contained Expression and Expression Fragment.* 
 
 This example is based on the Work Realisation example in the [Definition of FRBRoo v2.4](https://www.ifla.org/files/assets/cataloguing/FRBRoo/frbroo_v_2.4.pdf), Figure 3, page 20. The letter is part of a correspondence of multiple letters, which makes the correspondence a complex work. But the letter itself consists of multiple creative works. The abstract content of the original work is an individual work, but each transcription and each translation is itself also a creative work, that an annotation might refer to. E.g. if a scholar wants to use an annotation to indicate that a particular transcription contains a mistake, the scholars wants to be able to refer to the text containing the mistake at the level of the transcription. If the scholar instead wants to annotate the same piece of text with a comment about Vincent van Gogh’s writing, the annotation should refer to the abstract content of the original letter.
