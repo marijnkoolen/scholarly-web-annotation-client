@@ -131,6 +131,14 @@ swao:ScanImage rdf:type owl:Class ;
 	rdfs:label "ScanImage" ;
 	rdfs:subClassOf frbroo:F22_Self-Contained_Expression.
 
+swao:TranscriptionFragment rdf:type owl:Class ;
+	rdfs:label "TranscriptionFragment" ;
+	rdfs:subClassOf frbroo:F23_Expression_Fragment.
+
+swao:TranslationFragment rdf:type owl:Class ;
+	rdfs:label "TranslationFragment" ;
+	rdfs:subClassOf frbroo:F23_Expression_Fragment.
+
 swao:hasMetadata rdf:type owl:ObjectProperty ;
 	rdfs:domain frbroo:F1_Work;
 	rdfs:range cidoc:Entity;
