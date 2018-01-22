@@ -33,7 +33,40 @@ For many use cases, a simpler model would suffice. Below is an example of a sing
 
 Adding RDFa for individual expressions allows scholar to refer to them a separate resources or as a single resource. E.g. if a scholar wants to use an annotation to indicate that a particular transcription contains a mistake, the scholars wants to be able to refer to the text containing the mistake at the level of the transcription. If the scholar instead wants to annotate the same piece of text with a comment about Vincent van Gogh’s writing, the annotation should refer to the abstract content of the original letter.
 
-The reason to use different conceptual levels is that the digital edition may want to treat them differently. For instance, a digital edition may wish to show annotations on the abstract content of the original letter with every expression of it, e.g. to its transcription in Dutch as well as to its translation to English. The same digital edition may wish to show an annotation about a mistake in the English translation only with that particular translation.
+The reason to use different conceptual levels is that the digital edition may want to treat them differently. For instance, a digital edition may wish to show annotations on the abstract content of the original letter with every expression of it, e.g. with its transcription in Dutch as well as with its translation to English. The same digital edition may wish to show an annotation about a mistake in the English translation only with that particular translation.
+
+Below is an example in HTML that demonstrates how different conceptual levels can be exploited in RDFa-based annotation:
+
+```xhtml
+
+<div about=”urn:vangogh:letter001” vocab=”http://boot.huygens.knaw.nl/annotate/vangogh_ontology.ttl#” typeof=”letter”>
+	<div resource=”urn:vangogh:letter001:transcription” typeof=”Transcription” property=”R9_is_realised_in”>
+		<div resource=”urn:vangogh:letter001:p.1:transcription” typeof=”TranscriptionFragment” property=”R15_has_fragment”>
+			<div resource=”urn:vangogh:letter001:p.1” typeof=”ParagraphInLetter” property=”R9_is_realisation_of”>
+					Waarde Theo,
+			</div>
+		</div>
+		<div resource=”urn:vangogh:letter001:p.2:transcription” typeof=”TranscriptionFragment” property=”R15_has_fragment”>
+			<div resource=”urn:vangogh:letter001:p.2” typeof=”ParagraphInLetter” property=”R9_is_realisation_of”>
+					Dank voor je brief, het deed mij genoegen dat je weer goed aangekomen zijt.
+			</div>
+		</div>
+	</div>
+	<div resource=”urn:vangogh:letter001:translation” typeof=”Translation” property=”R9_is_realised_in”>
+		<div resource=”urn:vangogh:letter001:p.1:translation” typeof=”TranslationFragment” property=”R15_has_fragment”>
+			<div resource=”urn:vangogh:letter001:p.1” typeof=”ParagraphInLetter” property=”R9_is_realisation_of”>
+					Dear Theo,
+			</div>
+		</div>
+		<div resource=”urn:vangogh:letter001:p.2:translation” typeof=”TranslationFragment” property=”R15_has_fragment”>
+			<div resource=”urn:vangogh:letter001:p.2” typeof=”ParagraphInLetter” property=”R9_is_realisation_of”>
+					Thanks for your letter, I was glad to hear that you got back safely.
+			</div>
+		</div>
+	</div>
+</div>
+
+```
 
 
 ## Special features of the SWA Ontology
