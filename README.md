@@ -6,6 +6,8 @@ The Scholarly Web Annotation (SWA) client is a Javascript annotation client for 
 + [Using the SWA Client](#using-the-swa-client)
 + [Modifying the SWA Client](#modifying-the-swa-client)
 
+We also introduce a [Scholarly Web Annotation Ontology](https://github.com/CLARIAH/scholarly-web-annotation-client/blob/master/docs/annotation_ontology.md) that extends FRBRoo and CIDOC-CRM concepts, to exploit the possibility of annotating a resource on different conceptual levels (e.g. work, manifestation, expression). 
+
 <a name=”embed”></a>
 ## Embedding the SWA Client
 
