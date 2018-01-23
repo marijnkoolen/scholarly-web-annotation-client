@@ -7,6 +7,8 @@ import FlexModal from './../FlexModal';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import SelectionUtil from './../../util/SelectionUtil.js';
 import TargetUtil from './../../util/TargetUtil.js';
+import TimeUtil from '../../util/TimeUtil';
+import RDFaUtil from '../../util/RDFaUtil';
 
 class Annotation extends React.Component {
     constructor(props) {
@@ -16,7 +18,7 @@ class Annotation extends React.Component {
         }
     }
     componentDidMount() {
-        this.setState({targetRanges: TargetUtil.mapTargetsToRanges(this.props.annotation)});
+        this.setState({targetDOMElements: TargetUtil.mapTargetsToDOMElements(this.props.annotation)});
     }
     canEdit() {
         return this.props.currentUser && this.props.currentUser.username === this.props.annotation.creator ? true : false;
@@ -30,7 +32,7 @@ class Annotation extends React.Component {
         // TODO: implement permission check (what should permission check be?)
         return allowed;
     }
-    editTarget(annotation) {
+    editAnnotationTarget(annotation) {
         // ask for adding, changing or removing target
         // if target is resource, allow new resource selection
         // if target is annotation, allow new annotation selection
@@ -52,12 +54,7 @@ class Annotation extends React.Component {
         }
     }
     toggleHighlight() {
-        let component = this;
-        this.state.targetRanges.forEach((target) => {
-            component.state.highlighted ?
-                SelectionUtil.selectAndRemoveRange(target.node, target.start, target.end) :
-                SelectionUtil.selectAndHighlightRange(target.node, target.start, target.end);
-        });
+        TargetUtil.toggleHighlight(this.state.targetDOMElements, this.state.highlighted);
         this.setState({highlighted: this.state.highlighted ? false : true});
     }
     computeClass() {
@@ -65,6 +62,14 @@ class Annotation extends React.Component {
         if(this.state.highlighted)
             className += ' active';
         return className;
+    }
+
+    onMouseOverHandler(crumb) {
+        crumb.node.style.border = "1px solid red";
+    }
+
+    onMouseOutHandler(crumb) {
+        crumb.node.style.border = "";
     }
 
     render() {
@@ -92,24 +97,62 @@ class Annotation extends React.Component {
             var text = "";
             var label;
             if (source.type === "resource") {
-                let selector = AnnotationUtil.getTextQuoteSelector(target);
-                text = selector ? selector.exact : component.getTargetText(target, source);
+                if (target.type === "Text") {
+                    text = TargetUtil.getTargetText(target, source);
+                } else if (target.type === "Image") {
+                    let selector = TargetUtil.getTargetMediaFragment(target);
+                    let rect = selector.rect;
+                    let topLeft = selector.rect.x + ',' + selector.rect.y;
+                    let bottomRight = selector.rect.x + selector.rect.w + ',' + (selector.rect.y + selector.rect.h);
+                    text = (
+                        <span>
+                            {'[' + topLeft + ' - ' + bottomRight + ']'}
+                        </span>
+                    )
+                } else if (target.type === "Video") {
+                    let selector = TargetUtil.getTargetMediaFragment(target);
+                    let segment = selector.interval;
+                    text = (
+                        <span>
+                            {'[' + TimeUtil.formatTime(segment.start) + ' - ' + TimeUtil.formatTime(segment.end) + ']'}
+                        </span>
+                    );
+                }
                 if (text.length > 40) {
                     text = text.substr(0, 37) + "...";
                 }
                 label = source.data.rdfaType;
+                let breadcrumbs = RDFaUtil.createBreadcrumbTrail(source.data.rdfaResource);
+                let breadcrumbLabels = breadcrumbs.map((crumb, index) => {
+                    let next = " > ";
+                    if (!index)
+                        next = "";
+                    return (
+                        <span key={"crumb" + index}
+                            onMouseOver={component.onMouseOverHandler.bind(this, crumb)}
+                            onMouseOut={component.onMouseOutHandler.bind(this, crumb)}
+                        >
+                            <span title={crumb.property}>
+                            {next}
+                            </span>
+                            <span
+                                className="label label-info"
+                                title={"Identifier: " + crumb.id}
+                            >
+                               {crumb.type}
+                            </span>
+                            &nbsp;
+                        </span>
+                    )
+                })
                 return (
                     <div key={targetCount}>
-                        <span></span>
-                        <span
-                            className="label label-info"
-                            >{label}</span>
-                        &nbsp;
+                        {breadcrumbLabels}
+                        <br/>
                         <span>{text}</span>
                     </div>
                 );
-            }
-            if (source.type === "annotation") {
+            } else if (source.type === "annotation") {
                 let body = AnnotationUtil.extractBodies(source.data)[0];
                 let label = body.type;
                 let text = body.value;
@@ -123,6 +166,8 @@ class Annotation extends React.Component {
                         <span>{text}</span>
                     </div>
                 );
+            } else if (source.type === undefined) {
+                console.error("source.type is not defined, showing content of annotation target and associated indexed source", target, source);
             }
         });
 

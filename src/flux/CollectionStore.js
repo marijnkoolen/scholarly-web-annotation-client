@@ -37,7 +37,7 @@ AppDispatcher.register( function( action ) {
             AppCollectionStore.defaultTrigger(action.eventName, action.collection);
             break;
         case 'updated-collection':
-            AppCollectionStore.defaultTrigger(action.eventName, action.page);
+            AppCollectionStore.defaultTrigger(action.eventName, action.collection);
             break;
         case 'default-collection':
             AppCollectionStore.defaultTrigger(action.eventName, action.collection);

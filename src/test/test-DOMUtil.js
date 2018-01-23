@@ -14,6 +14,8 @@ describe("DOMUtil", function() {
         let doc = jsdom.jsdom(htmlSource)
         let window = doc.defaultView;
         global.document = window.document;
+		let observerNodeClass = 'annotation-target-observer';
+		DOMUtil.setObserverNodeClass(observerNodeClass);
         done();
     });
 
@@ -35,7 +37,7 @@ describe("DOMUtil", function() {
 
     describe("getting annotation-observer nodes", function() {
         it("should return a DIV element", function(done) {
-            let observers = DOMUtil.getObserverNodes(document);
+            let observers = DOMUtil.getObserverNodes();
             expect(observers.length).to.not.equal(0);
             expect(observers[0].nodeName).to.equal("DIV");
             done();

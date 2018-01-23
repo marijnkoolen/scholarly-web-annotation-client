@@ -1,0 +1,118 @@
+@prefix         hi: <http://localhost:3001/vocabularies/genericontology.ttl#> .
+@prefix       foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix       skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix        owl: <http://www.w3.org/2002/07/owl#> .
+@prefix       rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix        rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix       beng: <http://data.beeldengeluid.nl/> .
+@prefix         ma: <http://www.w3.org/ns/ma-ont#> .
+<http://localhost:3001/vocabularies/beng> rdf:type owl:Ontology .
+
+<http://localhost:3001/vocabularies/beng_ontology.ttl>  owl:imports  <http://localhost:3001/vocabularies/genericontology.ttl>.
+
+# B&G generic properties
+beng:Collection rdf:type owl:Class ;
+	rdfs:label "Collection" .
+
+beng:Title rdf:type owl:Class ;
+	rdfs:label "Title" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:Summary rdf:type owl:Class ;
+	rdfs:label "Summary" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:Broadcaster rdf:type owl:Class ;
+	rdfs:label "Broadcaster" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:BroadcastDate rdf:type owl:Class ;
+	rdfs:label "BroadcastDate" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:Genre rdf:type owl:Class ;
+	rdfs:label "Genre" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:Date rdf:type owl:Class ;
+	rdfs:label "Date" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:Description rdf:type owl:Class ;
+	rdfs:label "Description" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:Identifier rdf:type owl:Class ;
+	rdfs:label "Identifier" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+beng:InCollection rdf:type owl:Class ;
+	rdfs:label "InCollection" ;
+	rdfs:subClassOf hi:MetadataItem.
+
+
+# The Creative Works
+beng:Series
+	a rdfs:Class;
+	rdfs:label "BenG_Series";
+	rdfs:subClassOf hi:CreativeWork;
+	hi:hasMetadataItem beng:Title;
+	hi:hasMetadataItem beng:Summary;
+	hi:hasMetadataItem beng:Broadcaster;
+	hi:hasMetadataItem beng:Genre.
+
+
+beng:Season
+	a rdfs:Class;
+	rdfs:label "BenG_Season";
+	rdfs:subClassOf hi:CreativeWork;
+	hi:isPartOf beng:Series;
+	hi:hasMetadataItem beng:Title;
+	hi:hasMetadataItem beng:Summary;
+	hi:hasMetadataItem beng:Broadcaster;
+	hi:hasMetadataItem beng:Genre.
+
+beng:Program
+	a rdfs:Class;
+	rdfs:label "BenG_Program";
+	rdfs:subClassOf hi:CreativeWork;
+	hi:isPartOf beng:Season;
+	hi:hasMetadataItem beng:Title;
+	hi:hasMetadataItem beng:Summary;
+	hi:hasMetadataItem beng:Broadcaster;
+	hi:hasMetadataItem beng:BroadcasterDate;
+	hi:hasMetadataItem beng:Genre;
+	hi:hasMetadataItem beng:Date;
+	hi:hasMetadataItem beng:Description;
+	hi:hasMetadataItem beng:Identifier;
+	hi:hasMetadataItem beng:InCollection;
+	hi:hasRepresentation hi:Representation.
+
+beng:Segment
+	a rdfs:Class;
+	rdfs:label "BenG_Segment";
+	rdfs:subClassOf hi:CreativeWork;
+	hi:isPartOf beng:Program;
+	hi:hasMetadataItem beng:Title;
+	hi:hasMetadataItem beng:Summary;
+	hi:hasRepresentation hi:Representation.
+
+# for EYE movies
+beng:Movie
+	a rdfs:Class;
+	rdfs:label "Movie";
+	rdfs:subClassOf hi:CreativeWork;
+	hi:hasMetadataItem beng:Title;
+	hi:hasMetadataItem beng:Date;
+	hi:hasMetadataItem beng:Description;
+	hi:hasMetadataItem beng:Identifier;
+	hi:hasMetadataItem beng:InCollection;
+	hi:hasRepresentation hi:Representation.
+
+# Relations
+beng:hasItem rdf:type owl:ObjectProperty ;
+	rdfs:domain beng:Collection;
+	rdfs:range hi:CreativeWork;
+	rdfs:label "hasItem" ;
+	rdfs:comment "Indicates that a collection contains a creative work";
+	rdfs:subPropertyOf hi:includes.

@@ -1,7 +1,12 @@
 # generic ignore
-node_modules/
+.DS_Store
 npm-debug.log
 *.pyc
+
+#ignore generated js
+scholarly-web-annotator.js
+scholarly-web-annotator.js.map
+node_modules
 
 # specific ignore
 experimental_server.py
@@ -14,3 +19,8 @@ public/video.html
 
 public/js/delpher_searcher.js
 public/js/delpher_searcher.js.map
+public/js/openseadragon/
+public/js/openseadragonselection/
+
+#never commit real settings
+settings.py

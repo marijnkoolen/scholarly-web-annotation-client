@@ -13,7 +13,18 @@ class CandidateTarget extends React.Component {
     }
     render() {
         // TO DO: deal with elements that have multiple types
-        var text = this.props.candidate.params.text;
+        var text = "";
+        if (this.props.candidate.type === "annotation") {
+            text = this.props.candidate.params.text;
+        } else if (this.props.candidate.mimeType === "text") {
+            if (this.props.candidate.params.quote) {
+                text = this.props.candidate.params.quote.exact;
+            } else if (this.props.candidate.params.text) {
+                text = this.props.candidate.params.text;
+            }
+        } else if (this.props.candidate.mimeType === "image") {
+            text = "Image selection"
+        }
         if (text.length > 200) {
             text = text.substr(0,200) + "...";
         }

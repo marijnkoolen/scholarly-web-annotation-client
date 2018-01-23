@@ -9,10 +9,10 @@ const StringUtil = {
     },
 
     collapseLeftWhitespace : function(text) {
-        return text[0] === " " ? text.replace(/^\s+/, " ") : text;
+        return /\s/.test(text[0]) ? text.replace(/^\s+/, " ") : text;
     },
 
-    collapse : function(text) {
+    collapseWhitespace : function(text) {
         return StringUtil.collapseRightWhitespace(StringUtil.collapseLeftWhitespace(text));
     },
 

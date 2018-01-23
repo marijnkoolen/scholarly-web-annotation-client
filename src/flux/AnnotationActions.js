@@ -15,6 +15,12 @@ const AnnotationActions = {
     annotationIndex : {},
     resourceIndex : {},
     topResources : [],
+    annotationListener: [],
+
+    addListenerElement(element) {
+        if (!this.annotationListener.includes(element))
+            this.annotationListener.push(element);
+    },
 
     lookupIdentifier(sourceId) {
         var source = { type: null, data: null }; // for IDs to external resources
@@ -23,6 +29,21 @@ const AnnotationActions = {
         else if (AnnotationActions.resourceIndex.hasOwnProperty(sourceId))
             source = { type: "resource", data: AnnotationActions.resourceIndex[sourceId] };
         return source;
+    },
+
+    lookupAnnotationsByTarget(resourceId) {
+        return Object.values(this.annotationIndex).filter((annotation) => {
+            let match = annotation.target.some((target) => {
+                if (target.source && target.source === resourceId) {
+                    return true;
+                } else if (target.identifier && target.identifier === resourceId) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+            return match ? true : false;
+        });
     },
 
     save : function(annotation) {
@@ -57,6 +78,13 @@ const AnnotationActions = {
         });
     },
 
+    createAnnotation : function(annotationTargets) { //is the annotation always on the same page?
+        AppDispatcher.dispatch({
+            eventName: 'create-annotation',
+            annotationTargets: annotationTargets
+        });
+    },
+
     set : function(annotation) { //is the annotation always on the same page?
         AppDispatcher.dispatch({
             eventName: 'set-annotation',
@@ -85,6 +113,7 @@ const AnnotationActions = {
             if (error)
                 console.error(resourceIds, error.toString());
 
+            AnnotationActions.annotationIndex = {};
             annotations.forEach(function(annotation) {
                 AnnotationActions.annotationIndex[annotation.id] = annotation;
             });
@@ -92,6 +121,14 @@ const AnnotationActions = {
                 eventName: 'load-annotations',
                 annotations: annotations
             });
+            this.dispatchLoadEvent();
+        });
+    },
+
+    dispatchLoadEvent() { // for external listeners
+        this.annotationListener.forEach((element) => {
+            let event = new CustomEvent("load-annotations");
+            element.dispatchEvent(event);
         });
     },
 
@@ -102,10 +139,9 @@ const AnnotationActions = {
     },
 
     loadResources: function() {
-        this.topResources = RDFaUtil.getTopRDFaResources(document.body);
+        this.topResources = RDFaUtil.getTopRDFaResources();
         this.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
         this.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
-        this.registerResources(this.resourceMaps);
         AppDispatcher.dispatch({
             eventName: 'load-resources',
             topResources: this.topResources,

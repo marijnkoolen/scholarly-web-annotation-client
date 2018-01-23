@@ -6,6 +6,14 @@ import AppDispatcher from './AppDispatcher';
 
 class AnnotationStore {
 
+    setTargetObserverClass() {
+        return this.clientConfiguration.targetObserverClass;
+    }
+
+    getTargetObserverClass() {
+        return this.clientConfiguration.targetObserverClass;
+    }
+
     loadAnnotations(annotations) {
         this.trigger('loaded-annotations', annotations);
     }
@@ -27,8 +35,6 @@ class AnnotationStore {
 
     delete(annotation) {
         console.log(annotation);
-        //notify all components that just listen to a single target
-        this.trigger(annotation.target.source, 'delete', annotation);
         //then notify all components that are interested in all annotations
         this.trigger('load-annotations');
         // then notify all components that are interested in the deleted annotation
@@ -41,6 +47,10 @@ class AnnotationStore {
 
     edit(annotation) {
         this.trigger('edit-annotation', annotation);
+    }
+
+    createAnnotation(annotationTargets) {
+        this.trigger('create-annotation', annotationTargets);
     }
 
     set(annotation) {
@@ -93,6 +103,9 @@ AppDispatcher.register( function( action ) {
             break;
         case 'edit-annotation':
             AppAnnotationStore.edit(action.annotation, action.callback);
+            break;
+        case 'create-annotation':
+            AppAnnotationStore.createAnnotation(action.annotationTargets, action.callback);
             break;
         case 'set-annotation':
             AppAnnotationStore.set(action.annotation, action.callback);

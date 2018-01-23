@@ -34,7 +34,7 @@ const VocabularyUtil = {
                 if (error)
                     callback(error);
 
-                if (importURLs.length > 0) {
+                if (importURLs && importURLs.length > 0) {
                     importURLs.forEach(function(importURL, index) {
                         VocabularyUtil.addVocabulary(importURL, function(error) {
                             if (error)

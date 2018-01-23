@@ -1,5 +1,7 @@
 //aims to implement https://www.w3.org/TR/annotation-model
 
+import SelectionUtil from './SelectionUtil.js';
+
 const AnnotationUtil = {
 
 
@@ -8,43 +10,126 @@ const AnnotationUtil = {
     *************************************************************************************/
 
     //called from components that want to create a new annotation with a proper target
-    generateW3CAnnotation : function(creator, annotationTargets) {
+    generateW3CAnnotation : function(annotationTargets, creator) {
+        if (!AnnotationUtil.hasTargets(annotationTargets))
+            throw new Error('Annotation requires a non-empty array of annotation targets.');
+        if (creator === undefined)
+            throw new Error('Annotation requires a creator object.')
+        let targetList = annotationTargets.map(function(annotationTarget) {
+            return AnnotationUtil.makeAnnotationTarget(annotationTarget);
+        });
         return {
             "@context": "http://www.w3.org/ns/anno.jsonld",
             type: "Annotation",
             motivation: null,
-            creator : creator, //TODO like the selector, generate the w3c stuff here?
-            created: Date.now(),
-            target : annotationTargets.map(function(annotationTarget) {
-                let params = annotationTarget.params;
-                if(!annotationTarget.source) {
-                    return null;
-                }
-                let selector = null; //when selecting a piece of the target
-                let targetType = null;
-
-                //only try to extract/append the spatio-temporal parameters from the params if there is a mimeType
-                if(annotationTarget.mimeType) {
-                    if(annotationTarget.mimeType.indexOf('video') != -1) {
-                        targetType = 'Video';
-                    } else if(annotationTarget.mimeType.indexOf('audio') != -1) {
-                        targetType = 'Audio';
-                    } else if(annotationTarget.mimeType.indexOf('image') != -1) {
-                        targetType = 'Image';
-                    } else if(annotationTarget.mimeType.indexOf('text') != -1) {
-                        targetType = 'Text';
-                    }
-                    if (params) {
-                        selector = AnnotationUtil.makeSelector(params, targetType);
-                    }
-                }
-                return {
-                    source: annotationTarget.source,
-                    selector: selector,
-                    type: targetType
-                }
-            })
+            creator : creator, //TODO map to W3C
+            target : targetList,
         }
+    },
+
+    hasTargets : (targets) => {
+        if (targets === undefined)
+            return false;
+        if (!Array.isArray(targets))
+            return false;
+        if (targets.length === 0)
+            return false;
+        return true;
+    },
+
+    makeAnnotationTarget : (target) => {
+        if (target.source === undefined)
+            throw Error('annotation target requires a source');
+        let selector = null;
+        let targetType = AnnotationUtil.determineTargetType(target);
+        if (target.params !== undefined) {
+            selector = AnnotationUtil.makeSelector(target.params, targetType);
+        }
+        return {
+            source: target.source,
+            selector: selector,
+            type: targetType
+        }
+    },
+
+    determineTargetType : (target) => {
+        if (target.type === "annotation")
+            return "Annotation"
+        if (target.mimeType === undefined)
+            throw Error('annotation target requires a mimetype');
+        if(target.mimeType.startsWith('video')) {
+            return 'Video';
+        } else if(target.mimeType.startsWith('audio')) {
+            return 'Audio';
+        } else if(target.mimeType.startsWith('image')) {
+            return 'Image';
+        } else if(target.mimeType.startsWith('text')) {
+            return 'Text';
+        } else {
+            return null;
+        }
+    },
+
+    /*************************************************************************************
+     ************************************* W3C Subresource HELPERS ***************
+    *************************************************************************************/
+
+    makeNestedPIDSelector : function(breadcrumbTrail) {
+        if (!AnnotationUtil.hasSubresources(breadcrumbTrail)) {
+            throw new Error('makeNestedPIDSelector requires a breadcrumb trail');
+        }
+        let nestedPIDList = breadcrumbTrail.map((breadcrumb) => {
+            return {
+                id: breadcrumb.id,
+                property: breadcrumb.property,
+                type: breadcrumb.type
+            }
+        });
+        return {
+            type: "NestedPIDSelector",
+            value: nestedPIDList
+        };
+    },
+
+    makeSubresourceSelector : function(breadcrumbTrail) {
+        if (!AnnotationUtil.hasSubresources(breadcrumbTrail)) {
+            throw new Error('makeSubresourceSelector requires a breadcrumb trail');
+        }
+        return {
+            type: "SubresourceSelector",
+            value: AnnotationUtil.makeSubresourceBranch(breadcrumbTrail)
+        }
+    },
+
+    makeSubresourceBranch : (breadcrumbTrail) => {
+        let top = breadcrumbTrail.shift();
+        var branch = {
+            id: top.id,
+            type: top.type,
+        }
+        if (top.property)
+            branch.property = top.property;
+        if (breadcrumbTrail.length)
+            branch.subresource = AnnotationUtil.makeSubresourceBranch(breadcrumbTrail);
+        return branch;
+    },
+
+    hasSubresources : (breadcrumbTrail) => {
+        if (breadcrumbTrail === undefined)
+            return false;
+        if (!Array.isArray(breadcrumbTrail))
+            return false;
+        if (breadcrumbTrail.length === 0)
+            return false;
+        return breadcrumbTrail.every((breadcrumb) => {
+            if (typeof(breadcrumb) !== "object")
+                return false;
+            let requiredProperties = ["id", "type", "property"];
+            return requiredProperties.every((property) => {
+
+                return Object.keys(breadcrumb).includes(property);
+            });
+        });
     },
 
     /*************************************************************************************
@@ -52,83 +137,101 @@ const AnnotationUtil = {
     *************************************************************************************/
 
     makeSelector : function(params, targetType) {
+        console.log(params);
+        if (params.breadcrumbs !== undefined) {
+            var selector = AnnotationUtil.makeNestedPIDSelector(params.breadcrumbs);
+            if (targetType)
+                selector.refinedBy = AnnotationUtil.makeMimeSelector(params, targetType);
+            return selector;
+        } else {
+            return AnnotationUtil.makeMimeSelector(params, targetType);
+        }
+    },
+
+    makeMimeSelector : function(params, targetType) {
         if (targetType === "Text") {
             return AnnotationUtil.makeTextSelector(params);
-        }
-        else {
+        } else if (["Audio", "Image", "Video"].includes(targetType)) {
             return AnnotationUtil.makeMediaFragmentSelector(params);
+        } else {
+            return null;
         }
     },
 
     makeMediaFragmentSelector : function(params) {
-        var selector = null;
-        if(params.start && params.end && params.start != -1 && params.end != -1) {
+        if (params === undefined)
+            return null;
+        if (params.interval !== undefined) {
+            SelectionUtil.checkInterval(params.interval);
             return {
-                "type": "FragmentSelector",
-                "conformsTo": "http://www.w3.org/TR/media-frags/",
-                "value": '#t=' + params.start + ',' + params.end
+                type: "FragmentSelector",
+                conformsTo: "http://www.w3.org/TR/media-frags/",
+                value: '#t=' + params.interval.start + ',' + params.interval.end,
+                interval: params.interval
             }
-        } else if(params.rect) {
+
+        } else if (params.rect !== undefined) {
+            SelectionUtil.checkRectangle(params.rect);
             return {
-                "type": "FragmentSelector",
-                "conformsTo": "http://www.w3.org/TR/media-frags/",
-                "value": '#xywh=' + params.rect.x + ',' + params.rect.y + ',' + params.rect.w + ',' + params.rect.h
+                type: "FragmentSelector",
+                conformsTo: "http://www.w3.org/TR/media-frags/",
+                value: '#xywh=' + params.rect.x + ',' + params.rect.y + ',' + params.rect.w + ',' + params.rect.h,
+                rect: params.rect
             }
         } else {
             return null;
         }
     },
 
-    makeTextSelector : function(params) {
-        var selector = null;
-        let textPositionSelector = AnnotationUtil.makeTextPositionSelector(params);
-        let textQuoteSelector = AnnotationUtil.makeTextQuoteSelector(params);
-        let specification = "http://tools.ietf.org/rfc/rfc3870";
-        let fragmentSelector = AnnotationUtil.makeFragmentSelector(params, specification);
-        if (fragmentSelector) {
-            selector = fragmentSelector;
-            var refinedBy = [];
-            if (textQuoteSelector) { refinedBy.push(textQuoteSelector) }
-            if (textPositionSelector) { refinedBy.push(textPositionSelector) }
-            if (refinedBy.length > 0) { selector.refinedBy = refinedBy }
-        }
-        else if (textPositionSelector && textQuoteSelector) {
-            selector = [textPositionSelector, textQuoteSelector];
-        }
-        else if (textPositionSelector) { selector = textPositionSelector }
-        else if (textQuoteSelector) { selector = textQuoteSelector }
-        return selector;
-    },
 
-    makeFragmentSelector : function(params, specification) {
-        if (params.resourcePart) {
-            return {
-                type: "FragmentSelector",
-                conformsTo: specification,
-                value: params.resourcePart
-            }
+
+    makeTextSelector : function(params) {
+        if (params === undefined || (!params.position && !params.quote))
+            return null;
+        let textPositionSelector = AnnotationUtil.makeTextPositionSelector(params.position);
+        let textQuoteSelector = AnnotationUtil.makeTextQuoteSelector(params.quote);
+        if (textPositionSelector && textQuoteSelector) {
+            return [textPositionSelector, textQuoteSelector];
+        } else if (textPositionSelector) {
+            return textPositionSelector
+        } else if (textQuoteSelector) {
+            return textQuoteSelector
         }
         return null;
     },
 
-    makeTextQuoteSelector : function(params) {
-        if(params.prefix !== undefined && params.suffix !== undefined && params.text !== undefined) {
+    makeTextQuoteSelector : function(quote) {
+        if (quote === undefined)
+            return null;
+        if (!quote.exact)
+            throw new Error('text quote parameters should contain property exact');
+        if (!quote.suffix)
+            throw new Error('text quote parameters should contain property suffix');
+        if (!quote.prefix)
+            throw new Error('text quote parameters should contain property prefix');
+        if(quote.prefix !== undefined && quote.suffix !== undefined && quote.exact !== undefined) {
             return {
                 "type": "TextQuoteSelector",
-                "prefix": params.prefix,
-                "suffix": params.suffix,
-                "exact": params.text
+                "prefix": quote.prefix,
+                "suffix": quote.suffix,
+                "exact": quote.exact
             }
         }
         return null;
     },
 
-    makeTextPositionSelector : function(params) {
-        if(params.start !== undefined && params.end !== undefined) {
+    makeTextPositionSelector : function(position) {
+        if (!position)
+            return null;
+        if (!position.start)
+            throw new Error('text position parameters should contain property start');
+        if (!position.end)
+            throw new Error('text position parameters should contain property end');
+        if(position.start !== undefined && position.end !== undefined) {
             return {
                 "type": "TextPositionSelector",
-                "start": params.start,
-                "end": params.end,
+                "start": position.start,
+                "end": position.end,
             }
         }
         return null;
@@ -179,34 +282,6 @@ const AnnotationUtil = {
         return AnnotationUtil.extractTargets(annotation).map(function(target) {
             return AnnotationUtil.extractTargetIdentifier(target);
         });
-    },
-
-    getTextPositionSelector :function(target) {
-        if (!target.selector)
-            return null;
-        if (!target.type || target.type !== "Text")
-            return null;
-        var textPosition = null;
-        let selectors = Array.isArray(target.selector) ? target.selector : [target.selector];
-        selectors.forEach((selector) => {
-            if (selector.type === "TextPositionSelector")
-                textPosition = selector;
-        });
-        return textPosition;
-    },
-
-    getTextQuoteSelector :function(target) {
-        if (!target.selector)
-            return null;
-        if (!target.type || target.type !== "Text")
-            return null;
-        var textQuote = null;
-        let selectors = Array.isArray(target.selector) ? target.selector : [target.selector];
-        selectors.forEach((selector) => {
-            if (selector.type === "TextQuoteSelector")
-                textQuote = selector;
-        });
-        return textQuote;
     },
 
     /*************************************************************************************

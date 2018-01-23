@@ -1,4 +1,4 @@
-const config = {
+{
     "targetObserverClass": "annotation-target-observer",
     "services" : {
         "AnnotationServer": {
@@ -32,27 +32,18 @@ const config = {
         }
     },
     "annotationTasks" : {
-        "classify" : {
-            "vocabularies" : [
-                "DBpedia",
-                "GTAA"
-            ],
-            "type": "classification",
-            "purpose": "classifying",
-            "format": "text/plain"
-        },
-        "link" : {
-            "apis" : [
-                {"name" : "wikidata"},
-                {"name" : "europeana"}
-            ],
-            "type": "link",
-            "purpose": "linking",
-            "format": "text/plain"
-        },
         "bookmark" : {
             "type": "bookmark",
             "purpose": "bookmarking"
+        },
+        "classify" : {
+            "type": "classification",
+            "purpose": "classifying",
+            "format": "text/plain",
+            "vocabularies" : [
+                "DBpedia",
+                "GTAA"
+            ]
         },
         "comment" : {
             "type": "comment",
@@ -64,12 +55,29 @@ const config = {
             "purpose": "correcting",
             "format": "text/plain"
         },
+        "link" : {
+            "type": "link",
+            "purpose": "linking",
+            "format": "text/plain",
+            "apis" : [
+                {"name" : "wikidata"},
+                {"name" : "europeana"}
+            ]
+        },
+        "tag": {
+            "type": "tag",
+            "purpose": "tagging",
+            "format": "text/plain",
+            "specifies": "classify"
+        },
         "transcribe" : {
             "type": "transcription",
             "purpose": "transcribing",
             "format": "text/plain"
         }
+    },
+    "defaults": {
+        "target": ["BenG_Program", "BenG_Season", "BenG_Series", "Genre", "Movie", "Title", "Summary", "Broadcaster", "BroadcastDate"]
     }
 }
 
-export default config;

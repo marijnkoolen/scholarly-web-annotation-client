@@ -1,5 +1,4 @@
 /*
- *
  * Taken from http://jsfiddle.net/8mdX4/1211/
  * See stackoverflow discussion: http://stackoverflow.com/questions/6240139/highlight-text-range-using-javascript
  * Originally created by Tim Down
@@ -14,6 +13,8 @@ import RDFaUtil from './RDFaUtil.js';
 import DOMUtil from './DOMUtil.js';
 
 const SelectionUtil = {
+
+    currentSelection : null,
 
     makeEditableAndHighlight : function(colour) {
         var sel = window.getSelection();
@@ -79,9 +80,12 @@ const SelectionUtil = {
             var charCount = 0, endCharCount;
 
             for (var i = 0, textNode; textNode = textNodes[i]; i++) {
-                endCharCount = charCount + textNode.length;
+                // offset of display text w.r.t underlying text content (e.g. removed leading whitespace)
+                let displayOffset = DOMUtil.getTextNodeDisplayOffset(textNode);
+                let displayText = DOMUtil.getTextNodeDisplayText(textNode);
+                endCharCount = charCount + displayText.length;
                 if (!foundStart && start >= charCount && (start < endCharCount || (start === endCharCount && i <= textNodes.length))) {
-                    range.setStart(textNode, start - charCount);
+                    range.setStart(textNode, start - charCount + displayOffset);
                     foundStart = true;
                 }
                 if (foundStart && end === -1) {
@@ -90,7 +94,7 @@ const SelectionUtil = {
                     break;
                 }
                 else if (foundStart && end !== -1 && end <= endCharCount) {
-                    range.setEnd(textNode, end - charCount);
+                    range.setEnd(textNode, end - charCount + displayOffset);
                     break;
                 }
                 charCount = endCharCount;
@@ -109,31 +113,151 @@ const SelectionUtil = {
         }
     },
 
+    checkDOMElement : (element) => {
+        if (element === undefined)
+            throw Error("argument 'element' is required.")
+        if (!(element instanceof Element) || !document.contains(element))
+            throw Error("element must be a DOM element.")
+        return true;
+    },
+
+    checkRectangle : (rect) => {
+        if (rect === undefined)
+            throw Error("argument 'rect' is required.")
+        if (!(rect instanceof Object))
+            throw Error("rect should be an object with properties: x, y, w, h.");
+        let keys = Object.keys(rect);
+        ["x", "y", "w", "h"].forEach((prop) => {
+            if (!keys.includes(prop))
+                throw Error("rect is missing required property " + prop + ".");
+            if (!Number.isInteger(rect[prop]))
+                throw Error("rect property " + prop + " is not an integer.");
+        });
+        return true;
+    },
+
+    checkInterval : (interval) => {
+        if (interval === undefined)
+            throw Error("argument 'interval' is required.")
+        if (!(interval instanceof Object))
+            throw Error("interval should be an object with properties: start, end.");
+        let keys = Object.keys(interval);
+        ["start", "end"].forEach((prop) => {
+            if (!keys.includes(prop))
+                throw Error("interval is missing required property " + prop + ".");
+            if (Number.isNaN(interval[prop]))
+                throw Error("interval property " + prop + " is not a number.");
+            //if (!Number.isInteger(interval[prop]))
+            //    interval[prop] = parseInt(interval[prop]);
+        });
+        return true;
+    },
+
+    setSelection : function(element, selection, mimeType) {
+        SelectionUtil.checkDOMElement(element);
+        SelectionUtil.currentSelection = {
+            startNode: element,
+            endNode: element,
+            mimeType: mimeType
+        };
+        if (!selection) {
+            return true;
+        } else if (mimeType.startsWith('video') || mimeType.startsWith('audio')) {
+            SelectionUtil.checkInterval(selection);
+            SelectionUtil.currentSelection.interval = selection;
+        } else if (mimeType.startsWith('image')) {
+            SelectionUtil.checkRectangle(selection);
+            SelectionUtil.currentSelection.rect = selection;
+        }
+    },
+
+    setImageSelection : function(element, rect) {
+        SelectionUtil.checkDOMElement(element);
+        SelectionUtil.checkRectangle(rect);
+        SelectionUtil.currentSelection = {
+            startNode: element,
+            endNode: element,
+            rect: rect,
+            mimeType: "image"
+        }
+    },
+
+    setAudioSelection : function(element, interval) {
+        SelectionUtil.checkDOMElement(element);
+        SelectionUtil.checkInterval(interval);
+        SelectionUtil.currentSelection = {
+            startNode: element,
+            endNode: element,
+            interval: interval,
+            mimeType: "audio"
+        }
+    },
+
+    setVideoSelection : function(element, interval) {
+        SelectionUtil.checkDOMElement(element);
+        SelectionUtil.checkInterval(interval);
+        SelectionUtil.currentSelection = {
+            startNode: element,
+            endNode: element,
+            interval: interval,
+            mimeType: "video"
+        }
+    },
+
+    setDOMSelection : function() {
+        var selection = document.getSelection();
+        if (selection.isCollapsed) {
+            let observerNodes = DOMUtil.getObserverNodes();
+            SelectionUtil.currentSelection = {
+                startNode: observerNodes[0],
+                endNode: observerNodes[observerNodes.length - 1],
+                mimeType: "multipart" // TODO: FIX based on actual content
+            }
+        }
+        else {
+            let position = selection.anchorNode.compareDocumentPosition(selection.focusNode);
+            let backwards = position & Node.DOCUMENT_POSITION_PRECEDING;
+            if (position === 0 && selection.anchorOffset > selection.focusOffset)
+                backwards = 1;
+            var focusOffset = SelectionUtil.getTrimmedOffset(selection.focusNode, selection.focusOffset);
+            var anchorOffset = SelectionUtil.getTrimmedOffset(selection.anchorNode, selection.anchorOffset);
+            SelectionUtil.currentSelection = {
+                startNode: backwards ? selection.focusNode : selection.anchorNode,
+                startOffset: backwards ? focusOffset : anchorOffset,
+                endNode: backwards ? selection.anchorNode : selection.focusNode,
+                endOffset: backwards ? anchorOffset : focusOffset,
+                selectionText: selection.toString(),
+                mimeType: "text"
+            };
+        }
+        let endParent = SelectionUtil.currentSelection.endNode.parentNode;
+        if (RDFaUtil.isRDFaIgnoreNode(endParent)) {
+            let prevNode = DOMUtil.getPreviousTextNode(SelectionUtil.currentSelection.endNode);
+            SelectionUtil.currentSelection.endNode = prevNode;
+            SelectionUtil.currentSelection.endOffset = prevNode.length;
+            SelectionUtil.adjustSelection(SelectionUtil.currentSelection);
+            selection = document.getSelection();
+            SelectionUtil.currentSelection.selectionText = selection.toString();
+        }
+    },
+
+    getTrimmedOffset : function(node, offset) {
+        if (node.nodeType === window.Node.TEXT_NODE && offset > 0) {
+            let textContent = node.textContent;
+            if (offset > 0)
+                offset -= DOMUtil.getTextNodeDisplayOffset(node);
+            //offset -= textContent.length - textContent.trimLeft().length;
+        }
+        return offset;
+    },
 
     // Find nodes and offsets corresponding to the selection.
     // Start node is always before end node in presentation order
     // regardless of whether selection is done forwards or backwards.
-    getStartEndSelection : function() {
-        var selection = document.getSelection();
-        if (selection.isCollapsed) {
-            let observerNodes = DOMUtil.getObserverNodes();
-            return {
-                startNode: observerNodes[0],
-                endNode: observerNodes[observerNodes.length - 1]
-            }
-        }
-        let position = selection.anchorNode.compareDocumentPosition(selection.focusNode);
-        let backwards = position & Node.DOCUMENT_POSITION_PRECEDING;
-        if (position === 0 && selection.anchorOffset > selection.focusOffset)
-            backwards = 1;
-        return {
-            startNode: backwards ? selection.focusNode : selection.anchorNode,
-            startOffset: backwards ? selection.focusOffset : selection.anchorOffset,
-            endNode: backwards ? selection.anchorNode : selection.focusNode,
-            endOffset: backwards ? selection.anchorOffset : selection.focusOffset,
-            selectionText: selection.toString(),
-            mimeType: "text"
-        };
+    getCurrentSelection : function() {
+        if (!SelectionUtil.currentSelection)
+            SelectionUtil.setDOMSelection();
+        return SelectionUtil.currentSelection;
     },
 
     checkSelectionRange : function() {
@@ -142,32 +266,36 @@ const SelectionUtil = {
             return null;
         }
         // 2. get start and end nodes of selection in display order
-        var selection = SelectionUtil.getStartEndSelection();
+        var selection = SelectionUtil.getCurrentSelection();
         // 3. if selection start node has SelectWholeElement property
         let startNode = SelectionUtil.selectWholeElement(selection.startNode)
         let endNode = SelectionUtil.selectWholeElement(selection.endNode)
-        if (startNode) {
+        if (selection.startOffset !== undefined && startNode) {
             // move selection to start of start node
             selection.startOffset = 0;
             selection.startNode = startNode;
         }
         // 4. if selection end node has SelectWholeElement property
-        if (endNode) {
+        if (selection.endOffset !== undefined && endNode) {
             // move selection to end of end node
-            let textNodes = DOMUtil.getTextNodes(DOMUtil.getDescendants(endNode));
+            let textNodes = DOMUtil.getTextNodes(endNode);
             selection.endNode = textNodes[textNodes.length - 1];
             selection.endOffset = selection.endNode.length;
         }
         // 5. if start and/or end nodes have SelectWholeElement property,
         // make sure the offsets are set properly
         if (startNode || endNode){
-            var range = document.createRange();
-            range.setStart(selection.startNode, selection.startOffset);
-            range.setEnd(selection.endNode, selection.endOffset);
-            var sel = document.getSelection();
-            sel.removeAllRanges();
-            sel.addRange(range);
+            SelectionUtil.adjustSelection(selection);
         }
+    },
+
+    adjustSelection : (selection) => {
+        var range = document.createRange();
+        range.setStart(selection.startNode, selection.startOffset);
+        range.setEnd(selection.endNode, selection.endOffset);
+        var sel = document.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
     },
 
     selectWholeElement : function(node) {
@@ -181,6 +309,7 @@ const SelectionUtil = {
         }
         return null;
     },
+
 }
 
 export default SelectionUtil;

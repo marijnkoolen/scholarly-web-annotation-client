@@ -1,8 +1,12 @@
 {
-  "name": "annotate-rdfa",
+  "name": "scholarly-web-annotator",
   "version": "1.0.0",
   "description": "Annotation library for RDFa-enriched HTML representations of complex text objects.",
-  "main": "src/index.jsx",
+  "main": "src/main.jsx",
+  "repository": {
+	  "type": "git",
+	  "url": "https://github.com/CLARIAH/scholarly-web-annotation-client.git"
+  },
   "scripts": {
     "test": "mocha --compilers js:babel-core/register src/test/* -r jsdom-global/register",
     "test:lint": "eslint . --ext .js --ext .jsx --ignore-path .eslintignore --cache",
@@ -40,12 +44,15 @@
     "jsdom-global": "^2.1.1",
     "jsx-loader": "^0.13.2",
     "mocha": "^3.2.0",
+    "moment": "^2.18.1",
     "n3": "^0.9.0",
+    "openseadragon": "^2.3.0",
     "rdflib": "^0.13.0",
     "react": "^15.3.2",
     "react-bootstrap": "^0.30.5",
     "react-dom": "^15.3.2",
     "style-loader": "^0.13.1",
+    "uuid4": "^1.0.0",
     "webpack": "^1.13.2"
   },
   "dependencies": {

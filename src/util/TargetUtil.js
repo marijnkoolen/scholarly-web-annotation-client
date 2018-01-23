@@ -57,7 +57,7 @@ const TargetUtil = {
     findNodeOffsetInContainer : function(container, targetNode) {
         let descendants = RDFaUtil.getNotIgnoreDescendants(container);
         let precedingNodes = descendants.slice(0, descendants.indexOf(targetNode));
-        let textNodes = DOMUtil.getTextNodes(precedingNodes);
+        let textNodes = DOMUtil.filterTextNodes(precedingNodes);
         var targetOffset = 0;
         textNodes.forEach(function(node) {
             targetOffset += node.textContent.length;
@@ -66,11 +66,23 @@ const TargetUtil = {
     },
 
     findHighlighted : function(container, selection) {
-        if (selection.selectionText.length === 0) {
-            return false;
+        var params = null;
+        if (selection.mimeType.startsWith("text")) {
+            if (selection.selectionText.length > 0) {
+                params = this.makeTextSelectors(container, selection);
+            }
+        } else if (selection.mimeType.startsWith("image")) {
+            if (selection.rect !== undefined) {
+                params = {rect: selection.rect};
+            }
+        } else if (selection.mimeType.startsWith("audio") || selection.mimeType.startsWith("video")) {
+            if (selection.interval !== undefined) {
+                params = {interval: selection.interval};
+            }
+        } else {
+            console.error("Selection has unknown mimetype:", selection);
         }
-        var params = this.makeTextPositionParams(container, selection);
-        this.makeTextQuoteParams(container, params);
+        params.breadcrumbs = RDFaUtil.createBreadcrumbTrail(container.source);
         return {
             node: container.node,
             mimeType: selection.mimeType,
@@ -81,46 +93,66 @@ const TargetUtil = {
         }
     },
 
-    makeTextPositionParams : function(container, selection) {
+    makeTextSelectors : function(container, selection) {
         var startNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.startNode);
         var endNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.endNode);
+        selection.startContainerOffset = startNodeOffset + selection.startOffset;
+        selection.endContainerOffset = endNodeOffset + selection.endOffset;
         return {
-            start: startNodeOffset + selection.startOffset,
-            end: endNodeOffset + selection.endOffset
+            position: this.makeTextPositionParams(container, selection),
+            quote: this.makeTextQuoteParams(container, selection)
         }
     },
 
-    makeTextQuoteParams : function(container, params) {
+    makeTextPositionParams : function(container, selection) {
+        return {
+            start: selection.startContainerOffset,
+            end: selection.endContainerOffset
+        }
+    },
+
+    makeTextQuoteParams : function(container, selection) {
         let textContent = RDFaUtil.getRDFaTextContent(container.node);
-        let maxPrefix = params.start >= 20 ? 20 : params.start;
-        let selectionLength = params.end - params.start;
-        params.text = textContent.substr(params.start, selectionLength);
-        params.prefix = textContent.substr(params.start - maxPrefix, maxPrefix);
-        params.suffix = textContent.substr(params.end, 20);
+        let maxPrefix = selection.startContainerOffset >= 20 ? 20 : selection.startContainerOffset;
+        let selectionLength = selection.endContainerOffset - selection.startContainerOffset;
+        return {
+            exact: textContent.substr(selection.startContainerOffset, selectionLength),
+            prefix: textContent.substr(selection.startContainerOffset - maxPrefix, maxPrefix),
+            suffix: textContent.substr(selection.endContainerOffset, 20)
+        }
     },
 
     // given a list of nodes, select all RDFa enriched nodes
     // and return as candidate annotation targets
     getRDFaCandidates : function(nodes) {
         return RDFaUtil.selectRDFaNodes(nodes).map(function(node) {
+            let resourceId = RDFaUtil.getRDFaResource(node);
             return {
                 node: node,
                 type: "resource",
-                mimeType: "text",
+                mimeType: "text", // TODO - fix based on actual content
                 params: {
-                    text: RDFaUtil.getRDFaTextContent(node)
+                    breadcrumbs: RDFaUtil.createBreadcrumbTrail(resourceId),
+                    text: RDFaUtil.getRDFaTextContent(node),
                 },
                 label: node.getAttribute("typeof"),
-                source: node.hasAttribute("resource") ? node.getAttribute("resource") : node.getAttribute("about")
+                source: resourceId
             }
         });
     },
 
     // Return all potential annotation targets.
+    getCandidates : function(annotations, defaultTargets) {
+        let candidateResources = TargetUtil.getCandidateRDFaTargets(defaultTargets);
+        let candidateAnnotations = TargetUtil.selectCandidateAnnotations(annotations, candidateResources.highlighted);
+        return {resource: candidateResources, annotation: candidateAnnotations};
+    },
+
     // Annotation targets are elements containing
     // or contained in the selected passage.
     getCandidateRDFaTargets : function(defaultTargets) {
-        var selection = SelectionUtil.getStartEndSelection();
+        var selection = SelectionUtil.getCurrentSelection();
+        console.log(selection);
         var ancestors = DOMUtil.findCommonAncestors(selection.startNode, selection.endNode);
         selection.containerNode = ancestors[ancestors.length - 1];
         var biggerNodes = TargetUtil.getRDFaCandidates(ancestors);
@@ -128,11 +160,11 @@ const TargetUtil = {
         let smallerNodes = TargetUtil.getRDFaCandidates(selectionNodes);
         var wholeNodes = biggerNodes.concat(smallerNodes);
         var highlighted = null;
-        if (selection.startOffset !== undefined) {
+        if (selection.startOffset !== undefined || selection.rect !== undefined || selection.interval !== undefined) {
             let container = biggerNodes[biggerNodes.length - 1];
             highlighted = TargetUtil.findHighlighted(container, selection);
         }
-        else {
+        else if (defaultTargets !== undefined && Array.isArray(defaultTargets)){
             wholeNodes = wholeNodes.filter((resource) => {
                 return defaultTargets.includes(resource.label);
             });
@@ -252,50 +284,77 @@ const TargetUtil = {
         return TargetUtil.mimeTypeMap[mimeType];
     },
 
-    mapTargetsToRanges : function(annotation) {
-        var targetRanges = [];
+    mapTargetsToDOMElements : function(annotation) {
+        var domTargets = [];
         AnnotationUtil.extractTargets(annotation).forEach((target) => {
-            if (target.type === "Text") {
-                let annotationTargetRanges = TargetUtil.getTargetRanges(target)
-                targetRanges = targetRanges.concat(annotationTargetRanges);
+            var targetId = AnnotationUtil.extractTargetIdentifier(target);
+            if (!targetId) // target is not loaded in browser window
+                return [];
+            var source = AnnotationActions.lookupIdentifier(targetId);
+            var targetResources = [];
+
+            if (source.type === undefined) {
+                console.error("source information for target " + targetId + " should have a type:", source);
+            } else if (source.type === "annotation"){
+                AnnotationUtil.extractTargets(source.data).forEach((target) => {
+                    domTargets = domTargets.concat(TargetUtil.mapTargetsToDOMElements(source.data));
+                });
+            } else if (source.type === "resource") {
+                if (target.type === undefined) {
+                    console.error("Target should have a type property:", target);
+                } else if (target.type === "Text") {
+                    domTargets.push(TargetUtil.makeTextRange(target, source.data.domNode));
+                } else if (target.type === "Image") {
+                    domTargets.push(TargetUtil.makeImageRegion(target, source.data.domNode));
+                } else if (target.type === "Video" || target.type === "Audio") {
+                    domTargets.push(TargetUtil.makeTemporalSegment(target, source.data.domNode));
+                } else {
+                    console.error("Unknown target type", target);
+                }
+            } else {
+                console.error("no source type for source:", source);
             }
         });
-        return targetRanges;
+        return domTargets;
     },
 
-    /*
-     * A getTargetResources parses a single annotation target
-     * and returns any resources that are the leaves of the
-     * annotation chain (if there are annotations on annotations).
-     * Target resources that are not indexed are ignored.
-     */
-    getTargetRanges : function(target) {
-        var targetId = AnnotationUtil.extractTargetIdentifier(target);
-        if (!targetId) // target is not loaded in browser window
-            return [];
-        var source = AnnotationActions.lookupIdentifier(targetId);
-        if (source.type === "resource")
-            return [TargetUtil.makeTargetRange(target, source.data.domNode)];
-        var targetRanges = [];
-        AnnotationUtil.extractTargets(source.data).forEach((annotationTarget) => {
-            var annotationRanges = TargetUtil.getTargetRanges(annotationTarget);
-            targetRanges = targetRanges.concat(annotationRanges);
-        });
-        return targetRanges;
+    makeImageRegion : function(target, node) {
+        var imageRegion = {
+            type: "Image",
+            node: node
+        }
+        if (target.selector !== undefined && target.selector !== null) {
+            let mediaFragment = TargetUtil.getTargetMediaFragment(target);
+            imageRegion.rect = mediaFragment.rect
+        }
+        return imageRegion;
     },
 
-    makeTargetRange(target, node) {
+    makeTextRange(target, node) {
         var targetRange = {
+            type: "Text",
             start: 0,
             end: -1,
             node: node
         }
-        let textPosition = AnnotationUtil.getTextPositionSelector(target);
+        let textPosition = TargetUtil.getSelectorByType(target, "TextPositionSelector");
         if (textPosition && textPosition.start !== undefined) {
             targetRange.start = textPosition.start;
             targetRange.end = textPosition.end;
         }
         return targetRange;
+    },
+
+    makeTemporalSegment : function(target, node) {
+        var segment = {
+            type: target.type,
+            node: node
+        }
+        if (target.selector !== undefined && target.selector !== null) {
+            let mediaFragment = TargetUtil.getTargetMediaFragment(target);
+            segment.interval = mediaFragment.interval
+        }
+        return segment;
     },
 
     getTargetText(target, resource) {
@@ -324,6 +383,57 @@ const TargetUtil = {
         selection.removeAllRanges();
         return text;
     },
+
+    getTargetMediaFragment(target) {
+        if (typeof(target) === "string")
+            return null;
+        if (target.selector && target.selector.type === "FragmentSelector") {
+                return target.selector;
+        } else if (target.selector.refinedBy && target.selector.refinedBy.type === "FragmentSelector") {
+            return target.selector.refinedBy;
+        }
+    },
+
+    toggleHighlight(targetDOMElements, highlighted) {
+        targetDOMElements.forEach((target) => {
+            if (target.type === undefined) {
+                console.error("Target should have a type:", target);
+            } else if (target.type === "Text") {
+                TargetUtil.toggleTextHighlight(target, highlighted);
+            } else if (target.type === "Audio") {
+                TargetUtil.toggleAudioHighlight(target, highlighted);
+            } else if (target.type === "Image") {
+                TargetUtil.toggleImageHighlight(target, highlighted);
+            } else if (target.type === "Video") {
+                TargetUtil.toggleVideoHighlight(target, highlighted);
+            } else {
+                console.error("Unknown target type:", target);
+            }
+        });
+    },
+
+    toggleTextHighlight(target, highlighted) {
+        if (highlighted )
+            SelectionUtil.selectAndRemoveRange(target.node, target.start, target.end);
+        else
+            SelectionUtil.selectAndHighlightRange(target.node, target.start, target.end);
+    },
+
+    toggleImageHighlight(target, highlighted) {
+        // trigger toggleOverlay event with target node and rectangle as detail
+        let toggleOverlay = new CustomEvent('toggle-annotation-overlay', {
+            detail: {rect: target.rect, highlighted: highlighted}
+        });
+        target.node.dispatchEvent(toggleOverlay);
+    },
+
+    toggleVideoHighlight(target, started) {
+        // trigger toggleOverlay event with target node and rectangle as detail
+        let toggleOverlay = new CustomEvent('play-video-segment', {
+            detail: {interval: target.interval, started: started}
+        });
+        target.node.dispatchEvent(toggleOverlay);
+    }
 
 }
 

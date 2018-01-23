@@ -13,10 +13,16 @@ global.document = window.document;
 
 describe("RDFaUtil parse of test letter. ", function() {
 
+    beforeEach((done) => {
+        let observerNodes = document.getElementsByClassName('annotation-target-observer');
+        RDFaUtil.setObserverNodes(observerNodes);
+        done();
+    });
+
     describe("getTopRDFaResources", function() {
 
         it("should return letter as top level resource", function(done) {
-            let topResources = RDFaUtil.getTopRDFaResources(document);
+            let topResources = RDFaUtil.getTopRDFaResources();
             expect(topResources).to.contain("urn:vangogh:testletter");
             done();
         });
@@ -25,10 +31,12 @@ describe("RDFaUtil parse of test letter. ", function() {
     describe("getRDFaAttributes", function() {
 
         it("should return a vocabulary reference for top level resources", function(done) {
-            let topResourceNodes = RDFaUtil.getTopRDFaNodes(document);
-            topResourceNodes.forEach(function(topResourceNode) {
-                let attrs = RDFaUtil.getRDFaAttributes(topResourceNode);
-                expect(attrs.vocab).to.exist;
+            RDFaUtil.observerNodes.forEach((observerNode) => {
+                let topResourceNodes = RDFaUtil.getTopRDFaNodes(observerNode);
+                topResourceNodes.forEach(function(topResourceNode) {
+                    let attrs = RDFaUtil.getRDFaAttributes(topResourceNode);
+                    expect(attrs.vocab).to.exist;
+                });
             });
             done();
         });

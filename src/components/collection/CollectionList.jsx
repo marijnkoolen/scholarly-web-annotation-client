@@ -34,10 +34,10 @@ export default class CollectionViewer extends React.Component {
 
     addAnnotation(annotation) {
         if (this.state.default)
-            CollectionActions.addAnnotation(this.state.default, annotation.id);
+            CollectionActions.addAnnotation(this.state.default, annotation);
     }
 
-    getCollections(pageId) {
+    getCollections() {
         CollectionActions.getCollections();
     }
 

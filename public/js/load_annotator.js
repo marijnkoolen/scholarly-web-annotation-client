@@ -1,15 +1,15 @@
 document.onreadystatechange = function () {
-	if (document.readyState === "complete") {
-		console.log("document ready!");
-		loadConfig((error, config) => {
-			rdfaAnnotator = new RDFaAnnotator.RDFaAnnotator(config);
-			rdfaAnnotator.addAnnotationClient();
-		});
-	}
+    if (document.readyState === "complete") {
+        loadConfig((error, config) => {
+            annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config);
+            var viewerElement = document.getElementById('annotation-viewer');
+            annotator.addAnnotationClient(viewerElement);
+        });
+    }
 }
 
 var loadConfig = function(callback) {
-    fetch("rdfa-annotation-config.json", {
+    fetch("config/van-gogh-annotation-config.json", {
         method: "GET"
     }).then(function(response) {
         return response.json();
