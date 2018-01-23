@@ -1,8 +1,8 @@
 # The Scholarly Web Annotation Ontology
 
-The Scholarly Web Annotation client uses RDFa reason about the page it is annotating. A page can use any Semantic Web ontology to describe itself, but for some specific scholarly goals, there is an annotation ontology that the client can use for special functionalities. 
+The Scholarly Web Annotation client uses RDFa to reason about the page it is annotating. A page can use any Semantic Web ontology to describe itself, but for some specific scholarly goals, there is an annotation ontology that the client can use for special functionalities. 
 
-The Scholarly Web Annotation Ontology (SWAO) extends the FRBRoo and CIDOC-CRM ontologies, so that scholars can differentiate between conceptual levels of the resources presented on a page and choose which level they want to annotate. E.g. it is possible to describe a resource both at the level of a work, or a specific manifestation or expression of it. For instance, when annotating a letter that is part of correspondence, scholars may want to annotate a phrase in the text to say something about the letter in general, or about some aspect of the specific transcription or translation.
+The Scholarly Web Annotation Ontology (SWAO) extends the FRBRoo and CIDOC-CRM ontologies, so that scholars can differentiate between conceptual levels of the resources presented on a page and choose at which level they want to annotate. E.g. it is possible to describe a resource both at the level of a work, or a specific manifestation or expression of it. For instance, when annotating a letter that is part of a correspondence, scholars may want to annotate a phrase in the text to say something about the letter in general, or about some aspect of the specific transcription or translation.
 
 The FRBRoo ontology is very extensive, and in many cases only a few of the concepts will be relevant, so we demonstrate how our SWA Ontology connects to some of the basic concepts of FRBRoo related to *Works*. 
 
