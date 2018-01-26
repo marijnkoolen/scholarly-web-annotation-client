@@ -31,7 +31,7 @@ For many use cases, a simpler model would suffice. Below is an example of a sing
 
 *Figure 2. Example of a digital edition of a Letter by Vincent van Gogh, connected to the FRBRoo concepts of Complex Work, Individual Work, Self-Contained Expression and CIDOC/CRM concepts of Actor, Date and Place.* 
 
-Adding RDFa for individual expressions allows scholar to refer to them a separate resources or as a single resource. E.g. if a scholar wants to use an annotation to indicate that a particular transcription contains a mistake, the scholars wants to be able to refer to the text containing the mistake at the level of the transcription. If the scholar instead wants to annotate the same piece of text with a comment about Vincent van Gogh’s writing, the annotation should refer to the abstract content of the original letter.
+Adding RDFa for individual expressions allows scholars to refer to them as separate resources or as a single resource. E.g. if a scholar wants to use an annotation to indicate that a particular transcription contains a mistake, the scholar wants to be able to refer to the text containing the mistake at the level of the transcription. If the scholar instead wants to annotate the same piece of text with a comment about Vincent van Gogh’s writing, the annotation should refer to the abstract content of the original letter.
 
 The reason to use different conceptual levels is that the digital edition may want to treat them differently. For instance, a digital edition may wish to show annotations on the abstract content of the original letter with every expression of it, e.g. with its transcription in Dutch as well as with its translation to English. The same digital edition may wish to show an annotation about a mistake in the English translation only with that particular translation.
 
@@ -71,13 +71,13 @@ Below is an example in HTML that demonstrates how different conceptual levels ca
 
 ## Special features of the SWA Ontology
 
-There are two special concepts that affect how the SWA client behaves, for identifying elements that should be unselectable or only selectable as a whole. 
+There are two special concepts that affect how the SWA client behaves for identifying elements that should be unselectable or only selectable as a whole. 
 
 ### Atomic Content Elements
 
-You may want to consider certain aspects of a resource to be atomic, such as metadata properties, that should only be annotatable as a whole. If you don’t want users to be able to select and annotate fragments of these atomic units, you can wrap them in a HTML element and add the `SelectWholeElement` property. When a user selects a fragment of such an element, the SWA client will automatically expand the selection to the entire element.
+You may want to consider certain aspects of a resource to be atomic, such as metadata properties, that should only be annotatable as a whole. If you don’t want users to be able to select and annotate fragments of these atomic units, you can wrap them in an HTML element and add the `SelectWholeElement` property. When a user selects a fragment of such an element, the SWA client will automatically expand the selection to the entire element.
 
-Typical elements to select in whole are metadata properties, e.g.:
+Typical elements to select as a whole are metadata properties, e.g.:
 
 ```xhtml
 <div typeof=”Sender” resource=”urn:vangogh:letter001.sender” property=”hasMetadataItem”>
