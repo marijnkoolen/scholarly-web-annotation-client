@@ -100,7 +100,7 @@ Once you have a SWA client configuration, you can instantiate a client object an
 
 ```js
 annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config); // instantiate client with configuration
-var viewerElement = document.getElementsByClassName(‘annotation-viewer’)[0]; // select DOM element to attach client to
+var viewerElement = document.getElementsByClassName('annotation-viewer')[0]; // select DOM element to attach client to
 annotator.addAnnotationClient(viewerElement); // insert client in the DOM
 ```
 
