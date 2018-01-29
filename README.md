@@ -8,7 +8,7 @@ The Scholarly Web Annotation (SWA) client is a Javascript annotation client for 
 
 We also introduce a [Scholarly Web Annotation Ontology](https://github.com/CLARIAH/scholarly-web-annotation-client/blob/master/docs/annotation_ontology.md) that extends FRBRoo and CIDOC-CRM concepts, to exploit the possibility of annotating a resource on different conceptual levels (e.g. work, manifestation, expression). 
 
-<a name=”embed”></a>
+<a name="embed"></a>
 ## Embedding the SWA Client
 
 ### Loading Client Dependencies
@@ -18,10 +18,10 @@ This JS library requires [jQuery](https://jquery.com/) and [Bootstrap](https://g
 Add the following lines to your HTML:
 
 ```
-<script src=”https://code.jquery.com/jquery-2.2.4.js”></script>
-<script src=”https://code.jquery.com/ui/1.12.1/jquery-ui.js”></script>
-<script src=”http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js”></script>
-<link rel=”stylesheet” href=”http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css”>
+<script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
 ```
 
@@ -64,11 +64,11 @@ Put the configuration in a JSON object:
         },
         "comment" : {
             "type": "comment",
-            "purpose": "commenting",
+            "purpose": "commenting"
         },
         "correct" : {
             "type": "correction",
-            "purpose": "correcting",
+            "purpose": "correcting"
         },
         "link" : {
             "type": "link",
@@ -85,7 +85,7 @@ Put the configuration in a JSON object:
         },
         "transcribe" : {
             "type": "transcription",
-            "purpose": "transcribing",
+            "purpose": "transcribing"
         }
     },
     "defaults": {
@@ -100,17 +100,19 @@ Once you have a SWA client configuration, you can instantiate a client object an
 
 ```js
 annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config); // instantiate client with configuration
-var viewerElement = document.getElementById(‘annotation-viewer’); // select DOM element to attach client to
+var viewerElement = document.getElementsByClassName(‘annotation-viewer’)[0]; // select DOM element to attach client to
 annotator.addAnnotationClient(viewerElement); // insert client in the DOM
 ```
 
 ### A complete example
 
-Here is a complete example to demonstrate how you can setup a web page with an RDFa-enriched resource and a fully-configured annotation client. This example assumes four files sitting in the same web directory that is served over HTTP: the SWA client library (`scholarly-web-annotator.js`), a configuration file (`annotator_config.js`), a loading script to configure and embed the client (`load_annotator.js`) and an HTML file with the RDFa-enriched resource (`index.html`).
+Here is a complete example to demonstrate how you can setup a web page with an RDFa-enriched resource and a fully-configured annotation client. This example assumes four files sitting in the same web directory that is served over HTTP: the SWA client library (`scholarly-web-annotator.js`), a configuration file (`annotator_config.json`), a loading script to configure and embed the client (`load_annotator.js`) and an HTML file with the RDFa-enriched resource (`index.html`).
+
+*Note that in the config below, you have to fill the address of a running SWA server!*
 
 The SWA client library can be found in this repository: `dist/scholarly-web-annotator.js`
 
-`annotator_config.js`:
+`annotator_config.json`:
 
 ```json
 {
@@ -137,11 +139,11 @@ The SWA client library can be found in this repository: `dist/scholarly-web-anno
         },
         "comment" : {
             "type": "comment",
-            "purpose": "commenting",
+            "purpose": "commenting"
         },
         "correct" : {
             "type": "correction",
-            "purpose": "correcting",
+            "purpose": "correcting"
         },
         "link" : {
             "type": "link",
@@ -154,13 +156,11 @@ The SWA client library can be found in this repository: `dist/scholarly-web-anno
         "tag": {
             "type": "tag",
             "purpose": "tagging",
-            "format": "text/plain",
             "specifies": "classify"
         },
         "transcribe" : {
             "type": "transcription",
-            "purpose": "transcribing",
-            "format": "text/plain"
+            "purpose": "transcribing"
         }
     },
     "defaults": {
@@ -174,28 +174,32 @@ The SWA client library can be found in this repository: `dist/scholarly-web-anno
 ```js
 document.onreadystatechange = function () { // wait till page is loaded
     if (document.readyState === "complete") {
-        console.log("document ready!");
-        loadConfig((error, config) => { // load configuration file
+        loadConfig(function(error, config) { // load configuration file
             if (error)
                 return null;
             // instantiate, configure and insert client
             annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config);
-            var viewerElement = document.getElementById('annotation-viewer');
+            var viewerElement = document.getElementsByClassName('annotation-viewer')[0];
             annotator.addAnnotationClient(viewerElement);
         });
     }
 }
 
 var loadConfig = function(callback) {
-    fetch("annotator_config.json", {
-        method: "GET"
-    }).then(function(response) {
-        return response.json();
-    }).then(function(config) {
-        return callback(null, config);
-    }).catch(function(error) {
-        return callback(error, null);
-    });
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", "annotator_config.json");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            try {
+                var config = JSON.parse(xhr.responseText);
+                return callback(null, config);
+            } catch(error) {
+                console.log(error);
+                return callback(error, null);
+            }
+        }
+    }
+    xhr.send();
 }
 
 ```
@@ -207,27 +211,27 @@ Finally, create an HTML file that loads the dependencies, the SWA client library
 ```xhtml
 <html>
     <head>
-        <script src=”https://code.jquery.com/jquery-2.2.4.js”></script>
-        <script src=”https://code.jquery.com/ui/1.12.1/jquery-ui.js”></script>
-        <script src=”http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js”></script>
-        <link rel=”stylesheet” href=”http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css”>
+        <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     </head>
     <body>
-        <div class=”annotation-target-observer”>
-            <div typeof=”Letter” resource=”urn:vangogh:letter001” vocab=”http://boot.huygens.knaw.nl/annotate/vangoghontology.ttl”>
-                <p typeof=”Paragraphinletter” resource=”urn:vangogh:letter001:p.1” property=”hasPart”>Text of the first paragraph.</p>
-                <p typeof=”Paragraphinletter” resource=”urn:vangogh:letter001:p.2” property=”hasPart”>Text of the second paragraph.</p>
+        <div class="annotation-target-observer">
+            <div typeof="Letter" resource="urn:vangogh:letter001" vocab="http://boot.huygens.knaw.nl/annotate/vangoghontology.ttl">
+                <p typeof="Paragraphinletter" resource="urn:vangogh:letter001:p.1" property="hasPart">Text of the first paragraph.</p>
+                <p typeof="Paragraphinletter" resource="urn:vangogh:letter001:p.2" property="hasPart">Text of the second paragraph.</p>
             </div>
         </div>
-        <div class=”annotation-viewer”></div>
-        <script src=”./scholarly-web-annotator.js”></script>
-        <script src=”./load_annotator.js”></script>
+        <div class="annotation-viewer"></div>
+        <script src="./scholarly-web-annotator.js"></script>
+        <script src="./load_annotator.js"></script>
     </body>
 </html>
 ```
 
 
-<a name=”use”></a>
+<a name="use"></a>
 ## Using the SWA Client
 
 Once you have the client up and running, as well as a SWA server, you can start annotating.
@@ -261,7 +265,7 @@ Below are screenshots demonstrating how to use the client.
 
 
 
-<a name=”develop”></a>
+<a name="develop"></a>
 ## Modifying the SWA Client
 
 ### How to install
