@@ -33948,18 +33948,6 @@ var ScholarlyWebAnnotator =
 	        });
 	    },
 	
-	    login: function login(userDetails, callback) {
-	        var url = this.annotationServer + "/login";
-	        var options = {
-	            method: "POST",
-	            headers: { "Content-Type": "application/json" },
-	            body: JSON.stringify(userDetails)
-	        };
-	        this.makeRequest(url, options, function (error, data) {
-	            return callback(error, data);
-	        });
-	    },
-	
 	    getAnnotationById: function getAnnotationById(annotationId, callback) {
 	        var status = null;
 	        var url = this.annotationServer + '/annotations/' + annotationId;
@@ -34106,6 +34094,18 @@ var ScholarlyWebAnnotator =
 	    removeAnnotation: function removeAnnotation(collectionId, annotationId, callback) {
 	        var url = this.annotationServer + '/collections/' + collectionId + '/annotations/' + annotationId;
 	        var options = { method: "DELETE" };
+	        this.makeRequest(url, options, function (error, data) {
+	            return callback(error, data);
+	        });
+	    },
+	
+	    login: function login(userDetails, callback) {
+	        var url = this.annotationServer + "/login";
+	        var options = {
+	            method: "POST",
+	            headers: { "Content-Type": "application/json" },
+	            body: JSON.stringify(userDetails)
+	        };
 	        this.makeRequest(url, options, function (error, data) {
 	            return callback(error, data);
 	        });
@@ -55906,7 +55906,7 @@ var ScholarlyWebAnnotator =
 	
 	    getTargetText: function getTargetText(target, resource) {
 	        // if whole resource is the target,
-	        // return the text content of the correspondign node
+	        // return the text content of the corresponding node
 	        if (!target.selector) return resource.data.text;
 	        var selector = target.selector;
 	        if (target.selector.refinedBy) selector = target.selector.refinedBy;
@@ -55915,7 +55915,7 @@ var ScholarlyWebAnnotator =
 	        if (!selector.type) return null;
 	        if (selector.type === "TextQuoteSelector") return selector.exact;
 	        if (selector.type === "TextPositionSelector") return TargetUtil.getTargetRangeText(resource.data.domNode, selector.start, selector.end);
-	        return null;
+	        return ""; // if no text can is targeted, return empty string
 	    },
 	    getTargetRangeText: function getTargetRangeText(node, start, end) {
 	        _SelectionUtil2.default.setRDFaSelectionRange(node, start, end);
@@ -79464,6 +79464,9 @@ var ScholarlyWebAnnotator =
 	        },
 	        "DBpedia": {
 	            "api": "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString="
+	        },
+	        "Wikipedia": {
+	            "api": "https://en.wikipedia.org/w/api.php?action=opensearch&limit=20&namespace=0&format=json&search="
 	        }
 	    },
 	    "annotationSupport": {
