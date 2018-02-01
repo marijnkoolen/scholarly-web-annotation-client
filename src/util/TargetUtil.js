@@ -359,7 +359,7 @@ const TargetUtil = {
 
     getTargetText(target, resource) {
         // if whole resource is the target,
-        // return the text content of the correspondign node
+        // return the text content of the corresponding node
         if (!target.selector)
             return resource.data.text;
         var selector = target.selector;
@@ -373,7 +373,7 @@ const TargetUtil = {
             return selector.exact;
         if (selector.type === "TextPositionSelector")
             return TargetUtil.getTargetRangeText(resource.data.domNode, selector.start, selector.end);
-        return null;
+        return ""; // if no text can is targeted, return empty string
     },
 
     getTargetRangeText(node, start, end) {
