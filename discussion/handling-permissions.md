@@ -12,13 +12,13 @@ Each annotation must have see/edit/delete permissions for at least one user (typ
 
 ### Operations permitted
 
-The most basic permission is being able to read/see/view an annotation. Given that a user can create, retrieve, edit, and remove annotations, it makes sense to have separate permissions for different *operations*, e.g. seeing, changing and removing (**question: should changing and removing be a single operational permission?** [BB: I vote yes]). This can also be based on the UNIX model for read/write/execute permissions. The *execute* operation in UNIX has no meaningful correspondence in the annotation domain, so it can be discarded.
+The most basic permission is being able to read/see/view an annotation. Given that a user can create, retrieve, edit, and remove annotations, it makes sense to have separate permissions for different *operations*, e.g. seeing (reading) and changing or removing (writing). This can also be based on the UNIX model for read/write/execute permissions. The *execute* operation in UNIX has no meaningful correspondence in the annotation domain, so it can be discarded.
 
 This results in the following list of requirements:
 
 + R1: there should be permission levels for owner, group and public.
-+ R2: operation types should have their own permissions.
-+ R3: ownership should be transferrable. 
++ R2: the operation types reading and writing should have their own permissions.
++ R3: ownership should be transferrable.
 + R4: owners should be able to change operation permissions per level and per group.
 
 ## Permission model
@@ -34,12 +34,11 @@ The owner of an annotation can have (What?)
 Types of operations permitted:
 
 + **read**: the permission to see/view/read an annotation. The responsibility lies with the server to return only annotations to a user who has read permissions.
-+ **edit**: the permission to make changes to an annotation. Changes are timestamped via the `modified` property. To avoid overly complex permission models, there should only be a single set of properties that are allowed to be changed. The properties relation to the creation of the annotation (e.g. `creator`, `created`) should not be changeable. The server should check with each PUT request whether the user has edit permissions. The client can indicate edit permissions through e.g. an edit button. 
-+ **delete**: the permission to completely remove an annotation. 
++ **writing**: the permission to make changes to an annotation, including deleting it. Changes are timestamped via the `modified` property. To avoid overly complex permission models, there should only be a single set of properties that are allowed to be changed. The properties relation to the creation of the annotation (e.g. `creator`, `created`) should not be changeable. The server should check with each PUT request whether the user has edit permissions. The client can indicate edit permissions through e.g. an edit button. 
 
-There are some issues regarding *editing* and *deleting* annotations. If an annotation is the target of a later annotation, it cannot be changed or removed without consequences. One way of dealing with this is to add a notification to annotations that target a changed/deleted annotation. Another way is to not allow changing/removing annotations that are targets of other annotations. 
+There are some issues regarding *changing* or *deleting* annotations. If an annotation is the target of a later annotation, it cannot be changed or removed without consequences. One way of dealing with this is to add a notification to annotations that target a changed/deleted annotation. Another way is to not allow changing/removing annotations that are targets of other annotations. 
 
-[BB: In Alexandria, there is no "editing" of an annotation as such, when you PUT to an existing annotation, this creates a new annotation that replaces the existint annotation, and increases the "version" number. When referring to the annotation by URI, it always refers to the latest version of the annotation, but all versions of the annotation can be retrieved by adding /ver/ + the version number to the annotation URI. Also, sending a DELETE to an annotation sets the state of that annotation to DELETED. DELETED annotations are hidden by default, but can still be retrieved. ( http://huygensing.github.io/alexandria/alexandria-acceptance-tests/concordion/nl/knaw/huygens/alexandria/annotation/Accessing.html )
+[BB: In Alexandria, there is no "editing" of an annotation as such, when you PUT to an existing annotation, this creates a new annotation that replaces the existing annotation, and increases the "version" number. When referring to the annotation by URI, it always refers to the latest version of the annotation, but all versions of the annotation can be retrieved by adding /ver/ + the version number to the annotation URI. Also, sending a DELETE to an annotation sets the state of that annotation to DELETED. DELETED annotations are hidden by default, but can still be retrieved. ( http://huygensing.github.io/alexandria/alexandria-acceptance-tests/concordion/nl/knaw/huygens/alexandria/annotation/Accessing.html )
 This can be an alternative or an additional way of dealing with edit/delete.
 
 There is also currently no provision in Alexandria for user-based access limitations, or grouping of users.]
@@ -47,3 +46,40 @@ There is also currently no provision in Alexandria for user-based access limitat
 ### Capturing groups and permissions in annotations
 
 The W3C working group for Web Annotations suggests to use the [audience](https://www.w3.org/TR/annotation-model/#intended-audience) property for any *group*-related aspects and that *authorization* and *authentication* are not responsibilities of the annotation data model (as discussed in this issue on GitHub: [How do we model "groups" in the Annotation Model](https://github.com/w3c/web-annotation/issues/119)). 
+
+Authentication is dealt with by the annotation server. The annotation protocol can deal with authorization through URL query parameters.
+
+```
+POST /annotations/?access_status=restricted&access_read=Alice,Bob&access_write=Alice
+Host: {annotation-server-address}
+Accept: application/ld+json; profile="http://www.w3.org/ns/anno.jsonld"
+Content-Type: application/ld+json; profile="http://www.w3.org/ns/anno.jsonld"
+
+{
+    "@context": "http://www.w3.org/ns/anno.jsonld",
+    "type": "Annotation",
+    "body": [
+        {
+            "value": "Communication",
+            "purpose": "classifying",
+            "id": "http://dbpedia.org/resource/Communication"
+        }
+    ],
+    "creator": "Alice",
+    "target": [
+        {
+            "@context": "http://boot.huygens.knaw.nl/annotate/vangoghontology.ttl#",
+            "type": ["Text", "Letter"],
+            "id": "urn:vangogh:let001"
+        }
+    ]
+}
+```
+
+### Bulk updating permissions
+
+TO DO: finish this section.
+
+A user can PUT an `AnnotationContainer` using `Prefer` type `PreferContainedIRIs` in the request header and permissions in the URL parameters or by adding permission information in the container representation.
+
+
