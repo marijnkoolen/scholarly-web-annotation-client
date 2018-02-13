@@ -48,6 +48,7 @@ const AnnotationUtil = {
         return {
             source: target.source,
             selector: selector,
+            scope: window.location.href,
             type: targetType
         }
     },
@@ -86,6 +87,7 @@ const AnnotationUtil = {
             }
         });
         return {
+            "@context": "http://boot.huygens.knaw.nl/annotate/swao.jsonld",
             type: "NestedPIDSelector",
             value: nestedPIDList
         };
@@ -96,6 +98,7 @@ const AnnotationUtil = {
             throw new Error('makeSubresourceSelector requires a breadcrumb trail');
         }
         return {
+            "@context": "http://boot.huygens.knaw.nl/annotate/swao.jsonld",
             type: "SubresourceSelector",
             value: AnnotationUtil.makeSubresourceBranch(breadcrumbTrail)
         }
@@ -137,7 +140,6 @@ const AnnotationUtil = {
     *************************************************************************************/
 
     makeSelector : function(params, targetType) {
-        console.log(params);
         if (params.breadcrumbs !== undefined) {
             var selector = AnnotationUtil.makeNestedPIDSelector(params.breadcrumbs);
             if (targetType)
