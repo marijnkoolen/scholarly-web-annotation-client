@@ -138,9 +138,13 @@ const AnnotationActions = {
         });
     },
 
+    indexResources: function() {
+        this.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
+    },
+
     loadResources: function() {
         this.topResources = RDFaUtil.getTopRDFaResources();
-        this.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
+        this.indexResources();
         this.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
         AppDispatcher.dispatch({
             eventName: 'load-resources',

@@ -152,7 +152,6 @@ const TargetUtil = {
     // or contained in the selected passage.
     getCandidateRDFaTargets : function(defaultTargets) {
         var selection = SelectionUtil.getCurrentSelection();
-        console.log(selection);
         var ancestors = DOMUtil.findCommonAncestors(selection.startNode, selection.endNode);
         selection.containerNode = ancestors[ancestors.length - 1];
         var biggerNodes = TargetUtil.getRDFaCandidates(ancestors);

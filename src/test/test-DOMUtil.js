@@ -46,11 +46,10 @@ describe("DOMUtil", function() {
 
     describe("getting text nodes", function() {
         it("should return only nodes of type TEXT_NODE", function(done) {
-            let descendants = DOMUtil.getDescendants(document);
-            let textNodes = DOMUtil.getTextNodes(descendants);
+            let textNodes = DOMUtil.getTextNodes(document);
             textNodes.forEach(function(node) {
                 expect(node.nodeType).to.equal(window.Node.TEXT_NODE)
-            })
+            });
             done();
         });
     });

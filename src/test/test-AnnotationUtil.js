@@ -287,6 +287,7 @@ describe("AnnotationUtil", () => {
             let selector = AnnotationUtil.makeNestedPIDSelector(breadcrumbs);
             expect(selector.type).to.equal("NestedPIDSelector");
             expect(selector.value).to.exist;
+            expect(selector["@context"]).to.exist;
             expect(selector.value[0].type).to.equal("Correspondence");
             return done();
         })
@@ -424,6 +425,9 @@ describe("AnnotationUtil", () => {
             expect(annotation.type).to.equal("Annotation");
             expect(annotation.target[0].type).to.equal("Text");
             expect(annotation.target[0].selector).to.equal(null);
+            annotation.target.forEach((target) => {
+                expect(target.scope).to.exist;
+            });
             done();
         });
 
