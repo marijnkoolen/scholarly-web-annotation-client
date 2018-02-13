@@ -49,8 +49,21 @@ The W3C working group for Web Annotations suggests to use the [audience](https:/
 
 Authentication is dealt with by the annotation server. The annotation protocol can deal with authorization through URL query parameters.
 
+Access permission parameters:
+
++ `can_see`: list of users who can see but not edit an annotation
++ `can_edit`: list of users who can see *and* edit an annotation
+
+Access status parameter:
+
++ `access_status`: determines whether an annotation is `private`, `shared` or `public`. An owner/creator can always change the status of `private` and `shared` annotations. *Question*: should an owner/creator be able to change the status of `public` annotations back to `shared` or `private`?
++ When `POST`ing an annotation, a creator can indicate the `access_status` of the annotation, and where relevant, the access permission parameters.
+    + The default `access_status` is `private`. An annotation `POST`ed without specifying its `access_status` is assumed to be private. For `private` annotations, no additional permission parameters are required or allowed. Owners/creators can always see and edit their own annotations.
+    + For `shared` annotations, the owner/creator MAY indicate who `can_see` and who `can_edit`. If no permissions are specified, no changes in permissions are made (e.g. if user `POSTS` a new annotation are `shared` or changes an existing annotation from `private` to `shared` without listing other users, the status is set to `shared` but only the user has access. Owners/creators do not have to list themselves in the `shared` permission lists, as they always retain `can_see` and `can_edit` permissions.
+    + For `public` annotations, only the owner/creator has permissions to change or delete the annotation. *Question*: should `public` annotations be deletable?
+
 ```
-POST /annotations/?access_status=restricted&access_read=Alice,Bob&access_write=Alice
+POST /annotations/?access_status=restricted&can_see=Bob&can_edit=Charlie
 Host: {annotation-server-address}
 Accept: application/ld+json; profile="http://www.w3.org/ns/anno.jsonld"
 Content-Type: application/ld+json; profile="http://www.w3.org/ns/anno.jsonld"
@@ -76,10 +89,14 @@ Content-Type: application/ld+json; profile="http://www.w3.org/ns/anno.jsonld"
 }
 ```
 
+In the above annotation, _Alice_ is the owner/creator of the annotation, _Bob_ can only see but not edit the annotation, while _Charlie_ can see and edit the annotation, as well as delete it. Both _Alice_ and _Charlie_ can change who `can_see` and `can_edit` the annotation, although _Charlie_ cannot change or remove the permissions of _Alice_ as she remains the owner/creator of the annotation and does not have to be specified in the parameters.
+
 ### Bulk updating permissions
 
 TO DO: finish this section.
 
-A user can PUT an `AnnotationContainer` using `Prefer` type `PreferContainedIRIs` in the request header and permissions in the URL parameters or by adding permission information in the container representation.
+A user may want to update a set of annotations to have the same acccess status and permissions. To enable bulk setting or updating of permissions, a user can `PUT` an `AnnotationContainer` using `Prefer` type `PreferContainedIRIs` in the request header, and the access status and permissions in the URL parameters. 
+
+For sharing annotations with large numbers of users, specifying them in the URL is cumbersome. There might be a clean way to add permission information in the container representation.
 
 
