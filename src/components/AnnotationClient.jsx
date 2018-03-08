@@ -17,6 +17,7 @@ import AnnotationUtil from './../util/AnnotationUtil.js';
 import AppAnnotationStore from './../flux/AnnotationStore';
 import AnnotationActions from '../flux/AnnotationActions.js';
 import LoginBox from './LoginBox';
+import '../css/swa.css';
 
 export default class AnnotationClient extends React.Component {
     constructor(props) {
@@ -24,16 +25,38 @@ export default class AnnotationClient extends React.Component {
         this.state = {
             user: null,
             view: "annotations",
+            serverAvailable: false,
+            private: true,
+            public: false,
+            accessStatus: ["private"],
         };
     }
     componentDidMount() {
-        AppAnnotationStore.bind('login-user', this.setUser.bind(this));
+        AppAnnotationStore.bind('login-succeeded', this.setUser.bind(this));
+        AppAnnotationStore.bind('register-succeeded', this.setUser.bind(this));
         AppAnnotationStore.bind('logout-user', this.setUser.bind(this));
-
-        AnnotationActions.loadResources();
+        AppAnnotationStore.bind('server-status-change', this.setServerAvailable.bind(this));
+    }
+    setServerAvailable(serverAvailable) {
+        this.setState({serverAvailable: serverAvailable});
     }
     setUser(user) {
         this.setState({user: user});
+    }
+    handleAccessPreferenceChange(event) {
+        let level = event.target.value;
+        let isChecked = this.state[level] ? false : true;
+        var accessStatus = this.state.accessStatus;
+        if (isChecked) {
+            accessStatus.push(level);
+        } else {
+            accessStatus.splice(accessStatus.indexOf(level), 1);
+        }
+        this.setState({
+            [level]: isChecked,
+            accessStatus: accessStatus
+        });
+        AnnotationActions.setAccessStatus(accessStatus);
     }
     render() {
         let component = this;
@@ -76,6 +99,31 @@ export default class AnnotationClient extends React.Component {
                 </div>
             )
         });
+        let accessPreferences = (
+            <div
+                className="access-preferences"
+            >
+                <div>Show:</div>
+                <div>
+                    <input
+                        type="checkbox"
+                        value="private"
+                        checked={this.state.private}
+                        onChange={this.handleAccessPreferenceChange.bind(this)}
+                    />
+                    <label>Private annotations</label>
+                </div>
+                <div>
+                    <input
+                        type="checkbox"
+                        value="public"
+                        checked={this.state.public}
+                        onChange={this.handleAccessPreferenceChange.bind(this)}
+                    />
+                    <label>Public annotations</label>
+                </div>
+            </div>
+        )
         const viewerTabs = itemTypes.map((itemType) => {
             return (
                 <li
@@ -89,9 +137,24 @@ export default class AnnotationClient extends React.Component {
             )
         });
 
+        let indicator = "led-red";
+        if (this.state.serverAvailable) {
+            indicator = "led-green";
+        }
+        const serverAvailable = (
+                <div className={indicator}></div>
+        );
+
         return (
             <div className="annotationClient">
                 <h1>Annotation Client</h1>
+                <div
+                    className="server-status"
+                >
+                    Annotation server status:
+                        &nbsp;
+                    {serverAvailable}
+                </div>
                 <LoginBox
                     user={this.state.user}
                 />
@@ -100,6 +163,7 @@ export default class AnnotationClient extends React.Component {
                         {viewerTabs}
                     </ul>
                     <div className="tab-content">
+                        {accessPreferences}
                         {viewerTabContents}
                     </div>
                 </div>

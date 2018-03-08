@@ -16,6 +16,7 @@ class AnnotationCreator extends React.Component {
         this.selectCandidates = this.selectCandidates.bind(this);
         this.onHide = this.onHide.bind(this);
         this.state = {
+            permission: "private",
             showModal: null,
             annotations: [],
             create: null
@@ -49,7 +50,8 @@ class AnnotationCreator extends React.Component {
     editAnnotationBody(annotation) {
         this.setState({ editAnnotation: annotation, showModal: true, create: "body" });
     }
-    createAnnotation(annotationTargets) {
+    createAnnotation(annotationTargets, permission) {
+        this.setState({permission: permission});
         var annotation = AnnotationUtil.generateW3CAnnotation(annotationTargets, this.props.currentUser.username);
         this.editAnnotationBody(annotation);
     }
@@ -60,6 +62,7 @@ class AnnotationCreator extends React.Component {
                 candidates={this.state.candidates}
                 annotations={this.state.annotations}
                 defaultTargets={this.props.config.defaults.target}
+                permission={this.state.permission}
             />
         )
         let bodyCreator = (
@@ -69,6 +72,7 @@ class AnnotationCreator extends React.Component {
                 annotationTasks={this.props.config.annotationTasks}
                 services={this.props.config.services}
                 hideAnnotationForm={this.onHide.bind(this)}
+                permission={this.state.permission}
             />
         )
         let creator = this.state.create === "target" ? targetCreator : bodyCreator;

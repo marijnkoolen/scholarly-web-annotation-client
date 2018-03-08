@@ -32,6 +32,7 @@ class BodyCreator extends React.Component {
             activeTab : activeTab,
             bodies: bodies,
             defaultCollection: null,
+            permission: AnnotationActions.getPermission(),
         }
     }
 
@@ -57,6 +58,11 @@ class BodyCreator extends React.Component {
         annotation.body = body;
         AnnotationActions.save(annotation);
         this.props.hideAnnotationForm();
+    }
+
+    handlePermissionChange(event) {
+        this.setState({permission: event.target.value});
+        AnnotationActions.setPermission(event.target.value);
     }
 
     render() {
@@ -119,6 +125,26 @@ class BodyCreator extends React.Component {
 
         return (
             <div>
+                <div className="permission-selector">
+                    <label>
+                        <input
+                            type="radio"
+                            value="private"
+                            checked={this.state.permission === "private"}
+                            onChange={this.handlePermissionChange.bind(this)}
+                        />
+                        private annotation
+                    </label>
+                    <label>
+                        <input
+                            type="radio"
+                            value="public"
+                            checked={this.state.permission === "public"}
+                            onChange={this.handlePermissionChange.bind(this)}
+                        />
+                        public annotation
+                    </label>
+                </div>
                 <ul className="nav nav-tabs">
                     {tabs}
                 </ul>
