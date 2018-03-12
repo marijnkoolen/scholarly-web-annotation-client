@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+   <teiHeader>
+      <fileDesc>
+         <titleStmt>
+            <title>Title</title>
+         </titleStmt>
+         <publicationStmt>
+            <p>Publication Information</p>
+         </publicationStmt>
+         <sourceDesc>
+            <p>Information about the source</p>
+         </sourceDesc>
+      </fileDesc>
+   </teiHeader>
+   <text>
+      <group>
+         <text n="T1" xml:id="T1">
+            <body>
+               <pb n="p1"/>
+               <lg>
+                  <lb n="1"/><l n="1">Of Mans First Disobedience, and the Fruit</l>
+                  <lb n="2"/><l n="2">Of that Forbidden Tree, whose mortal tast</l>
+                  <lb n="3"/><l n="3">Brought Death into the World, and all our woe,</l>
+                  <lb n="4"/><l n="4">With loss of Eden, till one greater Man</l>
+                  <lb n="5"/><l n="5">Restore us, and regain the blissful Seat...</l>
+               </lg>
+            </body>
+         </text>
+         <text n="T2" xml:id="T2">
+            <body>
+               <lg type="sonnet">
+                  <lg>
+                     <lb n="6"/><l n="1">Thus speaks the Muse, and bends her brow severe:—</l>
+                     <lb n="7"/><l n="2">“Did I, Lætitia, lend my choicest lays,</l>
+                     <pb n="p2"/>
+                     <lb n="1"/><l n="3">And crown thy youthful head with freshest bays,</l>
+                     <l n="4">That all <lb n="2"/>the' expectance of thy full-grown year</l>
+                     <l n="5">Should <lb n="3"/>lie inert and fruitless? <lb n="4"/>O revere</l>
+                     <l n="6">Those sacred gifts whose meed is deathless praise,</l>
+                     <lb n="5"/><l n="7">Whose potent charms the' enraptured soul can raise</l>
+                     <lb n="6"/><l n="8">Far from the vapours of this earthly sphere!</l>
+                     <lb n="7"/><l n="9">Seize, seize the lyre! resume the lofty strain!</l>
+                     <lb n="8"/><l n="10">'T is time, 't is time! hark how the nations round</l>
+                     <lb n="9"/><l n="11">With jocund notes of liberty resound,—</l>
+                     <pb n="p3"/>
+                     <lb n="1"/><l n="12">And thy own Corsica has burst her chain!</l>
+                     <lb n="2"/><l n="13">O let the song to Britain's shores rebound,</l>
+                     <lb n="3"/><l n="14">Where Freedom's once-loved voice is heard, alas! in vain.</l>
+                  </lg>
+               </lg>
+            </body>
+         </text>
+      </group>
+   </text>
+</TEI>
