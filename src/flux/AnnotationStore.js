@@ -73,13 +73,19 @@ class AnnotationStore {
         this.trigger('load-collections', collections);
     }
 
-    login(userDetails) {
-        this.trigger('login-user', userDetails);
+    login(userDetails, triggerMessage) {
+        console.log("trigger message:", triggerMessage);
+        console.log("user details:", userDetails);
+        this.trigger('login-succeeded', userDetails);
     }
 
     logout(userDetails) {
         this.trigger('logout-user', userDetails);
     }
+
+    changeServerStatus(serverAvailable) {
+        this.trigger('server-status-change', serverAvailable);
+    };
 
 }
 
@@ -128,11 +134,20 @@ AppDispatcher.register( function( action ) {
         case 'load-collections':
             AppAnnotationStore.loadCollections(action.collections, action.callback);
             break;
-        case 'login-user':
-            AppAnnotationStore.login(action.userDetails);
+        case 'login-succeeded':
+            AppAnnotationStore.login(action.userDetails, 'login-succeeded');
+            break;
+        case 'login-failed':
+            AppAnnotationStore.login(action.userDetails, 'login-failed');
             break;
         case 'logout-user':
             AppAnnotationStore.logout(action.userDetails);
+            break;
+        case 'register-succeeded':
+            AppAnnotationStore.login(action.userDetails, 'register-succeeded');
+            break;
+        case 'register-failed':
+            AppAnnotationStore.logout(action.userDetails, 'register-failed');
             break;
         case 'get-server-address':
             AppAnnotationStore.getServerAddress();
@@ -142,6 +157,9 @@ AppDispatcher.register( function( action ) {
             break;
         case 'register-resources':
             AppAnnotationStore.registerResources(action.maps);
+            break;
+        case 'server-status-change':
+            AppAnnotationStore.changeServerStatus(action.serverAvailable);
             break;
 
     }

@@ -12,6 +12,9 @@ const config = {
         },
         "DBpedia": {
             "api": "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString="
+        },
+        "Wikipedia": {
+            "api": "https://en.wikipedia.org/w/api.php?action=opensearch&limit=20&namespace=0&format=json&search="
         }
     },
     "annotationSupport" : {

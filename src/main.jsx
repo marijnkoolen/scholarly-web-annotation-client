@@ -19,6 +19,7 @@ import defaultConfig from './rdfa-annotation-config.js';
 import AnnotationActions from './flux/AnnotationActions.js';
 import CollectionActions from './flux/CollectionActions.js';
 import AppAnnotationStore from './flux/AnnotationStore.js';
+import AnnotationAPI from './api/AnnotationAPI.js';
 
 export class ScholarlyWebAnnotator {
 
@@ -45,10 +46,15 @@ export class ScholarlyWebAnnotator {
     configureClient(configuration) {
         if (configuration)
             this.overrideDefaultConfiguration(configuration);
-        AnnotationActions.setServerAddress(this.clientConfig.services.AnnotationServer.api);
-        CollectionActions.setServerAddress(this.clientConfig.services.AnnotationServer.api);
+
         this.configureObservers();
         this.topResources = RDFaUtil.getTopRDFaResources();
+        AnnotationActions.setServerAddress(this.clientConfig.services.AnnotationServer.api);
+        AnnotationActions.pollServer();
+        AnnotationActions.loadResources();
+        if (localStorage.userDetails) {
+            AnnotationActions.loginUser(JSON.parse(localStorage.userDetails));
+        }
     }
 
     configureObservers() {

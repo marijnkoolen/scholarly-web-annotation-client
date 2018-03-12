@@ -7,6 +7,7 @@ import CandidateList from './CandidateList.jsx';
 import SelectedList from './SelectedList.jsx';
 import TargetUtil from './../../util/TargetUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
+import AnnotationActions from '../../flux/AnnotationActions';
 
 export default class TargetSelector extends React.Component {
     constructor(props) {
@@ -15,6 +16,7 @@ export default class TargetSelector extends React.Component {
         this.removeFromSelected = this.removeFromSelected.bind(this);
         this.state = {
             selected: [],
+            permission: AnnotationActions.getPermission(),
             annotations: [],
             activeType: "resource",
             candidateTypes: ["resource", "annotation"],
@@ -36,8 +38,18 @@ export default class TargetSelector extends React.Component {
         }
     }
     annotateTargets() {
-        this.props.createAnnotation(this.state.selected);
+        if (this.state.selected.length == 0) {
+            alert("No annotation target selected, annotation requires at least one target");
+        }
+        else {
+            this.props.createAnnotation(this.state.selected);
+        }
     }
+    handlePermissionChange(event) {
+        this.setState({permission: event.target.value});
+        AnnotationActions.setPermission(event.target.value);
+    }
+
     render() {
         //generate the tabs from the configured modes
         var component = this;
@@ -74,6 +86,26 @@ export default class TargetSelector extends React.Component {
         return (
             <div className="TargetCreator">
                 <div className="TargetCreator-header">
+                    <div className="permission-selector">
+                        <label>
+                            <input
+                                type="radio"
+                                value="private"
+                                checked={this.state.permission === "private"}
+                                onChange={this.handlePermissionChange.bind(this)}
+                            />
+                            private annotation
+                        </label>
+                        <label>
+                            <input
+                                type="radio"
+                                value="public"
+                                checked={this.state.permission === "public"}
+                                onChange={this.handlePermissionChange.bind(this)}
+                            />
+                            public annotation
+                        </label>
+                    </div>
                     <h3>Select Annotation Targets</h3>
                     <SelectedList
                         candidates={this.state.selected}

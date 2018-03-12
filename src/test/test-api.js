@@ -7,6 +7,7 @@ require('isomorphic-fetch');
 import AnnotationAPI from '../api/AnnotationAPI.js';
 var uuid = require('uuid4');
 
+let user = {username: "a_certain_someone", password: "cannotbehacked"};
 let annotationInvalid = {
     "@context": "http://www.w3.org/ns/anno.jsonld",
     type: "Annotation",
@@ -19,7 +20,7 @@ let annotationInvalid = {
             value: "Vincent van Gogh"
         }
     ],
-    creator: "marijn"
+    creator: "A. Certain Someone"
 };
 
 let annotationValid = {
@@ -34,7 +35,7 @@ let annotationValid = {
             value: "Vincent van Gogh"
         }
     ],
-    creator: "marijn",
+    creator: "A. Certain Someone",
     target: [
         {
             source: "urn:vangogh:testletter.sender",
@@ -45,18 +46,118 @@ let annotationValid = {
 };
 
 describe('AnnotationAPI', () => {
-    it('should exist', () => {
-        expect(AnnotationAPI).to.not.be.undefined;
+});
+
+describe('AnnotationAPI', () => {
+
+    before((done) => {
+        let serverAddress = "http://localhost:3000/api"
+        AnnotationAPI.setServerAddress(serverAddress);
+        return done();
+    });
+
+    describe('after initialising', () => {
+        it('should exist', (done) => {
+            expect(AnnotationAPI).to.not.be.undefined;
+            done();
+        });
+
+        it('should have a server address', (done) => {
+            expect(AnnotationAPI.annotationServer).to.not.be.null;
+            done();
+        });
+
+        it('should should check server is available', (done) => {
+            expect(AnnotationAPI.serverAvailable).to.be.true;
+            done();
+        });
+
+        it('should have no user details', (done) => {
+            expect(AnnotationAPI.userDetails).to.equal(null);
+            done();
+        })
+    })
+
+    describe('registering a new user', () => {
+        it('should return 201 on registering', (done) => {
+            AnnotationAPI.registerUser(user, (error, response) => {
+                expect(error).to.equal(null);
+                expect(response.action).to.equal("created");
+                done();
+            });
+        });
+
+        it('should return 200 on logout', (done) => {
+            AnnotationAPI.logoutUser((error, response) => {
+                expect(error).to.equal(null);
+                expect(AnnotationAPI.userDetails).to.equal(null);
+                done();
+            });
+        });
+
+        it('should return 200 on login', (done) => {
+            AnnotationAPI.loginUser(user, (error, response) => {
+                expect(error).to.equal(null);
+                expect(response.action).to.equal("verified");
+                done();
+            });
+        });
+
+        it('should return 204 on delete', (done) => {
+            AnnotationAPI.deleteUser(user, (error, response) => {
+                expect(error).to.equal(null);
+                done();
+            });
+        });
+
     });
 
 });
 
 describe('AnnotationAPI', () => {
 
-    beforeEach((done) => {
+    before((done) => {
         let serverAddress = "http://localhost:3000/api"
         AnnotationAPI.setServerAddress(serverAddress);
-        return done();
+        done();
+    });
+
+    describe('POSTing an annotation unauthorized', () => {
+        it('should return 403', (done) => {
+            AnnotationAPI.saveAnnotation(annotationValid, function(error, annotation) {
+                expect(error).to.not.equal(null);
+                expect(error.status).to.equal(403);
+                done();
+            });
+        });
+    });
+
+    describe('GETting an annotation unauthorized', () => {
+        it('should return list', (done) => {
+            AnnotationAPI.getAnnotations(function(error, annotationContainer) {
+                expect(error).to.equal(null);
+                expect(annotationContainer.type).to.include("AnnotationContainer");
+                done();
+            });
+        });
+    });
+
+});
+
+describe('AnnotationAPI', () => {
+
+    before((done) => {
+        let serverAddress = "http://localhost:3000/api"
+        AnnotationAPI.setServerAddress(serverAddress);
+        AnnotationAPI.registerUser(user, (error, response) => {
+            done();
+        });
+    });
+
+    after((done) => {
+        AnnotationAPI.deleteUser(user, (error, response) => {
+            done();
+        });
     });
 
     describe('sending a non-existing resource ID', () => {
@@ -65,7 +166,7 @@ describe('AnnotationAPI', () => {
             let expectedData = [];
             AnnotationAPI.getAnnotationsByTarget(fakeId, function(error, actualData) {
                 expect(error).to.equal(null);
-                expect(actualData).to.eql(expectedData);
+                expect(actualData.total).to.eql(0);
                 done();
             });
         });
@@ -145,8 +246,10 @@ describe('AnnotationAPI', () => {
                 done();
             });
         });
-    });
+/*
 
+    */
+    });
 });
 
 

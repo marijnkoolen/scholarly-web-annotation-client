@@ -8,7 +8,9 @@ class LoginBox extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            selectedAction: "login",
             username: "",
+            password: "",
             warning: "",
             showLoginModal: false,
             user: null,
@@ -18,10 +20,8 @@ class LoginBox extends React.Component {
         }
     }
     componentDidMount() {
-        AppAnnotationStore.bind('login-user', this.doLogin.bind(this));
-        if (localStorage.userDetails) {
-            AnnotationActions.login(JSON.parse(localStorage.userDetails));
-        }
+        AppAnnotationStore.bind('login-succeeded', this.doLogin.bind(this));
+        AppAnnotationStore.bind('register-succeeded', this.doLogin.bind(this));
     }
     handleLogin() {
         if (!this.state.loggedIn) {
@@ -34,7 +34,7 @@ class LoginBox extends React.Component {
                 loginButtonLabel: "login",
                 loginMessage: "You are not logged in"
             });
-            AnnotationActions.logout();
+            AnnotationActions.logoutUser();
             localStorage.removeItem("userDetails");
         }
     }
@@ -63,20 +63,37 @@ class LoginBox extends React.Component {
         }
     }
 
+    handlePasswordChange(e) {
+        this.setState({password: e.target.value});
+    }
+
     handleUsernameChange(e) {
-        this.setState({username: e.target.value})
+        this.setState({username: e.target.value});
+    }
+
+    handleActionChange(e) {
+        this.setState({selectedAction: e.target.value});
+        console.log(e.target.value)
     }
 
     handleSubmit(e) {
         e.preventDefault();
         let userDetails = {
-            username: this.state.username
+            username: this.state.username,
+            password: this.state.password
         }
-        AnnotationActions.login(userDetails);
+        console.log(userDetails);
+        console.log(this.state.selectedAction);
+        if (this.state.selectedAction === "register") {
+            AnnotationActions.registerUser(userDetails);
+        } else {
+            AnnotationActions.loginUser(userDetails);
+        }
     }
 
     render() {
         this.showModal = this.state.showLoginModal;
+
         return (
             <div>
                 <button className="btn btn-default"
@@ -90,6 +107,26 @@ class LoginBox extends React.Component {
                         elementId="login__modal"
                         handleHideModal={this.hideLoginForm.bind(this)}
                         title="User Login">
+                        <div className="authentication-action">
+                            <label>
+                                Login as existing user
+                                <input
+                                    type="radio"
+                                    value="login"
+                                    checked={this.state.selectedAction === "login"}
+                                    onChange={this.handleActionChange.bind(this)}
+                                />
+                            </label>
+                            <label>
+                                Register as new user
+                                <input
+                                    type="radio"
+                                    value="register"
+                                    checked={this.state.selectedAction === "register"}
+                                    onChange={this.handleActionChange.bind(this)}
+                                />
+                            </label>
+                        </div>
                         <form className="loginForm" onSubmit={this.handleSubmit.bind(this)}>
                             <label>Username</label>
                             <input
@@ -97,6 +134,14 @@ class LoginBox extends React.Component {
                                 placeholder="username"
                                 value={this.state.username}
                                 onChange={this.handleUsernameChange.bind(this)}
+                            />
+                            &nbsp;
+                            <label>Password</label>
+                            <input
+                                type="password"
+                                placeholder="password"
+                                value={this.state.password}
+                                onChange={this.handlePasswordChange.bind(this)}
                             />
                             &nbsp;
                             <input className="btn btn-default" type="submit" value="Login" />
