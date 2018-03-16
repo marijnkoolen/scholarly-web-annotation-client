@@ -17,7 +17,6 @@ const AnnotationActions = {
 
     pollServer : () => {
         AnnotationAPI.checkServerAvailable((serverAvailable) => {
-            console.log(serverAvailable);
             if (serverAvailable !== AnnotationActions.serverAvailable) {
                 AnnotationActions.serverAvailable = serverAvailable;
             }

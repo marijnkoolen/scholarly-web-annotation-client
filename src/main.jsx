@@ -61,7 +61,9 @@ export class ScholarlyWebAnnotator {
         DOMUtil.setObserverNodeClass(this.clientConfig.targetObserverClass);
         this.observerNodes = DOMUtil.getObserverNodes();
         RDFaUtil.setObserverNodes(this.observerNodes);
-        this.startObserver();
+        if (this.clientConfig.observeMutations) {
+            this.startObserver();
+        }
         this.setSelectionListener();
         this.setAnnotationAttributes();
     }
@@ -98,10 +100,13 @@ export class ScholarlyWebAnnotator {
                 AnnotationActions.loadResources(); // trigger reload of annotations
         });
 
-        var observerConfig = { childList: true, attributes: false, subtree: true };
+        if (!this.clientConfig.observerConfig) {
+            // if observer config is missing, set default observer config
+            this.clientConfig.observerConfig = { childList: true, attributes: false, subtree: true };
+        }
 
         for (var index = 0; index < this.observerNodes.length; index++) {
-            observer.observe(this.observerNodes[index], observerConfig);
+            observer.observe(this.observerNodes[index], this.clientConfig.observerConfig);
         }
 
     }

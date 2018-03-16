@@ -1,5 +1,11 @@
 const config = {
     "targetObserverClass": "annotation-target-observer",
+    "observeMutations": true,
+    "observerConfig": {
+        childList: true,
+        attributes: false,
+        subtree: true
+    },
     "services" : {
         "AnnotationServer": {
             "api": "http://localhost:3000/api"
