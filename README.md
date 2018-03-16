@@ -30,7 +30,10 @@ Add the following lines to your HTML:
 
 The configuration consists of four parts:
 
-1. `targetobserverclass`: this is the class name that the client will use to select HTML DOM elements to consider as annotatable objects. It is possible to specify multiple `observer target` elements. The SWA client starts a watcher that will re-initialise the client when anything in the `observer target` elements change. This allows you to use the SWA client with dynamic content, such as search results.
+1. `targetObserver`: this configures the part of the DOM that should be scanned for RDFa information and that can be targetted for annotation. It consists of three properties: 
+    - 1) `targetObserverClass` is the class name that the client will use to select HTML DOM elements to consider as annotatable objects. It is possible to specify multiple `observer target` elements. The SWA client starts a watcher that will re-initialise the client when anything in the `observer target` elements change. This allows you to use the SWA client with dynamic content, such as search results.
+    - 2) `observeMutations`: a boolean indicating whether the client should reload when there are any mutations in the DOM elements that belong to the observer class.
+    - 3) `observerConfig`: an object configuring which type of mutations to listen for, i.e. changes in the `childList`, `attributes`, `characterData` and/or the `subtree`. 
 
 2. `services`: here you can specify addresses for APIs, including the annotation server that the SWA client will use for sending and retrieving annotations, and APIs for vocabularies that the client can use for classifying and linking annotation targets.
 
@@ -42,7 +45,15 @@ Put the configuration in a JSON object:
 
 ```json
 {
-    "targetObserverClass": "annotation-target-observer",
+    "targetObserver": {
+        "targetObserverClass": "annotation-target-observer",
+        "observeMutations": true,
+        "observerConfig": {
+            "childList": true,
+            "attributes": true,
+            "subtree": true
+        }
+    },
     "services" : {
         "AnnotationServer": {
             "api": "http://localhost:3000/api"
@@ -117,7 +128,15 @@ The SWA client library can be found in this repository: `dist/scholarly-web-anno
 
 ```json
 {
-    "targetObserverClass": "annotation-target-observer",
+    "targetObserver": {
+        "targetObserverClass": "annotation-target-observer",
+        "observeMutations": true,
+        "observerConfig": {
+            "childList": true,
+            "attributes": true,
+            "subtree": true
+        }
+    },
     "services" : {
         "AnnotationServer": {
             "api": "http://<annotation.server.address>/api"

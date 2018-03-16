@@ -1,10 +1,12 @@
 const config = {
-    "targetObserverClass": "annotation-target-observer",
-    "observeMutations": true,
-    "observerConfig": {
-        childList: true,
-        attributes: false,
-        subtree: true
+    "targetObserver": {
+        "targetObserverClass": "annotation-target-observer",
+        "observeMutations": true,
+        "observerConfig": {
+            "childList": true,
+            "attributes": false,
+            "subtree": true
+        }
     },
     "services" : {
         "AnnotationServer": {
