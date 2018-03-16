@@ -157,12 +157,14 @@ var ScholarlyWebAnnotator =
 	    }, {
 	        key: 'configureObservers',
 	        value: function configureObservers() {
-	            _DOMUtil2.default.setObserverNodeClass(this.clientConfig.targetObserverClass);
+	            _DOMUtil2.default.setObserverNodeClass(this.clientConfig.targetObserver.targetObserverClass);
 	            this.observerNodes = _DOMUtil2.default.getObserverNodes();
 	            _RDFaUtil2.default.setObserverNodes(this.observerNodes);
-	            this.startObserver();
 	            this.setSelectionListener();
 	            this.setAnnotationAttributes();
+	            if (this.clientConfig.targetObserver.observeMutations) {
+	                this.startObserver();
+	            }
 	        }
 	    }, {
 	        key: 'setAnnotationAttributes',
@@ -202,10 +204,13 @@ var ScholarlyWebAnnotator =
 	                if (_this2.resourcesChanged()) _AnnotationActions2.default.loadResources(); // trigger reload of annotations
 	            });
 
-	            var observerConfig = { childList: true, attributes: false, subtree: true };
+	            if (!this.clientConfig.targetObserver.observerConfig) {
+	                // if observer config is missing, set default observer config
+	                this.clientConfig.targetObserver.observerConfig = { childList: true, attributes: false, subtree: true };
+	            }
 
 	            for (var index = 0; index < this.observerNodes.length; index++) {
-	                observer.observe(this.observerNodes[index], observerConfig);
+	                observer.observe(this.observerNodes[index], this.clientConfig.targetObserver.observerConfig);
 	            }
 	        }
 	    }, {
@@ -32617,7 +32622,6 @@ var ScholarlyWebAnnotator =
 
 	    pollServer: function pollServer() {
 	        _AnnotationAPI2.default.checkServerAvailable(function (serverAvailable) {
-	            console.log(serverAvailable);
 	            if (serverAvailable !== AnnotationActions.serverAvailable) {
 	                AnnotationActions.serverAvailable = serverAvailable;
 	            }
@@ -88857,7 +88861,15 @@ var ScholarlyWebAnnotator =
 	    value: true
 	});
 	var config = {
-	    "targetObserverClass": "annotation-target-observer",
+	    "targetObserver": {
+	        "targetObserverClass": "annotation-target-observer",
+	        "observeMutations": true,
+	        "observerConfig": {
+	            "childList": true,
+	            "attributes": false,
+	            "subtree": true
+	        }
+	    },
 	    "services": {
 	        "AnnotationServer": {
 	            "api": "http://localhost:3000/api"
