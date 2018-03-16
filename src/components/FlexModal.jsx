@@ -22,7 +22,7 @@ class FlexModal extends React.Component {
     render() {
         return (
             <div id={this.props.elementId} className="modal fade" role="dialog">
-                <div className="modal-dialog" role="document">
+                <div className="modal-dialog modal-lg" role="document">
                     <div className="modal-content">
                         <div className="modal-header">
                             <h4 className="modal-title">{this.props.title}</h4>

@@ -34168,11 +34168,12 @@ var ScholarlyWebAnnotator =
 	                    'li',
 	                    {
 	                        key: candidateType + '__tab_option',
-	                        className: component.state.activeType === candidateType ? 'active' : ''
+	                        className: 'nav-item'
 	                    },
 	                    _react2.default.createElement(
 	                        'a',
-	                        { 'data-toggle': 'tab', href: '#' + candidateType },
+	                        { 'data-toggle': 'tab', href: '#' + candidateType,
+	                            className: component.state.activeType === candidateType ? 'nav-link active' : 'nav-link' },
 	                        candidateType
 	                    )
 	                );
@@ -34199,63 +34200,79 @@ var ScholarlyWebAnnotator =
 
 	            return _react2.default.createElement(
 	                'div',
-	                { className: 'TargetCreator' },
+	                { className: 'container-fluid' },
 	                _react2.default.createElement(
 	                    'div',
-	                    { className: 'TargetCreator-header' },
+	                    { className: 'row' },
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: 'permission-selector' },
+	                        { className: 'col-12' },
 	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            _react2.default.createElement('input', {
-	                                type: 'radio',
-	                                value: 'private',
-	                                checked: this.state.permission === "private",
-	                                onChange: this.handlePermissionChange.bind(this)
-	                            }),
-	                            'private annotation'
-	                        ),
-	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            _react2.default.createElement('input', {
-	                                type: 'radio',
-	                                value: 'public',
-	                                checked: this.state.permission === "public",
-	                                onChange: this.handlePermissionChange.bind(this)
-	                            }),
-	                            'public annotation'
+	                            'div',
+	                            { className: 'btn-group btn-group-toggle' },
+	                            _react2.default.createElement(
+	                                'label',
+	                                {
+	                                    className: this.state.permission === "private" ? "btn btn-primary active" : "btn btn-primary"
+	                                },
+	                                _react2.default.createElement('input', {
+	                                    type: 'radio',
+	                                    value: 'private',
+	                                    checked: this.state.permission === "private",
+	                                    onChange: this.handlePermissionChange.bind(this)
+	                                }),
+	                                'Private annotation'
+	                            ),
+	                            _react2.default.createElement(
+	                                'label',
+	                                {
+	                                    className: this.state.permission === "public" ? "btn btn-primary active" : "btn btn-primary"
+	                                },
+	                                _react2.default.createElement('input', {
+	                                    type: 'radio',
+	                                    value: 'public',
+	                                    checked: this.state.permission === "public",
+	                                    onChange: this.handlePermissionChange.bind(this)
+	                                }),
+	                                'Public annotation'
+	                            )
 	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        'h3',
-	                        null,
-	                        'Select Annotation Targets'
-	                    ),
-	                    _react2.default.createElement(_SelectedList2.default, {
-	                        candidates: this.state.selected,
-	                        removeFromSelected: this.removeFromSelected.bind(this)
-	                    })
+	                    )
 	                ),
 	                _react2.default.createElement(
 	                    'div',
-	                    null,
+	                    { className: 'row' },
 	                    _react2.default.createElement(
-	                        'h4',
-	                        null,
-	                        'Candidate Targets'
-	                    ),
-	                    _react2.default.createElement(
-	                        'ul',
-	                        { className: 'nav nav-tabs' },
-	                        tabs
+	                        'div',
+	                        { className: 'col-6' },
+	                        _react2.default.createElement(
+	                            'h3',
+	                            null,
+	                            'Available Targets'
+	                        ),
+	                        _react2.default.createElement(
+	                            'ul',
+	                            { className: 'nav nav-tabs' },
+	                            tabs
+	                        ),
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'tab-content' },
+	                            tabContents
+	                        )
 	                    ),
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: 'tab-content' },
-	                        tabContents
+	                        { className: 'col-6' },
+	                        _react2.default.createElement(
+	                            'h3',
+	                            null,
+	                            'Selected Targets'
+	                        ),
+	                        _react2.default.createElement(_SelectedList2.default, {
+	                            candidates: this.state.selected,
+	                            removeFromSelected: this.removeFromSelected.bind(this)
+	                        })
 	                    )
 	                ),
 	                _react2.default.createElement(
@@ -34263,8 +34280,8 @@ var ScholarlyWebAnnotator =
 	                    null,
 	                    _react2.default.createElement(
 	                        'button',
-	                        { onClick: this.annotateTargets.bind(this) },
-	                        'Annotate'
+	                        { onClick: this.annotateTargets.bind(this), className: 'btn btn-primary' },
+	                        'Create Annotation'
 	                    )
 	                )
 	            );
@@ -54821,11 +54838,11 @@ var ScholarlyWebAnnotator =
 	                    'li',
 	                    {
 	                        key: mode + '__tab_option',
-	                        className: this.state.activeTab == mode ? 'active' : ''
+	                        className: 'nav-tab'
 	                    },
 	                    _react2.default.createElement(
 	                        'a',
-	                        { 'data-toggle': 'tab', href: '#' + mode },
+	                        { 'data-toggle': 'tab', href: '#' + mode, className: this.state.activeTab == mode ? 'nav-link active' : 'nav-link' },
 	                        mode
 	                    )
 	                );
@@ -54874,31 +54891,43 @@ var ScholarlyWebAnnotator =
 
 	            return _react2.default.createElement(
 	                'div',
-	                null,
+	                { className: 'container-fluid' },
 	                _react2.default.createElement(
 	                    'div',
-	                    { className: 'permission-selector' },
+	                    { className: 'row' },
 	                    _react2.default.createElement(
-	                        'label',
-	                        null,
-	                        _react2.default.createElement('input', {
-	                            type: 'radio',
-	                            value: 'private',
-	                            checked: this.state.permission === "private",
-	                            onChange: this.handlePermissionChange.bind(this)
-	                        }),
-	                        'private annotation'
-	                    ),
-	                    _react2.default.createElement(
-	                        'label',
-	                        null,
-	                        _react2.default.createElement('input', {
-	                            type: 'radio',
-	                            value: 'public',
-	                            checked: this.state.permission === "public",
-	                            onChange: this.handlePermissionChange.bind(this)
-	                        }),
-	                        'public annotation'
+	                        'div',
+	                        { className: 'col-12' },
+	                        _react2.default.createElement(
+	                            'div',
+	                            { className: 'btn-group btn-group-toggle' },
+	                            _react2.default.createElement(
+	                                'label',
+	                                {
+	                                    className: this.state.permission === "private" ? "btn btn-primary active" : "btn btn-primary"
+	                                },
+	                                _react2.default.createElement('input', {
+	                                    type: 'radio',
+	                                    value: 'private',
+	                                    checked: this.state.permission === "private",
+	                                    onChange: this.handlePermissionChange.bind(this)
+	                                }),
+	                                'Private annotation'
+	                            ),
+	                            _react2.default.createElement(
+	                                'label',
+	                                {
+	                                    className: this.state.permission === "public" ? "btn btn-primary active" : "btn btn-primary"
+	                                },
+	                                _react2.default.createElement('input', {
+	                                    type: 'radio',
+	                                    value: 'public',
+	                                    checked: this.state.permission === "public",
+	                                    onChange: this.handlePermissionChange.bind(this)
+	                                }),
+	                                'Public annotation'
+	                            )
+	                        )
 	                    )
 	                ),
 	                _react2.default.createElement(
@@ -60169,7 +60198,7 @@ var ScholarlyWebAnnotator =
 	                { id: this.props.elementId, className: 'modal fade', role: 'dialog' },
 	                _react2.default.createElement(
 	                    'div',
-	                    { className: 'modal-dialog', role: 'document' },
+	                    { className: 'modal-dialog modal-lg', role: 'document' },
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'modal-content' },
