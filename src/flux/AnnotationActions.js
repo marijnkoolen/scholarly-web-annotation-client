@@ -17,14 +17,14 @@ const AnnotationActions = {
 
     pollServer : () => {
         AnnotationAPI.checkServerAvailable((serverAvailable) => {
+            console.log(serverAvailable);
             if (serverAvailable !== AnnotationActions.serverAvailable) {
-                // change in availability, trigger event for listeners
-                AppDispatcher.dispatch({
-                    eventName: 'server-status-change',
-                    serverAvailable: serverAvailable
-                })
                 AnnotationActions.serverAvailable = serverAvailable;
             }
+            AppDispatcher.dispatch({
+                eventName: 'server-status-change',
+                serverAvailable: serverAvailable
+            });
             if (!serverAvailable) {
                 console.error("Annotation server not reachable");
             }
