@@ -98,7 +98,7 @@ export class ScholarlyWebAnnotator {
                 AnnotationActions.loadResources(); // trigger reload of annotations
         });
 
-        var observerConfig = { childList: true, attributes: true, subtree: true };
+        var observerConfig = { childList: true, attributes: false, subtree: true };
 
         for (var index = 0; index < this.observerNodes.length; index++) {
             observer.observe(this.observerNodes[index], observerConfig);
