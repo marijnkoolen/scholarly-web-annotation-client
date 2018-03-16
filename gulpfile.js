@@ -18,7 +18,7 @@ gulp.task('serve', ['watch'], function() {
         root: 'demo',
         livereload: true
     });
-    gulp.watch('demo/*.*', ['serve:reload']);
+    gulp.watch('demo/**/*.*', ['serve:reload']);
 });
 gulp.task('serve:reload', function(cb) {
     pump([
