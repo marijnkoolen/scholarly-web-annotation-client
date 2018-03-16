@@ -83,7 +83,7 @@ class Annotation extends React.Component {
                 <div key={bodyCount}>
                     <span></span>
                     <span
-                        className="label label-success"
+                        className="badge badge-success"
                         >{body.purpose}</span>
                     &nbsp;
                     <span>{body.value}</span>
@@ -136,7 +136,7 @@ class Annotation extends React.Component {
                             {next}
                             </span>
                             <span
-                                className="label label-info"
+                                className="badge badge-info"
                                 title={"Identifier: " + crumb.id}
                             >
                                {crumb.type}
@@ -160,7 +160,7 @@ class Annotation extends React.Component {
                     <div key={targetCount}>
                         <span></span>
                         <span
-                            className="label label-success"
+                            className="badge badge-success"
                             >{label}</span>
                         &nbsp;
                         <span>{text}</span>
@@ -173,34 +173,34 @@ class Annotation extends React.Component {
 
         var renderEditBody = function() {
             return (
-                <i className="label label-warning"
+                <span className="badge badge-primary"
                     onClick={() => {component.editAnnotationBody(annotation)}}>
                     edit body
-                </i>
+                </span>
             )
         }
         var renderEditTarget = function() {
             return (
-                <i className="label label-warning"
+                <span className="badge badge-warning"
                     onClick={() => {component.editAnnotationTarget(annotation)}}>
                     edit target
-                </i>
+                </span>
             )
         }
         var renderDelete = function() {
             return (
-                <i className="label label-danger"
+                <span className="badge badge-danger"
                     onClick={() => {component.deleteAnnotation(annotation)}}>
                     delete
-                </i>
+                </span>
             )
         }
         var renderCopy = function() {
             return (
-                <i className="label label-default"
+                <span className="badge badge-success"
                     onClick={() => {component.copyAnnotation(annotation)}}>
                     copy
-                </i>
+                </span>
             )
         }
 

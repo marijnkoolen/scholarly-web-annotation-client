@@ -74,9 +74,7 @@ class AnnotationStore {
     }
 
     login(userDetails, triggerMessage) {
-        console.log("trigger message:", triggerMessage);
-        console.log("user details:", userDetails);
-        this.trigger('login-succeeded', userDetails);
+        this.trigger(triggerMessage, userDetails);
     }
 
     logout(userDetails) {

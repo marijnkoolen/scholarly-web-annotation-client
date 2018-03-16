@@ -72,9 +72,9 @@ class BodyCreator extends React.Component {
             return (
                 <li
                     key={mode + '__tab_option'}
-                    className={this.state.activeTab == mode ? 'active' : ''}
+                    className="nav-tab"
                 >
-                    <a data-toggle="tab" href={'#' + mode}>
+                    <a data-toggle="tab" href={'#' + mode} className={this.state.activeTab == mode ? 'nav-link active' : 'nav-link'}>
                         {mode}
                     </a>
                 </li>
@@ -124,26 +124,34 @@ class BodyCreator extends React.Component {
         }, this);
 
         return (
-            <div>
-                <div className="permission-selector">
-                    <label>
-                        <input
-                            type="radio"
-                            value="private"
-                            checked={this.state.permission === "private"}
-                            onChange={this.handlePermissionChange.bind(this)}
-                        />
-                        private annotation
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            value="public"
-                            checked={this.state.permission === "public"}
-                            onChange={this.handlePermissionChange.bind(this)}
-                        />
-                        public annotation
-                    </label>
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-12">
+                        <div className="btn-group btn-group-toggle">
+                            <label
+                                className={this.state.permission === "private" ? "btn btn-primary active" : "btn btn-primary"}
+                                >
+                                <input
+                                    type="radio"
+                                    value="private"
+                                    checked={this.state.permission === "private"}
+                                    onChange={this.handlePermissionChange.bind(this)}
+                                />
+                                Private annotation
+                            </label>
+                            <label
+                                className={this.state.permission === "public" ? "btn btn-primary active" : "btn btn-primary"}
+                                >
+                                <input
+                                    type="radio"
+                                    value="public"
+                                    checked={this.state.permission === "public"}
+                                    onChange={this.handlePermissionChange.bind(this)}
+                                />
+                                Public annotation
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <ul className="nav nav-tabs">
                     {tabs}

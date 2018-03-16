@@ -6,6 +6,7 @@ import BodyCreator from './BodyCreator';
 import TargetUtil from './../../util/TargetUtil.js';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
 import FlexModal from '../FlexModal';
+import $ from 'jquery';
 
 import AppAnnotationStore from '../../flux/AnnotationStore';
 

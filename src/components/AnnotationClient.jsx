@@ -17,7 +17,7 @@ import AnnotationUtil from './../util/AnnotationUtil.js';
 import AppAnnotationStore from './../flux/AnnotationStore';
 import AnnotationActions from '../flux/AnnotationActions.js';
 import LoginBox from './LoginBox';
-import '../css/swa.css';
+//import '../css/swa.css';
 
 export default class AnnotationClient extends React.Component {
     constructor(props) {
@@ -105,22 +105,24 @@ export default class AnnotationClient extends React.Component {
             >
                 <div>Show:</div>
                 <div>
-                    <input
-                        type="checkbox"
-                        value="private"
-                        checked={this.state.private}
-                        onChange={this.handleAccessPreferenceChange.bind(this)}
-                    />
-                    <label>Private annotations</label>
+                    <label>
+                        <input
+                            type="checkbox"
+                            value="private"
+                            checked={this.state.private}
+                            onChange={this.handleAccessPreferenceChange.bind(this)}
+                        />
+                        Private annotations</label>
                 </div>
                 <div>
-                    <input
-                        type="checkbox"
-                        value="public"
-                        checked={this.state.public}
-                        onChange={this.handleAccessPreferenceChange.bind(this)}
-                    />
-                    <label>Public annotations</label>
+                    <label>
+                        <input
+                            type="checkbox"
+                            value="public"
+                            checked={this.state.public}
+                            onChange={this.handleAccessPreferenceChange.bind(this)}
+                        />
+                        Public annotations</label>
                 </div>
             </div>
         )
@@ -128,9 +130,9 @@ export default class AnnotationClient extends React.Component {
             return (
                 <li
                     key={itemType + '__tab_option'}
-                    className={component.state.view === itemType ? 'active' : ''}
+                    className="nav-item"
                 >
-                    <a data-toggle="tab" href={'#' + itemType}>
+                    <a data-toggle="tab" href={'#' + itemType} className={component.state.view === itemType ? 'nav-link active' : 'nav-link'}>
                         {itemType}
                     </a>
                 </li>
@@ -147,19 +149,16 @@ export default class AnnotationClient extends React.Component {
 
         return (
             <div className="annotationClient">
-                <h1>Annotation Client</h1>
-                <div
-                    className="server-status"
-                >
-                    Annotation server status:
-                        &nbsp;
-                    {serverAvailable}
+                <div className="row">
+                    <h1 className="col">Annotator</h1>
+                    <div className="col-auto"><LoginBox user={this.state.user}/></div>
                 </div>
-                <LoginBox
-                    user={this.state.user}
-                />
+                <div className="server-status row">
+                    <div className="col">Annotation server status:</div>
+                    <div className="col-auto">{serverAvailable}</div>
+                </div>
                 <div>
-                    <ul className="nav nav-tabs">
+                    <ul className="nav nav-tabs nav-fill">
                         {viewerTabs}
                     </ul>
                     <div className="tab-content">
@@ -171,5 +170,3 @@ export default class AnnotationClient extends React.Component {
         );
     }
 }
-
-
