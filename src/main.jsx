@@ -20,6 +20,7 @@ import AnnotationActions from './flux/AnnotationActions.js';
 import CollectionActions from './flux/CollectionActions.js';
 import AppAnnotationStore from './flux/AnnotationStore.js';
 import AnnotationAPI from './api/AnnotationAPI.js';
+import 'bootstrap';
 
 export class ScholarlyWebAnnotator {
 
@@ -172,4 +173,3 @@ export class ScholarlyWebAnnotator {
     }
 
 }
-

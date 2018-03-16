@@ -2,6 +2,7 @@ import React from 'react';
 import FlexModal from './FlexModal';
 import AppAnnotationStore from './../flux/AnnotationStore';
 import AnnotationActions from './../flux/AnnotationActions';
+import $ from 'jquery';
 
 class LoginBox extends React.Component {
 
@@ -157,4 +158,3 @@ class LoginBox extends React.Component {
 }
 
 export default LoginBox;
-

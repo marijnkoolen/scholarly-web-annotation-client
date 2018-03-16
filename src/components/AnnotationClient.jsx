@@ -17,7 +17,7 @@ import AnnotationUtil from './../util/AnnotationUtil.js';
 import AppAnnotationStore from './../flux/AnnotationStore';
 import AnnotationActions from '../flux/AnnotationActions.js';
 import LoginBox from './LoginBox';
-import '../css/swa.css';
+//import '../css/swa.css';
 
 export default class AnnotationClient extends React.Component {
     constructor(props) {
@@ -171,5 +171,3 @@ export default class AnnotationClient extends React.Component {
         );
     }
 }
-
-
