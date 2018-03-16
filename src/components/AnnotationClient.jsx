@@ -105,22 +105,24 @@ export default class AnnotationClient extends React.Component {
             >
                 <div>Show:</div>
                 <div>
-                    <input
-                        type="checkbox"
-                        value="private"
-                        checked={this.state.private}
-                        onChange={this.handleAccessPreferenceChange.bind(this)}
-                    />
-                    <label>Private annotations</label>
+                    <label>
+                        <input
+                            type="checkbox"
+                            value="private"
+                            checked={this.state.private}
+                            onChange={this.handleAccessPreferenceChange.bind(this)}
+                        />
+                        Private annotations</label>
                 </div>
                 <div>
-                    <input
-                        type="checkbox"
-                        value="public"
-                        checked={this.state.public}
-                        onChange={this.handleAccessPreferenceChange.bind(this)}
-                    />
-                    <label>Public annotations</label>
+                    <label>
+                        <input
+                            type="checkbox"
+                            value="public"
+                            checked={this.state.public}
+                            onChange={this.handleAccessPreferenceChange.bind(this)}
+                        />
+                        Public annotations</label>
                 </div>
             </div>
         )

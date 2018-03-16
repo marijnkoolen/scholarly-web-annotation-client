@@ -22320,30 +22320,30 @@ var ScholarlyWebAnnotator =
 	                _react2.default.createElement(
 	                    'div',
 	                    null,
-	                    _react2.default.createElement('input', {
-	                        type: 'checkbox',
-	                        value: 'private',
-	                        checked: this.state.private,
-	                        onChange: this.handleAccessPreferenceChange.bind(this)
-	                    }),
 	                    _react2.default.createElement(
 	                        'label',
 	                        null,
+	                        _react2.default.createElement('input', {
+	                            type: 'checkbox',
+	                            value: 'private',
+	                            checked: this.state.private,
+	                            onChange: this.handleAccessPreferenceChange.bind(this)
+	                        }),
 	                        'Private annotations'
 	                    )
 	                ),
 	                _react2.default.createElement(
 	                    'div',
 	                    null,
-	                    _react2.default.createElement('input', {
-	                        type: 'checkbox',
-	                        value: 'public',
-	                        checked: this.state.public,
-	                        onChange: this.handleAccessPreferenceChange.bind(this)
-	                    }),
 	                    _react2.default.createElement(
 	                        'label',
 	                        null,
+	                        _react2.default.createElement('input', {
+	                            type: 'checkbox',
+	                            value: 'public',
+	                            checked: this.state.public,
+	                            onChange: this.handleAccessPreferenceChange.bind(this)
+	                        }),
 	                        'Public annotations'
 	                    )
 	                )
@@ -70703,7 +70703,7 @@ var ScholarlyWebAnnotator =
 	                _react2.default.createElement(
 	                    'h3',
 	                    null,
-	                    'Saved annotations'
+	                    'Stored Annotations'
 	                ),
 	                _react2.default.createElement(
 	                    'ul',
@@ -70880,7 +70880,7 @@ var ScholarlyWebAnnotator =
 	                    _react2.default.createElement(
 	                        'span',
 	                        {
-	                            className: 'label label-success'
+	                            className: 'badge badge-success'
 	                        },
 	                        body.purpose
 	                    ),
@@ -70944,7 +70944,7 @@ var ScholarlyWebAnnotator =
 	                            _react2.default.createElement(
 	                                'span',
 	                                {
-	                                    className: 'label label-info',
+	                                    className: 'badge badge-info',
 	                                    title: "Identifier: " + crumb.id
 	                                },
 	                                crumb.type
@@ -70974,7 +70974,7 @@ var ScholarlyWebAnnotator =
 	                        _react2.default.createElement(
 	                            'span',
 	                            {
-	                                className: 'label label-success'
+	                                className: 'badge badge-success'
 	                            },
 	                            _label
 	                        ),
@@ -70992,8 +70992,8 @@ var ScholarlyWebAnnotator =
 
 	            var renderEditBody = function renderEditBody() {
 	                return _react2.default.createElement(
-	                    'i',
-	                    { className: 'label label-warning',
+	                    'span',
+	                    { className: 'badge badge-primary',
 	                        onClick: function onClick() {
 	                            component.editAnnotationBody(annotation);
 	                        } },
@@ -71002,8 +71002,8 @@ var ScholarlyWebAnnotator =
 	            };
 	            var renderEditTarget = function renderEditTarget() {
 	                return _react2.default.createElement(
-	                    'i',
-	                    { className: 'label label-warning',
+	                    'span',
+	                    { className: 'badge badge-warning',
 	                        onClick: function onClick() {
 	                            component.editAnnotationTarget(annotation);
 	                        } },
@@ -71012,8 +71012,8 @@ var ScholarlyWebAnnotator =
 	            };
 	            var renderDelete = function renderDelete() {
 	                return _react2.default.createElement(
-	                    'i',
-	                    { className: 'label label-danger',
+	                    'span',
+	                    { className: 'badge badge-danger',
 	                        onClick: function onClick() {
 	                            component.deleteAnnotation(annotation);
 	                        } },
@@ -71022,8 +71022,8 @@ var ScholarlyWebAnnotator =
 	            };
 	            var renderCopy = function renderCopy() {
 	                return _react2.default.createElement(
-	                    'i',
-	                    { className: 'label label-default',
+	                    'span',
+	                    { className: 'badge badge-success',
 	                        onClick: function onClick() {
 	                            component.copyAnnotation(annotation);
 	                        } },
