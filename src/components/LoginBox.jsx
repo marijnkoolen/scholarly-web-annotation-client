@@ -16,52 +16,55 @@ class LoginBox extends React.Component {
             showLoginModal: false,
             user: null,
             loggedIn: false,
-            loginButtonLabel: "login",
-            loginMessage: "You are not logged in"
+            loginButtonLabel: "Login"
         }
     }
+
     componentDidMount() {
-        AppAnnotationStore.bind('login-succeeded', this.doLogin.bind(this));
-        AppAnnotationStore.bind('register-succeeded', this.doLogin.bind(this));
+        AppAnnotationStore.bind('login-succeeded', this.loginSuccess.bind(this));
+        AppAnnotationStore.bind('register-succeeded', this.loginSuccess.bind(this));
+        AppAnnotationStore.bind('login-failed', this.loginFailed.bind(this));
+        AppAnnotationStore.bind('register-failed', this.loginFailed.bind(this));
     }
+
     handleLogin() {
         if (!this.state.loggedIn) {
             this.setState({showLoginModal: true});
-        }
-        else {
+        } else {
             this.setState({
                 user: null,
                 loggedIn: false,
-                loginButtonLabel: "login",
-                loginMessage: "You are not logged in"
+                loginButtonLabel: "Login"
             });
             AnnotationActions.logoutUser();
             localStorage.removeItem("userDetails");
         }
     }
-    showLoginForm() {
-        this.setState({showLoginModal: true});
-    }
-    hideLoginForm() {
-        $('#login__modal').modal('hide');//TODO ugly, but without this the static backdrop won't disappear!
-        this.setState({showLoginModal: false});
-    }
-    doLogin(userDetails) {
+
+    loginSuccess(userDetails) {
         this.setState({
             user: userDetails,
             loggedIn: true,
-            loginButtonLabel: "logout",
-            loginMessage: "You are logged in as " + userDetails.username
+            loginButtonLabel: "Logout " + userDetails.username,
+            warning: null
         });
         localStorage.setItem("userDetails", JSON.stringify(userDetails));
-        if (userDetails.username) {
-            this.hideLoginForm();
-        }
-        else if (userDetails.error){
-            this.setState({
-                warning: userDetails.error
-            });
-        }
+        this.hideLoginForm();
+    }
+
+    loginFailed(error) {
+        this.setState({
+            warning: error.message
+        });
+    }
+
+    showLoginForm() {
+        this.setState({showLoginModal: true});
+    }
+
+    hideLoginForm() {
+        $('#login__modal').modal('hide');//TODO ugly, but without this the static backdrop won't disappear!
+        this.setState({showLoginModal: false});
     }
 
     handlePasswordChange(e) {
@@ -74,7 +77,6 @@ class LoginBox extends React.Component {
 
     handleActionChange(e) {
         this.setState({selectedAction: e.target.value});
-        console.log(e.target.value)
     }
 
     handleSubmit(e) {
@@ -83,8 +85,6 @@ class LoginBox extends React.Component {
             username: this.state.username,
             password: this.state.password
         }
-        console.log(userDetails);
-        console.log(this.state.selectedAction);
         if (this.state.selectedAction === "register") {
             AnnotationActions.registerUser(userDetails);
         } else {
@@ -101,55 +101,70 @@ class LoginBox extends React.Component {
                     onClick={this.handleLogin.bind(this)}>
                     {this.state.loginButtonLabel}
                 </button>
-                &nbsp;
-                <span>{this.state.loginMessage}</span>
                 {this.showModal ?
                     <FlexModal
                         elementId="login__modal"
                         handleHideModal={this.hideLoginForm.bind(this)}
-                        title="User Login">
-                        <div className="authentication-action">
-                            <label>
-                                Login as existing user
-                                <input
-                                    type="radio"
-                                    value="login"
-                                    checked={this.state.selectedAction === "login"}
-                                    onChange={this.handleActionChange.bind(this)}
-                                />
-                            </label>
-                            <label>
-                                Register as new user
-                                <input
-                                    type="radio"
-                                    value="register"
-                                    checked={this.state.selectedAction === "register"}
-                                    onChange={this.handleActionChange.bind(this)}
-                                />
-                            </label>
+                        title="Login or Register">
+                        <div className="container-fluid">
+                            <p className="row">
+                                <div className="col-12 text-right">
+                                    <div className="btn-group btn-group-toggle">
+                                        <label className={this.state.selectedAction === "login" ? "btn btn-primary active" : "btn btn-primary"}>
+                                            <input type="radio" value="login"
+                                                checked={this.state.selectedAction === "login"}
+                                                onChange={this.handleActionChange.bind(this)}
+                                            /> Login
+                                        </label>
+                                        <label className={this.state.selectedAction === "register" ? "btn btn-primary active" : "btn btn-primary"}>
+                                            <input type="radio" value="register"
+                                                checked={this.state.selectedAction === "register"}
+                                                onChange={this.handleActionChange.bind(this)}
+                                            /> Register
+                                        </label>
+                                    </div>
+                                </div>
+                            </p>
+                            <form className="loginForm" onSubmit={this.handleSubmit.bind(this)}>
+                                <div className="row">
+                                    <div className="col-6">
+                                        <label for="loginBoxUsername">Username</label>
+                                        <input
+                                            id="loginBoxUsername"
+                                            type="text"
+                                            placeholder="username"
+                                            value={this.state.username}
+                                            onChange={this.handleUsernameChange.bind(this)}
+                                            className={this.state.warning ? "form-control is-invalid" : "form-control"}
+                                        />
+                                        <div className="invalid-feedback">{this.state.warning}</div>
+                                    </div>
+                                    <div className="col-6">
+                                        <label for="loginBoxPassword">Password</label>
+                                        <input
+                                            id="loginBoxPassword"
+                                            type="password"
+                                            placeholder="password"
+                                            value={this.state.password}
+                                            onChange={this.handlePasswordChange.bind(this)}
+                                            className={this.state.warning ? "form-control is-invalid" : "form-control"}
+                                        />
+                                        <div className="invalid-feedback">{this.state.warning}</div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-12">
+                                        <p className="text-right">
+                                            <input
+                                                type="submit"
+                                                className="btn btn-primary"
+                                                value={this.state.selectedAction === "login" ? "Login" : "Register"}
+                                            />
+                                        </p>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                        <form className="loginForm" onSubmit={this.handleSubmit.bind(this)}>
-                            <label>Username</label>
-                            <input
-                                type="text"
-                                placeholder="username"
-                                value={this.state.username}
-                                onChange={this.handleUsernameChange.bind(this)}
-                            />
-                            &nbsp;
-                            <label>Password</label>
-                            <input
-                                type="password"
-                                placeholder="password"
-                                value={this.state.password}
-                                onChange={this.handlePasswordChange.bind(this)}
-                            />
-                            &nbsp;
-                            <input className="btn btn-default" type="submit" value="Login" />
-                            <span className="label label-danger">
-                                {this.state.warning}
-                            </span>
-                        </form>
                     </FlexModal>: null
                 }
             </div>

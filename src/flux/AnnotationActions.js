@@ -224,7 +224,7 @@ const AnnotationActions = {
             if (error) {
                 AppDispatcher.dispatch({
                     eventName: 'login-failed',
-                    userDetails: userDetails
+                    userDetails: error
                 });
             } else {
                 AnnotationActions.loadResources();

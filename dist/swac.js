@@ -202,7 +202,7 @@ var ScholarlyWebAnnotator =
 	                if (_this2.resourcesChanged()) _AnnotationActions2.default.loadResources(); // trigger reload of annotations
 	            });
 
-	            var observerConfig = { childList: true, attributes: true, subtree: true };
+	            var observerConfig = { childList: true, attributes: false, subtree: true };
 
 	            for (var index = 0; index < this.observerNodes.length; index++) {
 	                observer.observe(this.observerNodes[index], observerConfig);
@@ -22353,11 +22353,11 @@ var ScholarlyWebAnnotator =
 	                    'li',
 	                    {
 	                        key: itemType + '__tab_option',
-	                        className: component.state.view === itemType ? 'active' : ''
+	                        className: 'nav-item'
 	                    },
 	                    _react2.default.createElement(
 	                        'a',
-	                        { 'data-toggle': 'tab', href: '#' + itemType },
+	                        { 'data-toggle': 'tab', href: '#' + itemType, className: component.state.view === itemType ? 'nav-link active' : 'nav-link' },
 	                        itemType
 	                    )
 	                );
@@ -22373,27 +22373,39 @@ var ScholarlyWebAnnotator =
 	                'div',
 	                { className: 'annotationClient' },
 	                _react2.default.createElement(
-	                    'h1',
-	                    null,
-	                    'Annotation Client'
+	                    'div',
+	                    { className: 'row' },
+	                    _react2.default.createElement(
+	                        'h1',
+	                        { className: 'col' },
+	                        'Annotator'
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'col-auto' },
+	                        _react2.default.createElement(_LoginBox2.default, { user: this.state.user })
+	                    )
 	                ),
 	                _react2.default.createElement(
 	                    'div',
-	                    {
-	                        className: 'server-status'
-	                    },
-	                    'Annotation server status: \xA0',
-	                    serverAvailable
+	                    { className: 'server-status row' },
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'col' },
+	                        'Annotation server status:'
+	                    ),
+	                    _react2.default.createElement(
+	                        'div',
+	                        { className: 'col-auto' },
+	                        serverAvailable
+	                    )
 	                ),
-	                _react2.default.createElement(_LoginBox2.default, {
-	                    user: this.state.user
-	                }),
 	                _react2.default.createElement(
 	                    'div',
 	                    null,
 	                    _react2.default.createElement(
 	                        'ul',
-	                        { className: 'nav nav-tabs' },
+	                        { className: 'nav nav-tabs nav-fill' },
 	                        viewerTabs
 	                    ),
 	                    _react2.default.createElement(
@@ -32605,14 +32617,14 @@ var ScholarlyWebAnnotator =
 
 	    pollServer: function pollServer() {
 	        _AnnotationAPI2.default.checkServerAvailable(function (serverAvailable) {
+	            console.log(serverAvailable);
 	            if (serverAvailable !== AnnotationActions.serverAvailable) {
-	                // change in availability, trigger event for listeners
-	                _AppDispatcher2.default.dispatch({
-	                    eventName: 'server-status-change',
-	                    serverAvailable: serverAvailable
-	                });
 	                AnnotationActions.serverAvailable = serverAvailable;
 	            }
+	            _AppDispatcher2.default.dispatch({
+	                eventName: 'server-status-change',
+	                serverAvailable: serverAvailable
+	            });
 	            if (!serverAvailable) {
 	                console.error("Annotation server not reachable");
 	            }
@@ -32809,7 +32821,7 @@ var ScholarlyWebAnnotator =
 	            if (error) {
 	                _AppDispatcher2.default.dispatch({
 	                    eventName: 'login-failed',
-	                    userDetails: userDetails
+	                    userDetails: error
 	                });
 	            } else {
 	                AnnotationActions.loadResources();
@@ -33623,9 +33635,7 @@ var ScholarlyWebAnnotator =
 	    }, {
 	        key: 'login',
 	        value: function login(userDetails, triggerMessage) {
-	            console.log("trigger message:", triggerMessage);
-	            console.log("user details:", userDetails);
-	            this.trigger('login-succeeded', userDetails);
+	            this.trigger(triggerMessage, userDetails);
 	        }
 	    }, {
 	        key: 'logout',
@@ -60156,10 +60166,10 @@ var ScholarlyWebAnnotator =
 	        value: function render() {
 	            return _react2.default.createElement(
 	                'div',
-	                { id: this.props.elementId, className: 'modal fade' },
+	                { id: this.props.elementId, className: 'modal fade', role: 'dialog' },
 	                _react2.default.createElement(
 	                    'div',
-	                    { className: 'modal-dialog modal-lg' },
+	                    { className: 'modal-dialog', role: 'document' },
 	                    _react2.default.createElement(
 	                        'div',
 	                        { className: 'modal-content' },
@@ -60167,14 +60177,18 @@ var ScholarlyWebAnnotator =
 	                            'div',
 	                            { className: 'modal-header' },
 	                            _react2.default.createElement(
-	                                'button',
-	                                { type: 'button', className: 'close', 'data-dismiss': 'modal' },
-	                                'x'
-	                            ),
-	                            _react2.default.createElement(
 	                                'h4',
 	                                { className: 'modal-title' },
 	                                this.props.title
+	                            ),
+	                            _react2.default.createElement(
+	                                'button',
+	                                { type: 'button', className: 'close', 'data-dismiss': 'modal', 'aria-label': 'Close' },
+	                                _react2.default.createElement(
+	                                    'span',
+	                                    { 'aria-hidden': 'true' },
+	                                    '\xD7'
+	                                )
 	                            )
 	                        ),
 	                        _react2.default.createElement(
@@ -88584,8 +88598,7 @@ var ScholarlyWebAnnotator =
 	            showLoginModal: false,
 	            user: null,
 	            loggedIn: false,
-	            loginButtonLabel: "login",
-	            loginMessage: "You are not logged in"
+	            loginButtonLabel: "Login"
 	        };
 	        return _this;
 	    }
@@ -88593,8 +88606,10 @@ var ScholarlyWebAnnotator =
 	    _createClass(LoginBox, [{
 	        key: 'componentDidMount',
 	        value: function componentDidMount() {
-	            _AnnotationStore2.default.bind('login-succeeded', this.doLogin.bind(this));
-	            _AnnotationStore2.default.bind('register-succeeded', this.doLogin.bind(this));
+	            _AnnotationStore2.default.bind('login-succeeded', this.loginSuccess.bind(this));
+	            _AnnotationStore2.default.bind('register-succeeded', this.loginSuccess.bind(this));
+	            _AnnotationStore2.default.bind('login-failed', this.loginFailed.bind(this));
+	            _AnnotationStore2.default.bind('register-failed', this.loginFailed.bind(this));
 	        }
 	    }, {
 	        key: 'handleLogin',
@@ -88605,12 +88620,30 @@ var ScholarlyWebAnnotator =
 	                this.setState({
 	                    user: null,
 	                    loggedIn: false,
-	                    loginButtonLabel: "login",
-	                    loginMessage: "You are not logged in"
+	                    loginButtonLabel: "Login"
 	                });
 	                _AnnotationActions2.default.logoutUser();
 	                localStorage.removeItem("userDetails");
 	            }
+	        }
+	    }, {
+	        key: 'loginSuccess',
+	        value: function loginSuccess(userDetails) {
+	            this.setState({
+	                user: userDetails,
+	                loggedIn: true,
+	                loginButtonLabel: "Logout " + userDetails.username,
+	                warning: null
+	            });
+	            localStorage.setItem("userDetails", JSON.stringify(userDetails));
+	            this.hideLoginForm();
+	        }
+	    }, {
+	        key: 'loginFailed',
+	        value: function loginFailed(error) {
+	            this.setState({
+	                warning: error.message
+	            });
 	        }
 	    }, {
 	        key: 'showLoginForm',
@@ -88622,24 +88655,6 @@ var ScholarlyWebAnnotator =
 	        value: function hideLoginForm() {
 	            (0, _jquery2.default)('#login__modal').modal('hide'); //TODO ugly, but without this the static backdrop won't disappear!
 	            this.setState({ showLoginModal: false });
-	        }
-	    }, {
-	        key: 'doLogin',
-	        value: function doLogin(userDetails) {
-	            this.setState({
-	                user: userDetails,
-	                loggedIn: true,
-	                loginButtonLabel: "logout",
-	                loginMessage: "You are logged in as " + userDetails.username
-	            });
-	            localStorage.setItem("userDetails", JSON.stringify(userDetails));
-	            if (userDetails.username) {
-	                this.hideLoginForm();
-	            } else if (userDetails.error) {
-	                this.setState({
-	                    warning: userDetails.error
-	                });
-	            }
 	        }
 	    }, {
 	        key: 'handlePasswordChange',
@@ -88655,7 +88670,6 @@ var ScholarlyWebAnnotator =
 	        key: 'handleActionChange',
 	        value: function handleActionChange(e) {
 	            this.setState({ selectedAction: e.target.value });
-	            console.log(e.target.value);
 	        }
 	    }, {
 	        key: 'handleSubmit',
@@ -88665,8 +88679,6 @@ var ScholarlyWebAnnotator =
 	                username: this.state.username,
 	                password: this.state.password
 	            };
-	            console.log(userDetails);
-	            console.log(this.state.selectedAction);
 	            if (this.state.selectedAction === "register") {
 	                _AnnotationActions2.default.registerUser(userDetails);
 	            } else {
@@ -88687,76 +88699,113 @@ var ScholarlyWebAnnotator =
 	                        onClick: this.handleLogin.bind(this) },
 	                    this.state.loginButtonLabel
 	                ),
-	                '\xA0',
-	                _react2.default.createElement(
-	                    'span',
-	                    null,
-	                    this.state.loginMessage
-	                ),
 	                this.showModal ? _react2.default.createElement(
 	                    _FlexModal2.default,
 	                    {
 	                        elementId: 'login__modal',
 	                        handleHideModal: this.hideLoginForm.bind(this),
-	                        title: 'User Login' },
+	                        title: 'Login or Register' },
 	                    _react2.default.createElement(
 	                        'div',
-	                        { className: 'authentication-action' },
+	                        { className: 'container-fluid' },
 	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            'Login as existing user',
-	                            _react2.default.createElement('input', {
-	                                type: 'radio',
-	                                value: 'login',
-	                                checked: this.state.selectedAction === "login",
-	                                onChange: this.handleActionChange.bind(this)
-	                            })
+	                            'p',
+	                            { className: 'row' },
+	                            _react2.default.createElement(
+	                                'div',
+	                                { className: 'col-12 text-right' },
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'btn-group btn-group-toggle' },
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        { className: this.state.selectedAction === "login" ? "btn btn-primary active" : "btn btn-primary" },
+	                                        _react2.default.createElement('input', { type: 'radio', value: 'login',
+	                                            checked: this.state.selectedAction === "login",
+	                                            onChange: this.handleActionChange.bind(this)
+	                                        }),
+	                                        ' Login'
+	                                    ),
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        { className: this.state.selectedAction === "register" ? "btn btn-primary active" : "btn btn-primary" },
+	                                        _react2.default.createElement('input', { type: 'radio', value: 'register',
+	                                            checked: this.state.selectedAction === "register",
+	                                            onChange: this.handleActionChange.bind(this)
+	                                        }),
+	                                        ' Register'
+	                                    )
+	                                )
+	                            )
 	                        ),
 	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            'Register as new user',
-	                            _react2.default.createElement('input', {
-	                                type: 'radio',
-	                                value: 'register',
-	                                checked: this.state.selectedAction === "register",
-	                                onChange: this.handleActionChange.bind(this)
-	                            })
-	                        )
-	                    ),
-	                    _react2.default.createElement(
-	                        'form',
-	                        { className: 'loginForm', onSubmit: this.handleSubmit.bind(this) },
-	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            'Username'
-	                        ),
-	                        _react2.default.createElement('input', {
-	                            type: 'text',
-	                            placeholder: 'username',
-	                            value: this.state.username,
-	                            onChange: this.handleUsernameChange.bind(this)
-	                        }),
-	                        '\xA0',
-	                        _react2.default.createElement(
-	                            'label',
-	                            null,
-	                            'Password'
-	                        ),
-	                        _react2.default.createElement('input', {
-	                            type: 'password',
-	                            placeholder: 'password',
-	                            value: this.state.password,
-	                            onChange: this.handlePasswordChange.bind(this)
-	                        }),
-	                        '\xA0',
-	                        _react2.default.createElement('input', { className: 'btn btn-default', type: 'submit', value: 'Login' }),
-	                        _react2.default.createElement(
-	                            'span',
-	                            { className: 'label label-danger' },
-	                            this.state.warning
+	                            'form',
+	                            { className: 'loginForm', onSubmit: this.handleSubmit.bind(this) },
+	                            _react2.default.createElement(
+	                                'div',
+	                                { className: 'row' },
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'col-6' },
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        { 'for': 'loginBoxUsername' },
+	                                        'Username'
+	                                    ),
+	                                    _react2.default.createElement('input', {
+	                                        id: 'loginBoxUsername',
+	                                        type: 'text',
+	                                        placeholder: 'username',
+	                                        value: this.state.username,
+	                                        onChange: this.handleUsernameChange.bind(this),
+	                                        className: this.state.warning ? "form-control is-invalid" : "form-control"
+	                                    }),
+	                                    _react2.default.createElement(
+	                                        'div',
+	                                        { className: 'invalid-feedback' },
+	                                        this.state.warning
+	                                    )
+	                                ),
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'col-6' },
+	                                    _react2.default.createElement(
+	                                        'label',
+	                                        { 'for': 'loginBoxPassword' },
+	                                        'Password'
+	                                    ),
+	                                    _react2.default.createElement('input', {
+	                                        id: 'loginBoxPassword',
+	                                        type: 'password',
+	                                        placeholder: 'password',
+	                                        value: this.state.password,
+	                                        onChange: this.handlePasswordChange.bind(this),
+	                                        className: this.state.warning ? "form-control is-invalid" : "form-control"
+	                                    }),
+	                                    _react2.default.createElement(
+	                                        'div',
+	                                        { className: 'invalid-feedback' },
+	                                        this.state.warning
+	                                    )
+	                                )
+	                            ),
+	                            _react2.default.createElement(
+	                                'div',
+	                                { className: 'row' },
+	                                _react2.default.createElement(
+	                                    'div',
+	                                    { className: 'col-12' },
+	                                    _react2.default.createElement(
+	                                        'p',
+	                                        { className: 'text-right' },
+	                                        _react2.default.createElement('input', {
+	                                            type: 'submit',
+	                                            className: 'btn btn-primary',
+	                                            value: this.state.selectedAction === "login" ? "Login" : "Register"
+	                                        })
+	                                    )
+	                                )
+	                            )
 	                        )
 	                    )
 	                ) : null
