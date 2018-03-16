@@ -61,11 +61,11 @@ export class ScholarlyWebAnnotator {
         DOMUtil.setObserverNodeClass(this.clientConfig.targetObserver.targetObserverClass);
         this.observerNodes = DOMUtil.getObserverNodes();
         RDFaUtil.setObserverNodes(this.observerNodes);
+        this.setSelectionListener();
+        this.setAnnotationAttributes();
         if (this.clientConfig.targetObserver.observeMutations) {
             this.startObserver();
         }
-        this.setSelectionListener();
-        this.setAnnotationAttributes();
     }
 
     setAnnotationAttributes() {
