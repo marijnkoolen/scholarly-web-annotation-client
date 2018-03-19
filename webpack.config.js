@@ -2,20 +2,36 @@ var path = require('path');
 
 module.exports = {
     entry: "./src/main.jsx",
+    mode: "development",
     output: {
+        filename: "[name].js",
         path: path.join(__dirname, "public/js"),
-        filename: "scholarly-web-annotator.js",
-		libraryTarget: "var",
-		library: "ScholarlyWebAnnotator"
+        libraryTarget: "var",
+        library: "ScholarlyWebAnnotator"
     },
-	devtool: 'inline-source-map',
     module: {
-        loaders: [
-			{ test: path.join(__dirname, 'src'), loader: 'babel' },
-            { test: /\.css$/, loader: "style!css" }
-        ]
+        rules: [{
+                exclude: /node_modules/,
+                test: /\.jsx?$/,
+                use: {
+                    loader: 'babel-loader'
+                }
+            }]
     },
     resolve: {
-        extensions: ['', '.js', '.jsx']
+        extensions: ['*', '.js', '.jsx']
+    },
+    optimization: {
+        splitChunks: {
+            chunks: 'all',
+            cacheGroups: {
+                commons: {
+                    test: /node_modules/,
+                    name: "vendor",
+                    chunks: "initial",
+                    minSize: 1
+                }
+            }
+        }
     }
 };

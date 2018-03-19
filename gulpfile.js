@@ -1,10 +1,9 @@
 var gulp = require('gulp'),
     pump = require('pump'),
-    rename = require('gulp-rename'),
     sass = require('gulp-sass'),
-    webpack = require('gulp-webpack'),
-    path = require('path'),
-    connect = require('gulp-connect');
+    webpack = require('webpack-stream'),
+    connect = require('gulp-connect'),
+    named = require('vinyl-named');
 
 gulp.task('default', ['css', 'js']);
 
@@ -32,30 +31,48 @@ gulp.task('css', function(cb) {
         gulp.src('src/scss/swac.scss'),
         sass({includePaths: 'node_modules/bootstrap/scss'}),
         gulp.dest('dist/'),
-        gulp.dest('demo/')
+        gulp.dest('demo/build/')
     ], cb);
 })
 
 gulp.task('js', function(cb) {
     pump([
         gulp.src('src/main.jsx'),
+        named(function(f) { return 'swac'; }),
         webpack({
+            mode: "development",
             output: {
-                filename: "swac.js",
+                filename: "[name].js",
         		libraryTarget: "var",
         		library: "ScholarlyWebAnnotator"
             },
             module: {
-                loaders: [
-        			{ test: path.join(__dirname, 'src'), loader: 'babel' },
-                    { test: /\.css$/, loader: "style!css" }
-                ]
+                rules: [{
+                        exclude: /node_modules/,
+                        test: /\.jsx?$/,
+                        use: {
+                            loader: 'babel-loader'
+                        }
+                    }]
             },
             resolve: {
-                extensions: ['', '.js', '.jsx']
+                extensions: ['*', '.js', '.jsx']
+            },
+            optimization: {
+                splitChunks: {
+                    chunks: 'all',
+                    cacheGroups: {
+                        commons: {
+                            test: /node_modules/,
+                            name: "vendor",
+                            chunks: "initial",
+                            minSize: 1
+                        }
+                    }
+                }
             }
-        }),
+        }, require('webpack')),
         gulp.dest('dist/'),
-        gulp.dest('demo/')
+        gulp.dest('demo/build/')
     ], cb);
 });

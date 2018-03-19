@@ -7,6 +7,8 @@ npm-debug.log
 scholarly-web-annotator.js
 scholarly-web-annotator.js.map
 node_modules
+dist
+demo/build
 
 # specific ignore
 experimental_server.py
