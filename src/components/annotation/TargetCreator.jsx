@@ -7,16 +7,14 @@ import CandidateList from './CandidateList.jsx';
 import SelectedList from './SelectedList.jsx';
 import TargetUtil from './../../util/TargetUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
-import AnnotationActions from '../../flux/AnnotationActions';
 
-export default class TargetSelector extends React.Component {
+export default class TargetCreator extends React.Component {
     constructor(props) {
         super(props);
         this.addToSelected = this.addToSelected.bind(this);
         this.removeFromSelected = this.removeFromSelected.bind(this);
         this.state = {
-            selected: [],
-            permission: AnnotationActions.getPermission(),
+            selected: this.props.selectedTargets,
             annotations: [],
             activeType: "resource",
             candidateTypes: ["resource", "annotation"],
@@ -27,6 +25,7 @@ export default class TargetSelector extends React.Component {
         if (selected.indexOf(candidate) === -1) {
             selected.push(candidate);
             this.setState({selected: selected});
+            this.props.setTargets(selected);
         }
     }
     removeFromSelected(candidate) {
@@ -35,21 +34,12 @@ export default class TargetSelector extends React.Component {
         if (index !== -1) {
             selected.splice(index, 1);
             this.setState({selected: selected});
+            this.props.setTargets(selected);
         }
     }
-    annotateTargets() {
-        if (this.state.selected.length == 0) {
-            alert("No annotation target selected, annotation requires at least one target");
-        }
-        else {
-            this.props.createAnnotation(this.state.selected);
-        }
+    addMotivations() {
+        this.props.addMotivations();
     }
-    handlePermissionChange(event) {
-        this.setState({permission: event.target.value});
-        AnnotationActions.setPermission(event.target.value);
-    }
-
     render() {
         //generate the tabs from the configured modes
         var component = this;
@@ -87,34 +77,6 @@ export default class TargetSelector extends React.Component {
         return (
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-12">
-                        <div className="btn-group btn-group-toggle">
-                            <label
-                                className={this.state.permission === "private" ? "btn btn-primary active" : "btn btn-primary"}
-                                >
-                                <input
-                                    type="radio"
-                                    value="private"
-                                    checked={this.state.permission === "private"}
-                                    onChange={this.handlePermissionChange.bind(this)}
-                                />
-                                Private annotation
-                            </label>
-                            <label
-                                className={this.state.permission === "public" ? "btn btn-primary active" : "btn btn-primary"}
-                                >
-                                <input
-                                    type="radio"
-                                    value="public"
-                                    checked={this.state.permission === "public"}
-                                    onChange={this.handlePermissionChange.bind(this)}
-                                />
-                                Public annotation
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div className="row">
                     <div className="col-6">
                         <h3>Available Targets</h3>
                         <ul className="nav nav-tabs">
@@ -133,7 +95,6 @@ export default class TargetSelector extends React.Component {
                     </div>
                 </div>
                 <div>
-                    <button onClick={this.annotateTargets.bind(this)} className="btn btn-primary">Create Annotation</button>
                 </div>
             </div>
         )
