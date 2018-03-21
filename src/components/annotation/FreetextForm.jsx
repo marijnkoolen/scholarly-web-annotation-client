@@ -65,7 +65,7 @@ class FreetextForm extends React.Component {
         const statements = this.state.data.map((statement, index) => {
             return (
                 <li key={'com__' + index} className="list-group-item">
-                    <i className="glyphicon glyphicon-remove interactive" onClick={this.removeStatement.bind(this, index)}></i>
+                    <i className="badge badge-light" onClick={this.removeStatement.bind(this, index)}></i>
                     &nbsp;
                     {statement.value}
                 </li>
