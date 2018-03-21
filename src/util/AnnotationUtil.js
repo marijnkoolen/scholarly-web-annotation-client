@@ -205,11 +205,11 @@ const AnnotationUtil = {
     makeTextQuoteSelector : function(quote) {
         if (quote === undefined)
             return null;
-        if (!quote.exact)
+        if (quote.exact === undefined)
             throw new Error('text quote parameters should contain property exact');
-        if (!quote.suffix)
+        if (quote.suffix === undefined)
             throw new Error('text quote parameters should contain property suffix');
-        if (!quote.prefix)
+        if (quote.prefix === undefined)
             throw new Error('text quote parameters should contain property prefix');
         if(quote.prefix !== undefined && quote.suffix !== undefined && quote.exact !== undefined) {
             return {
@@ -225,9 +225,9 @@ const AnnotationUtil = {
     makeTextPositionSelector : function(position) {
         if (!position)
             return null;
-        if (!position.start)
+        if (position.start === undefined)
             throw new Error('text position parameters should contain property start');
-        if (!position.end)
+        if (position.end === undefined)
             throw new Error('text position parameters should contain property end');
         if(position.start !== undefined && position.end !== undefined) {
             return {
