@@ -3,15 +3,15 @@
 #    Generic ontology (should be usable for any edition)  
 #
 #################################################################
-@prefix hi: <http://localhost:3001/vocabularies/genericontology.ttl#> .
+@prefix hi: <http://localhost:8080/vocabularies/genericontology.ttl#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix sch: <http://schema.org/> .
-@base <http://localhost:3001/vocabularies/genericontology.ttl> .
-<http://localhost:3001/vocabularies/genericontology.ttl> rdf:type owl:Ontology .
+@base <http://localhost:8080/vocabularies/genericontology.ttl> .
+<http://localhost:8080/vocabularies/genericontology.ttl> rdf:type owl:Ontology .
 
 #################################################################
 #
