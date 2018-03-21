@@ -166,6 +166,19 @@ const AnnotationActions = {
         });
     },
 
+    copyAnnotation: (annotation) => {
+        // remove id, creation timestamp, permissions (assume permission of current user setting)
+        delete annotation.id;
+        delete annotation.created
+        delete annotation.premissions;
+        AnnotationAPI.saveAnnotation(annotation, AnnotationActions.permission, (error, data) => {
+            AppDispatcher.dispatch({
+                eventName: 'save-annotation',
+                annotation: data
+            });
+        });
+    },
+
     dispatchAnnotations(annotations) {
         AppDispatcher.dispatch({
             eventName: 'load-annotations',

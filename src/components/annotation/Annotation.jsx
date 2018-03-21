@@ -36,6 +36,7 @@ class Annotation extends React.Component {
         // ask for adding, changing or removing target
         // if target is resource, allow new resource selection
         // if target is annotation, allow new annotation selection
+        // TODO: implement changing target
     }
     editAnnotationBody(annotation) {
         AnnotationActions.edit(annotation);
@@ -43,8 +44,7 @@ class Annotation extends React.Component {
     copyAnnotation(annotation) {
         let confirm = window.confirm("Are you sure you want to copy this annotation?");
         if (confirm) {
-            AnnotationActions.copy(annotation);
-            // TODO: implement copying of annotation
+            AnnotationActions.copyAnnotation(annotation);
         }
     }
     deleteAnnotation(annotation) {
