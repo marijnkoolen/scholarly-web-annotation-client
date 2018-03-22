@@ -107,7 +107,7 @@ class LoginBox extends React.Component {
                         handleHideModal={this.hideLoginForm.bind(this)}
                         title="Login or Register">
                         <div className="container-fluid">
-                            <p className="row">
+                            <div className="row">
                                 <div className="col-12 text-right">
                                     <div className="btn-group btn-group-toggle">
                                         <label className={this.state.selectedAction === "login" ? "btn btn-primary active" : "btn btn-primary"}>
@@ -124,7 +124,7 @@ class LoginBox extends React.Component {
                                         </label>
                                     </div>
                                 </div>
-                            </p>
+                            </div>
                             <form className="loginForm" onSubmit={this.handleSubmit.bind(this)}>
                                 <div className="row">
                                     <div className="col-6">

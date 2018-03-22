@@ -9,16 +9,7 @@ class BodyCreator extends React.Component {
 
     constructor(props) {
         super(props);
-        let bodies = this.props.createdBodies;
 
-        // when editing an existing annotation, map bodies to their motivations
-        if(this.props.editAnnotation && this.props.editAnnotation.body) {
-            this.props.editAnnotation.body.forEach(function(body) {
-                if (!Object.keys(bodies).includes(body.type))
-                    bodies[body.type] = [];
-                bodies[body.type].push(body);
-            });
-        }
         let activeTab = null;
         for(let i=0;i<Object.keys(this.props.annotationTasks).length;i++) {
             if(Object.keys(this.props.annotationTasks)[i] != 'bookmark') {
@@ -28,7 +19,7 @@ class BodyCreator extends React.Component {
         }
         this.state = {
             activeTab : activeTab,
-            bodies: bodies,
+            bodies: this.props.createdBodies,
             defaultCollection: null,
         }
     }

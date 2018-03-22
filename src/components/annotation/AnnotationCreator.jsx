@@ -42,17 +42,25 @@ class AnnotationCreator extends React.Component {
     selectTargets() {
         let candidates = TargetUtil.getCandidates(this.state.annotations, this.props.config.defaults.target);
         this.setState({
+            editAnnotation: null,
             candidates: candidates,
             showModal: true,
             create: "target",
+            createdBodies: {}
         });
     }
     hideAnnotationForm() {
-        this.setState({showModal: false});
+        $('#annotation__modal').modal('hide');//TODO ugly, but without this the static backdrop won't disappear!
+        this.setState({
+            showModal: false,
+            selectedTargets: [],
+            createdBodies: {}
+        });
     }
     editAnnotationBody(annotation) {
         this.setState({
             editAnnotation: annotation,
+            createdBodies: this.categorizeBodies(annotation.body),
             showModal: true, create: "body"
         });
     }
@@ -71,23 +79,23 @@ class AnnotationCreator extends React.Component {
         this.setState({createdBodies: createdBodies});
     }
     createAnnotation() {
-        var annotation = AnnotationUtil.generateW3CAnnotation(this.state.selectTargets, this.props.currentUser.username);
-        annotation.body = createdBodies;
+        annotation.body = this.listBodies(this.state.createdBodies);
         this.editAnnotationBody(annotation);
     }
     gatherDataAndSave() {
         let component = this;
-        var annotation = this.props.editAnnotation;
-        var body = [];
-        Object.keys(component.state.createdBodies).forEach(function(bodyType) {
-            body = body.concat(component.state.bodies[bodyType]);
-        });
-        if (body.length === 0) {
+        if (this.state.editAnnotation) {
+            var annotation = this.state.editAnnotation;
+        } else {
+            var annotation = AnnotationUtil.generateW3CAnnotation(this.state.selectedTargets, this.props.currentUser.username);
+        }
+        var bodies = this.listBodies(this.state.createdBodies);
+        if (bodies.length === 0) {
             alert("Cannot save annotation without content. Please add at least one motivation.");
         } else {
-            annotation.body = body;
+            annotation.body = bodies;
             AnnotationActions.save(annotation);
-            this.props.hideAnnotationForm();
+            this.hideAnnotationForm();
         }
     }
     handlePermissionChange(event) {
@@ -95,6 +103,32 @@ class AnnotationCreator extends React.Component {
         AnnotationActions.setPermission(event.target.value);
     }
 
+    listBodies(createdBodies) {
+        var bodies = [];
+        Object.keys(createdBodies).forEach((bodyType) => {
+            bodies = bodies.concat(createdBodies[bodyType]);
+        });
+        return bodies;
+    }
+
+    categorizeBodies(bodies) {
+        var createdBodies = {};
+        bodies.forEach((body) => {
+            if (!createdBodies[body.type])
+                createdBodies[body.type] = [];
+            createdBodies[body.type].push(body);
+        });
+        return createdBodies;
+    }
+
+    hasTarget() {
+        return this.state.selectedTargets.length > 0 || this.state.editAnnotation !== null;
+    }
+
+    hasBody() {
+        let bodies = this.listBodies(this.state.createdBodies);
+        return bodies.length > 0;
+    }
 
     render() {
         let targetCreator = (
@@ -110,7 +144,6 @@ class AnnotationCreator extends React.Component {
         )
         let bodyCreator = (
             <BodyCreator
-                editAnnotation={this.state.editAnnotation}
                 createdBodies={this.state.createdBodies}
                 addTargets={this.addTargets.bind(this)}
                 setBodies={this.setBodies.bind(this)}
@@ -121,6 +154,7 @@ class AnnotationCreator extends React.Component {
                 permission={this.state.permission}
             />
         )
+        var canSave = this.hasTarget() && this.hasBody();
         let creatorButtons = (
             <div className="row">
                 <div className="creator-view-buttons col-12">
@@ -138,7 +172,7 @@ class AnnotationCreator extends React.Component {
                     </button>
                     <button
                         className="btn btn-primary"
-                        disabled={Object.keys(this.state.createdBodies).length === 0}
+                        disabled={!canSave}
                         onClick={this.gatherDataAndSave.bind(this)}>
                         Save
                     </button>

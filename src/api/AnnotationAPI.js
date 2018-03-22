@@ -61,7 +61,6 @@ const AnnotationAPI = {
         var status = null;
         options.cache = 'no-cache';
         options.mode = 'cors';
-        console.log(AnnotationAPI.userDetails);
         if (AnnotationAPI.userDetails) {
             AnnotationAPI.addAuthorization(options);
         }
@@ -173,8 +172,6 @@ const AnnotationAPI = {
                 if (error)
                     return callback(error, null);
 
-                console.log("received container:");
-                console.log(annotationContainer);
                 var items = [];
                 if (annotationContainer.first && annotationContainer.first.hasOwnProperty("items")) {
                     items = annotationContainer.first.items;
@@ -185,8 +182,6 @@ const AnnotationAPI = {
                         annotations.push(annotation);
                     }
                     if (index === items.length - 1 && targetIndex === targetIds.length - 1) {
-                        console.log("returning annotations");
-                        console.log(annotations);
                         return callback(null, annotations);
                     }
                 });
@@ -328,7 +323,6 @@ const AnnotationAPI = {
         }
         AnnotationAPI.makeRequest(url, options, (error, authorizationData) => {
             if (!error) {
-                console.log(authorizationData);
                 userDetails.user_id = authorizationData.user.user_id;
                 userDetails.token = authorizationData.user.token;
                 AnnotationAPI.setUserDetails(userDetails);
