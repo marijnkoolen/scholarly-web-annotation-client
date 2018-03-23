@@ -128,7 +128,7 @@ class LoginBox extends React.Component {
                             <form className="loginForm" onSubmit={this.handleSubmit.bind(this)}>
                                 <div className="row">
                                     <div className="col-6">
-                                        <label for="loginBoxUsername">Username</label>
+                                        <label htmlFor="loginBoxUsername">Username</label>
                                         <input
                                             id="loginBoxUsername"
                                             type="text"
@@ -140,7 +140,7 @@ class LoginBox extends React.Component {
                                         <div className="invalid-feedback">{this.state.warning}</div>
                                     </div>
                                     <div className="col-6">
-                                        <label for="loginBoxPassword">Password</label>
+                                        <label htmlFor="loginBoxPassword">Password</label>
                                         <input
                                             id="loginBoxPassword"
                                             type="password"
