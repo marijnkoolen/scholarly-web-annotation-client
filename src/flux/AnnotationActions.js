@@ -18,13 +18,12 @@ const AnnotationActions = {
     pollServer : () => {
         AnnotationAPI.checkServerAvailable((serverAvailable) => {
             if (serverAvailable !== AnnotationActions.serverAvailable) {
-                // change in availability, trigger event for listeners
-                AppDispatcher.dispatch({
-                    eventName: 'server-status-change',
-                    serverAvailable: serverAvailable
-                })
                 AnnotationActions.serverAvailable = serverAvailable;
             }
+            AppDispatcher.dispatch({
+                eventName: 'server-status-change',
+                serverAvailable: serverAvailable
+            });
             if (!serverAvailable) {
                 console.error("Annotation server not reachable");
             }
@@ -167,6 +166,19 @@ const AnnotationActions = {
         });
     },
 
+    copyAnnotation: (annotation) => {
+        // remove id, creation timestamp, permissions (assume permission of current user setting)
+        delete annotation.id;
+        delete annotation.created
+        delete annotation.premissions;
+        AnnotationAPI.saveAnnotation(annotation, AnnotationActions.permission, (error, data) => {
+            AppDispatcher.dispatch({
+                eventName: 'save-annotation',
+                annotation: data
+            });
+        });
+    },
+
     dispatchAnnotations(annotations) {
         AppDispatcher.dispatch({
             eventName: 'load-annotations',
@@ -225,7 +237,7 @@ const AnnotationActions = {
             if (error) {
                 AppDispatcher.dispatch({
                     eventName: 'login-failed',
-                    userDetails: userDetails
+                    userDetails: error
                 });
             } else {
                 AnnotationActions.loadResources();

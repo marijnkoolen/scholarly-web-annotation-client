@@ -40,7 +40,7 @@ class AnnotationList extends React.Component {
         }
         return (
             <div className="annotationList">
-                <h3>Saved annotations</h3>
+                <h3>Stored Annotations</h3>
                 <ul className="list-group">
                     {annotationItems}
                 </ul>

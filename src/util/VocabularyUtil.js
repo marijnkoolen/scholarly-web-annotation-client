@@ -107,17 +107,17 @@ const VocabularyUtil = {
         if (!N3.Util.isLiteral(typeLabel)) {
             typeLabel = N3.Util.createLiteral(typeLabel);
         }
-        let triples = VocabularyUtil.store.find(null, VocabularyUtil.expand('rdfs:label'), typeLabel);
+        let triples = VocabularyUtil.store.getTriples(null, VocabularyUtil.expand('rdfs:label'), typeLabel);
         return triples[0] ? triples[0].subject : null;
     },
 
     getClassLabel : function(className) {
-        let triples = VocabularyUtil.store.find(className, VocabularyUtil.expand('rdfs:label'), null);
+        let triples = VocabularyUtil.store.getTriples(className, VocabularyUtil.expand('rdfs:label'), null);
         return triples[0] ? triples[0].object : null;
     },
 
     getDescendantClasses : function(className) {
-        let triples = VocabularyUtil.store.find(null, VocabularyUtil.expand('rdfs:subClassOf'), className);
+        let triples = VocabularyUtil.store.getTriples(null, VocabularyUtil.expand('rdfs:subClassOf'), className);
         var subClasses = [];
         triples.forEach(function(triple) {
             subClasses.push(VocabularyUtil.getClassLabel(triple.subject));
@@ -127,7 +127,7 @@ const VocabularyUtil = {
     },
 
     getSubClasses : function(className) {
-        let triples = VocabularyUtil.store.find(null, VocabularyUtil.expand('rdfs:subClassOf'), className);
+        let triples = VocabularyUtil.store.getTriples(null, VocabularyUtil.expand('rdfs:subClassOf'), className);
         return triples.map(function(triple) {
             return VocabularyUtil.getClassLabel(triple.subject);
         });
@@ -142,7 +142,7 @@ const VocabularyUtil = {
     },
 
     getSuperClass : function(className) {
-        var triples = VocabularyUtil.store.find(className, VocabularyUtil.expand('rdfs:subClassOf'), null);
+        var triples = VocabularyUtil.store.getTriples(className, VocabularyUtil.expand('rdfs:subClassOf'), null);
         triples = VocabularyUtil.filterBlanks(triples);
         return triples[0] ? triples[0].object : null;
     },

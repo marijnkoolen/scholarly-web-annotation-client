@@ -1,6 +1,6 @@
 #################################################################
 #
-#    Generic ontology (should be usable for any edition)
+#    Generic ontology (should be usable for any edition)  
 #
 #################################################################
 @prefix hi: <http://localhost:8080/vocabularies/genericontology.ttl#> .
@@ -15,7 +15,7 @@
 
 #################################################################
 #
-#    Annotatable things and its subclasses
+#    Annotatable things and its subclasses 
 #
 #################################################################
 hi:AnnotatableThing rdf:type owl:Class ;
@@ -155,21 +155,22 @@ hi:hasAnnotation rdf:type owl:ObjectProperty;
 
 hi:CreativeWork rdfs:subClassOf [
 a owl:Restriction;
-owl:onProperty hi:hasAnnotation;
+owl:onProperty hi:hasAnnotation; 
 owl:allValuesFrom hi:AboutContent
 ].
 hi:Enrichment rdfs:subClassOf [
 a owl:Restriction;
-owl:onProperty hi:hasAnnotation;
+owl:onProperty hi:hasAnnotation; 
 owl:allValuesFrom hi:AboutEnrichment
 ].
 hi:MediaBearer rdfs:subClassOf [
 a owl:Restriction;
-owl:onProperty hi:hasAnnotation;
+owl:onProperty hi:hasAnnotation; 
 owl:allValuesFrom hi:AboutMediaBearer
 ].
 hi:Representation rdfs:subClassOf [
 a owl:Restriction;
-owl:onProperty hi:hasAnnotation;
+owl:onProperty hi:hasAnnotation; 
 owl:allValuesFrom hi:AboutRepresentation
 ].
+

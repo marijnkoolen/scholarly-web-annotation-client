@@ -209,13 +209,19 @@ const TargetUtil = {
 
     addCandidateAnnotations : function(annotations) {
         return annotations.map(function(annotation) {
+            var text = "";
+            var label = "";
+            if (annotation.body && annotation.body.length > 0) {
+                text = annotation.body[0].value;
+                label = annotation.body[0].purpose;
+            }
             return {
                 source: annotation.id,
                 type: "annotation",
                 params: {
-                    text: annotation.body[0].value
+                    text: text
                 },
-                label: annotation.body[0].purpose,
+                label: label,
                 target: {
                     source: annotation.id
                 }

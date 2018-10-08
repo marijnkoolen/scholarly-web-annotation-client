@@ -7,16 +7,14 @@ import CandidateList from './CandidateList.jsx';
 import SelectedList from './SelectedList.jsx';
 import TargetUtil from './../../util/TargetUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
-import AnnotationActions from '../../flux/AnnotationActions';
 
-export default class TargetSelector extends React.Component {
+export default class TargetCreator extends React.Component {
     constructor(props) {
         super(props);
         this.addToSelected = this.addToSelected.bind(this);
         this.removeFromSelected = this.removeFromSelected.bind(this);
         this.state = {
-            selected: [],
-            permission: AnnotationActions.getPermission(),
+            selected: this.props.selectedTargets,
             annotations: [],
             activeType: "resource",
             candidateTypes: ["resource", "annotation"],
@@ -27,6 +25,7 @@ export default class TargetSelector extends React.Component {
         if (selected.indexOf(candidate) === -1) {
             selected.push(candidate);
             this.setState({selected: selected});
+            this.props.setTargets(selected);
         }
     }
     removeFromSelected(candidate) {
@@ -35,21 +34,12 @@ export default class TargetSelector extends React.Component {
         if (index !== -1) {
             selected.splice(index, 1);
             this.setState({selected: selected});
+            this.props.setTargets(selected);
         }
     }
-    annotateTargets() {
-        if (this.state.selected.length == 0) {
-            alert("No annotation target selected, annotation requires at least one target");
-        }
-        else {
-            this.props.createAnnotation(this.state.selected);
-        }
+    addMotivations() {
+        this.props.addMotivations();
     }
-    handlePermissionChange(event) {
-        this.setState({permission: event.target.value});
-        AnnotationActions.setPermission(event.target.value);
-    }
-
     render() {
         //generate the tabs from the configured modes
         var component = this;
@@ -57,9 +47,10 @@ export default class TargetSelector extends React.Component {
             return (
                 <li
                     key={candidateType + '__tab_option'}
-                    className={component.state.activeType === candidateType ? 'active' : ''}
+                    className="nav-item"
                 >
-                    <a data-toggle="tab" href={'#' + candidateType}>
+                    <a data-toggle="tab" href={'#' + candidateType}
+                        className={component.state.activeType === candidateType ? 'nav-link active' : 'nav-link'}>
                         {candidateType}
                     </a>
                 </li>
@@ -84,45 +75,26 @@ export default class TargetSelector extends React.Component {
         }, this);
 
         return (
-            <div className="TargetCreator">
-                <div className="TargetCreator-header">
-                    <div className="permission-selector">
-                        <label>
-                            <input
-                                type="radio"
-                                value="private"
-                                checked={this.state.permission === "private"}
-                                onChange={this.handlePermissionChange.bind(this)}
-                            />
-                            private annotation
-                        </label>
-                        <label>
-                            <input
-                                type="radio"
-                                value="public"
-                                checked={this.state.permission === "public"}
-                                onChange={this.handlePermissionChange.bind(this)}
-                            />
-                            public annotation
-                        </label>
+            <div className="container-fluid">
+                <div className="row">
+                    <div className="col-6">
+                        <h3>Available Targets</h3>
+                        <ul className="nav nav-tabs">
+                            {tabs}
+                        </ul>
+                        <div className="tab-content">
+                            {tabContents}
+                        </div>
                     </div>
-                    <h3>Select Annotation Targets</h3>
-                    <SelectedList
-                        candidates={this.state.selected}
-                        removeFromSelected={this.removeFromSelected.bind(this)}
-                    />
-                </div>
-                <div>
-                    <h4>Candidate Targets</h4>
-                    <ul className="nav nav-tabs">
-                        {tabs}
-                    </ul>
-                    <div className="tab-content">
-                        {tabContents}
+                    <div className="col-6">
+                        <h3>Selected Targets</h3>
+                        <SelectedList
+                            candidates={this.state.selected}
+                            removeFromSelected={this.removeFromSelected.bind(this)}
+                        />
                     </div>
                 </div>
                 <div>
-                    <button onClick={this.annotateTargets.bind(this)}>Annotate</button>
                 </div>
             </div>
         )

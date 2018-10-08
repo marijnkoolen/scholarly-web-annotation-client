@@ -2,25 +2,14 @@ import FreetextForm from './FreetextForm';
 import ClassifyingForm from './ClassifyingForm';
 import LinkingForm from './LinkingForm';
 
-import AnnotationActions from '../../flux/AnnotationActions';
 import React from 'react';
 
 
-//TODO this should all be changed: instead of one annotation with multiple bodies (comments, classifications, links)
-//this class should load multiple annotations related to the current target... pff lots of work...
 class BodyCreator extends React.Component {
 
     constructor(props) {
         super(props);
-        let bodies = {};
 
-        if(this.props.editAnnotation.body) {
-            this.props.editAnnotation.body.forEach(function(body) {
-                if (!Object.keys(bodies).includes(body.type))
-                    bodies[body.type] = [];
-                bodies[body.type].push(body);
-            });
-        }
         let activeTab = null;
         for(let i=0;i<Object.keys(this.props.annotationTasks).length;i++) {
             if(Object.keys(this.props.annotationTasks)[i] != 'bookmark') {
@@ -30,9 +19,8 @@ class BodyCreator extends React.Component {
         }
         this.state = {
             activeTab : activeTab,
-            bodies: bodies,
+            bodies: this.props.createdBodies,
             defaultCollection: null,
-            permission: AnnotationActions.getPermission(),
         }
     }
 
@@ -46,23 +34,11 @@ class BodyCreator extends React.Component {
         var bodies = this.state.bodies;
         bodies[annotationMode] = value;
         this.setState({bodies: bodies});
+        this.props.setBodies(bodies);
     }
 
-    gatherDataAndSave() {
-        let component = this;
-        var annotation = this.props.editAnnotation;
-        var body = [];
-        Object.keys(component.state.bodies).forEach(function(bodyType) {
-            body = body.concat(component.state.bodies[bodyType]);
-        });
-        annotation.body = body;
-        AnnotationActions.save(annotation);
-        this.props.hideAnnotationForm();
-    }
-
-    handlePermissionChange(event) {
-        this.setState({permission: event.target.value});
-        AnnotationActions.setPermission(event.target.value);
+    addTargets() {
+        this.props.addTargets();
     }
 
     render() {
@@ -72,9 +48,9 @@ class BodyCreator extends React.Component {
             return (
                 <li
                     key={mode + '__tab_option'}
-                    className={this.state.activeTab == mode ? 'active' : ''}
+                    className="nav-tab"
                 >
-                    <a data-toggle="tab" href={'#' + mode}>
+                    <a data-toggle="tab" href={'#' + mode} className={this.state.activeTab == mode ? 'nav-link active' : 'nav-link'}>
                         {mode}
                     </a>
                 </li>
@@ -124,40 +100,14 @@ class BodyCreator extends React.Component {
         }, this);
 
         return (
-            <div>
-                <div className="permission-selector">
-                    <label>
-                        <input
-                            type="radio"
-                            value="private"
-                            checked={this.state.permission === "private"}
-                            onChange={this.handlePermissionChange.bind(this)}
-                        />
-                        private annotation
-                    </label>
-                    <label>
-                        <input
-                            type="radio"
-                            value="public"
-                            checked={this.state.permission === "public"}
-                            onChange={this.handlePermissionChange.bind(this)}
-                        />
-                        public annotation
-                    </label>
-                </div>
+            <div className="container-fluid">
                 <ul className="nav nav-tabs">
                     {tabs}
                 </ul>
                 <div className="tab-content">
                     {tabContents}
                 </div>
-                <div className="text-right">
-                    <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={this.gatherDataAndSave.bind(this)}>
-                        Save
-                    </button>
+                <div>
                 </div>
             </div>
         )

@@ -7,6 +7,7 @@ import Annotation from '../annotation/Annotation.jsx';
 import AppCollectionStore from '../../flux/CollectionStore';
 import AppAnnotationStore from '../../flux/AnnotationStore';
 import CollectionActions from '../../flux/CollectionActions';
+import $ from 'jquery';
 
 export default class CollectionCreator extends React.Component {
     constructor(props) {
@@ -240,6 +241,3 @@ export default class CollectionCreator extends React.Component {
     }
 
 }
-
-
-

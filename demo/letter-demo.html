@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>To Theo van Gogh. Earth, Sunday, 16 May 2072</title>
+    <link rel="stylesheet" href="build/swac.css"/>
+  </head>
+  <body>
+    <div class="container-fluid">
+      <div class="row">
+        <article vocab="/vocabularies/vangoghontology.ttl#" typeof="Letter" about="urn:vangogh:testletter" class="annotation-target-observer col-8">
+          <p resource="urn:vangogh:correspondence" typeof="Correspondence" property="isPartOf"><a href="http://vangoghletters.org/vg/">Van Gogh Letters</a></p>
+          <h1>To Theo van Gogh. Earth, Sunday, 16 May 2072.</h1>
+          <div class="row">
+            <div class="col-6">
+              <h2 typeof="IgnorableElement">Metadata</h2>
+              <dl class="row">
+                <dt class="col-3" typeof="IgnorableElement">From</dt>
+                <dd class="col-9" typeof="Sender" property="hasMetadataItem" resource="urn:vangogh:testletter.sender"><span property="selectWholeElement" content="True">Vincent van Gogh</span></dd>
+                <dt class="col-3" typeof="IgnorableElement">To</dt>
+                <dd class="col-9" typeof="Receiver" property="hasMetadataItem" resource="urn:vangogh:testletter.receiver"><span property="selectWholeElement" content="True">Theo van Gogh</span></dd>
+                <dt class="col-3" typeof="IgnorableElement">Sent from</dt>
+                <dd class="col-9" typeof="Location" property="hasMetadataItem" resource="urn:vangogh:testletter.location"><span property="selectWholeElement" content="True">The Hague</span></dd>
+                <dt class="col-3" typeof="IgnorableElement">Date</dt>
+                <dd class="col-9" typeof="Date" property="hasMetadataItem" resource="urn:vangogh:testletter.date"><span property="selectWholeElement" content="True">Sunday, 16 May 2072</span></dd>
+                <dt class="col-3" typeof="IgnorableElement">Source Note</dt>
+                <dd class="col-9" typeof="SourceNote" property="hasMetadataItem" resource="urn:vangogh:testletter.sourcenote"><span property="selectWholeElement" content="True">Original Manuscript</span></dd>
+                <dt class="col-3" typeof="IgnorableElement">Location</dt>
+                <dd class="col-9" typeof="LocationNote" property="hasMetadataItem" resource="urn:vangogh:testletter.locationnote"><span property="selectWholeElement" content="True">Somewhere nearby</span></dd>
+              </dl>
+            </div>
+            <div class="col-6">
+              <h2 typeof="IgnorableElement">Original Text</h2>
+              <p property="hasPart" typeof="ParagraphInLetter" resource="urn:vangogh:testletter:p.5">Wat vreesselijk weer, je zult het wel benauwd hebben op je wandelingen naar Oisterwijk.<sup typeof="IgnorableElement">1</sup> Gisteren is het harddraverij geweest ter gelegenheid van de tentoonstelling,<sup typeof="IgnorableElement">2</sup> maar de illuminatie &amp; het vuurwerk zijn uit gesteld, om het slechte weer,<sup typeof="IgnorableElement">3</sup> het is dus maar goed dat je niet gebleven zijt om die te zien. Groeten van de familie Haanebeek<sup typeof="IgnorableElement">4</sup> &amp; Roos.<sup typeof="IgnorableElement">5</sup> Steeds</p>
+              <h2 typeof="IgnorableElement">Pages</h2>
+              <img typeof="TextBearer" property="isCarriedOn" resource="urn:vangogh:let001:page.1" src="http://vangoghletters.org/vg/facsimiles/VGM001000001_01_nt.jpg"/>
+              <img typeof="TextBearer" property="isCarriedOn" resource="urn:vangogh:let001:page.2" src="http://vangoghletters.org/vg/facsimiles/VGM001000001_02_nt.jpg"/>
+            </div>
+          </div>
+        </article>
+        <aside id="annotator-client" class="col-4">
+        </aside>
+      </div>
+    </div>
+    <script src="build/vendor.js"></script>
+    <script src="build/swac.js"></script>
+    <script>
+    var config = {
+        "targetObserverClass": "annotation-target-observer",
+        "services" : {
+            "AnnotationServer": {
+                "api": "http://localhost:3000/api"
+            },
+            "GTAA": {
+                "api": "http://openskos.beeldengeluid.nl/api/autocomplete/",
+                "params": {
+                    "lang": "nl"
+                }
+            },
+            "DBpedia": {
+                "api": "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString="
+            }
+        },
+        "annotationSupport" : {
+            "currentQuery" : {
+                "modes" : ["bookmark"]
+            },
+            "singleItem" : {
+                "modes" : ["bookmark"]
+            },
+            "mediaObject" : {
+                "modes" : ["classify", "comment", "link"]
+            },
+            "mediaSegment" : {
+                "modes" : ["classify", "comment", "link"]
+            },
+            "annotation" : {
+                "modes" : ["comment"]
+            }
+        },
+        "annotationTasks" : {
+            "bookmark" : {
+                "type": "bookmark",
+                "purpose": "bookmarking"
+            },
+            "classify" : {
+                "type": "classification",
+                "purpose": "classifying",
+                "format": "text/plain",
+                "vocabularies" : [
+                    "DBpedia",
+                    "GTAA"
+                ]
+            },
+            "comment" : {
+                "type": "comment",
+                "purpose": "commenting",
+                "format": "text/plain"
+            },
+            "correct" : {
+                "type": "correction",
+                "purpose": "correcting",
+                "format": "text/plain"
+            },
+            "link" : {
+                "type": "link",
+                "purpose": "linking",
+                "format": "text/plain",
+                "apis" : [
+                    {"name" : "wikidata"},
+                    {"name" : "europeana"}
+                ]
+            },
+            "tag": {
+                "type": "tag",
+                "purpose": "tagging",
+                "format": "text/plain",
+                "specifies": "classify"
+            },
+            "transcribe" : {
+                "type": "transcription",
+                "purpose": "transcribing",
+                "format": "text/plain"
+            }
+        },
+        "defaults": {
+            "target": ["ParagraphInLetter", "Note", "LocationNote", "SourceNote"]
+        }
+    };
+    var annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config);
+    annotator.addAnnotationClient(document.getElementById('annotator-client'));
+    </script>
+  </body>
+</html>

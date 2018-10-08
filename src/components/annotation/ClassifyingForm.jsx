@@ -50,9 +50,10 @@ class ClassifyingForm extends React.Component {
         }
     }
 
-	toggleDefault(index) {
-		AnnotationActions.toggleDefault(cs[index]);
-	}
+    toggleDefault(index) {
+        // not yet implemented
+        //AnnotationActions.toggleDefault(cs[index]);
+    }
     removeClassification(index) {
         var cs = this.state.data;
         if(cs) {
@@ -195,18 +196,22 @@ class ClassifyingForm extends React.Component {
     render() {
         let classificationList = null;
         const classifications = this.state.data.map((c, index) => {
-            let csClass = 'label label-success tag';
+            let csClass = 'badge badge-success tag';
             if(c.vocabulary == 'DBpedia') {
-                csClass = 'label label-danger tag';
+                csClass = 'badge badge-danger tag';
             }
             return (
                 <span key={'cl__' + index} className={csClass}>
                     {c.value}
-                    <i className="glyphicon glyphicon-remove interactive"
+                    &nbsp;
+                    <i className="badge badge-light"
                         onClick={this.removeClassification.bind(this, index)}>
+                        x
                     </i>
-                    <i className="glyphicon glyphicon-star-empty interactive"
+                    &nbsp;
+                    <i className="badge badge-light"
                         onClick={this.toggleDefault.bind(this, index)}>
+                        o
                     </i>
                     &nbsp;
                 </span>

@@ -81,7 +81,7 @@ class LinkingForm extends React.Component {
             links = this.state.data.map((link, index) => {
                 return (
                     <li key={'com__' + index} className="list-group-item">
-                        <i className="glyphicon glyphicon-remove interactive" onClick={this.removeLink.bind(this, index)}></i>
+                        <i className="badge badge-light" onClick={this.removeLink.bind(this, index)}></i>
                         &nbsp;
                         {link.label}
                     </li>

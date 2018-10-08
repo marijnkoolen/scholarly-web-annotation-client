@@ -36,6 +36,7 @@ class Annotation extends React.Component {
         // ask for adding, changing or removing target
         // if target is resource, allow new resource selection
         // if target is annotation, allow new annotation selection
+        // TODO: implement changing target
     }
     editAnnotationBody(annotation) {
         AnnotationActions.edit(annotation);
@@ -43,8 +44,7 @@ class Annotation extends React.Component {
     copyAnnotation(annotation) {
         let confirm = window.confirm("Are you sure you want to copy this annotation?");
         if (confirm) {
-            AnnotationActions.copy(annotation);
-            // TODO: implement copying of annotation
+            AnnotationActions.copyAnnotation(annotation);
         }
     }
     deleteAnnotation(annotation) {
@@ -83,7 +83,7 @@ class Annotation extends React.Component {
                 <div key={bodyCount}>
                     <span></span>
                     <span
-                        className="label label-success"
+                        className="badge badge-success"
                         >{body.purpose}</span>
                     &nbsp;
                     <span>{body.value}</span>
@@ -136,7 +136,7 @@ class Annotation extends React.Component {
                             {next}
                             </span>
                             <span
-                                className="label label-info"
+                                className="badge badge-info"
                                 title={"Identifier: " + crumb.id}
                             >
                                {crumb.type}
@@ -160,7 +160,7 @@ class Annotation extends React.Component {
                     <div key={targetCount}>
                         <span></span>
                         <span
-                            className="label label-success"
+                            className="badge badge-success"
                             >{label}</span>
                         &nbsp;
                         <span>{text}</span>
@@ -173,34 +173,34 @@ class Annotation extends React.Component {
 
         var renderEditBody = function() {
             return (
-                <i className="label label-warning"
+                <span className="badge badge-primary"
                     onClick={() => {component.editAnnotationBody(annotation)}}>
                     edit body
-                </i>
+                </span>
             )
         }
         var renderEditTarget = function() {
             return (
-                <i className="label label-warning"
+                <span className="badge badge-warning"
                     onClick={() => {component.editAnnotationTarget(annotation)}}>
                     edit target
-                </i>
+                </span>
             )
         }
         var renderDelete = function() {
             return (
-                <i className="label label-danger"
+                <span className="badge badge-danger"
                     onClick={() => {component.deleteAnnotation(annotation)}}>
                     delete
-                </i>
+                </span>
             )
         }
         var renderCopy = function() {
             return (
-                <i className="label label-default"
+                <span className="badge badge-success"
                     onClick={() => {component.copyAnnotation(annotation)}}>
                     copy
-                </i>
+                </span>
             )
         }
 

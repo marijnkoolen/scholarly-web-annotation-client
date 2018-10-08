@@ -5,7 +5,7 @@ The Scholarly Web Annotation (SWA) client is a Javascript annotation client for 
 + [Embedding the SWA Client](#embedding-the-swa-client)
 + [Using the SWA Client](#using-the-swa-client)
 + [Modifying the SWA Client](#modifying-the-swa-client)
-+ [Scholarly Web Annotation Ontology](https://github.com/CLARIAH/scholarly-web-annotation-client/blob/master/docs/annotation_ontology.md) introduces an ontology that extends FRBRoo and CIDOC-CRM concepts, to exploit the possibility of annotating a resource on different conceptual levels (e.g. work, manifestation, expression). 
++ [Scholarly Web Annotation Ontology](https://github.com/CLARIAH/scholarly-web-annotation-client/blob/master/docs/annotation_ontology.md) introduces an ontology that extends FRBRoo and CIDOC-CRM concepts, to exploit the possibility of annotating a resource on different conceptual levels (e.g. work, manifestation, expression).
 + [Scholarly Web Annotation Data Model](https://github.com/CLARIAH/scholarly-web-annotation-client/blob/master/docs/data_models.md) Extends the [W3C Web Annotation Data model](https://www.w3.org/TR/annotation-model/).
 + [Access permissions](https://github.com/CLARIAH/scholarly-web-annotation-client/blob/master/discussion/handling-permissions.md) discusses a proposal for handling access permissions for scholarly web annotations.
 
@@ -14,23 +14,24 @@ The Scholarly Web Annotation (SWA) client is a Javascript annotation client for 
 
 ### Loading Client Dependencies
 
-This JS library requires [jQuery](https://jquery.com/) and [Bootstrap](https://getbootstrap.com/) to be loaded individually in the web page.
-
-Add the following lines to your HTML:
-
-```
-<script src="https://code.jquery.com/jquery-2.2.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-
-```
+1. Load the CSS files by adding the following into the `<head>`
+   ```html
+   <link rel="stylesheet" href="dist/swac.css"/>
+   ```
+2. Load the JS files by adding the following just before the closing `</body>`
+   ```html
+   <script src="dist/vendor.js"></script>
+   <script src="dist/swac.js"></script>
+   ```
 
 ### Configuring the Client
 
 The configuration consists of four parts:
 
-1. `targetobserverclass`: this is the class name that the client will use to select HTML DOM elements to consider as annotatable objects. It is possible to specify multiple `observer target` elements. The SWA client starts a watcher that will re-initialise the client when anything in the `observer target` elements change. This allows you to use the SWA client with dynamic content, such as search results.
+1. `targetObserver`: this configures the part of the DOM that should be scanned for RDFa information and that can be targetted for annotation. It consists of three properties:
+    - 1) `targetObserverClass` is the class name that the client will use to select HTML DOM elements to consider as annotatable objects. It is possible to specify multiple `observer target` elements. The SWA client starts a watcher that will re-initialise the client when anything in the `observer target` elements change. This allows you to use the SWA client with dynamic content, such as search results.
+    - 2) `observeMutations`: a boolean indicating whether the client should reload when there are any mutations in the DOM elements that belong to the observer class.
+    - 3) `observerConfig`: an object configuring which type of mutations to listen for, i.e. changes in the `childList`, `attributes`, `characterData` and/or the `subtree`. Each type can be switched on or off (default) through a boolean value.
 
 2. `services`: here you can specify addresses for APIs, including the annotation server that the SWA client will use for sending and retrieving annotations, and APIs for vocabularies that the client can use for classifying and linking annotation targets.
 
@@ -38,11 +39,19 @@ The configuration consists of four parts:
 
 4. `defaults`: here you can specify defaults for certain aspects of the annotation process, including the default target types. This is an efficient way to provide users with a default list of annotation targets based on the vocabulary with which the annotatable objects in the DOM are described. For instance, in the example of the Van Gogh correspondence, if the edition maintainer expects most users will want to annotate the paragraphs of letters, they can set `Paragraphinletter` as the default target type. When a user then hit the `Make annotation` button, the client lists the individual paragraphs as default targets.
 
-Put the configuration in a JSON object:
+Put the configuration in a JSON object (into a ``<script>``) after the ones you added in the previous step:
 
 ```json
 {
-    "targetObserverClass": "annotation-target-observer",
+    "targetObserver": {
+        "targetObserverClass": "annotation-target-observer",
+        "observeMutations": true,
+        "observerConfig": {
+            "childList": true,
+            "attributes": true,
+            "subtree": true
+        }
+    },
     "services" : {
         "AnnotationServer": {
             "api": "http://localhost:3000/api"
@@ -117,7 +126,15 @@ The SWA client library can be found in this repository: `dist/scholarly-web-anno
 
 ```json
 {
-    "targetObserverClass": "annotation-target-observer",
+    "targetObserver": {
+        "targetObserverClass": "annotation-target-observer",
+        "observeMutations": true,
+        "observerConfig": {
+            "childList": true,
+            "attributes": true,
+            "subtree": true
+        }
+    },
     "services" : {
         "AnnotationServer": {
             "api": "http://<annotation.server.address>/api"
@@ -281,40 +298,27 @@ Install the required npm packages:
 npm install
 ```
 
-The repository contains code for a basic Python/Flask server with which you can experiment with toy examples. To run the server, install the required python packages:
-```
-pip install -r requirements.txt
-```
-
-For the Image annotation example, make sure to install the [OpenSeadragonSelection](https://github.com/picturae/openseadragonselection) plugin in the `public/js/` folder.
-
 ## How to test
 
 You need the run the [Scholarly Web Annotation Server](https://github.com/marijnkoolen/scholarly-web-annotation-server) in the background for the client to function properly.
 
-Start the server:
+To test the client run:
 ```
-python resource_server.py
+gulp serve
 ```
+
+This will build the client, and make a server available at `localhost:8080`. The
+server will automatically rebuild the client and reload the page if you make
+any changes to the code in `src`.
 
 ### Testing text annotation
 
-Point your browser to `localhost:3001` to try a test letter.
+Point your browser to `localhost:8080/letter-demo.html` to try a test letter.
 
 ### Testing Image annotation
 
-Point your browser to `localhost:3001/beng-image-example`.
+Point your browser to `localhost:8080/image-demo.html`.
 
 ### Testing Video annotation
 
-Point your browser to `localhost:3001/beng-av-example`.
-
-## How to modify
-
-Run the webpack watcher:
-```
-npm run dev
-```
-
-Whenever you modify source files in `src/`, the watcher will rebuild the Javascript bundle `public/js/scholarly-web-annotator.js` that’s used in the test letter `public/testletter.html`.
-
+Point your browser to `localhost:8080/video-demo.html`.
