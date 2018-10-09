@@ -19,6 +19,7 @@
 -->    </xsl:template>
     
     <xsl:template match="*" mode="text">
+        <xsl:number level="any" count="*"/>
         <xsl:apply-templates mode="text"/>
     </xsl:template>
     
@@ -57,7 +58,7 @@
     <xsl:template match="tei:pb" mode="text">
         <span typeof="Page" resource="{hi:urn(.)}" class="pagenum">
             <xsl:text>[</xsl:text>
-            <xsl:value-of select="@n"/>
+            <a href="{hi:filename(.)}"><xsl:value-of select="@n"/></a>
             <xsl:text>]</xsl:text>
         </span>
     </xsl:template>
@@ -67,7 +68,7 @@
             <xsl:value-of select="@n"/>
             <xsl:value-of select="hi:filename(.)"/>
         </xsl:message>
-        <xsl:result-document href="{hi:filename(.)}" encoding="utf-8">
+        <xsl:result-document href="{hi:fileurl(.)}" encoding="utf-8">
         <html>
             <head>
                 <title>RDFa demo, text view</title>
@@ -106,11 +107,15 @@
         </xsl:result-document>
     </xsl:template>
     
-    <xsl:function name="hi:filename">
+    <xsl:function name="hi:fileurl">
         <xsl:param name="node"/>
-        <xsl:text></xsl:text>
         <xsl:value-of select="$dirname"/>
         <xsl:text>/</xsl:text>
+        <xsl:value-of select="hi:filename($node)"/>
+    </xsl:function>
+    
+    <xsl:function name="hi:filename">
+        <xsl:param name="node"/>
         <xsl:value-of select="local-name($node)"/>
         <xsl:text>-</xsl:text>
         <xsl:value-of select="$node/@n"/>
