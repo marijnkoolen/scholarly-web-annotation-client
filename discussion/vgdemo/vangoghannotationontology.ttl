@@ -36,4 +36,8 @@ vg:Page rdf:type owl:Class ;
 vg:Line rdf:type owl:Class ;
 	rdfs:label "Line" ;
 	rdfs:subClassOf hi:DocumentZone.
+vg:TranslatedEditionText rdf:type owl:Class ;
+	rdfs:label "TranslatedEditionText" ;
+	rdfs:subClassOf hi:EditionText ;
+	rdfs:comment "Edition reading text, translated version" .
 

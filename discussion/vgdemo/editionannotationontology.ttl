@@ -171,15 +171,33 @@ hi:EditionText rdf:type owl:Class ;
 	rdfs:comment "Edition reading text" .
 hi:EditionTranscript rdf:type owl:Class ;
 	rdfs:label "EditionTranscript" ;
-	rdfs:subClassOf efrbroo:F73_Information_Object ;
+	rdfs:subClassOf efrbroo:E73_Information_Object ;
 	rdfs:subClassOf hi:EditionThing ;
 	rdfs:comment "Transcription of DocumentOrDocPart" .
 hi:Image rdf:type owl:Class ;
 	rdfs:label "Image" ;
-	rdfs:subClassOf efrbroo:F9_Place ;
+	rdfs:subClassOf ecrm:E38_Image ;
 	rdfs:subClassOf hi:EditionThing ;
 	rdfs:comment "Image of DocumentOrDocPart" .
 	
+#################################################################
+#
+#    Properties that connect Edition things
+#
+#################################################################
+	
+hi:hasTextPart rdf:type owl:ObjectProperty ;
+	rdfs:domain hi:Text;
+	rdfs:range hi:Text;
+	rdfs:label "hasTextPart" ;
+	rdfs:comment "Describes relation between Texts and parts of Texts";
+	rdfs:subPropertyOf hi:includes.
+hi:isTextPartOf rdf:type owl:ObjectProperty ;
+	rdfs:domain hi:Text;
+	rdfs:range hi:Text;
+	rdfs:label "isTextPartOf" ;
+	rdfs:comment "Describes relation between parts of Texts and Texts";
+	owl:inverseOf hi:hasTextPart.
 #################################################################
 #
 #    Properties that connect Edition and Editable things
