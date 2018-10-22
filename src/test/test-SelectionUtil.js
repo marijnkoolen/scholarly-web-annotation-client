@@ -9,7 +9,7 @@ let htmlSource = fs.readFileSync("public/testletter.html");
 
 describe("SelectionUtil", () => {
 
-    beforeEach((done) => {
+    before((done) => {
         let doc = jsdom.jsdom(htmlSource)
         let window = doc.defaultView;
         global.document = window.document;
