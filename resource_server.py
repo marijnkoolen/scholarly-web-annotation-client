@@ -2,7 +2,7 @@ import os
 from flask import Flask
 from flask import send_from_directory
 from flask import render_template
-from flask.ext.cors import CORS
+from flask_cors import CORS
 from BengResourceMapper import BengResourceMapper
 from settings import config
 
