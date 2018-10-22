@@ -68,8 +68,10 @@ describe('AnnotationAPI', () => {
         });
 
         it('should should check server is available', (done) => {
-            expect(AnnotationAPI.serverAvailable).to.be.true;
-            done();
+            AnnotationAPI.checkServerAvailable((serverAvailable) => {
+                expect(serverAvailable).to.be.true;
+                done();
+            })
         });
 
         it('should have no user details', (done) => {
@@ -124,7 +126,8 @@ describe('AnnotationAPI', () => {
 
     describe('POSTing an annotation unauthorized', () => {
         it('should return 403', (done) => {
-            AnnotationAPI.saveAnnotation(annotationValid, function(error, annotation) {
+            let permission = "private";
+            AnnotationAPI.saveAnnotation(annotationValid, permission, function(error, annotation) {
                 expect(error).to.not.equal(null);
                 expect(error.status).to.equal(403);
                 done();
@@ -164,7 +167,8 @@ describe('AnnotationAPI', () => {
         it('should return an empty list', (done) => {
             let fakeId = "this-resource-does-not-exist";
             let expectedData = [];
-            AnnotationAPI.getAnnotationsByTarget(fakeId, function(error, actualData) {
+            let accessStatus = ["private"];
+            AnnotationAPI.getAnnotationsByTarget(fakeId, accessStatus, function(error, actualData) {
                 expect(error).to.equal(null);
                 expect(actualData.total).to.eql(0);
                 done();
@@ -177,7 +181,8 @@ describe('AnnotationAPI', () => {
         it('should return an error', (done) => {
             let objectAsId = {"id": "this-resource-does-not-exist"};
             let expectedData = null;
-            AnnotationAPI.getAnnotationsByTarget(objectAsId, function(error, actualData) {
+            let accessStatus = ["private"];
+            AnnotationAPI.getAnnotationsByTarget(objectAsId, accessStatus, function(error, actualData) {
                 expect(error.name).to.equal("TypeError");
                 expect(error.message).to.equal("resource ID should be string");
                 expect(actualData).to.eql(expectedData);
@@ -189,7 +194,8 @@ describe('AnnotationAPI', () => {
     describe('POSTing an annotation without a target', () => {
 
         it('should return an error', (done) => {
-            AnnotationAPI.saveAnnotation(annotationInvalid, function(error, data) {
+            let permission = "private";
+            AnnotationAPI.saveAnnotation(annotationInvalid, permission, function(error, data) {
                 expect(error.status).to.equal(400);
                 expect(error.message).to.equal("annotation MUST have at least one target");
                 done();
@@ -203,7 +209,8 @@ describe('AnnotationAPI', () => {
         var savedAnnotation;
 
         it('should return annotation with ID after POST', (done) => {
-            AnnotationAPI.saveAnnotation(annotationValid, function(error, annotation) {
+            let permission = "private";
+            AnnotationAPI.saveAnnotation(annotationValid, permission, function(error, annotation) {
                 expect(error).to.equal(null);
                 expect(annotation.id).to.not.be.undefined;
                 savedAnnotation = annotation;
@@ -223,7 +230,8 @@ describe('AnnotationAPI', () => {
         it('should return updated annotation after PUT', (done) => {
             let newTarget = "urn:vangogh:testletter.receiver";
             savedAnnotation.target[0].source = newTarget;
-            AnnotationAPI.saveAnnotation(savedAnnotation, function(error, annotation) {
+            let permission = "private";
+            AnnotationAPI.saveAnnotation(savedAnnotation, permission, function(error, annotation) {
                 expect(error).to.equal(null);
                 expect(annotation.id).to.equal(savedAnnotation.id);
                 expect(annotation.target[0].source).to.equal(newTarget);
