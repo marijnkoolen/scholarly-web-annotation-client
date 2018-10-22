@@ -12,6 +12,7 @@ demo/build
 
 # specific ignore
 experimental_server.py
+public/
 public/delpher.html
 public/index.html
 public/let001-image.html
