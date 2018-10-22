@@ -8,6 +8,8 @@ const VocabularyUtil = {
 
     store : N3.Store(),
 
+    storedVocabularies : [],
+
     prefixes : {
         // common prefixes for ease of reference
         rdfs: "http://www.w3.org/2000/01/rdf-schema#",
@@ -16,8 +18,22 @@ const VocabularyUtil = {
 
     importPredicate : "http://www.w3.org/2002/07/owl#imports",
 
-    getVocabulary : function(vocabularyURL, callback) {
-        VocabularyUtil.addVocabulary(vocabularyURL, function(error) {
+    getVocabularies : (vocabularies, callback) => {
+        vocabularies.forEach((vocabulary, index) => {
+            VocabularyUtil.getVocabulary(vocabulary, (error) => {
+                if (error)
+                    callback(error);
+                if (index+1 == vocabularies.length)
+                    callback(null);
+            })
+        });
+    },
+
+    getVocabulary : (vocabularyURL, callback) => {
+        if (VocabularyUtil.storedVocabularies.includes(vocabularyURL))
+            callback(null); // skip vocabularies that are already stored
+
+        VocabularyUtil.addVocabulary(vocabularyURL, (error) => {
             if (error) {
                 callback(error);
             }
@@ -34,6 +50,7 @@ const VocabularyUtil = {
                 if (error)
                     callback(error);
 
+                VocabularyUtil.storedVocabularies.push(vocabularyURL);
                 if (importURLs && importURLs.length > 0) {
                     importURLs.forEach(function(importURL, index) {
                         VocabularyUtil.addVocabulary(importURL, function(error) {

@@ -200,20 +200,29 @@ const AnnotationActions = {
         });
     },
 
-    indexResources: function() {
-        AnnotationActions.resourceIndex = RDFaUtil.indexRDFaResources(); // ... refresh index
+    indexResources: function(callback) {
+        RDFaUtil.indexRDFaResources((error, index) => {
+            AnnotationActions.resourceIndex = index;
+            return callback(error);
+        }); // ... refresh index
     },
 
     loadResources: function() {
         AnnotationActions.topResources = RDFaUtil.getTopRDFaResources();
-        AnnotationActions.indexResources();
-        AnnotationActions.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
-        AppDispatcher.dispatch({
-            eventName: 'load-resources',
-            topResources: AnnotationActions.topResources,
-            resourceMaps: AnnotationActions.resourceMaps
+        AnnotationActions.indexResources((error) => {
+            if (error) {
+                console.error(error);
+                alert("Error indexing RDFa resources in this page");
+                return false;
+            }
+            AnnotationActions.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
+            AppDispatcher.dispatch({
+                eventName: 'load-resources',
+                topResources: AnnotationActions.topResources,
+                resourceMaps: AnnotationActions.resourceMaps
+            });
+            AnnotationActions.loadAnnotations(AnnotationActions.topResources);
         });
-        AnnotationActions.loadAnnotations(AnnotationActions.topResources);
     },
 
     registerUser : function(userDetails) {
