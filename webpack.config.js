@@ -1,7 +1,7 @@
 var path = require('path');
 
 module.exports = {
-    entry: "./src/scholarly-web-annotator.jsx",
+    entry: "./src/swac.jsx",
     mode: "development",
     devtool: 'inline-source-map',
     output: {

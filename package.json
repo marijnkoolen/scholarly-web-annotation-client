@@ -2,7 +2,7 @@
   "name": "scholarly-web-annotator",
   "version": "1.0.0",
   "description": "Annotation library for RDFa-enriched HTML representations of complex text objects.",
-  "main": "public/js/main.js",
+  "main": "dist/swac.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/CLARIAH/scholarly-web-annotation-client.git"
