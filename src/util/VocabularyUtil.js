@@ -1,14 +1,21 @@
 
-'use strict'
+"use strict";
 
-import N3 from 'n3';
-var N3Util = N3.Util;
+import rdf from "rdflib";
 
 const VocabularyUtil = {
 
-    store : N3.Store(),
+    rdf : rdf,
+    rdfStore : null,
+    fetcher : null,
+    RDF : rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+    RDFS : rdf.Namespace("http://www.w3.org/2000/01/rdf-schema#"),
 
-    storedVocabularies : [],
+    newStore : () => {
+        const store = rdf.graph();
+        VocabularyUtil.rdfStore = store;
+        VocabularyUtil.fetcher = new rdf.Fetcher(store, 500);
+    },
 
     prefixes : {
         // common prefixes for ease of reference
@@ -18,96 +25,28 @@ const VocabularyUtil = {
 
     importPredicate : "http://www.w3.org/2002/07/owl#imports",
 
-    getVocabularies : (vocabularies, callback) => {
-        vocabularies.forEach((vocabulary, index) => {
-            VocabularyUtil.getVocabulary(vocabulary, (error) => {
-                if (error)
-                    callback(error);
-                if (index+1 == vocabularies.length)
-                    callback(null);
+    readVocabularies : (vocabularyURLs, callback) => {
+        vocabularyURLs.forEach((vocabularyURL, index) => {
+            VocabularyUtil.readVocabulary(vocabularyURL, (error) => {
+                if (error) {
+                    window.alert("Error reading vocabulary from " + vocabularyURLi + "\n" + error.toString());
+                    return callback(error);
+                }
+                if (index+1 == vocabularyURLs.length)
+                    return callback(null);
             })
         });
     },
 
-    getVocabulary : (vocabularyURL, callback) => {
-        if (VocabularyUtil.storedVocabularies.includes(vocabularyURL))
-            callback(null); // skip vocabularies that are already stored
-
-        VocabularyUtil.addVocabulary(vocabularyURL, (error) => {
-            if (error) {
-                callback(error);
-            }
-            callback(null);
-        });
-    },
-
-    addVocabulary : function(vocabularyURL, callback) {
-        VocabularyUtil.getVocabularyData(vocabularyURL, function(error, data) {
-            if (error)
-                callback(error);
-
-            VocabularyUtil.parseVocabularyData(data, function(error, importURLs) {
-                if (error)
-                    callback(error);
-
-                VocabularyUtil.storedVocabularies.push(vocabularyURL);
-                if (importURLs && importURLs.length > 0) {
-                    importURLs.forEach(function(importURL, index) {
-                        VocabularyUtil.addVocabulary(importURL, function(error) {
-                            if (error)
-                                callback(error);
-
-                            if (index === importURLs.length - 1)
-                                callback(null);
-                        });
-                    });
-                } else {
-                    callback(null);
-                }
-            });
-        });
-    },
-
-    getVocabularyData : function(vocabularyURL, callback) {
-        fetch(vocabularyURL, {
-            method: "GET",
-            mode: "cors"
-        }).then(function(response) {
-            return response.text();
-        }).then(function(data) {
-            callback(null, data);
-        }).catch(function(error) {
-            callback(error, null);
-        });
-
-    },
-
-    parseVocabularyData : function(data, callback) {
-        let parser = N3.Parser();
-        var importURLs = [];
-        parser.parse(data, function(error, triple, prefixes) {
-            if (error) {
-                callback(error, null);
-            }
-
-            if (triple) {
-                VocabularyUtil.store.addTriple(triple.subject, triple.predicate, triple.object);
-                if (triple.predicate === VocabularyUtil.importPredicate) {
-                    importURLs.push(triple.object);
-                }
+    readVocabulary : (vocabularyURL, callback) => {
+        VocabularyUtil.fetcher.nowOrWhenFetched(vocabularyURL, undefined, (ok, body) => {
+            if (!ok) {
+                return callback(body, null);
             }
             else {
-                // all triples parsed, done!
-                callback(null, importURLs);
+                return callback(null, body);
             }
         });
-    },
-
-    listAnnotatableThings : function() {
-        let rootLabel = '"AnnotatableThing"';
-        let rootObject = VocabularyUtil.getLabelClass(rootLabel);
-        let annotatableThings = VocabularyUtil.getDescendantClasses(rootObject);
-        return VocabularyUtil.toStrings(annotatableThings);
     },
 
     toString : function(literal) {
@@ -120,51 +59,37 @@ const VocabularyUtil = {
         });
     },
 
-    getLabelClass : function(typeLabel) {
-        if (!N3.Util.isLiteral(typeLabel)) {
-            typeLabel = N3.Util.createLiteral(typeLabel);
+    getLabelClass : (classLabel) => {
+        let labelSym = VocabularyUtil.RDFS('label');
+        let subject = VocabularyUtil.rdfStore.any(undefined, labelSym, classLabel);
+        if (!subject) {
+            return null;
+        } else {
+            return subject.value;
         }
-        let triples = VocabularyUtil.store.getTriples(null, VocabularyUtil.expand('rdfs:label'), typeLabel);
-        return triples[0] ? triples[0].subject : null;
     },
 
-    getClassLabel : function(className) {
-        let triples = VocabularyUtil.store.getTriples(className, VocabularyUtil.expand('rdfs:label'), null);
-        return triples[0] ? triples[0].object : null;
+    getClassLabel : (classURI) => {
+        let labelSym = VocabularyUtil.RDFS('label');
+        let object = VocabularyUtil.rdfStore.any(classURI, labelSym, undefined);
+        if (!object) {
+            return null;
+        } else {
+            return object.value;
+        }
     },
 
-    getDescendantClasses : function(className) {
-        let triples = VocabularyUtil.store.getTriples(null, VocabularyUtil.expand('rdfs:subClassOf'), className);
-        var subClasses = [];
-        triples.forEach(function(triple) {
-            subClasses.push(VocabularyUtil.getClassLabel(triple.subject));
-            subClasses = subClasses.concat(VocabularyUtil.getSubClasses(triple.subject));
-        });
-        return subClasses;
+    getSuperClass : function(classURI) {
+        let predicate = VocabularyUtil.expand("rdfs:subClassOf");
+        let object = VocabularyUtil.rdfStore.any(classURI, predicate, undefined);
+        if (!object) {
+            return null;
+        } else {
+            return object.value;
+        }
     },
 
-    getSubClasses : function(className) {
-        let triples = VocabularyUtil.store.getTriples(null, VocabularyUtil.expand('rdfs:subClassOf'), className);
-        return triples.map(function(triple) {
-            return VocabularyUtil.getClassLabel(triple.subject);
-        });
-    },
-
-    filterBlanks : function(triples) {
-        return triples.filter(triple => !VocabularyUtil.hasBlankNode(triple));
-    },
-
-    hasBlankNode : function(triple) {
-        return N3Util.isBlank(triple.subject) || N3Util.isBlank(triple.object) ? true : false;
-    },
-
-    getSuperClass : function(className) {
-        var triples = VocabularyUtil.store.getTriples(className, VocabularyUtil.expand('rdfs:subClassOf'), null);
-        triples = VocabularyUtil.filterBlanks(triples);
-        return triples[0] ? triples[0].object : null;
-    },
-
-     getSuperClasses : function(className) {
+    getSuperClasses : function(className) {
         var superClasses = [];
         var superClass = VocabularyUtil.getSuperClass(className);
         while (superClass) {
@@ -174,11 +99,11 @@ const VocabularyUtil = {
         return superClasses;
     },
 
-   expand : function(prefixedName) {
+    expand : function(prefixedName) {
         let prefix = prefixedName.split(":")[0];
         let name = prefixedName.split(":")[1];
         return VocabularyUtil.prefixes[prefix] + name;
     }
-}
+};
 
 export default VocabularyUtil;
