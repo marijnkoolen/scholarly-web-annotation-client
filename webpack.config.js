@@ -1,8 +1,9 @@
 var path = require('path');
 
 module.exports = {
-    entry: "./src/main.jsx",
+    entry: "./src/scholarly-web-annotator.jsx",
     mode: "development",
+    devtool: 'inline-source-map',
     output: {
         filename: "[name].js",
         path: path.join(__dirname, "public/js"),

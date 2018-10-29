@@ -37,14 +37,14 @@ gulp.task('css', function(cb) {
 
 gulp.task('js', function(cb) {
     pump([
-        gulp.src('src/main.jsx'),
+        gulp.src('src/scholarly-web-annotator.jsx'),
         named(function(f) { return 'swac'; }),
         webpack({
             mode: "development",
             output: {
                 filename: "[name].js",
-        		libraryTarget: "var",
-        		library: "ScholarlyWebAnnotator"
+                libraryTarget: "var",
+                library: "ScholarlyWebAnnotator"
             },
             module: {
                 rules: [{
@@ -73,6 +73,7 @@ gulp.task('js', function(cb) {
             }
         }, require('webpack')),
         gulp.dest('dist/'),
+        gulp.dest('public/js/'),
         gulp.dest('demo/build/')
     ], cb);
 });
