@@ -173,3 +173,5 @@ export class ScholarlyWebAnnotator {
     }
 
 }
+
+

@@ -1,18 +1,18 @@
-var expect = require('chai').expect;
-require('es6-promise').polyfill();
-require('isomorphic-fetch');
-var fs = require('fs');
-var jsdom = require('jsdom');
-import SelectionUtil from '../util/SelectionUtil.js';
+var expect = require("chai").expect;
+require("es6-promise").polyfill();
+require("isomorphic-fetch");
+var fs = require("fs");
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+import SelectionUtil from "../util/SelectionUtil.js";
 
 let htmlSource = fs.readFileSync("public/testletter.html");
 
 describe("SelectionUtil", () => {
 
     before((done) => {
-        let doc = jsdom.jsdom(htmlSource)
-        let window = doc.defaultView;
-        global.document = window.document;
+        let dom = new JSDOM(htmlSource);
+        global.document = dom.window.document;
         done();
     });
 

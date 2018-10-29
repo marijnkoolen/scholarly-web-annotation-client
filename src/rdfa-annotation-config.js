@@ -81,6 +81,6 @@ const config = {
             "format": "text/plain"
         }
     }
-}
+};
 
 export default config;

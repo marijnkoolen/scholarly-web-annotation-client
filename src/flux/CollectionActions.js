@@ -1,6 +1,5 @@
-import AppDispatcher from './AppDispatcher';
-import AnnotationAPI from '../api/AnnotationAPI';
-import RDFaUtil from '../util/RDFaUtil.js';
+import AppDispatcher from "./AppDispatcher";
+import AnnotationAPI from "../api/AnnotationAPI";
 
 const CollectionActions = {
 
@@ -18,7 +17,7 @@ const CollectionActions = {
                 return null;
 
             AppDispatcher.dispatch({
-                eventName: 'saved-collection',
+                eventName: "saved-collection",
                 collection: data,
             });
         });
@@ -30,26 +29,31 @@ const CollectionActions = {
                 return null;
 
             AppDispatcher.dispatch({
-                eventName: 'deleted-collection',
+                eventName: "deleted-collection",
                 collection: data,
             });
-        })
+        });
     },
 
     update(collection) {
-        console.log(collection);
+        //console.log(collection);
+        // TO DO!
+        AppDispatcher.dispatch({
+            eventName: "update-collection",
+            collection: collection
+        });
     },
 
     editCollection(collection) {
         AppDispatcher.dispatch({
-            eventName: 'edit-collection',
+            eventName: "edit-collection",
             collection: collection
         });
     },
 
     setDefault(collection) {
         AppDispatcher.dispatch({
-            eventName: 'default-collection',
+            eventName: "default-collection",
             collection: collection
         });
     },
@@ -60,33 +64,33 @@ const CollectionActions = {
                 return null;
 
             AppDispatcher.dispatch({
-                eventName: 'loaded-collections',
+                eventName: "loaded-collections",
                 collections: collections,
             });
-        })
+        });
     },
 
     getCollection(collectionId) {
-        console.log(collectionId);
+        //console.log(collectionId);
         AnnotationAPI.getCollection(collectionId, (error, collection) => {
             if (error)
                 return null;
 
             AppDispatcher.dispatch({
-                eventName: 'loaded-collection',
+                eventName: "loaded-collection",
                 collection: collection,
             });
         });
     },
 
     getCollectionPage(collectionPageURL) {
-        console.log(collectionPageURL);
+        //console.log(collectionPageURL);
         AnnotationAPI.getCollectionPage(collectionPageURL, (error, page) => {
             if (error)
                 return null;
 
             AppDispatcher.dispatch({
-                eventName: 'loaded-page',
+                eventName: "loaded-page",
                 page: page,
             });
         });
@@ -98,8 +102,8 @@ const CollectionActions = {
                 return null;
 
             AppDispatcher.dispatch({
-                eventName: 'updated-collection',
-				collection: collection
+                eventName: "updated-collection",
+                collection: collection
             });
         });
     },
@@ -110,12 +114,12 @@ const CollectionActions = {
                 return null;
 
             AppDispatcher.dispatch({
-                eventName: 'updated-collection',
+                eventName: "updated-collection",
                 page: pageId,
             });
         });
     },
 
-}
+};
 
 export default CollectionActions;

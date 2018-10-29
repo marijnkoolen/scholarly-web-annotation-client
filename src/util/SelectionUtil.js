@@ -7,10 +7,10 @@
  *
  */
 
-'use strict'
+"use strict";
 
-import RDFaUtil from './RDFaUtil.js';
-import DOMUtil from './DOMUtil.js';
+import RDFaUtil from "./RDFaUtil.js";
+import DOMUtil from "./DOMUtil.js";
 
 const SelectionUtil = {
 
@@ -42,7 +42,7 @@ const SelectionUtil = {
                     SelectionUtil.makeEditableAndHighlight(colour);
                 }
             } catch (ex) {
-                SelectionUtil.makeEditableAndHighlight(colour)
+                SelectionUtil.makeEditableAndHighlight(colour);
             }
             sel = window.getSelection();
         } else if (document.selection && document.selection.createRange) {
@@ -79,7 +79,8 @@ const SelectionUtil = {
             var foundStart = false;
             var charCount = 0, endCharCount;
 
-            for (var i = 0, textNode; textNode = textNodes[i]; i++) {
+            for (var i = 0; i < textNodes.length; i++) {
+                let textNode = textNodes[i];
                 // offset of display text w.r.t underlying text content (e.g. removed leading whitespace)
                 let displayOffset = DOMUtil.getTextNodeDisplayOffset(textNode);
                 let displayText = DOMUtil.getTextNodeDisplayText(textNode);
@@ -115,15 +116,15 @@ const SelectionUtil = {
 
     checkDOMElement : (element) => {
         if (element === undefined)
-            throw Error("argument 'element' is required.")
+            throw Error("argument 'element' is required.");
         if (!(element instanceof Element) || !document.contains(element))
-            throw Error("element must be a DOM element.")
+            throw Error("element must be a DOM element.");
         return true;
     },
 
     checkRectangle : (rect) => {
         if (rect === undefined)
-            throw Error("argument 'rect' is required.")
+            throw Error("argument 'rect' is required.");
         if (!(rect instanceof Object))
             throw Error("rect should be an object with properties: x, y, w, h.");
         let keys = Object.keys(rect);
@@ -138,7 +139,7 @@ const SelectionUtil = {
 
     checkInterval : (interval) => {
         if (interval === undefined)
-            throw Error("argument 'interval' is required.")
+            throw Error("argument 'interval' is required.");
         if (!(interval instanceof Object))
             throw Error("interval should be an object with properties: start, end.");
         let keys = Object.keys(interval);
@@ -162,10 +163,10 @@ const SelectionUtil = {
         };
         if (!selection) {
             return true;
-        } else if (mimeType.startsWith('video') || mimeType.startsWith('audio')) {
+        } else if (mimeType.startsWith("video") || mimeType.startsWith("audio")) {
             SelectionUtil.checkInterval(selection);
             SelectionUtil.currentSelection.interval = selection;
-        } else if (mimeType.startsWith('image')) {
+        } else if (mimeType.startsWith("image")) {
             SelectionUtil.checkRectangle(selection);
             SelectionUtil.currentSelection.rect = selection;
         }
@@ -179,7 +180,7 @@ const SelectionUtil = {
             endNode: element,
             rect: rect,
             mimeType: "image"
-        }
+        };
     },
 
     setAudioSelection : function(element, interval) {
@@ -190,7 +191,7 @@ const SelectionUtil = {
             endNode: element,
             interval: interval,
             mimeType: "audio"
-        }
+        };
     },
 
     setVideoSelection : function(element, interval) {
@@ -201,7 +202,7 @@ const SelectionUtil = {
             endNode: element,
             interval: interval,
             mimeType: "video"
-        }
+        };
     },
 
     setDOMSelection : function() {
@@ -212,7 +213,7 @@ const SelectionUtil = {
                 startNode: observerNodes[0],
                 endNode: observerNodes[observerNodes.length - 1],
                 mimeType: "multipart" // TODO: FIX based on actual content
-            }
+            };
         }
         else {
             let position = selection.anchorNode.compareDocumentPosition(selection.focusNode);
@@ -243,7 +244,7 @@ const SelectionUtil = {
 
     getTrimmedOffset : function(node, offset) {
         if (node.nodeType === window.Node.TEXT_NODE && offset > 0) {
-            let textContent = node.textContent;
+            //let textContent = node.textContent;
             if (offset > 0)
                 offset -= DOMUtil.getTextNodeDisplayOffset(node);
             //offset -= textContent.length - textContent.trimLeft().length;
@@ -268,8 +269,8 @@ const SelectionUtil = {
         // 2. get start and end nodes of selection in display order
         var selection = SelectionUtil.getCurrentSelection();
         // 3. if selection start node has SelectWholeElement property
-        let startNode = SelectionUtil.selectWholeElement(selection.startNode)
-        let endNode = SelectionUtil.selectWholeElement(selection.endNode)
+        let startNode = SelectionUtil.selectWholeElement(selection.startNode);
+        let endNode = SelectionUtil.selectWholeElement(selection.endNode);
         if (selection.startOffset !== undefined && startNode) {
             // move selection to start of start node
             selection.startOffset = 0;
@@ -301,15 +302,15 @@ const SelectionUtil = {
     selectWholeElement : function(node) {
         let ancestors = DOMUtil.getAncestors(node);
         let nodes = ancestors.concat([node]).reverse();
-        var wholeElement = null;
-        for (var index = 0, node; node = nodes[index++]; ) {
-            if (node.attributes && node.hasAttribute("property") && node.getAttribute("property") === "selectWholeElement") {
-                return node;
+        for (var index = 0; index < nodes.length; index++) {
+            var checkNode = nodes[index];
+            if (checkNode.attributes && checkNode.hasAttribute("property") && checkNode.getAttribute("property") === "selectWholeElement") {
+                return checkNode;
             }
         }
         return null;
     },
 
-}
+};
 
 export default SelectionUtil;

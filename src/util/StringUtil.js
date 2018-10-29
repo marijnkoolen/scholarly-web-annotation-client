@@ -51,6 +51,6 @@ const StringUtil = {
         return {mapsTo: map, complete: completeAlignment};
     },
 
-}
+};
 
 export default StringUtil;

@@ -20,9 +20,9 @@ function snapSelectionToWord() {
             
             var direction = [];
             if (backwards) {
-                direction = ['backward', 'forward'];
+                direction = ["backward", "forward"];
             } else {
-                direction = ['forward', 'backward'];
+                direction = ["forward", "backward"];
             }
 
             sel.modify("move", direction[0], "character");

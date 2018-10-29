@@ -1,11 +1,11 @@
 // api-test.js
-'use strict';
+"use strict";
 
-var expect = require('chai').expect;
-require('es6-promise').polyfill();
-require('isomorphic-fetch');
-import AnnotationAPI from '../api/AnnotationAPI.js';
-var uuid = require('uuid4');
+var expect = require("chai").expect;
+require("es6-promise").polyfill();
+require("isomorphic-fetch");
+import AnnotationAPI from "../api/AnnotationAPI.js";
+var uuid = require("uuid4");
 
 let user = {username: "a_certain_someone", password: "cannotbehacked"};
 let annotationInvalid = {
@@ -45,43 +45,43 @@ let annotationValid = {
     ]
 };
 
-describe('AnnotationAPI', () => {
+describe("AnnotationAPI", () => {
 });
 
-describe('AnnotationAPI', () => {
+describe("AnnotationAPI", () => {
 
     before((done) => {
-        let serverAddress = "http://localhost:3000/api"
+        let serverAddress = "http://localhost:3000/api";
         AnnotationAPI.setServerAddress(serverAddress);
         return done();
     });
 
-    describe('after initialising', () => {
-        it('should exist', (done) => {
+    describe("after initialising", () => {
+        it("should exist", (done) => {
             expect(AnnotationAPI).to.not.be.undefined;
             done();
         });
 
-        it('should have a server address', (done) => {
+        it("should have a server address", (done) => {
             expect(AnnotationAPI.annotationServer).to.not.be.null;
             done();
         });
 
-        it('should should check server is available', (done) => {
+        it("should should check server is available", (done) => {
             AnnotationAPI.checkServerAvailable((serverAvailable) => {
                 expect(serverAvailable).to.be.true;
                 done();
-            })
+            });
         });
 
-        it('should have no user details', (done) => {
+        it("should have no user details", (done) => {
             expect(AnnotationAPI.userDetails).to.equal(null);
             done();
-        })
-    })
+        });
+    });
 
-    describe('registering a new user', () => {
-        it('should return 201 on registering', (done) => {
+    describe("registering a new user", () => {
+        it("should return 201 on registering", (done) => {
             AnnotationAPI.registerUser(user, (error, response) => {
                 expect(error).to.equal(null);
                 expect(response.action).to.equal("created");
@@ -89,7 +89,7 @@ describe('AnnotationAPI', () => {
             });
         });
 
-        it('should return 200 on logout', (done) => {
+        it("should return 200 on logout", (done) => {
             AnnotationAPI.logoutUser((error, response) => {
                 expect(error).to.equal(null);
                 expect(AnnotationAPI.userDetails).to.equal(null);
@@ -97,7 +97,7 @@ describe('AnnotationAPI', () => {
             });
         });
 
-        it('should return 200 on login', (done) => {
+        it("should return 200 on login", (done) => {
             AnnotationAPI.loginUser(user, (error, response) => {
                 expect(error).to.equal(null);
                 expect(response.action).to.equal("verified");
@@ -105,7 +105,7 @@ describe('AnnotationAPI', () => {
             });
         });
 
-        it('should return 204 on delete', (done) => {
+        it("should return 204 on delete", (done) => {
             AnnotationAPI.deleteUser(user, (error, response) => {
                 expect(error).to.equal(null);
                 done();
@@ -116,16 +116,16 @@ describe('AnnotationAPI', () => {
 
 });
 
-describe('AnnotationAPI', () => {
+describe("AnnotationAPI", () => {
 
     before((done) => {
-        let serverAddress = "http://localhost:3000/api"
+        let serverAddress = "http://localhost:3000/api";
         AnnotationAPI.setServerAddress(serverAddress);
         done();
     });
 
-    describe('POSTing an annotation unauthorized', () => {
-        it('should return 403', (done) => {
+    describe("POSTing an annotation unauthorized", () => {
+        it("should return 403", (done) => {
             let permission = "private";
             AnnotationAPI.saveAnnotation(annotationValid, permission, function(error, annotation) {
                 expect(error).to.not.equal(null);
@@ -135,8 +135,8 @@ describe('AnnotationAPI', () => {
         });
     });
 
-    describe('GETting an annotation unauthorized', () => {
-        it('should return list', (done) => {
+    describe("GETting an annotation unauthorized", () => {
+        it("should return list", (done) => {
             AnnotationAPI.getAnnotations(function(error, annotationContainer) {
                 expect(error).to.equal(null);
                 expect(annotationContainer.type).to.include("AnnotationContainer");
@@ -147,10 +147,10 @@ describe('AnnotationAPI', () => {
 
 });
 
-describe('AnnotationAPI', () => {
+describe("AnnotationAPI", () => {
 
     before((done) => {
-        let serverAddress = "http://localhost:3000/api"
+        let serverAddress = "http://localhost:3000/api";
         AnnotationAPI.setServerAddress(serverAddress);
         AnnotationAPI.registerUser(user, (error, response) => {
             done();
@@ -163,8 +163,8 @@ describe('AnnotationAPI', () => {
         });
     });
 
-    describe('sending a non-existing resource ID', () => {
-        it('should return an empty list', (done) => {
+    describe("sending a non-existing resource ID", () => {
+        it("should return an empty list", (done) => {
             let fakeId = "this-resource-does-not-exist";
             let expectedData = [];
             let accessStatus = ["private"];
@@ -176,9 +176,9 @@ describe('AnnotationAPI', () => {
         });
     });
 
-    describe('sending an object as resource ID', () => {
+    describe("sending an object as resource ID", () => {
 
-        it('should return an error', (done) => {
+        it("should return an error", (done) => {
             let objectAsId = {"id": "this-resource-does-not-exist"};
             let expectedData = null;
             let accessStatus = ["private"];
@@ -191,9 +191,9 @@ describe('AnnotationAPI', () => {
         });
     });
 
-    describe('POSTing an annotation without a target', () => {
+    describe("POSTing an annotation without a target", () => {
 
-        it('should return an error', (done) => {
+        it("should return an error", (done) => {
             let permission = "private";
             AnnotationAPI.saveAnnotation(annotationInvalid, permission, function(error, data) {
                 expect(error.status).to.equal(400);
@@ -204,11 +204,11 @@ describe('AnnotationAPI', () => {
     });
 
 
-    describe('handling a valid annotation', () => {
+    describe("handling a valid annotation", () => {
 
         var savedAnnotation;
 
-        it('should return annotation with ID after POST', (done) => {
+        it("should return annotation with ID after POST", (done) => {
             let permission = "private";
             AnnotationAPI.saveAnnotation(annotationValid, permission, function(error, annotation) {
                 expect(error).to.equal(null);
@@ -219,7 +219,7 @@ describe('AnnotationAPI', () => {
             });
         });
 
-        it('should return annotation after GET', (done) => {
+        it("should return annotation after GET", (done) => {
             AnnotationAPI.getAnnotationById(savedAnnotation.id, function(error, annotation) {
                 expect(error).to.equal(null);
                 expect(annotation.id).to.equal(savedAnnotation.id);
@@ -227,7 +227,7 @@ describe('AnnotationAPI', () => {
             });
         });
 
-        it('should return updated annotation after PUT', (done) => {
+        it("should return updated annotation after PUT", (done) => {
             let newTarget = "urn:vangogh:testletter.receiver";
             savedAnnotation.target[0].source = newTarget;
             let permission = "private";
@@ -239,7 +239,7 @@ describe('AnnotationAPI', () => {
             });
         });
 
-        it('should return annotation after DELETE', (done) => {
+        it("should return annotation after DELETE", (done) => {
             AnnotationAPI.deleteAnnotation(savedAnnotation, function(error, annotation) {
                 expect(error).to.equal(null);
                 expect(annotation.id).to.equal(savedAnnotation.id);
@@ -247,14 +247,14 @@ describe('AnnotationAPI', () => {
             });
         });
 
-        it('should return an error after GETting deleted annotation', (done) => {
+        it("should return an error after GETting deleted annotation", (done) => {
             AnnotationAPI.getAnnotationById(savedAnnotation.id, function(error, data) {
                 expect(error.status).to.equal(404);
                 expect(error.message).to.equal("Annotation with id " + savedAnnotation.id + " does not exist");
                 done();
             });
         });
-/*
+        /*
 
     */
     });

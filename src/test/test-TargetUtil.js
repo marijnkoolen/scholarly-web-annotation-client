@@ -1,25 +1,32 @@
 
-"use strict"
+"use strict";
 
-var expect = require('chai').expect;
-require('es6-promise').polyfill();
-require('isomorphic-fetch');
-var fs = require('fs');
-var jsdom = require('jsdom');
-import TargetUtil from '../util/TargetUtil.js';
-import SelectionUtil from '../util/SelectionUtil.js';
-import AnnotationActions from '../flux/AnnotationActions.js';
+var expect = require("chai").expect;
+require("es6-promise").polyfill();
+require("isomorphic-fetch");
+var fs = require("fs");
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+import TargetUtil from "../util/TargetUtil.js";
+import DOMUtil from "../util/DOMUtil.js";
+import RDFaUtil from "../util/RDFaUtil.js";
+import SelectionUtil from "../util/SelectionUtil.js";
+import AnnotationActions from "../flux/AnnotationActions.js";
 
-let htmlSource = fs.readFileSync("public/testletter.html");
+let htmlSource = fs.readFileSync("public/testletter.html", "utf-8");
 
 describe("TargetUtil", () => {
 
     beforeEach((done) => {
-        let doc = jsdom.jsdom(htmlSource)
-        let window = doc.defaultView;
-        global.document = window.document;
-        AnnotationActions.indexResources();
-        done();
+        let dom = new JSDOM(htmlSource);
+        global.document = dom.window.document;
+        // make sure observerNodes are reset in case of mocha caching utils
+        AnnotationActions.resourceIndex = null;
+        let observerNodes = DOMUtil.getObserverNodes();
+        RDFaUtil.setObserverNodes(observerNodes);
+        AnnotationActions.indexResources((error) => {
+            done();
+        });
     });
 
     it("should return candidate element with image coordinates", (done) => {

@@ -14,13 +14,13 @@
  *   - http://stackoverflow.com/questions/2880957/detect-inline-block-type-of-a-dom-element
  */
 
-'use strict'
+"use strict";
 
-import DOMUtil from './DOMUtil.js';
-import RDFaUtil from './RDFaUtil.js';
-import SelectionUtil from './SelectionUtil.js';
-import AnnotationUtil from './AnnotationUtil.js';
-import AnnotationActions from '../flux/AnnotationActions.js';
+import DOMUtil from "./DOMUtil.js";
+import RDFaUtil from "./RDFaUtil.js";
+import SelectionUtil from "./SelectionUtil.js";
+import AnnotationUtil from "./AnnotationUtil.js";
+import AnnotationActions from "../flux/AnnotationActions.js";
 
 const TargetUtil = {
 
@@ -80,7 +80,7 @@ const TargetUtil = {
                 params = {interval: selection.interval};
             }
         } else {
-            console.error("Selection has unknown mimetype:", selection);
+            //console.error("Selection has unknown mimetype:", selection);
         }
         params.breadcrumbs = RDFaUtil.createBreadcrumbTrail(container.source);
         return {
@@ -90,7 +90,7 @@ const TargetUtil = {
             label: container.label,
             source: container.source,
             type: "resource"
-        }
+        };
     },
 
     makeTextSelectors : function(container, selection) {
@@ -101,14 +101,14 @@ const TargetUtil = {
         return {
             position: this.makeTextPositionParams(container, selection),
             quote: this.makeTextQuoteParams(container, selection)
-        }
+        };
     },
 
     makeTextPositionParams : function(container, selection) {
         return {
             start: selection.startContainerOffset,
             end: selection.endContainerOffset
-        }
+        };
     },
 
     makeTextQuoteParams : function(container, selection) {
@@ -119,7 +119,7 @@ const TargetUtil = {
             exact: textContent.substr(selection.startContainerOffset, selectionLength),
             prefix: textContent.substr(selection.startContainerOffset - maxPrefix, maxPrefix),
             suffix: textContent.substr(selection.endContainerOffset, 20)
-        }
+        };
     },
 
     // given a list of nodes, select all RDFa enriched nodes
@@ -137,7 +137,7 @@ const TargetUtil = {
                 },
                 label: node.getAttribute("typeof"),
                 source: resourceId
-            }
+            };
         });
     },
 
@@ -185,7 +185,7 @@ const TargetUtil = {
         // if annotation target is not highlighted resource
         // then annotation is not a candidate target
         if (target.source != highlighted.source)
-            return false
+            return false;
         // double check that annotation target and
         // selected candidate have same mime type
         if (target.type != TargetUtil.mapMimeType(highlighted.mimeType))
@@ -225,7 +225,7 @@ const TargetUtil = {
                 target: {
                     source: annotation.id
                 }
-            }
+            };
         });
     },
 
@@ -296,17 +296,18 @@ const TargetUtil = {
             if (!targetId) // target is not loaded in browser window
                 return [];
             var source = AnnotationActions.lookupIdentifier(targetId);
-            var targetResources = [];
 
             if (source.type === undefined) {
-                console.error("source information for target " + targetId + " should have a type:", source);
+                //console.error("source information for target " + targetId + " should have a type:", source);
             } else if (source.type === "annotation"){
-                AnnotationUtil.extractTargets(source.data).forEach((target) => {
+                //AnnotationUtil.extractTargets(source.data).forEach((target) => {
+                AnnotationUtil.extractTargets(source.data).forEach(() => {
+                    domTargets = domTargets.concat(TargetUtil.mapTargetsToDOMElements(source.data));
                     domTargets = domTargets.concat(TargetUtil.mapTargetsToDOMElements(source.data));
                 });
             } else if (source.type === "resource") {
                 if (target.type === undefined) {
-                    console.error("Target should have a type property:", target);
+                    //console.error("Target should have a type property:", target);
                 } else if (target.type === "Text") {
                     domTargets.push(TargetUtil.makeTextRange(target, source.data.domNode));
                 } else if (target.type === "Image") {
@@ -314,10 +315,10 @@ const TargetUtil = {
                 } else if (target.type === "Video" || target.type === "Audio") {
                     domTargets.push(TargetUtil.makeTemporalSegment(target, source.data.domNode));
                 } else {
-                    console.error("Unknown target type", target);
+                    //console.error("Unknown target type", target);
                 }
             } else {
-                console.error("no source type for source:", source);
+                //console.error("no source type for source:", source);
             }
         });
         return domTargets;
@@ -327,10 +328,10 @@ const TargetUtil = {
         var imageRegion = {
             type: "Image",
             node: node
-        }
+        };
         if (target.selector !== undefined && target.selector !== null) {
             let mediaFragment = TargetUtil.getTargetMediaFragment(target);
-            imageRegion.rect = mediaFragment.rect
+            imageRegion.rect = mediaFragment.rect;
         }
         return imageRegion;
     },
@@ -341,7 +342,7 @@ const TargetUtil = {
             start: 0,
             end: -1,
             node: node
-        }
+        };
         let textPosition = TargetUtil.getSelectorByType(target, "TextPositionSelector");
         if (textPosition && textPosition.start !== undefined) {
             targetRange.start = textPosition.start;
@@ -354,10 +355,10 @@ const TargetUtil = {
         var segment = {
             type: target.type,
             node: node
-        }
+        };
         if (target.selector !== undefined && target.selector !== null) {
             let mediaFragment = TargetUtil.getTargetMediaFragment(target);
-            segment.interval = mediaFragment.interval
+            segment.interval = mediaFragment.interval;
         }
         return segment;
     },
@@ -393,7 +394,7 @@ const TargetUtil = {
         if (typeof(target) === "string")
             return null;
         if (target.selector && target.selector.type === "FragmentSelector") {
-                return target.selector;
+            return target.selector;
         } else if (target.selector.refinedBy && target.selector.refinedBy.type === "FragmentSelector") {
             return target.selector.refinedBy;
         }
@@ -402,7 +403,7 @@ const TargetUtil = {
     toggleHighlight(targetDOMElements, highlighted) {
         targetDOMElements.forEach((target) => {
             if (target.type === undefined) {
-                console.error("Target should have a type:", target);
+                //console.error("Target should have a type:", target);
             } else if (target.type === "Text") {
                 TargetUtil.toggleTextHighlight(target, highlighted);
             } else if (target.type === "Audio") {
@@ -412,7 +413,7 @@ const TargetUtil = {
             } else if (target.type === "Video") {
                 TargetUtil.toggleVideoHighlight(target, highlighted);
             } else {
-                console.error("Unknown target type:", target);
+                //console.error("Unknown target type:", target);
             }
         });
     },
@@ -426,7 +427,7 @@ const TargetUtil = {
 
     toggleImageHighlight(target, highlighted) {
         // trigger toggleOverlay event with target node and rectangle as detail
-        let toggleOverlay = new CustomEvent('toggle-annotation-overlay', {
+        let toggleOverlay = new CustomEvent("toggle-annotation-overlay", {
             detail: {rect: target.rect, highlighted: highlighted}
         });
         target.node.dispatchEvent(toggleOverlay);
@@ -434,13 +435,13 @@ const TargetUtil = {
 
     toggleVideoHighlight(target, started) {
         // trigger toggleOverlay event with target node and rectangle as detail
-        let toggleOverlay = new CustomEvent('play-video-segment', {
+        let toggleOverlay = new CustomEvent("play-video-segment", {
             detail: {interval: target.interval, started: started}
         });
         target.node.dispatchEvent(toggleOverlay);
     }
 
-}
+};
 
 export default TargetUtil;
 

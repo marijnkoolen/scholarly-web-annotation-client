@@ -1,5 +1,5 @@
 
-"use strict"
+"use strict";
 
 const AnnotationAPI = {
 
@@ -16,7 +16,6 @@ const AnnotationAPI = {
     },
 
     setServerAddress : (apiURL) => {
-        console.log("setting server address:", apiURL);
         AnnotationAPI.annotationServer = apiURL;
     },
 
@@ -27,9 +26,11 @@ const AnnotationAPI = {
     checkServerAvailable : (callback) => {
         fetch(AnnotationAPI.annotationServer, {}).then((response) => {
             return response.json();
-        }).then((data) => {
+        //}).then((data) => {
+        }).then(() => {
             return callback(true);
-        }).catch((error) => {
+        //}).catch((error) => {
+        }).catch(() => {
             return callback(false);
         });
     },
@@ -43,7 +44,7 @@ const AnnotationAPI = {
             if (!["private", "shared", "public"].includes(permissions.accessStatus)) {
                 return Error("Invalid accessStatus option. Must be 'private', 'shared' or 'public'");
             }
-            AnnotationAPI.permissions.accessStatus = permission.accessStatus;
+            AnnotationAPI.permissions.accessStatus = permissions.accessStatus;
         }
     },
 
@@ -59,8 +60,8 @@ const AnnotationAPI = {
         if (!AnnotationAPI.annotationServer)
             callback(AnnotationAPI.serverNotSet(), null);
         var status = null;
-        options.cache = 'no-cache';
-        options.mode = 'cors';
+        options.cache = "no-cache";
+        options.mode = "cors";
         if (AnnotationAPI.userDetails) {
             AnnotationAPI.addAuthorization(options);
         }
@@ -80,19 +81,19 @@ const AnnotationAPI = {
                 let error = {
                     status: status,
                     message: data.message
-                }
+                };
                 return callback(error, null);
             }
             return callback(null, data);
         }).catch((error) => {
-            console.error(url, error.toString());
+            //console.error(url, error.toString());
             return callback(error, null);
         });
     },
 
     addAuthorization : (options) => {
         if (!options.hasOwnProperty("headers")) {
-            options.headers = {}
+            options.headers = {};
         }
         var authorizationString = "";
         if (AnnotationAPI.userDetails.token) {
@@ -106,30 +107,28 @@ const AnnotationAPI = {
 
     saveAnnotation : (annotation, permission, callback) => {
         // default is POSTing a new annotation
-        console.log("saving annotation with permission level", permission);
-        var url = AnnotationAPI.annotationServer + '/annotations';
-        var method = 'POST';
+        var url = AnnotationAPI.annotationServer + "/annotations";
+        var method = "POST";
 
         // if annotation already has an id, it's an update, so PUT
         if(annotation.id) {
-            url = AnnotationAPI.annotationServer + '/annotations/' + annotation.id;
-            method = 'PUT';
+            url = AnnotationAPI.annotationServer + "/annotations/" + annotation.id;
+            method = "PUT";
         }
-        url = url + '?access_status=' + permission;
+        url = url + "?access_status=" + permission;
 
         let options = {
             method: method,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(annotation)
-        }
+        };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
     },
 
     getAnnotationById : function(annotationId, callback) {
-        var status = null;
-        let url = AnnotationAPI.annotationServer + '/annotations/' + annotationId;
+        let url = AnnotationAPI.annotationServer + "/annotations/" + annotationId;
         let options = { method: "GET" };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
@@ -137,8 +136,8 @@ const AnnotationAPI = {
     },
 
     getAnnotations : function(callback) {
-        let url = AnnotationAPI.annotationServer + '/annotations';
-        let options = { method: "GET" }
+        let url = AnnotationAPI.annotationServer + "/annotations";
+        let options = { method: "GET" };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
@@ -149,8 +148,8 @@ const AnnotationAPI = {
             let error = new TypeError("resource ID should be string");
             return callback(error, null);
         }
-        let url = AnnotationAPI.annotationServer + '/annotations' + '?'
-        + 'target_id=' + targetId
+        let url = AnnotationAPI.annotationServer + "/annotations" + "?"
+        + "target_id=" + targetId
         + "&access_status=" + accessStatus.join(",")
         + "&include_permissions=true";
         let options = {
@@ -158,7 +157,7 @@ const AnnotationAPI = {
                 "Prefer": "return=representation;include='http://www.w3.org/ns/oa#PreferContainedDescriptions'"
             },
             method: "GET"
-        }
+        };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
@@ -199,32 +198,32 @@ const AnnotationAPI = {
             let error = Error("annotation MUST have an id property");
             callback(error, null);
         }
-        let url = AnnotationAPI.annotationServer + '/annotations/' + annotation.id;
-        let options = { method: "DELETE" }
+        let url = AnnotationAPI.annotationServer + "/annotations/" + annotation.id;
+        let options = { method: "DELETE" };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
     },
 
     deleteAnnotationById : function (annotationId, callback) {
-        let url = AnnotationAPI.annotationServer + '/annotations/' + annotationId;
-        let options = { method: "DELETE" }
+        let url = AnnotationAPI.annotationServer + "/annotations/" + annotationId;
+        let options = { method: "DELETE" };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
     },
 
     getCollections : function(callback) {
-        let url = AnnotationAPI.annotationServer + '/collections';
-        let options = { method: "GET" }
+        let url = AnnotationAPI.annotationServer + "/collections";
+        let options = { method: "GET" };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
     },
 
     getCollection : function(collectionId, callback) {
-        let url = AnnotationAPI.annotationServer + '/collections/' + collectionId;
-        let options = { method: "GET" }
+        let url = AnnotationAPI.annotationServer + "/collections/" + collectionId;
+        let options = { method: "GET" };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
@@ -232,28 +231,27 @@ const AnnotationAPI = {
 
     getCollectionPage : function(pageURL, callback) {
         //let url = AnnotationAPI.annotationServer + '/pages/' + pageId;
-        let options = { method: "GET" }
+        let options = { method: "GET" };
         AnnotationAPI.makeRequest(pageURL, options, (error, data) => {
             return callback(error, data);
         });
     },
 
     saveCollection : function(collection, callback) {
-        var status = null;
-        let url = AnnotationAPI.annotationServer + '/collections';
-        let method = 'POST';
+        let url = AnnotationAPI.annotationServer + "/collections";
+        let method = "POST";
 
         // if annotation already has an id, it's an update, so PUT
         if(collection.id) {
-            url = AnnotationAPI.annotationServer + '/collections/' + collection.id;
-            method = 'PUT';
+            url = AnnotationAPI.annotationServer + "/collections/" + collection.id;
+            method = "PUT";
         }
 
         var options = {
             method: method,
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(collection),
-        }
+        };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
@@ -264,15 +262,15 @@ const AnnotationAPI = {
             let error = Error("collection MUST have an id property");
             callback(error, null);
         }
-        let url = AnnotationAPI.annotationServer + '/collections/' + collection.id;
-        let options = { method: "DELETE" }
+        let url = AnnotationAPI.annotationServer + "/collections/" + collection.id;
+        let options = { method: "DELETE" };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
     },
 
     addAnnotation : function (collectionId, annotation, callback) {
-        let url = AnnotationAPI.annotationServer + '/collections/' + collectionId + '/annotations/';
+        let url = AnnotationAPI.annotationServer + "/collections/" + collectionId + "/annotations/";
         let options = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -284,7 +282,7 @@ const AnnotationAPI = {
     },
 
     removeAnnotation : function (collectionId, annotationId, callback) {
-        let url = AnnotationAPI.annotationServer + '/collections/' + collectionId + '/annotations/' + annotationId;
+        let url = AnnotationAPI.annotationServer + "/collections/" + collectionId + "/annotations/" + annotationId;
         let options = { method: "DELETE" };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
@@ -299,10 +297,9 @@ const AnnotationAPI = {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(userDetails)
-        }
+        };
         AnnotationAPI.makeRequest(url, options, (error, authorizationData) => {
             if (!error) {
-                console.log(authorizationData);
                 userDetails.user_id = authorizationData.user.user_id;
                 userDetails.token = authorizationData.user.token;
                 AnnotationAPI.setUserDetails(userDetails);
@@ -320,7 +317,7 @@ const AnnotationAPI = {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(userDetails)
-        }
+        };
         AnnotationAPI.makeRequest(url, options, (error, authorizationData) => {
             if (!error) {
                 userDetails.user_id = authorizationData.user.user_id;
@@ -333,7 +330,7 @@ const AnnotationAPI = {
 
     logoutUser : function(callback) {
         var url = AnnotationAPI.annotationServer + "/logout";
-        let options = { method: "GET" }
+        let options = { method: "GET" };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             AnnotationAPI.removeUserDetails();
             return callback(error, data);
@@ -347,7 +344,7 @@ const AnnotationAPI = {
             headers: {
                 "Authorization": "Basic " + btoa(userDetails.username+":"+userDetails.password)
             }
-        }
+        };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             AnnotationAPI.removeUserDetails();
             return callback(error, data);
@@ -355,24 +352,24 @@ const AnnotationAPI = {
     },
 
     checkResource : function(resourceId, callback) {
-        let url = AnnotationAPI.annotationServer + '/resources/' + resourceId;
-        let options = { method: "GET" }
+        let url = AnnotationAPI.annotationServer + "/resources/" + resourceId;
+        let options = { method: "GET" };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
     },
 
     registerResource : function(resourceMap, callback) {
-        let url = AnnotationAPI.annotationServer + '/resources';
+        let url = AnnotationAPI.annotationServer + "/resources";
         var options = {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(resourceMap)
-        }
+        };
         AnnotationAPI.makeRequest(url, options, (error, data) => {
             return callback(error, data);
         });
     }
-}
+};
 
 export default AnnotationAPI;

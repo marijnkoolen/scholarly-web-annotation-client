@@ -1,9 +1,9 @@
-var expect = require('chai').expect;
-require('es6-promise').polyfill();
-require('isomorphic-fetch');
-var fs = require('fs');
-var jsdom = require('jsdom');
-import AnnotationUtil from '../util/AnnotationUtil.js';
+var expect = require("chai").expect;
+require("es6-promise").polyfill();
+require("isomorphic-fetch");
+var fs = require("fs");
+var jsdom = require("jsdom");
+import AnnotationUtil from "../util/AnnotationUtil.js";
 
 describe("AnnotationUtil", () => {
 
@@ -30,7 +30,7 @@ describe("AnnotationUtil", () => {
             let params = {rect: {x:1, y:1, w:100, h:200}};
             let selector = AnnotationUtil.makeMediaFragmentSelector(params);
             expect(selector.type).to.equal("FragmentSelector");
-            let urlParam = '#xywh=' + params.rect.x + ',' + params.rect.y + ',' + params.rect.w + ',' + params.rect.h;
+            let urlParam = "#xywh=" + params.rect.x + "," + params.rect.y + "," + params.rect.w + "," + params.rect.h;
             expect(selector.value).to.equal(urlParam);
             return done();
         });
@@ -39,7 +39,7 @@ describe("AnnotationUtil", () => {
             let params = {interval: {start: 1, end: 1}};
             let selector = AnnotationUtil.makeMediaFragmentSelector(params);
             expect(selector.type).to.equal("FragmentSelector");
-            let urlParam = '#t=' + params.interval.start + ',' + params.interval.end;
+            let urlParam = "#t=" + params.interval.start + "," + params.interval.end;
             expect(selector.value).to.equal(urlParam);
             return done();
         });
@@ -290,7 +290,7 @@ describe("AnnotationUtil", () => {
             expect(selector["@context"]).to.exist;
             expect(selector.value[0].type).to.equal("Correspondence");
             return done();
-        })
+        });
     });
 
     describe("makeSubresourceSelector", () => {
@@ -319,7 +319,7 @@ describe("AnnotationUtil", () => {
             expect(selector.value).to.exist;
             expect(selector.value.type).to.equal("Correspondence");
             return done();
-        })
+        });
     });
 
     describe("generateW3CAnnotation", () => {
@@ -388,9 +388,9 @@ describe("AnnotationUtil", () => {
                 AnnotationUtil.generateW3CAnnotation(annotationTargets, creator);
             }
             catch (err) {
-                error = err
+                error = err;
             }
-            expect(error.message).to.equal('annotation target requires a mimetype');
+            expect(error.message).to.equal("annotation target requires a mimetype");
             done();
         });
 
@@ -407,9 +407,9 @@ describe("AnnotationUtil", () => {
                 AnnotationUtil.generateW3CAnnotation(annotationTargets, creator);
             }
             catch (err) {
-                error = err
+                error = err;
             }
-            expect(error.message).to.equal('annotation target requires a source');
+            expect(error.message).to.equal("annotation target requires a source");
             done();
         });
 
