@@ -1,15 +1,15 @@
 
-'use strict'
+"use strict";
 
-import VocabularyUtil from './VocabularyUtil.js';
-import DOMUtil from './DOMUtil.js';
-import StringUtil from './StringUtil.js';
-import AnnotationActions from './../flux/AnnotationActions.js';
+import VocabularyUtil from "./VocabularyUtil.js";
+import DOMUtil from "./DOMUtil.js";
+import AnnotationActions from "./../flux/AnnotationActions.js";
 
 
 // RDFa property names
 //let RDFaAttrs = ["about", "content", "datatype", "href", "property", "rel", "resource", "rev", "src", "typeof", "vocab"];
-let RDFaAttrs = ["about", "property", "resource", "typeof", "vocab"];
+let RDFaAttrs = ["about", "prefix", "property", "resource", "typeof", "vocab"];
+VocabularyUtil.newStore();
 
 const RDFaUtil = {
 
@@ -19,9 +19,9 @@ const RDFaUtil = {
     **************************
     */
 
-   setObserverNodes(observerNodes) {
-       this.observerNodes = Array.from(observerNodes);
-   },
+    setObserverNodes(observerNodes) {
+        this.observerNodes = Array.from(observerNodes);
+    },
 
     /*
     **************************
@@ -57,9 +57,39 @@ const RDFaUtil = {
         return Object.keys(attrs).length > 0 && (!RDFaUtil.isRDFaIgnoreNode(node)) ? true : false;
     },
 
+    hasRDFaType : function(node) {
+        let attrs = RDFaUtil.getRDFaAttributes(node);
+        return attrs.hasOwnProperty("typeof");
+    },
+
+    hasRDFaPrefix : function(node) {
+        let attrs = RDFaUtil.getRDFaAttributes(node);
+        return attrs.hasOwnProperty("prefix");
+    },
+
     hasRDFaResource : function(node) {
         let attrs = RDFaUtil.getRDFaAttributes(node);
         return attrs.hasOwnProperty("resource") || attrs.hasOwnProperty("about") ? true : false;
+    },
+
+    getRDFaPrefix : function(node) {
+        let attrs = RDFaUtil.getRDFaAttributes(node);
+        var prefix = [];
+        if (!attrs.hasOwnProperty("prefix")) {
+            return null;
+        } else {
+            let parts = attrs["prefix"].split(" ");
+            if (parts.length % 2 !== 0) {
+                return null;
+            } else {
+                for (var i = 0; i < parts.length; i = i+2) {
+                    let vocPrefix = parts[i].substring(0,parts[i].length - 1);
+                    let vocURI = parts[i+1];
+                    prefix.push({vocabularyPrefix: vocPrefix, vocabularyURI: vocURI});
+                }
+                return prefix;
+            }
+        }
     },
 
     getRDFaIgnoreNodes : function(node) {
@@ -134,7 +164,7 @@ const RDFaUtil = {
     },
 
     getRDFaResource : (node) => {
-        return node.hasAttribute("resource") ? node.getAttribute("resource") : node.getAttribute("about")
+        return node.hasAttribute("resource") ? node.getAttribute("resource") : node.getAttribute("about");
     },
 
 
@@ -147,7 +177,7 @@ const RDFaUtil = {
         }
         node.childNodes.forEach(function(childNode) {
             topRDFaNodes = topRDFaNodes.concat(RDFaUtil.getTopRDFaNodes(childNode));
-        })
+        });
         return topRDFaNodes;
     },
 
@@ -163,34 +193,24 @@ const RDFaUtil = {
         return topResources;
     },
 
-    getAnnotatableResouces : function(node) {
-        RDFaUtil.getTopRDFaNodes(node).forEach(function(topRDFaNode) {
-            let attrs = RDFaUtil.getRDFaAttributes(topRDFaNode);
-            VocabularyUtil.getVocabulary(attrs.vocab, function(error) {
-                if (error)
-                    console.error(error);
-                else {
-                    let annotatableThings = VocabularyUtil.listAnnotatableThings();
-                }
-            });
+    addBreadcrumb(labelTrail, source) {
+        labelTrail.unshift({
+            id: source.data.rdfaResource,
+            node: source.data.domNode,
+            property: source.data.rdfaProperty,
+            type: source.data.rdfaTypeLabel
         });
-
     },
 
     createBreadcrumbTrail(resourceId) {
         var rootFound = false;
         var breadcrumb = {};
-        var labelcrumb = [];
+        var labelTrail = [];
         breadcrumb[resourceId] = {id: resourceId};
         while (!rootFound) {
             let source = AnnotationActions.lookupIdentifier(resourceId);
-            breadcrumb[source.data.rdfaResource].type = source.data.rdfaType;
-            labelcrumb.unshift({
-                id: source.data.rdfaResource,
-                node: source.data.domNode,
-                property: source.data.rdfaProperty,
-                type: source.data.rdfaType
-            });
+            breadcrumb[source.data.rdfaResource].type = source.data.rdfaTypeLabel;
+            RDFaUtil.addBreadcrumb(labelTrail, source);
             if (source !== undefined && source.data.rdfaParent) {
                 var val = {id: source.data.rdfaParent};
                 val[source.data.rdfaProperty] = breadcrumb[source.data.rdfaResource];
@@ -201,7 +221,7 @@ const RDFaUtil = {
                 rootFound = true;
             }
         }
-        return labelcrumb;
+        return labelTrail;
     },
 
     updateStack : function(stack, node) {
@@ -209,8 +229,8 @@ const RDFaUtil = {
         var position = top.compareDocumentPosition(node);
         while (!(position & window.Node.DOCUMENT_POSITION_CONTAINED_BY)) {
             stack.pop();
-            var top = stack[stack.length - 1];
-            var position = top.compareDocumentPosition(node);
+            top = stack[stack.length - 1];
+            position = top.compareDocumentPosition(node);
         }
     },
 
@@ -221,30 +241,87 @@ const RDFaUtil = {
      **************************
      */
 
-    makeIndexEntry(node) {
-        let rdfaTypeLabels = node.getAttribute("typeof").split(" ");
-        let vocabularies = [];
-        let typeURIs = rdfaTypeLabels.map((label) => {
-            let labelClass = VocabularyUtil.getLabelClass(label);
-            if (!labelClass) {
-                console.log("label:", label);
-            } else {
-                let vocabulary = labelClass.substr(0, labelClass.indexOf("#")+1);
+    labelHasPrefix(label) {
+        return (label.indexOf(":") !== -1);
+    },
+
+    labelParsePrefix(label, prefixIndex) {
+        let prefix = label.substring(0, label.indexOf(":"));
+        let term = label.substring(label.indexOf(":") + 1);
+        if (prefixIndex.hasOwnProperty(prefix)) {
+            return {
+                uri: prefixIndex[prefix] + term,
+                vocabulary: prefixIndex[prefix],
+                term: term
+            }
+        } else {
+            console.log("UNKNOWN PREFIX:", label, prefix);
+            return null;
+        }
+    },
+
+    getTypeURIs(rdfaTypeLabels, prefixIndex, vocabularies) {
+        if (!rdfaTypeLabels) {
+            return null;
+        }
+        return rdfaTypeLabels.map((label) => {
+            if (RDFaUtil.labelHasPrefix(label)) {
+                let labelInfo = RDFaUtil.labelParsePrefix(label, prefixIndex);
+                let typeURI = labelInfo.uri;
+                vocabularies.push(labelInfo.vocabulary);
+                return typeURI;
+            } else if (VocabularyUtil.getLabelClass(label)){
+                let typeURI = VocabularyUtil.getLabelClass(label);
+                let vocabulary = typeURI.substr(0, typeURI.indexOf("#")+1);
                 if (!vocabularies.includes(vocabulary)) {
                     vocabularies.push(vocabulary);
                 }
+                return typeURI;
+            } else {
+                console.log("ERROR - unknown RDFa type:", label);
+                return null;
             }
-            return labelClass;
         });
+    },
+
+    getRDFaTypeLabels(node) {
+        if (RDFaUtil.hasRDFaType(node)) {
+            return node.getAttribute("typeof").split(" ");
+        } else {
+            return null;
+        }
+    },
+
+    expandProperty(propertyLabel, prefixIndex) {
+        if (!propertyLabel) {
+            return null;
+        } else if (RDFaUtil.labelHasPrefix(propertyLabel)) {
+            let labelInfo = RDFaUtil.labelParsePrefix(propertyLabel, prefixIndex);
+            return labelInfo.uri;
+        } else {
+            let propertyURI = VocabularyUtil.getLabelClass(propertyLabel);
+            if (!propertyURI) {
+                console.log("ERROR - Unknown property:", propertyLabel);
+            }
+            return propertyURI;
+        }
+    },
+
+    makeIndexEntry(node, prefixIndex) {
+        var rdfaTypeLabels ;
+        var typeURIs;
+        let vocabularies = [];
+        rdfaTypeLabels = RDFaUtil.getRDFaTypeLabels(node);
+        typeURIs = RDFaUtil.getTypeURIs(rdfaTypeLabels, prefixIndex, vocabularies);
         return {
-            rdfaResource: node.getAttribute("resource"),
+            rdfaResource: RDFaUtil.getRDFaResource(node),
             rdfaVocabulary: vocabularies,
             domNode: node,
-            rdfaType: rdfaTypeLabels,
-            rdfaTypeURIs: typeURIs,
-            rdfaProperty: node.getAttribute("property"),
+            rdfaTypeLabel: rdfaTypeLabels,
+            rdfaTypeURI: typeURIs,
+            rdfaProperty: RDFaUtil.expandProperty(node.getAttribute("property"), prefixIndex),
             text: RDFaUtil.getRDFaTextContent(node)
-        }
+        };
     },
 
     hasVocabulary : (node) => {
@@ -264,65 +341,90 @@ const RDFaUtil = {
         });
     },
 
-    indexRDFaResources : (callback) => {
-        var index = {};
+    indexRDFa : (callback) => {
+        var index = {
+            resources: {},
+            relations: {}
+        };
         var vocabularies = [];
         RDFaUtil.listVocabularies(document, vocabularies);
-        VocabularyUtil.getVocabularies(vocabularies, (error) => {
+        VocabularyUtil.readVocabularies(vocabularies, (error) => {
             if (error) {
                 return callback(error, null);
             }
             RDFaUtil.observerNodes.forEach((observerNode) => {
                 RDFaUtil.getTopRDFaNodes(observerNode).forEach(function(rdfaResourceNode) {
-                    let topAttrs = RDFaUtil.getRDFaAttributes(rdfaResourceNode);
-                    index[topAttrs.about] = RDFaUtil.makeIndexEntry(rdfaResourceNode);
-                    index[topAttrs.about].rdfaResource = topAttrs.about;
-                    // index all RDFa sub-resources of top-level resource
-                    RDFaUtil.indexRDFaSubResources(index, rdfaResourceNode, topAttrs);
+                    var prefixIndex = {};
+                    RDFaUtil.indexPrefixes(rdfaResourceNode, prefixIndex);
+                    var topAttrs = RDFaUtil.getRDFaAttributes(rdfaResourceNode);
+                    var indexEntry = RDFaUtil.makeIndexEntry(rdfaResourceNode, prefixIndex);
+                    index.resources[indexEntry.rdfaResource] = indexEntry;
+                    RDFaUtil.indexRDFaResources(index, rdfaResourceNode, indexEntry.rdfaResource, prefixIndex);
                 });
             });
             return callback(null, index);
         });
     },
 
-    /*
-    indexRDFaResources : function() {
-        var index = {};
-        // index all top-level RDFa resources
-        RDFaUtil.observerNodes.forEach((observerNode) => {
-            RDFaUtil.getTopRDFaNodes(observerNode).forEach(function(rdfaResourceNode) {
-                let topAttrs = RDFaUtil.getRDFaAttributes(rdfaResourceNode);
-                index[topAttrs.about] = RDFaUtil.makeIndexEntry(rdfaResourceNode, topAttrs.vocab);
-                index[topAttrs.about].rdfaResource = topAttrs.about;
-                // index all RDFa sub-resources of top-level resource
-                RDFaUtil.indexRDFaSubResources(index, rdfaResourceNode, topAttrs);
-            });
-        });
-        return index;
-    },
-    */
-
-    indexRDFaSubResources(index, rdfaResourceNode, topAttrs) {
-        var resourceStack = [rdfaResourceNode];
-        var nodes = RDFaUtil.getNotIgnoreDescendants(rdfaResourceNode);
-        RDFaUtil.selectRDFaNodes(nodes).forEach(function(node) {
-            let resourceAttrs = RDFaUtil.getRDFaAttributes(node);
-            RDFaUtil.updateStack(resourceStack, node);
-            var parentAttrs = RDFaUtil.getRDFaAttributes(resourceStack[resourceStack.length - 1]);
-            var rdfaParent = parentAttrs.about ? parentAttrs.about : parentAttrs.resource;
-            // if top level resource isPartOf a larger resource,
-            // store as partOf information on top level resource,
-            index[resourceAttrs.resource] = RDFaUtil.makeIndexEntry(node);
-            if (resourceAttrs.property === "isPartOf") {
-                index[resourceAttrs.resource].rdfaParent = null;
-                index[topAttrs.about].rdfaProperty = "hasPart";
-                index[topAttrs.about].rdfaParent = resourceAttrs.resource;
+    indexRDFaResources(index, node, parentResource, prefixIndex) {
+        node.childNodes.forEach((childNode) => {
+            if (RDFaUtil.hasRDFaResource(childNode)) {
+                RDFaUtil.indexPrefixes(childNode, prefixIndex);
+                var indexEntry = RDFaUtil.makeIndexEntry(childNode, prefixIndex);
+                indexEntry.rdfaParent = parentResource;
+                if (!index.resources.hasOwnProperty(indexEntry.rdfaResource)) {
+                    index.resources[indexEntry.rdfaResource] = indexEntry;
+                }
+                RDFaUtil.indexRDFaRelations(index.relations, indexEntry);
+                RDFaUtil.indexRDFaResources(index, childNode, indexEntry.rdfaResource, prefixIndex);
             } else {
-                index[resourceAttrs.resource].rdfaParent = rdfaParent;
+                RDFaUtil.indexRDFaResources(index, childNode, parentResource, prefixIndex);
             }
-            resourceStack.push(node);
         });
+    },
 
+    indexRDFaRelations(relationIndex, resourceIndexEntry) {
+        RDFaUtil.indexParentRelation(relationIndex, resourceIndexEntry);
+        RDFaUtil.indexTypeRelation(relationIndex, resourceIndexEntry);
+    },
+
+    indexTypeRelation(relationIndex, resourceIndexEntry) {
+        if (!resourceIndexEntry.rdfaTypeLabel) {
+            return false;
+        } else {
+            resourceIndexEntry.rdfaTypeURI.forEach((rdfaType) => {
+                let relation = {
+                    subject: resourceIndexEntry.rdfaResource,
+                    predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+                    object: rdfaType
+                }
+                relationIndex[relation.subject].push(relation);
+            });
+        }
+    },
+
+    indexParentRelation(relationIndex, resourceIndexEntry) {
+        let relation = {
+            subject: resourceIndexEntry.rdfaParent,
+            predicate: resourceIndexEntry.rdfaProperty,
+            object: resourceIndexEntry.rdfaResource
+        }
+        if (!relationIndex.hasOwnProperty(relation.subject)) {
+            relationIndex[relation.subject] = [];
+        }
+        if (!relationIndex.hasOwnProperty(relation.object)) {
+            relationIndex[relation.object] = [];
+        }
+        relationIndex[relation.subject].push(relation);
+        relationIndex[relation.object].push(relation);
+    },
+
+    indexPrefixes(rdfaResourceNode, prefixIndex) {
+        if (RDFaUtil.hasRDFaPrefix(rdfaResourceNode)) {
+            RDFaUtil.getRDFaPrefix(rdfaResourceNode).forEach((prefix) => {
+                prefixIndex[prefix.vocabularyPrefix] = prefix.vocabularyURI;
+            });
+        }
     },
 
     buildResourcesMaps : function() {
@@ -334,7 +436,7 @@ const RDFaUtil = {
                     location: window.location.href,
                     origin: window.location.origin,
                     pathname: window.location.pathname
-                }
+                };
                 maps[map.id] = map;
             });
         });
@@ -349,7 +451,7 @@ const RDFaUtil = {
             if (!Object.keys(resourceMap).includes(property))
                 resourceMap[property] = [];
             resourceMap[property].push(subresourceMap);
-        })
+        });
         return resourceMap;
     },
 
@@ -425,7 +527,7 @@ const RDFaUtil = {
     },
 
 
-}
+};
 
 export default RDFaUtil;
 
