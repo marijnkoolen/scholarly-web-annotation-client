@@ -1,6 +1,6 @@
-import AppDispatcher from './AppDispatcher';
-import AnnotationAPI from '../api/AnnotationAPI';
-import RDFaUtil from '../util/RDFaUtil.js';
+import AppDispatcher from "./AppDispatcher";
+import AnnotationAPI from "../api/AnnotationAPI";
+import RDFaUtil from "../util/RDFaUtil.js";
 
 const AnnotationActions = {
 
@@ -21,12 +21,12 @@ const AnnotationActions = {
                 AnnotationActions.serverAvailable = serverAvailable;
             }
             AppDispatcher.dispatch({
-                eventName: 'server-status-change',
+                eventName: "server-status-change",
                 serverAvailable: serverAvailable
             });
-            if (!serverAvailable) {
-                console.error("Annotation server not reachable");
-            }
+            //if (!serverAvailable) {
+            //    console.error("Annotation server not reachable");
+            //}
         });
         setTimeout(AnnotationActions.pollServer, 60000);
     },
@@ -37,7 +37,7 @@ const AnnotationActions = {
 
     setAccessStatus(accessStatus) {
         AnnotationActions.accessStatus = accessStatus;
-        console.log("Updating access status:", AnnotationActions.accessStatus);
+        //console.log("Updating access status:", AnnotationActions.accessStatus);
         if (AnnotationActions.accessStatus.length === 0) {
             AnnotationActions.dispatchAnnotations([]); // when no access levels are selected
         } else {
@@ -51,13 +51,14 @@ const AnnotationActions = {
 
     setPermission(permission) {
         AnnotationActions.permission = permission;
-        console.log("Updating permission:", AnnotationActions.permission);
+        //console.log("Updating permission:", AnnotationActions.permission);
     },
 
     accessStatus : ["private"], // for retrieving annotations from the server
     permission : "private", // for submitting or updating annotations in the server
     annotationIndex : {},
     resourceIndex : {},
+    relationIndex : {},
     topResources : [],
     annotationListener: [],
 
@@ -91,10 +92,10 @@ const AnnotationActions = {
     },
 
     save : function(annotation) {
-        console.log("saving annotation with permission level", AnnotationActions.permission);
+        //console.log("saving annotation with permission level", AnnotationActions.permission);
         AnnotationAPI.saveAnnotation(annotation, AnnotationActions.permission, (error, data) => {
             AppDispatcher.dispatch({
-                eventName: 'save-annotation',
+                eventName: "save-annotation",
                 annotation: data
             });
         });
@@ -103,7 +104,7 @@ const AnnotationActions = {
     delete : function(annotation) {
         AnnotationAPI.deleteAnnotation(annotation, (error, data) => {
             AppDispatcher.dispatch({
-                eventName: 'delete-annotation',
+                eventName: "delete-annotation",
                 annotation: data
             });
         });
@@ -111,42 +112,42 @@ const AnnotationActions = {
 
     activate : function(annotation) {
         AppDispatcher.dispatch({
-            eventName: 'activate-annotation',
+            eventName: "activate-annotation",
             annotation: annotation
         });
     },
 
     edit : function(annotation) { //is the annotation always on the same page?
         AppDispatcher.dispatch({
-            eventName: 'edit-annotation',
+            eventName: "edit-annotation",
             annotation: annotation
         });
     },
 
     createAnnotation : function(annotationTargets) { //is the annotation always on the same page?
         AppDispatcher.dispatch({
-            eventName: 'create-annotation',
+            eventName: "create-annotation",
             annotationTargets: annotationTargets
         });
     },
 
     set : function(annotation) { //is the annotation always on the same page?
         AppDispatcher.dispatch({
-            eventName: 'set-annotation',
+            eventName: "set-annotation",
             annotation: annotation
         });
     },
 
     play : (annotation) => { //is the annotation always on the same page? (no)
         AppDispatcher.dispatch({
-            eventName: 'play-annotation',
+            eventName: "play-annotation",
             annotation: annotation
         });
     },
 
     changeTarget : (annotationTarget) => {
         AppDispatcher.dispatch({
-            eventName: 'change-target',
+            eventName: "change-target",
             annotationTarget: annotationTarget
         });
     },
@@ -155,8 +156,10 @@ const AnnotationActions = {
         if (resourceIds === undefined)
             resourceIds = AnnotationActions.topResources;
         AnnotationAPI.getAnnotationsByTargets(resourceIds, AnnotationActions.accessStatus, (error, annotations) => {
-            if (error)
-                console.error(resourceIds, error.toString());
+            if (error) {
+                //console.error(resourceIds, error.toString());
+                window.alert("Error loading annotations: " + error.toString());
+            }
 
             AnnotationActions.annotationIndex = {};
             annotations.forEach((annotation) => {
@@ -169,11 +172,11 @@ const AnnotationActions = {
     copyAnnotation: (annotation) => {
         // remove id, creation timestamp, permissions (assume permission of current user setting)
         delete annotation.id;
-        delete annotation.created
+        delete annotation.created;
         delete annotation.premissions;
         AnnotationAPI.saveAnnotation(annotation, AnnotationActions.permission, (error, data) => {
             AppDispatcher.dispatch({
-                eventName: 'save-annotation',
+                eventName: "save-annotation",
                 annotation: data
             });
         });
@@ -181,7 +184,7 @@ const AnnotationActions = {
 
     dispatchAnnotations(annotations) {
         AppDispatcher.dispatch({
-            eventName: 'load-annotations',
+            eventName: "load-annotations",
             annotations: annotations
         });
         AnnotationActions.dispatchLoadEvent();
@@ -196,13 +199,14 @@ const AnnotationActions = {
 
     reload: function() {
         AppDispatcher.dispatch({
-            eventName: 'reload-annotations'
+            eventName: "reload-annotations"
         });
     },
 
     indexResources: function(callback) {
-        RDFaUtil.indexRDFaResources((error, index) => {
-            AnnotationActions.resourceIndex = index;
+        RDFaUtil.indexRDFa((error, index) => {
+            AnnotationActions.resourceIndex = index.resources;
+            AnnotationActions.relationIndex = index.relations;
             return callback(error);
         }); // ... refresh index
     },
@@ -211,13 +215,13 @@ const AnnotationActions = {
         AnnotationActions.topResources = RDFaUtil.getTopRDFaResources();
         AnnotationActions.indexResources((error) => {
             if (error) {
-                console.error(error);
-                alert("Error indexing RDFa resources in this page");
+                //console.error(error);
+                window.alert("Error indexing RDFa resources in this page\n" + error.toString());
                 return false;
             }
             AnnotationActions.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
             AppDispatcher.dispatch({
-                eventName: 'load-resources',
+                eventName: "load-resources",
                 topResources: AnnotationActions.topResources,
                 resourceMaps: AnnotationActions.resourceMaps
             });
@@ -226,15 +230,15 @@ const AnnotationActions = {
     },
 
     registerUser : function(userDetails) {
-        AnnotationAPI.registerUser(userDetails, (error, data) => {
+        AnnotationAPI.registerUser(userDetails, (error) => {
             if (error) {
                 AppDispatcher.dispatch({
-                    eventName: 'register-failed',
+                    eventName: "register-failed",
                     userDetails: userDetails
                 });
             } else {
                 AppDispatcher.dispatch({
-                    eventName: 'register-succeeded',
+                    eventName: "register-succeeded",
                     userDetails: userDetails
                 });
             }
@@ -242,16 +246,16 @@ const AnnotationActions = {
     },
 
     loginUser : function(userDetails) {
-        AnnotationAPI.loginUser(userDetails, (error, data) => {
+        AnnotationAPI.loginUser(userDetails, (error) => {
             if (error) {
                 AppDispatcher.dispatch({
-                    eventName: 'login-failed',
+                    eventName: "login-failed",
                     userDetails: error
                 });
             } else {
                 AnnotationActions.loadResources();
                 AppDispatcher.dispatch({
-                    eventName: 'login-succeeded',
+                    eventName: "login-succeeded",
                     userDetails: userDetails
                 });
             }
@@ -259,9 +263,13 @@ const AnnotationActions = {
     },
 
     logoutUser : function() {
-        AnnotationAPI.logoutUser((error, data) => {
+        AnnotationAPI.logoutUser((error) => {
+            if (error) {
+                window.alert("Error logging out!");
+                return null;
+            }
             AppDispatcher.dispatch({
-                eventName: 'logout-user',
+                eventName: "logout-user",
                 userDetails: null
             });
         });
@@ -274,7 +282,7 @@ const AnnotationActions = {
             // check if server knows about resource
             AnnotationAPI.checkResource(resourceId, (error, data) => {
                 if (data && index === Object.keys(maps).length -1)
-                        return data;
+                    return data;
                 else if (data)
                     return null;
                 // register if server doesn't know resource
@@ -289,6 +297,6 @@ const AnnotationActions = {
         });
     },
 
-}
+};
 
 export default AnnotationActions;
