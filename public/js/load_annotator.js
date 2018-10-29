@@ -1,11 +1,21 @@
+"use strict"
+
 document.onreadystatechange = function () {
     if (document.readyState === "complete") {
-        loadConfig((error, config) => {
-            annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config);
-            var viewerElement = document.getElementsByClassName('annotation-viewer')[0];
-            annotator.addAnnotationClient(viewerElement);
-        });
+        // use a short time out, as sometimes annotator
+        // module is not loaded yet as global variable.
+        window.setTimeout(addClient, 100);
     }
+}
+
+var addClient = function() {
+    loadConfig((error, config) => {
+        console.log(config);
+        var annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config);
+        var viewerElement = document.getElementsByClassName('annotation-viewer')[0];
+        annotator.addAnnotationClient(viewerElement);
+    });
+
 }
 
 var loadConfig = function(callback) {
