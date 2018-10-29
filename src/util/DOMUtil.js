@@ -1,7 +1,7 @@
 
-'use strict'
+"use strict";
 
-import StringUtil from './StringUtil.js';
+import StringUtil from "./StringUtil.js";
 
 const DOMUtil = {
 
@@ -39,7 +39,6 @@ const DOMUtil = {
             }
             return textNode.textContent.length - displayText.length;
         }
-        return 0;
     },
 
     getTextNodeDisplayText : function (textNode) {
@@ -67,7 +66,7 @@ const DOMUtil = {
     */
 
     getPreviousTextNode : (textNode) => {
-        var previousTextNode = null;
+        //var previousTextNode = null;
         var parentNode = textNode.parentNode;
         var parentTextNodes = DOMUtil.getTextNodes(parentNode);
         while (parentNode !== document && parentTextNodes.indexOf(textNode) === 0) {
@@ -76,7 +75,7 @@ const DOMUtil = {
         }
         if (parentTextNodes.indexOf(textNode) === 0)
             return null;
-        return parentTextNodes[parentTextNodes.indexOf(textNode)-1]
+        return parentTextNodes[parentTextNodes.indexOf(textNode)-1];
     },
 
     // return all text nodes contained within a node
@@ -158,33 +157,42 @@ const DOMUtil = {
             // options:
             switch(node.nodeName) {
 
-                case "#text":
-                    mimetype = "text";
-                    break;
-                case "CANVAS":
-                    mimetype = "image";
-                    break;
-                case "IMG":
-                    mimetype = "image";
-                    break;
-                case "VIDEO":
-                    mimetype = "video";
-                    break;
-                default:
-                    mimetype = "text";
-                    break;
+            case "#text":
+                mimetype = "text";
+                break;
+            case "CANVAS":
+                mimetype = "image";
+                break;
+            case "IMG":
+                mimetype = "image";
+                break;
+            case "VIDEO":
+                mimetype = "video";
+                break;
+            default:
+                mimetype = "text";
+                break;
             }
-            return {node: node, mimetype: mimetype}
+            return {node: node, mimetype: mimetype};
         } else {
-            node.forEach((childNode) => {
-                childMimeType = DOMUtil.determineNodeMimeType(childNode);
-            })
+            let childMimeTypes = node.forEach((childNode) => {
+                return DOMUtil.determineNodeMimeType(childNode);
+            });
+            mimetype = childMimeTypes[0];
+            let singleType = childMimeTypes.every((childMimeType) => {
+                childMimeType === mimetype;
+            });
+            if (singleType) {
+                return mimetype;
+            } else {
+                return "mixed";
+            }
         }
         // 2a. if has children, determine mimetype of children
         // 2
     }
 
-}
+};
 
 export default DOMUtil;
 

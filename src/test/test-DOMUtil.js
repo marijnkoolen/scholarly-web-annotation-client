@@ -1,9 +1,10 @@
-var expect = require('chai').expect;
-require('es6-promise').polyfill();
-require('isomorphic-fetch');
-var fs = require('fs');
-var jsdom = require('jsdom');
-import DOMUtil from '../util/DOMUtil.js';
+var expect = require("chai").expect;
+require("es6-promise").polyfill();
+require("isomorphic-fetch");
+var fs = require("fs");
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+import DOMUtil from "../util/DOMUtil.js";
 
 let htmlSource = fs.readFileSync("public/testletter.html");
 
@@ -11,11 +12,12 @@ let htmlSource = fs.readFileSync("public/testletter.html");
 describe("DOMUtil", function() {
 
     beforeEach(function(done) {
-        let doc = jsdom.jsdom(htmlSource)
-        let window = doc.defaultView;
+        //let doc = jsdom.jsdom(htmlSource);
+        let dom = new JSDOM(htmlSource);
+        let window = dom.window;
         global.document = window.document;
-		let observerNodeClass = 'annotation-target-observer';
-		DOMUtil.setObserverNodeClass(observerNodeClass);
+        let observerNodeClass = "annotation-target-observer";
+        DOMUtil.setObserverNodeClass(observerNodeClass);
         done();
     });
 
@@ -48,7 +50,7 @@ describe("DOMUtil", function() {
         it("should return only nodes of type TEXT_NODE", function(done) {
             let textNodes = DOMUtil.getTextNodes(document);
             textNodes.forEach(function(node) {
-                expect(node.nodeType).to.equal(window.Node.TEXT_NODE)
+                expect(node.nodeType).to.equal(window.Node.TEXT_NODE);
             });
             done();
         });
@@ -59,8 +61,8 @@ describe("DOMUtil", function() {
             let descendants = DOMUtil.getDescendants(document);
             let elementNodes = DOMUtil.getElementNodes(descendants);
             elementNodes.forEach(function(node) {
-                expect(node.nodeType).to.equal(window.Node.ELEMENT_NODE)
-            })
+                expect(node.nodeType).to.equal(window.Node.ELEMENT_NODE);
+            });
             done();
         });
     });
