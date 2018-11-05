@@ -1,4 +1,6 @@
 var path = require('path');
+var webpack = require('webpack');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
     entry: "./src/swac.jsx",
@@ -19,6 +21,11 @@ module.exports = {
                 }
             }]
     },
+    plugins: [
+        new BundleAnalyzerPlugin(),
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+        //new webpack.DefinePlugin({'process.env': {'NODE_ENV': 'production'}})
+    ],
     resolve: {
         extensions: ['*', '.js', '.jsx']
     },

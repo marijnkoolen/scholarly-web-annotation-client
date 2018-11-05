@@ -1,0 +1,51 @@
+* {
+    font-size:16px;
+}
+div.horizontal {
+width:1700px;
+    margin-right:0px;
+    margin-top:0px;
+    margin-bottom:0px;
+    margin-left:0px;
+    padding:0px;
+     overflow: hidden;
+}
+div.annotation-target-observer{
+    border: 1px dotted blue;
+    width: 1240px;
+    margin:2px;
+    padding:2px;
+    float:left;
+    }
+
+div.annotation-viewer {
+width:350px;
+    margin:2px;
+    padding:2px;
+    border: 1px solid red;
+     float: left;
+}
+
+div.content {
+width:1200px;
+    margin:0px;
+    padding:10px;
+    border: 1px solid grey;
+    overflow: hidden;
+}
+span.para {
+   position:relative;
+    left:140px;
+    width: 800px;
+    display:inline-block;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding: 0px}
+span.linenumber {
+    position:fixed;
+   left:90px;
+}
+span.pagenumber {
+   position:fixed;
+    left: 30px;
+}
