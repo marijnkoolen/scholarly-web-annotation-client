@@ -35,10 +35,74 @@ var loadFRBRLetter = () => {
 
 var loadNonRDFaPage = () => {
     let htmlSource = "<body><div>Hello</div></body>";
-    let dom = new JSDOM(htmlSource);
+    loadPage(htmlSource);
+}
+
+var loadDoubleAbout = () => {
+    let vocabulary = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#";
+    let htmlSource = `
+    <body class=\"annotation-target-observer\" vocab=${vocabulary}>
+        <div about=\"urn:vangogh:let001\" typeof=\"Letter\">Hello</div>
+        <div about=\"urn:vangogh:let002\" typeof=\"Letter\">Goodbye</div>
+    </body>`;
+    loadPage(htmlSource);
+    let observerNodes = document.getElementsByClassName("annotation-target-observer");
+    RDFaUtil.setObserverNodes(observerNodes);
+}
+
+var loadPage = (htmlSource) => {
+    const jsdomConfig = {url: "http://localhost:3001/"}
+    let dom = new JSDOM(htmlSource, jsdomConfig);
     global.document = dom.window.document;
     global.window = dom.window;
 }
+
+describe("RDFaUtil getting RDF Type URLs", () => {
+    it("should return an error when non-URL label is passed without vocabulary", (done) => {
+        let vocabulary = null;
+        let labels = ["ParagraphInLetter"];
+        let prefixIndex = {};
+        let typeURLs = RDFaUtil.getTypeURLs(labels, vocabulary, prefixIndex);
+        expect(typeURLs[0]).to.equal(null);
+        done();
+    });
+})
+
+describe("RDFaUtil parsing page with multiple abouts", () => {
+
+    before((done) => {
+        loadDoubleAbout();
+        done();
+    });
+
+    // getRDFaTopNodes
+    it("should find two top nodes", (done) => {
+        let topNodes = RDFaUtil.getTopRDFaNodes(global.document);
+        expect(topNodes.length).to.equal(2);
+        done();
+    });
+
+    it("should index two nodes", (done) => {
+        RDFaUtil.indexRDFa((error, index) => {
+            expect(error).to.equal(null);
+            let resources = Object.keys(index.resources);
+            expect(index.resources).to.have.property("urn:vangogh:let001");
+        });
+        done();
+    });
+
+    it("should use vocab defined at higher level correctly", (done) => {
+        RDFaUtil.indexRDFa((error, index) => {
+            let vocabulary = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#";
+            expect(error).to.equal(null);
+            let resources = Object.keys(index.resources);
+            expect(index.resources).to.have.property("urn:vangogh:let001");
+            let resource = index.resources["urn:vangogh:let001"];
+            expect(resource.rdfaTypeURL[0]).to.equal(vocabulary + resource.rdfaTypeLabel);
+        });
+        done();
+    });
+})
 
 describe("RDFaUtil extracting relations", () => {
 
