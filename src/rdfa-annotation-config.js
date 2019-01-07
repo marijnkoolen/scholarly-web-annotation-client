@@ -13,13 +13,18 @@ const config = {
             "api": "http://localhost:3000/api"
         },
         "GTAA": {
-            "api": "http://openskos.beeldengeluid.nl/api/autocomplete/",
+            "api": "http://openskos.beeldengeluid.nl/api/autocomplete/?q=",
             "params": {
                 "lang": "nl"
-            }
+            },
+            "lookupParameter": "q"
         },
         "DBpedia": {
             "api": "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString="
+        },
+        "UNESCO": {
+            "api": "http://vocabularies.unesco.org/browser/rest/v1/search?vocab=thesaurus&lang=en&labellang=en&query=",
+            "addWildcard": true
         },
         "Wikipedia": {
             "api": "https://en.wikipedia.org/w/api.php?action=opensearch&limit=20&namespace=0&format=json&search="

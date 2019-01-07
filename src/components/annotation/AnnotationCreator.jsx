@@ -78,7 +78,8 @@ class AnnotationCreator extends React.Component {
     setBodies(createdBodies) {
         this.setState({createdBodies: createdBodies});
     }
-    createAnnotation() {
+    createAnnotation(annotationTargets) {
+        var annotation = AnnotationUtil.generateW3CAnnotation(annotationTargets, this.props.currentUser.username);
         annotation.body = this.listBodies(this.state.createdBodies);
         this.editAnnotationBody(annotation);
     }
@@ -176,7 +177,7 @@ class AnnotationCreator extends React.Component {
                         onClick={this.gatherDataAndSave.bind(this)}>
                         Save
                     </button>
-                    <div className="btn-group btn-group-toggle">
+                    <div className="permission-switch btn-group btn-group-toggle">
                         <label
                             className={this.state.permission === "private" ? "btn btn-primary active" : "btn btn-primary"}
                             >
@@ -186,7 +187,7 @@ class AnnotationCreator extends React.Component {
                                 checked={this.state.permission === "private"}
                                 onChange={this.handlePermissionChange.bind(this)}
                             />
-                            Private annotation
+                            Private
                         </label>
                         <label
                             className={this.state.permission === "public" ? "btn btn-primary active" : "btn btn-primary"}
@@ -197,7 +198,7 @@ class AnnotationCreator extends React.Component {
                                 checked={this.state.permission === "public"}
                                 onChange={this.handlePermissionChange.bind(this)}
                             />
-                            Public annotation
+                            Public
                         </label>
                     </div>
                 </div>

@@ -1,4 +1,5 @@
 import Autosuggest from 'react-autosuggest'; //See: https://github.com/moroshko/react-autosuggest
+import AnnotationActions from '../../flux/AnnotationActions';
 import React from 'react';
 
 
@@ -77,9 +78,9 @@ class ClassifyingForm extends React.Component {
         for(let x=this.xhrs.length;x>0;x--) {
             this.xhrs[x-1].abort();
             this.xhrs.pop();
-            //this.xhrs[x-1].abort().call(this, () => {
-            //    this.xhrs.pop();
-            //});
+        }
+        if (this.props.services[this.state.vocabulary].addWildcard) {
+            value = value + "*";
         }
         let url = this.props.services[this.state.vocabulary].api + value;
         var xhr = new XMLHttpRequest();
@@ -90,6 +91,7 @@ class ClassifyingForm extends React.Component {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 let data = JSON.parse(xhr.responseText);
+                console.log("results:", data.results);
                 callback(data.results);
             }
         }
@@ -127,48 +129,20 @@ class ClassifyingForm extends React.Component {
 
     getSuggestionValue(suggestion) {
         this.setState({suggestionId : suggestion.uri});
-          return suggestion.label.split('|')[0];
+        let entry = AnnotationActions.parseVocabularySuggestion(suggestion, this.state.vocabulary);
+        return entry.value;
     }
 
     //TODO the rendering should be adapted for different vocabularies
     renderSuggestion(suggestion) {
-        let arr = suggestion.label.split('|');
-        let label = arr[1];
-        let scopeNote = arr[2] ? '(' + arr[2] + ')' : ''
-        if (this.state.vocabulary === "GTAA") {
-            switch(arr[1]) {
-                case 'Persoon' :
-                    label = (<span className="label label-warning">Persoon</span>);break;
-                case 'Maker' :
-                    label = (<span className="label label-warning">Maker</span>);break;
-                case 'Geografisch' :
-                    label = (<span className="label label-success">Locatie</span>);break;
-                case 'Naam' :
-                    label = (<span className="label label-info">Naam</span>);break;
-                case 'Onderwerp' :
-                    label = (<span className="label label-primary">Onderwerp</span>);break;
-                case 'Genre' :
-                    label = (<span className="label label-default">Genre</span>);break;
-                case 'B&G Onderwerp' :
-                    label = (<span className="label label-danger">B&G Onderwerp</span>);break;
-                default :
-                    label = (<span className="label label-default">Concept</span>);break;
-            }
-        } else if (this.state.vocabulary === "DBpedia") {
-            label = (<span className="label label-default">Concept</span>);
-        } else if (this.state.vocabulary == 'UNESCO') {
-            switch(arr[1]) {
-                case 'Education' : label = (<span className="label label-warning">{arr[1]}</span>);break;
-                case 'Science' : label = (<span className="label label-warning">{arr[1]}</span>);break;
-                case 'Social and human sciences' : label = (<span className="label label-success">{arr[1]}</span>);break;
-                case 'Information and communication' : label = (<span className="label label-info">{arr[1]}</span>);break;
-                case 'Politics, law and economics' : label = (<span className="label label-primary">{arr[1]}</span>);break;
-                case 'Countries and country groupings' : label = (<span className="label label-default">{arr[1]}</span>);break;
-                default : label = (<span className="label label-default">{arr[1]}</span>);break;
-            }
-        }
+        let entry = AnnotationActions.parseVocabularySuggestion(suggestion, this.state.vocabulary);
         return (
-            <span>{arr[0]}&nbsp;{label}&nbsp;{scopeNote}</span>
+            <span>{entry.value}&nbsp;
+                <span className={entry.label.className}>
+                    {entry.label.value}
+                </span>
+                &nbsp;{entry.scopeNote}
+            </span>
         );
     }
 
@@ -237,7 +211,7 @@ class ClassifyingForm extends React.Component {
         //generate the options from the config and add a default one
         const vocabularyOptions = this.props.config.vocabularies.map((v, index) => {
             return (
-                <label className="radio-inline" key={index}>
+                <label className="vocabulary-option radio-inline" key={index}>
                     <input
                         type="radio"
                         name="vocabularyOptions"
@@ -245,12 +219,12 @@ class ClassifyingForm extends React.Component {
                         value={v}
                         checked={v == this.state.vocabulary}
                         onChange={this.setVocabulary.bind(this)}/>
-                        {v}
+                        {' ' + v}
                 </label>
             );
         }, this);
         vocabularyOptions.push(
-            <label className="radio-inline" key={vocabularyOptions.length}>
+            <label className="vocabulary-option radio-inline" key={vocabularyOptions.length}>
                     <input
                         type="radio"
                         name="vocabularyOptions"
@@ -258,7 +232,7 @@ class ClassifyingForm extends React.Component {
                         value="custom"
                         checked={this.state.vocabulary === 'custom'}
                         onChange={this.setVocabulary.bind(this)}/>
-                        Custom (no external lookup)
+                        {' '}Custom (no external lookup)
             </label>
         );
 
