@@ -19,10 +19,13 @@ module.exports = {
                 use: {
                     loader: 'babel-loader'
                 }
+            },{
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
             }]
     },
     plugins: [
-        new BundleAnalyzerPlugin(),
+        //new BundleAnalyzerPlugin(),
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
         //new webpack.DefinePlugin({'process.env': {'NODE_ENV': 'production'}})
     ],
