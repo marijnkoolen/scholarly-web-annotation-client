@@ -10,7 +10,8 @@ gulp.task('css', function(cb) {
         gulp.src('src/scss/swac.scss'),
         sass({includePaths: 'node_modules/bootstrap/scss'}),
         gulp.dest('dist/'),
-        gulp.dest('demo/build/')
+        gulp.dest('demo/build/'),
+        gulp.dest('public/css/')
     ], cb);
 })
 

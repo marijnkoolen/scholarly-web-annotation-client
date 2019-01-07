@@ -30,7 +30,20 @@ const DOMUtil = {
         var displayText = textNode.textContent;
         let parentDisplayType = DOMUtil.getDisplayType(textNode.parentNode);
         if (parentDisplayType === "inline") {
+            // if parent is inline element,
+            // multiple leading whitespace characters are collapsed to a single whitespace
+            if (displayText.length === 0 || !displayText.match(/^\s+/)) {
+                return 0;
+            }
+            let leadingSpaces = displayText.match(/^\s+/)[0];
+            if (leadingSpaces.length > 1) {
+                return leadingSpaces.length - 1;
+            } else {
+                return leadingSpaces.length;
+            }
+            /*
             return 0;
+            */
         } else {
             if (textNode === textNode.parentNode.firstChild) {
                 displayText = displayText.trimLeft();
@@ -55,6 +68,8 @@ const DOMUtil = {
             } else {
                 displayText = StringUtil.collapseRightWhitespace(displayText);
             }
+        } else {
+            //displayText = StringUtil.collapseWhitespace(displayText);
         }
         return displayText;
     },

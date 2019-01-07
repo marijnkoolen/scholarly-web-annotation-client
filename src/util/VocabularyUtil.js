@@ -1,20 +1,23 @@
 
 "use strict";
 
-import rdf from "rdflib";
+import Fetcher from "rdflib/lib/fetcher";
+import Namespace from "rdflib/lib/namespace";
+import DataFactory from "rdflib/lib/data-factory";
 
 const VocabularyUtil = {
 
-    rdf : rdf,
+    //rdf : rdf,
     rdfStore : null,
     fetcher : null,
-    RDF : rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
-    RDFS : rdf.Namespace("http://www.w3.org/2000/01/rdf-schema#"),
+    RDF : Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#"),
+    RDFS : Namespace("http://www.w3.org/2000/01/rdf-schema#"),
 
     newStore : () => {
-        const store = rdf.graph();
+        const store = DataFactory.graph();
         VocabularyUtil.rdfStore = store;
-        VocabularyUtil.fetcher = new rdf.Fetcher(store, 500);
+        //VocabularyUtil.fetcher = new rdf.Fetcher(store, 500);
+        VocabularyUtil.fetcher = new Fetcher(store, 500);
     },
 
     prefixes : {
@@ -60,8 +63,8 @@ const VocabularyUtil = {
     },
 
     getLabelClass : (classLabel) => {
-        let labelSym = VocabularyUtil.RDFS('label');
-        let subject = VocabularyUtil.rdfStore.any(undefined, labelSym, classLabel);
+        let predicate = VocabularyUtil.RDFS('label');
+        let subject = VocabularyUtil.rdfStore.any(undefined, predicate, classLabel);
         if (!subject) {
             return null;
         } else {
@@ -70,8 +73,8 @@ const VocabularyUtil = {
     },
 
     getClassLabel : (classURI) => {
-        let labelSym = VocabularyUtil.RDFS('label');
-        let object = VocabularyUtil.rdfStore.any(classURI, labelSym, undefined);
+        let predicate = VocabularyUtil.RDFS('label');
+        let object = VocabularyUtil.rdfStore.any(classURI, predicate, undefined);
         if (!object) {
             return null;
         } else {

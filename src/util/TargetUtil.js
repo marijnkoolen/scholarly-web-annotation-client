@@ -60,6 +60,7 @@ const TargetUtil = {
         let textNodes = DOMUtil.filterTextNodes(precedingNodes);
         var targetOffset = 0;
         textNodes.forEach(function(node) {
+            let displayText = DOMUtil.getTextNodeDisplayText(node);
             targetOffset += node.textContent.length;
         });
         return targetOffset;
@@ -69,7 +70,7 @@ const TargetUtil = {
         var params = null;
         if (selection.mimeType.startsWith("text")) {
             if (selection.selectionText.length > 0) {
-                params = this.makeTextSelectors(container, selection);
+                params = TargetUtil.makeTextSelectors(container, selection);
             }
         } else if (selection.mimeType.startsWith("image")) {
             if (selection.rect !== undefined) {
