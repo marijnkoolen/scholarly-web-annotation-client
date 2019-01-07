@@ -1,17 +1,12 @@
 "use strict"
 
-document.onreadystatechange = function () {
-    if (document.readyState === "complete") {
-        // use a short time out, as sometimes annotator
-        // module is not loaded yet as global variable.
-        window.setTimeout(addClient, 100);
-    }
-}
+var annotator;
+var configFile = "config/van-gogh-annotation-config.json";
 
 var addClient = function() {
     loadConfig((error, config) => {
         console.log(config);
-        var annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config);
+        annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config);
         var viewerElement = document.getElementsByClassName('annotation-viewer')[0];
         annotator.addAnnotationClient(viewerElement);
     });
@@ -20,7 +15,7 @@ var addClient = function() {
 
 var loadConfig = function(callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "config/van-gogh-annotation-config.json");
+    xhr.open("GET", configFile);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             try {
@@ -33,17 +28,13 @@ var loadConfig = function(callback) {
         }
     }
     xhr.send();
-    /*
-    fetch("config/van-gogh-annotation-config.json", {
-        method: "GET"
-    }).then(function(response) {
-        return response.json();
-    }).then(function(config) {
-        console.log("loading custom configuration");
-        return callback(null, config);
-    }).catch(function(error) {
-        return callback(error, null);
-    });
-    */
+}
+
+document.onreadystatechange = function () {
+    if (document.readyState === "complete") {
+        // use a short time out, as sometimes annotator
+        // module is not loaded yet as global variable.
+        window.setTimeout(addClient, 100);
+    }
 }
 

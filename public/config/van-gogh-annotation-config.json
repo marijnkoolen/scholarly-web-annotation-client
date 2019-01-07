@@ -13,13 +13,23 @@
             "api": "http://localhost:3000/api"
         },
         "GTAA": {
-            "api": "http://openskos.beeldengeluid.nl/api/autocomplete/",
+            "api": "http://openskos.beeldengeluid.nl/api/autocomplete/?q=",
             "params": {
                 "lang": "nl"
             }
         },
         "DBpedia": {
             "api": "http://lookup.dbpedia.org/api/search.asmx/PrefixSearch?QueryClass=&MaxHits=10&QueryString="
+        },
+        "GeoNames": {
+            "api": "http://api.geonames.org/search?maxRows=10&type=json&username=&name_startsWith=",
+            "params": {
+                "username": "my-username"
+            }
+        },
+        "UNESCO": {
+            "api": "http://vocabularies.unesco.org/browser/rest/v1/search?vocab=thesaurus&lang=en&labellang=en&maxhits=10&query=",
+            "addWildcard": true
         }
     },
     "annotationSupport" : {
@@ -50,7 +60,8 @@
             "format": "text/plain",
             "vocabularies" : [
                 "DBpedia",
-                "GTAA"
+                "GTAA",
+                "UNESCO"
             ]
         },
         "comment" : {
