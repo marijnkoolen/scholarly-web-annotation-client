@@ -12,7 +12,7 @@ import ViewSelector from './ViewSelector.jsx';
 import React from 'react';
 import AnnotationViewer from './annotation/AnnotationViewer.jsx';
 import CollectionViewer from './collection/CollectionViewer.jsx';
-//import ResourceViewer from './resource/ResourceViewer.jsx';
+import ResourceViewer from './resource/ResourceViewer.jsx';
 import AnnotationUtil from './../util/AnnotationUtil.js';
 import AppAnnotationStore from './../flux/AnnotationStore';
 import AnnotationActions from '../flux/AnnotationActions.js';
@@ -72,16 +72,17 @@ export default class AnnotationClient extends React.Component {
                 config={this.props.config}
             />
         );
-        let resourceViewer = null;
         /*
+        let resourceViewer = null;
+        */
         let resourceViewer = (
             <ResourceViewer
                 currentUser={this.state.user}
                 config={this.props.config}
             />
         )
-        */
-        let itemTypes = ["annotations", "collections", "resources"];
+        let itemTypes = ["annotations", "resources"];
+        //let itemTypes = ["annotations", "collections", "resources"];
         var viewer;
         let viewerTabContents = itemTypes.map((itemType) => {
             if (itemType === "annotations")
