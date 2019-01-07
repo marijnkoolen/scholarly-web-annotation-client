@@ -26,6 +26,10 @@ export default class Collection extends React.Component {
         CollectionActions.editCollection(this.props.collection);
     }
 
+    editContent() {
+        CollectionActions.editCollection(this.props.collection);
+    }
+
     copyCollection() {
         let confirm = window.confirm("Are you sure you want to copy this collection?");
         if (confirm) {
@@ -60,44 +64,35 @@ export default class Collection extends React.Component {
         let component = this;
         let collection = this.props.collection;
         let timestamp = (new Date(collection.created)).toLocaleString();
-        var renderEditLabels = function() {
-            return (
-                <span>
-                    <i className="label label-info"
-                        onClick={() => {component.editCollection()}}>
-                        edit label
-                    </i>
-                    &nbsp;
-                    <i className="label label-warning"
-                        onClick={() => {component.editContent()}}>
-                        edit content
-                    </i>
-                    &nbsp;
-                    <i className="label label-danger"
-                        onClick={() => {component.deleteCollection()}}>
-                        delete
-                    </i>
-                </span>
-            )
-        }
-        var renderCopy = function() {
-            return (
-                <i className="label label-success"
-                    onClick={() => {component.toggleDefaultCollection()}}>
-                    toggle default
+        var editLabels = (
+            <span>
+                <i className="badge badge-info"
+                    onClick={this.editCollection.bind(this)}>
+                    edit label
                 </i>
-            )
-        }
-        var makeOptions = function() {
-            var editLabels = component.canEdit() ? renderEditLabels() : "";
-            var copy = component.canCopy() ? renderCopy() : "";
-            return (
-                <div>
-                    {editLabels} {copy}
-                </div>
-            );
-        }
-        let options = makeOptions();
+                &nbsp;
+                <i className="badge badge-warning"
+                    onClick={this.editContent.bind(this)}>
+                    edit content
+                </i>
+                &nbsp;
+                <i className="badge badge-danger"
+                    onClick={this.deleteCollection.bind(this)}>
+                    delete
+                </i>
+            </span>
+        )
+        var copyLabel = (
+            <i className="badge badge-success"
+                onClick={this.toggleDefaultCollection.bind(this)}>
+                toggle default
+            </i>
+        )
+        var options = (
+            <div>
+                {component.canEdit() ? editLabels : ""} {component.canCopy() ? copyLabel : ""}
+            </div>
+        );
 
         return (
             <li
