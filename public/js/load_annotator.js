@@ -1,19 +1,18 @@
 "use strict"
 
 var annotator;
-var configFile = "config/van-gogh-annotation-config.json";
 
-var addClient = function() {
-    loadConfig((error, config) => {
+var addClient = function(configFile) {
+    loadConfig(configFile, (error, config) => {
         console.log(config);
         annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config);
-        var viewerElement = document.getElementsByClassName('annotation-viewer')[0];
+        var viewerElement = document.getElementById('swac-viewer');
         annotator.addAnnotationClient(viewerElement);
     });
 
 }
 
-var loadConfig = function(callback) {
+var loadConfig = function(configFile, callback) {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", configFile);
     xhr.onreadystatechange = function() {
@@ -30,11 +29,13 @@ var loadConfig = function(callback) {
     xhr.send();
 }
 
+var configFile = "config/van-gogh-annotation-config.json";
+
 document.onreadystatechange = function () {
     if (document.readyState === "complete") {
         // use a short time out, as sometimes annotator
         // module is not loaded yet as global variable.
-        window.setTimeout(addClient, 100);
+        addClient(configFile);
     }
 }
 

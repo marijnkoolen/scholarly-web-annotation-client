@@ -15,14 +15,17 @@ The Scholarly Web Annotation (SWA) client is a Javascript annotation client for 
 ### Loading Client Dependencies
 
 1. Load the CSS files by adding the following into the `<head>`
-   ```html
-   <link rel="stylesheet" href="dist/swac.css"/>
-   ```
+
+```html
+<link rel="stylesheet" href="dist/swac.css"/>
+```
+
 2. Load the JS files by adding the following just before the closing `</body>`
-   ```html
-   <script src="dist/vendor.js"></script>
-   <script src="dist/swac.js"></script>
-   ```
+
+```html
+<script src="dist/vendor.js"></script>
+<script src="dist/swac.js"></script>
+```
 
 ### Configuring the Client
 
@@ -106,11 +109,11 @@ Put the configuration in a JSON object (into a ``<script>``) after the ones you 
 
 ### Adding the Client to the Page
 
-Once you have a SWA client configuration, you can instantiate a client object and insert in the page:
+Once you have a SWA client configuration, you can instantiate a client object and insert in the page. In the example below, the viewer is inserted in a DOM element with id `swac-viewer`:
 
 ```js
 annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config); // instantiate client with configuration
-var viewerElement = document.getElementsByClassName('annotation-viewer')[0]; // select DOM element to attach client to
+var viewerElement = document.getElementById('swac-viewer'); // select DOM element to attach client to
 annotator.addAnnotationClient(viewerElement); // insert client in the DOM
 ```
 
@@ -118,9 +121,9 @@ annotator.addAnnotationClient(viewerElement); // insert client in the DOM
 
 Here is a complete example to demonstrate how you can setup a web page with an RDFa-enriched resource and a fully-configured annotation client. This example assumes four files sitting in the same web directory that is served over HTTP: the SWA client library (`scholarly-web-annotator.js`), a configuration file (`annotator_config.json`), a loading script to configure and embed the client (`load_annotator.js`) and an HTML file with the RDFa-enriched resource (`index.html`).
 
-*Note that in the config below, you have to fill the address of a running SWA server!*
+*Note that in the config below, you have to fill the address of a running [SWA server](https://github.com/marijnkoolen/scholarly-web-annotation-server)!*
 
-The SWA client library can be found in this repository: `dist/scholarly-web-annotator.js`
+The SWA client modules can be found in the [releases](https://github.com/CLARIAH/scholarly-web-annotation-client/releases) page.
 
 `annotator_config.json`:
 
@@ -190,6 +193,8 @@ The SWA client library can be found in this repository: `dist/scholarly-web-anno
 `load_annotator.js`:
 
 ```js
+var configFile = "annotator_config.json"; // location of the config file
+
 document.onreadystatechange = function () { // wait till page is loaded
     if (document.readyState === "complete") {
         loadConfig(function(error, config) { // load configuration file
@@ -197,7 +202,7 @@ document.onreadystatechange = function () { // wait till page is loaded
                 return null;
             // instantiate, configure and insert client
             annotator = new ScholarlyWebAnnotator.ScholarlyWebAnnotator(config);
-            var viewerElement = document.getElementsByClassName('annotation-viewer')[0];
+            var viewerElement = document.getElementById('swac-viewer');
             annotator.addAnnotationClient(viewerElement);
         });
     }
@@ -205,7 +210,7 @@ document.onreadystatechange = function () { // wait till page is loaded
 
 var loadConfig = function(callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "annotator_config.json");
+    xhr.open("GET", configFile);
     xhr.onreadystatechange = function() {
         if (xhr.readyState === XMLHttpRequest.DONE) {
             try {
@@ -229,10 +234,9 @@ Finally, create an HTML file that loads the dependencies, the SWA client library
 ```xhtml
 <html>
     <head>
-        <script src="https://code.jquery.com/jquery-2.2.4.js"></script>
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-        <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/swac.css"/>
+        <script src="js/vendor.js"></script>
+        <script src="js/swac.js"></script>
     </head>
     <body>
         <div class="annotation-target-observer">
@@ -241,8 +245,7 @@ Finally, create an HTML file that loads the dependencies, the SWA client library
                 <p typeof="Paragraphinletter" resource="urn:vangogh:letter001:p.2" property="hasPart">Text of the second paragraph.</p>
             </div>
         </div>
-        <div class="annotation-viewer"></div>
-        <script src="./scholarly-web-annotator.js"></script>
+        <div id="swac-viewer"></div>
         <script src="./load_annotator.js"></script>
     </body>
 </html>
