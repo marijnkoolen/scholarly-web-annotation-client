@@ -1,5 +1,13 @@
 {
-    "targetObserverClass": "annotation-target-observer",
+    "targetObserver": {
+        "targetObserverClass": "annotation-target-observer",
+        "observeMutations": false,
+        "observerConfig": {
+            "childList": false,
+            "attributes": false,
+            "subtree": false
+            }
+        },
     "services" : {
         "AnnotationServer": {
             "apix": "http://localhost:3000/api",

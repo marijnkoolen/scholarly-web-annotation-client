@@ -34,12 +34,7 @@
                         <xsl:value-of select="$title"/>
                     </title>
                     <link href="./css/demo.css" rel="stylesheet" type="text/css"/>
-                    <script src="https://code.jquery.com/jquery-2.2.4.js"/>
-                    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"/>
-                    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"/>
-                    <link rel="stylesheet"
-                        href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-                    />
+                    <link rel="stylesheet" href="dist/swac.css"/>
                 </head>
                 <body>
                     <div class="horizontal">
@@ -67,12 +62,36 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="annotation-viewer" id="annotation-viewer">prut1</div>
-                        <script src="./scholarly-web-annotator.js"/>
+                        <div class="annotation-viewer" id="swac-viewer">prut1</div>
                         <script src="./load_annotator.js"/>
                     </div>
-                </body>
+                    <script src="dist/vendor.js"></script>
+                    <script src="dist/swac.js"></script>                </body>
             </html>
+        </xsl:result-document>
+        <xsl:result-document href="{concat('../',concat($type,'.ttl'))}">
+            <xsl:text>
+@prefix hi: &lt;http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#> .
+@prefix vg: &lt;http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#> .
+@prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+            </xsl:text>
+            <xsl:call-template name="vg:writettlline">
+                <xsl:with-param name="s">
+                    <xsl:value-of select="vg:letterurn()"/>
+                </xsl:with-param>
+                <xsl:with-param name="p">rdf:type</xsl:with-param>
+                <xsl:with-param name="o">vg:Letter</xsl:with-param>
+            </xsl:call-template>
+            <xsl:call-template name="vg:writettlline">
+                <xsl:with-param name="s">
+                    <xsl:value-of select="vg:letterurn()"/>
+                </xsl:with-param>
+                <xsl:with-param name="p">hi:hasRepresentation</xsl:with-param>
+                <xsl:with-param name="o">
+                    <xsl:value-of select="vg:texturn($type)"/>
+                </xsl:with-param>
+            </xsl:call-template>
+            <xsl:apply-templates mode="rdf"/>
         </xsl:result-document>
     </xsl:template>
 
@@ -185,11 +204,31 @@
         </xsl:apply-templates>
     </xsl:template>
 
+    <xsl:template match="*" mode="rdf">
+        <xsl:param name="type"/>
+        <xsl:apply-templates mode="rdf">
+            <xsl:with-param name="type" select="$type"/>
+        </xsl:apply-templates>
+    </xsl:template>
+    
+    <xsl:template name="vg:writettlline">
+        <xsl:param name="s"/>
+        <xsl:param name="p"/>
+        <xsl:param name="o"/>
+        <xsl:text>&#10;</xsl:text>
+        <xsl:value-of select="$s"/>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="$p"/>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="$o"/>
+        <xsl:text>.</xsl:text>
+    </xsl:template>
+
     <xsl:function name="vg:letterurn">
         <xsl:text>urn:vangogh:letter:</xsl:text>
         <xsl:value-of select="$letno"/>
     </xsl:function>
-
+    
     <xsl:function name="vg:texturn">
         <xsl:param name="type"/>
         <xsl:value-of select="vg:letterurn()"/>
