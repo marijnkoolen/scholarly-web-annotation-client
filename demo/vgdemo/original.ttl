@@ -1,0 +1,42 @@
+
+@prefix hi: <http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#> .
+@prefix vg: <http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+            
+<urn:vangogh:letter:001> rdf:type vg:Letter.
+<urn:vangogh:letter:001> hi:hasRepresentation <urn:vangogh:letter:001.original>.
+
+
+    
+<urn:vangogh:letter:001.para.1> rdf:type ParagraphInLetter.
+<urn:vangogh:letter:001.para.1> hi:hasRepresentation <urn:vangogh:letter:001.para.1.original>.
+<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.1>.
+
+
+<urn:vangogh:letter:001.para.2> rdf:type ParagraphInLetter.
+<urn:vangogh:letter:001.para.2> hi:hasRepresentation <urn:vangogh:letter:001.para.2.original>.
+<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.2>.
+
+<urn:vangogh:letter:001.para.3> rdf:type ParagraphInLetter.
+<urn:vangogh:letter:001.para.3> hi:hasRepresentation <urn:vangogh:letter:001.para.3.original>.
+<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.3>.
+
+<urn:vangogh:letter:001.para.4> rdf:type ParagraphInLetter.
+<urn:vangogh:letter:001.para.4> hi:hasRepresentation <urn:vangogh:letter:001.para.4.original>.
+<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.4>.
+
+<urn:vangogh:letter:001.para.5> rdf:type ParagraphInLetter.
+<urn:vangogh:letter:001.para.5> hi:hasRepresentation <urn:vangogh:letter:001.para.5.original>.
+<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.5>.
+
+
+<urn:vangogh:letter:001.para.6> rdf:type ParagraphInLetter.
+<urn:vangogh:letter:001.para.6> hi:hasRepresentation <urn:vangogh:letter:001.para.6.original>.
+<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.6>.
+
+<urn:vangogh:letter:001.para.7> rdf:type ParagraphInLetter.
+<urn:vangogh:letter:001.para.7> hi:hasRepresentation <urn:vangogh:letter:001.para.7.original>.
+<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.7>.
+
+
+
