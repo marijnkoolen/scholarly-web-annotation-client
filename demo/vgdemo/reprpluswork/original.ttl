@@ -3,40 +3,111 @@
 @prefix vg: <http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
                 
-<urn:vangogh:letter:001> rdf:type vg:Letter.
-<urn:vangogh:letter:001> hi:hasRepresentation <urn:vangogh:letter:001.original>.
-
-
-    
-<urn:vangogh:letter:001.para.1> rdf:type ParagraphInLetter.
-<urn:vangogh:letter:001.para.1> hi:hasRepresentation <urn:vangogh:letter:001.para.1.original>.
-<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.1>.
-
-
-<urn:vangogh:letter:001.para.2> rdf:type ParagraphInLetter.
-<urn:vangogh:letter:001.para.2> hi:hasRepresentation <urn:vangogh:letter:001.para.2.original>.
-<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.2>.
-
-<urn:vangogh:letter:001.para.3> rdf:type ParagraphInLetter.
-<urn:vangogh:letter:001.para.3> hi:hasRepresentation <urn:vangogh:letter:001.para.3.original>.
-<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.3>.
-
-<urn:vangogh:letter:001.para.4> rdf:type ParagraphInLetter.
-<urn:vangogh:letter:001.para.4> hi:hasRepresentation <urn:vangogh:letter:001.para.4.original>.
-<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.4>.
-
-<urn:vangogh:letter:001.para.5> rdf:type ParagraphInLetter.
-<urn:vangogh:letter:001.para.5> hi:hasRepresentation <urn:vangogh:letter:001.para.5.original>.
-<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.5>.
-
-
-<urn:vangogh:letter:001.para.6> rdf:type ParagraphInLetter.
-<urn:vangogh:letter:001.para.6> hi:hasRepresentation <urn:vangogh:letter:001.para.6.original>.
-<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.6>.
-
-<urn:vangogh:letter:001.para.7> rdf:type ParagraphInLetter.
-<urn:vangogh:letter:001.para.7> hi:hasRepresentation <urn:vangogh:letter:001.para.7.original>.
-<urn:vangogh:letter:001> hi:hasWorkPart <urn:vangogh:letter:001.para.7>.
-
-
-
+<urn:vangogh/letter=001> rdf:type vg:Letter.
+<urn:vangogh/letter=001> hi:hasFragmentOf <urn:vangogh/letter=001:repr=original>.
+<urn:vangogh/letter=001:sheet=1r:page=1> rdf:type vg:Page.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-1> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-1>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-1> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-1:para=1:repr=transcript>.
+<urn:vangogh/letter=001:para=1> rdf:type ParagraphInLetter.
+<urn:vangogh/letter=001:para=1> hi:hasRepresentation <urn:vangogh/letter=001:para=1:repr=original>.
+<urn:vangogh/letter=001> hi:hasWorkPart <urn:vangogh/letter=001:para=1>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-2> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-2>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-2> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-2:para=2:repr=transcript>.
+<urn:vangogh/letter=001:para=2> rdf:type ParagraphInLetter.
+<urn:vangogh/letter=001:para=2> hi:hasRepresentation <urn:vangogh/letter=001:para=2:repr=original>.
+<urn:vangogh/letter=001> hi:hasWorkPart <urn:vangogh/letter=001:para=2>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-3> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-3>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-3> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-3:para=3:repr=transcript>.
+<urn:vangogh/letter=001:para=3> rdf:type ParagraphInLetter.
+<urn:vangogh/letter=001:para=3> hi:hasRepresentation <urn:vangogh/letter=001:para=3:repr=original>.
+<urn:vangogh/letter=001> hi:hasWorkPart <urn:vangogh/letter=001:para=3>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-4> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-4>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-4> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-4:para=3:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-5> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-5>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-5> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-5:para=3:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-6> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-6>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-6> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-6:para=3:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-7> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-7>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-7> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-7:para=3:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-8> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-8>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-8> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-8:para=3:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-9> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-9>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-9> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-9:para=3:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-10> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-10>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-10> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-10:para=4:repr=transcript>.
+<urn:vangogh/letter=001:para=4> rdf:type ParagraphInLetter.
+<urn:vangogh/letter=001:para=4> hi:hasRepresentation <urn:vangogh/letter=001:para=4:repr=original>.
+<urn:vangogh/letter=001> hi:hasWorkPart <urn:vangogh/letter=001:para=4>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-11> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-11>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-11> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-11:para=4:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-12> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-12>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-12> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-12:para=4:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-13> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-13>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-13> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-13:para=4:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-14> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-14>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-14> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-14:para=4:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-15> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-15>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-15> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-15:para=5:repr=transcript>.
+<urn:vangogh/letter=001:para=5> rdf:type ParagraphInLetter.
+<urn:vangogh/letter=001:para=5> hi:hasRepresentation <urn:vangogh/letter=001:para=5:repr=original>.
+<urn:vangogh/letter=001> hi:hasWorkPart <urn:vangogh/letter=001:para=5>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-16> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-16>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-16> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-16:para=5:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-17> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-17>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-17> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-17:para=5:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-18> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-18>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-18> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-18:para=5:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-19> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-19>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-19> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-19:para=5:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-20> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-20>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-20> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-20:para=5:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-21> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-21>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-21> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-21:para=5:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-22> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-22>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-22> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-22:para=5:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-23> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-23>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-23> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-23:para=5:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-24> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-24>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-24> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-24:para=5:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-25> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-25>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-25> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-25:para=5:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-26> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-26>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-26> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-26:para=5:repr=transcript>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-27> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-27>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-27> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-27:para=6:repr=transcript>.
+<urn:vangogh/letter=001:para=6> rdf:type ParagraphInLetter.
+<urn:vangogh/letter=001:para=6> hi:hasRepresentation <urn:vangogh/letter=001:para=6:repr=original>.
+<urn:vangogh/letter=001> hi:hasWorkPart <urn:vangogh/letter=001:para=6>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-28> rdf:type vg:Line.
+<urn:vangogh/letter=001:sheet=1r:page=1> hi:hasDocPart <urn:vangogh/letter=001:sheet=1r:page=1:line=l-28>.
+<urn:vangogh/letter=001:sheet=1r:page=1:line=l-28> hi:hasFragmentIn <urn:vangogh/letter=001:sheet=1r:page=1:line=l-28:para=7:repr=transcript>.
+<urn:vangogh/letter=001:para=7> rdf:type ParagraphInLetter.
+<urn:vangogh/letter=001:para=7> hi:hasRepresentation <urn:vangogh/letter=001:para=7:repr=original>.
+<urn:vangogh/letter=001> hi:hasWorkPart <urn:vangogh/letter=001:para=7>.

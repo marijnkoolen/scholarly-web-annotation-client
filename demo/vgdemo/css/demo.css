@@ -2,7 +2,7 @@
     font-size:16px;
 }
 div.horizontal {
-width:1700px;
+width:1800px;
     margin-right:0px;
     margin-top:0px;
     margin-bottom:0px;
@@ -19,7 +19,7 @@ div.annotation-target-observer{
     }
 
 div.annotation-viewer {
-width:350px;
+width:530px;
     margin:2px;
     padding:2px;
     border: 1px solid red;
