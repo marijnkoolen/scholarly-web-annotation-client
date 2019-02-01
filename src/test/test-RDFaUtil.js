@@ -57,6 +57,176 @@ var loadPage = (htmlSource) => {
     global.window = dom.window;
 }
 
+var loadIgnorable = () => {
+    let htmlSource = `
+    <body class=\"annotation-target-observer\" prefix="hi: http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#">
+        <div id="non-prefix" typeof=\"IgnorableElement\">bad ignore</div>
+        <div id="prefix" typeof=\"hi:IgnorableElement\">prefixed ignore</div>
+        <div id="full-url" typeof=\"http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#IgnorableElement\">full ignore</div>
+        <div id="vocab" vocab="http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#">
+            <div id="vocab-non-prefix" typeof=\"IgnorableElement\">vocab ignore</div>
+            <div>Some text with <span id="ignore-span-1" typeof=\"hi:IgnorableElement\">one</span> and <span id="ignore-span-2" typeof=\"hi:IgnorableElement\">two</span> ignorable elements.</div>
+        </div>
+    </body>`;
+    const jsdomConfig = {url: "http://localhost:3001/"}
+    let dom = new JSDOM(htmlSource, jsdomConfig);
+    global.document = dom.window.document;
+    global.window = dom.window;
+    let observerNodes = document.getElementsByClassName("annotation-target-observer");
+    let a = document.getElementsByTagName("div");
+    RDFaUtil.setObserverNodes(observerNodes);
+}
+
+describe("RDFaUtil parsing HTML with ignorable elements", () => {
+
+    beforeEach((done) => {
+        loadIgnorable();
+        done();
+    });
+
+    it("setIgnoreNodes should ignore non-prefixed literal IgnorableElement", (done) => {
+        var vocab = null;
+        var prefixIndex = {hi: "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#"};
+        let div = document.getElementById("non-prefix");
+        RDFaUtil.setIgnoreNodes(div, vocab, prefixIndex);
+        let isIgnored = RDFaUtil.isRDFaIgnoreNode(div);
+        expect(isIgnored).to.equal(false);
+        done();
+    });
+
+    it("setIgnoreNodes should set prefixed literal IgnorableElement as ignore node", (done) => {
+        var vocab = null;
+        var prefixIndex = {hi: "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#"};
+        let div = document.getElementById("prefix");
+        RDFaUtil.setIgnoreNodes(div, vocab, prefixIndex);
+        let isIgnored = RDFaUtil.isRDFaIgnoreNode(div);
+        expect(isIgnored).to.equal(true);
+        done();
+    });
+
+    it("setIgnoreNodes should set full URL IgnorableElement as ignore node", (done) => {
+        var vocab = null;
+        var prefixIndex = {hi: "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#"};
+        let div = document.getElementById("full-url");
+        RDFaUtil.setIgnoreNodes(div, vocab, prefixIndex);
+        let isIgnored = RDFaUtil.isRDFaIgnoreNode(div);
+        expect(isIgnored).to.equal(true);
+        done();
+    });
+
+    it("setIgnoreNodes should set non-prefixed literal IgnorableElement with vocabulary as ignore node", (done) => {
+        var vocab = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#";
+        var prefixIndex = {hi: "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#"};
+        let div = document.getElementById("vocab-non-prefix");
+        RDFaUtil.setIgnoreNodes(div, vocab, prefixIndex);
+        let isIgnored = RDFaUtil.isRDFaIgnoreNode(div);
+        expect(isIgnored).to.equal(true);
+        done();
+    });
+
+    it("setIgnoreNodes should set child node with non-prefixed literal IgnorableElement of vocabulary node as ignore node", (done) => {
+        var vocab = null;
+        var prefixIndex = {hi: "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#"};
+        let vocabDiv = document.getElementById("vocab");
+        let ignoreDiv = document.getElementById("vocab-non-prefix");
+        RDFaUtil.setIgnoreNodes(vocabDiv, vocab, prefixIndex);
+        let isIgnored = RDFaUtil.isRDFaIgnoreNode(ignoreDiv);
+        expect(isIgnored).to.equal(true);
+        done();
+    });
+
+    it("setIgnoreNodes should set all child nodes with IgnorableElement of vocabulary node as ignore node", (done) => {
+        var vocab = null;
+        var prefixIndex = {hi: "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#"};
+        let vocabDiv = document.getElementById("vocab");
+        RDFaUtil.setIgnoreNodes(vocabDiv, vocab, prefixIndex);
+        let ignoreSpan1 = document.getElementById("ignore-span-1");
+        let ignoreSpan2 = document.getElementById("ignore-span-2");
+        expect(RDFaUtil.isRDFaIgnoreNode(ignoreSpan1)).to.equal(true);
+        expect(RDFaUtil.isRDFaIgnoreNode(ignoreSpan2)).to.equal(true);
+        done();
+    });
+
+    it("resetIgnoreNodes should ignore non-prefixed literal IgnorableElement", (done) => {
+        RDFaUtil.resetIgnoreNodes();
+        let div = document.getElementById("non-prefix");
+        let isIgnored = RDFaUtil.isRDFaIgnoreNode(div);
+        expect(isIgnored).to.equal(false);
+        done();
+    });
+
+    it("resetIgnoreNodes should identify prefixed literal hi:IgnorableElement as ignorable", (done) => {
+        RDFaUtil.resetIgnoreNodes();
+        let div = document.getElementById("prefix");
+        let isIgnored = RDFaUtil.isRDFaIgnoreNode(div);
+        expect(isIgnored).to.equal(true);
+        done();
+    });
+
+    it("resetIgnoreNodes should identify full IgnorableElement URL as ignorable", (done) => {
+        RDFaUtil.resetIgnoreNodes();
+        let div = document.getElementById("full-url");
+        let isIgnored = RDFaUtil.isRDFaIgnoreNode(div);
+        expect(isIgnored).to.equal(true);
+        done();
+    });
+
+    it("resetIgnoreNodes should identify non-prefixed vocab-specified IgnorableElement URL as ignorable", (done) => {
+        RDFaUtil.resetIgnoreNodes();
+        let div = document.getElementById("vocab-non-prefix");
+        let isIgnored = RDFaUtil.isRDFaIgnoreNode(div);
+        expect(isIgnored).to.equal(true);
+        done();
+    });
+
+    it("expandRDFaTerm should return none if no term is given", (done) => {
+        var vocab = null;
+        var prefixIndex = {hi: "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#"};
+        var rdfaTerm = null;
+        let expandedTerm = RDFaUtil.expandRDFaTerm(rdfaTerm, vocab, prefixIndex);
+        expect(expandedTerm).to.equal(null);
+        done();
+    });
+
+    it("expandRDFaTerm should return none if unexpandable term is given", (done) => {
+        var vocab = null;
+        var prefixIndex = {hi: "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#"};
+        var rdfaTerm = "IgnorableElement";
+        let expandedTerm = RDFaUtil.expandRDFaTerm(rdfaTerm, vocab, prefixIndex);
+        expect(expandedTerm).to.equal(null);
+        done();
+    });
+
+    it("expandRDFaTerm should return none if prefixed term with unknown prefix is given", (done) => {
+        var vocab = null;
+        var prefixIndex = {hi: "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#"};
+        var rdfaTerm = "vg:IgnorableElement";
+        let expandedTerm = RDFaUtil.expandRDFaTerm(rdfaTerm, vocab, prefixIndex);
+        console.log("expandedTerm:", expandedTerm);
+        expect(expandedTerm).to.equal(null);
+        done();
+    });
+
+    it("expandRDFaTerm should return URL if non-prefixed term and vocabulary are given", (done) => {
+        var vocab = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#";
+        var prefixIndex = {};
+        var rdfaTerm = "IgnorableElement";
+        let expandedTerm = RDFaUtil.expandRDFaTerm(rdfaTerm, vocab, prefixIndex);
+        expect(expandedTerm).to.equal("http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#IgnorableElement");
+        done();
+    });
+
+    it("expandRDFaTerm should return URL if prefixed term with known prefix is given", (done) => {
+        var vocab = null;
+        var prefixIndex = {hi: "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#"};
+        var rdfaTerm = "hi:IgnorableElement";
+        let expandedTerm = RDFaUtil.expandRDFaTerm(rdfaTerm, vocab, prefixIndex);
+        expect(expandedTerm).to.equal("http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#IgnorableElement");
+        done();
+    });
+
+});
+
 describe("RDFaUtil getting RDF Type URLs", () => {
     it("should return an error when non-URL label is passed without vocabulary", (done) => {
         let vocabulary = null;
@@ -66,6 +236,7 @@ describe("RDFaUtil getting RDF Type URLs", () => {
         expect(typeURLs[0]).to.equal(null);
         done();
     });
+
 })
 
 describe("RDFaUtil parsing page with multiple abouts", () => {

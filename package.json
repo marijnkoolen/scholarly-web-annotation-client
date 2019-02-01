@@ -10,9 +10,9 @@
   "scripts": {
     "test": "mocha --compilers js:babel-core/register -r jsdom-global/register src/test/test-*.js",
     "test:lint": "eslint . --ext .js --ext .jsx --ignore-path .eslintignore --cache",
-    "dev": "webpack -d --progress --colors --watch",
+    "dev": "webpack -d --progress --colors --watch --output ./public/js/swac.js",
     "start": "webpack-dev-server --mode=development --watch",
-    "build": "webpack --mode=production"
+    "build": "webpack --mode=production --output ./dist/swac.js"
   },
   "keywords": [
     "annotation",
@@ -58,8 +58,8 @@
     "webpack": "^4.22.0",
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
-    "webpack-dev-server": "^3.1.9",
-    "webpack-stream": "^4.0.2"
+    "webpack-dev-server": "^3.1.14",
+    "webpack-stream": "^4.0.3"
   },
   "dependencies": {}
 }

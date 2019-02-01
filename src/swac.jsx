@@ -84,6 +84,7 @@ export class ScholarlyWebAnnotator {
     }
 
     setUnselectable(node) {
+        RDFaUtil.resetIgnoreNodes();
         let ignoreNodes = RDFaUtil.getRDFaIgnoreNodes(node);
         ignoreNodes.forEach(function(ignoreNode) {
             ignoreNode.style.webkitUserSelect = "none";

@@ -22,6 +22,39 @@ const RDFaUtil = {
         this.observerNodes = Array.from(observerNodes);
     },
 
+    resetIgnoreNodes() {
+        var prefixIndex = {};
+        var vocab = null;
+        RDFaUtil.setIgnoreNodes(document, vocab, prefixIndex);
+        return false;
+    },
+
+    setIgnoreNodes(node, vocab, prefixIndex) {
+        RDFaUtil.indexPrefixes(node, prefixIndex);
+        let attrs = RDFaUtil.getRDFaAttributes(node);
+        if (attrs.hasOwnProperty("vocab")) {
+            vocab = attrs.vocab;
+        }
+        RDFaUtil.setIgnoreNode(node, vocab, prefixIndex);
+        if (node.hasChildNodes()) {
+            node.childNodes.forEach((childNode) => {
+                RDFaUtil.setIgnoreNodes(childNode, vocab, prefixIndex);
+            });
+        }
+    },
+
+    setIgnoreNode(node, vocab, prefixIndex) {
+        let attrs = RDFaUtil.getRDFaAttributes(node);
+        if (attrs.hasOwnProperty("typeof")) {
+            let rdfaType = RDFaUtil.expandRDFaTerm(attrs.typeof, vocab, prefixIndex);
+            node.rdfaIgnorable = (RDFaUtil.isIgnoreClass(rdfaType)) ? true : false;
+        }
+    },
+
+    isIgnoreClass(url) {
+        return url === "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#IgnorableElement";
+    },
+
     /*
     **************************
     * RDFa related functions *
@@ -42,8 +75,7 @@ const RDFaUtil = {
     },
 
     isRDFaIgnoreNode : function(node) {
-        let nodeRDFaAttrs = RDFaUtil.getRDFaAttributes(node);
-        return nodeRDFaAttrs.typeof === "IgnorableElement" ? true : false;
+        return (node.hasOwnProperty("rdfaIgnorable") && node.rdfaIgnorable);
     },
 
     isSelectWholeNode : function(node) {
@@ -288,6 +320,28 @@ const RDFaUtil = {
         if (RDFaUtil.hasRDFaType(node)) {
             return node.getAttribute("typeof").split(" ");
         } else {
+            return null;
+        }
+    },
+
+    expandRDFaTerm(rdfaTerm, vocabulary, prefixIndex) {
+        if (!rdfaTerm) {
+            return null;
+        } else if (StringUtil.isURL(rdfaTerm)) {
+            return rdfaTerm;
+        } else if (RDFaUtil.labelHasPrefix(rdfaTerm)) {
+            let labelInfo = RDFaUtil.labelParsePrefix(rdfaTerm, prefixIndex);
+            if (labelInfo) {
+                return labelInfo.url;
+            } else {
+                return null;
+            }
+        } else if (vocabulary && rdfaTerm) {
+            // assume rdfaTerm is defined by vocabulary
+            return vocabulary + rdfaTerm;
+        } else {
+            let message = "ERROR - Unknown property: " + rdfaTerm;
+            console.log(message);
             return null;
         }
     },
