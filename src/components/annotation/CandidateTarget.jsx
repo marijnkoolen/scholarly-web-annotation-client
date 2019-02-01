@@ -25,15 +25,25 @@ class CandidateTarget extends React.Component {
         } else if (this.props.candidate.mimeType === "image") {
             text = "Image selection"
         }
-        if (text.length > 200) {
-            text = text.substr(0,200) + "...";
+        if (text.length > 100) {
+            text = text.substr(0,100) + "...";
         }
         return (
             <li
                 onClick={this.handleClick}
                 className="list-group-item candidate-target">
-                <span className="label label-info">{this.props.candidate.label}</span>:
-                <span>&nbsp;{text}</span>
+                <div>
+                    <label>Resource:</label>
+                    <span>{this.props.candidate.source}</span>
+                </div>
+                <div>
+                    <label>Type:</label>
+                    <span className="badge badge-info">{this.props.candidate.label}</span>
+                </div>
+                <div>
+                    <label>Content:</label>
+                    <span>{text}</span>
+                </div>
             </li>
         )
     }

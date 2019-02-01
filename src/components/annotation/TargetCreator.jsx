@@ -37,13 +37,15 @@ export default class TargetCreator extends React.Component {
             this.props.setTargets(selected);
         }
     }
+
     addMotivations() {
         this.props.addMotivations();
     }
+
     render() {
         //generate the tabs from the configured modes
         var component = this;
-        const tabs = this.state.candidateTypes.map(function(candidateType) {
+        const tabs = this.state.candidateTypes.map((candidateType) => {
             return (
                 <li
                     key={candidateType + '__tab_option'}
@@ -63,15 +65,16 @@ export default class TargetCreator extends React.Component {
                 <div
                     key={candidateType + '__tab_content'}
                     id={candidateType}
-                    className={this.state.activeType === candidateType ? 'tab-pane active' : 'tab-pane'}>
+                    className={this.state.activeType === candidateType ? 'tab-pane active' : 'tab-pane'}
+                >
                         Click on a {candidateType} to select it as annotation target.
                         <CandidateList
                             candidates={candidates}
                             addToSelected={this.addToSelected.bind(this)}
                             candidateType={candidateType}
-                            />
+                        />
                 </div>
-                );
+            );
         }, this);
 
         return (
