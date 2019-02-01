@@ -6,6 +6,10 @@ import AppDispatcher from "./AppDispatcher";
 
 class CollectionStore {
 
+    editCollection(message, collection, view) {
+        this.trigger(message, collection, view);
+    }
+
     defaultTrigger(message, data) {
         this.trigger(message, data);
     }
@@ -43,7 +47,7 @@ AppDispatcher.register( function( action ) {
         AppCollectionStore.defaultTrigger(action.eventName, action.collection);
         break;
     case "edit-collection":
-        AppCollectionStore.defaultTrigger(action.eventName, action.collection);
+        AppCollectionStore.editCollection(action.eventName, action.collection, action.view);
         break;
 
     }

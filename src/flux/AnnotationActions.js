@@ -5,6 +5,14 @@ import RDFaUtil from "../util/RDFaUtil.js";
 const AnnotationActions = {
 
     serverAvailable : false,
+    accessStatus : ["private"], // for retrieving annotations from the server
+    permission : "private", // for submitting or updating annotations in the server
+    annotationIndex : {},
+    resourceIndex : {},
+    relationIndex : {},
+    topResources : [],
+    annotationListener: [],
+
 
     getServerAddress() {
         return AnnotationAPI.getServerAddress();
@@ -53,14 +61,6 @@ const AnnotationActions = {
         AnnotationActions.permission = permission;
         //console.log("Updating permission:", AnnotationActions.permission);
     },
-
-    accessStatus : ["private"], // for retrieving annotations from the server
-    permission : "private", // for submitting or updating annotations in the server
-    annotationIndex : {},
-    resourceIndex : {},
-    relationIndex : {},
-    topResources : [],
-    annotationListener: [],
 
     addListenerElement(element) {
         if (!AnnotationActions.annotationListener.includes(element))

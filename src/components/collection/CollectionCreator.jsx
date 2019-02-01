@@ -18,12 +18,13 @@ export default class CollectionCreator extends React.Component {
         this.state = {
             annotations: [],
             collectionLabel: "",
-            page: null,
+            page: [],
             showModal: false,
             toAdd: [],
             toRemove: [],
             view: "label",
         }
+        this.collectionLabel = "";
     }
 
     componentDidMount() {
@@ -47,6 +48,8 @@ export default class CollectionCreator extends React.Component {
     }
 
     fetchPage(collection) {
+        console.log("fetching collection page");
+        console.log(collection);
         CollectionActions.getCollectionPage(collection.last);
     }
 
@@ -60,15 +63,19 @@ export default class CollectionCreator extends React.Component {
         };
         this.editCollection(collection);
     }
-    editCollection(collection) {
-        var page = null;
+
+    editCollection(collection, view) {
+        console.log(collection);
+        var page = [];
         if (collection.label !== undefined)
-            this.setState({collectionLabel: collection.label});
+            this.collectionLabel = collection.label;
+            //this.setState({collectionLabel: collection.label});
         if (collection.last !== undefined && collection.last !== null) {
-            page = collection.last;
+            //page = collection.last;
+            console.log("getting collection page");
             CollectionActions.getCollectionPage(collection.last);
         }
-        this.setState({collection: collection, page: page});
+        this.setState({collection: collection, page: page, view: view});
         this.setState({showModal: true})
     }
     hideCollectionForm() {
@@ -78,13 +85,15 @@ export default class CollectionCreator extends React.Component {
     saveCollection() {
         $('#collection__modal').modal('hide');//TODO ugly, but without this the static backdrop won't disappear!
         var collection = this.state.collection;
-        collection.label = this.state.collectionLabel;
+        collection.label = this.collectionLabel;
+        console.log(collection);
         CollectionActions.save(collection);
+        this.collectionLabel = "";
         this.setState({
             showModal: false,
             collectionLabel: "",
             collection: null,
-            page: null,
+            page: [],
             annotations: [],
         });
     }
@@ -98,7 +107,7 @@ export default class CollectionCreator extends React.Component {
     }
 
     handleLabelChange(label) {
-        this.setState({collectionLabel: label});
+        this.collectionLabel = label;
     }
 
     render() {
@@ -106,8 +115,11 @@ export default class CollectionCreator extends React.Component {
         var addCandidates = [];
         var removeCandidates = [];
 
-        let pageItems = (this.state.page && this.state.page.items !== undefined) ? this.state.page.items : [];
+        //let pageItems = (this.state.page && this.state.page.items !== undefined) ? this.state.page.items : [];
+        let pageItems = this.state.page;
+        //console.log(pageItems);
         let pageIds = pageItems.map((annotation) => {return annotation.id});
+        //let pageIds = this.state.page;
 
         addCandidates = this.state.annotations.filter((annotation) => {return pageIds.includes(annotation.id) === false;}).map((annotation) => {
 
@@ -160,7 +172,10 @@ export default class CollectionCreator extends React.Component {
 
         let editorTabContents = editViews.map((editView) => {
             if (editView === "label") {
-                editor = (<CollectionLabelEditor onChange={this.handleLabelChange} />);
+                editor = (<CollectionLabelEditor
+                              onChange={this.handleLabelChange}
+                              collectionLabel={this.collectionLabel}
+                          />);
             } else if (editView === "content") {
                 editor = (<CollectionContentEditor
                     collection={this.state.collection}

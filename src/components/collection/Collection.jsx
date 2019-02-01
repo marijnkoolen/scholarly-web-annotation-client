@@ -23,11 +23,11 @@ export default class Collection extends React.Component {
     }
 
     editCollection() {
-        CollectionActions.editCollection(this.props.collection);
+        CollectionActions.editCollection(this.props.collection, "label");
     }
 
     editContent() {
-        CollectionActions.editCollection(this.props.collection);
+        CollectionActions.editCollection(this.props.collection, "content");
     }
 
     copyCollection() {

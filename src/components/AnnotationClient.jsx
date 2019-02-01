@@ -81,8 +81,8 @@ export default class AnnotationClient extends React.Component {
                 config={this.props.config}
             />
         )
-        let itemTypes = ["annotations", "resources"];
-        //let itemTypes = ["annotations", "collections", "resources"];
+        //let itemTypes = ["annotations", "resources"];
+        let itemTypes = ["annotations", "collections", "resources"];
         var viewer;
         let viewerTabContents = itemTypes.map((itemType) => {
             if (itemType === "annotations")

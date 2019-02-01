@@ -44,10 +44,11 @@ const CollectionActions = {
         });
     },
 
-    editCollection(collection) {
+    editCollection(collection, view) {
         AppDispatcher.dispatch({
             eventName: "edit-collection",
-            collection: collection
+            collection: collection,
+            view: view
         });
     },
 
@@ -84,8 +85,10 @@ const CollectionActions = {
     },
 
     getCollectionPage(collectionPageURL) {
-        //console.log(collectionPageURL);
+        collectionPageURL = collectionPageURL.replace("iris=1", "iris=0");
+        console.log(collectionPageURL);
         AnnotationAPI.getCollectionPage(collectionPageURL, (error, page) => {
+
             if (error)
                 return null;
 

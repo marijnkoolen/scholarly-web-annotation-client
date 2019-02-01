@@ -233,7 +233,15 @@ const AnnotationAPI = {
         //let url = AnnotationAPI.annotationServer + '/pages/' + pageId;
         let options = { method: "GET" };
         AnnotationAPI.makeRequest(pageURL, options, (error, data) => {
-            return callback(error, data);
+            if (error) {
+                return callback(error, null);
+            }
+
+            var items = [];
+            if (data && data.first && data.first instanceof Object && data.first.items) {
+                items = data.first.items;
+            }
+            return callback(error, items);
         });
     },
 
