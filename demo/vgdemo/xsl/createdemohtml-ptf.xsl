@@ -10,19 +10,16 @@
         <xsl:value-of select="//tei:idno[@type = 'jlb']/text()"/>
     </xsl:variable>
     
-    <xsl:variable name="representations">
+    <xsl:variable name="configurations">
         <root>
-            <option value="align"/>
-            <option value="original"/>
-            <option value="translated"/>
-        </root>
-    </xsl:variable>
-
-    <xsl:variable name="annotatables">
-        <root>
-            <option value="repr"/>
-            <option value="work"/>
-            <option value="reprpluswork"/>
+            <configuration display="align" annotatable="docpluswork"/>
+            <configuration display="align" annotatable="work"/>
+            <configuration display="original" annotatable="work"/>
+            <configuration display="original" annotatable="reprpluswork"/>
+            <configuration display="original" annotatable="repr"/>
+            <configuration display="translated" annotatable="work"/>
+            <configuration display="translated" annotatable="reprpluswork"/>
+            <configuration display="translated" annotatable="repr"/>
         </root>
     </xsl:variable>
     
@@ -34,44 +31,30 @@
         <xsl:result-document href="currentplus.xml" method="xml">
             <xsl:copy-of select="$currentplus"/>
         </xsl:result-document>
-        <xsl:for-each select="$representations//option">
-            <xsl:variable name="representation" select="@value"/>
-            <xsl:for-each select="$annotatables//option">
-                <xsl:apply-templates select="$currentplus//tei:text">
-                    <xsl:with-param name="type" select="$representation"/>
-                    <xsl:with-param name="annotatable" select="@value"/>
-                </xsl:apply-templates>
-            </xsl:for-each>
+        <xsl:for-each select="$configurations//configuration">
+            <xsl:apply-templates select="$currentplus//tei:text">
+                <xsl:with-param name="configuration" select="."/>
+            </xsl:apply-templates>
         </xsl:for-each>
-<!--        <xsl:apply-templates select="//tei:text">
-            <xsl:with-param name="type" select="'align'"/>
-        </xsl:apply-templates>
-        <xsl:apply-templates select="//tei:text">
-            <xsl:with-param name="type" select="'original'"/>
-        </xsl:apply-templates>
-        <xsl:apply-templates select="//tei:text">
-            <xsl:with-param name="type" select="'translated'"/>
-        </xsl:apply-templates>
--->    </xsl:template>
+    </xsl:template>
 
     <xsl:template match="tei:text">
-        <xsl:param name="type"/>
-        <xsl:param name="annotatable"/>
-        <xsl:message>type <xsl:value-of select="$type"/></xsl:message>
-        <xsl:message>annotatable <xsl:value-of select="$annotatable"/></xsl:message>
+        <xsl:param name="configuration"/>
+        <xsl:message>display <xsl:value-of select="$configuration/@display"/></xsl:message>
+        <xsl:message>annotatable <xsl:value-of select="$configuration/@annotatable"/></xsl:message>
         <xsl:variable name="href">
             <xsl:text>../</xsl:text>
-            <xsl:value-of select="$annotatable"/>
+            <xsl:value-of select="$configuration/@annotatable"/>
             <xsl:text>/</xsl:text>
-            <xsl:value-of select="$type"/>
+            <xsl:value-of select="$configuration/@display"/>
             <xsl:text>.html</xsl:text>
         </xsl:variable>
         <xsl:result-document href="{$href}">
             <xsl:variable name="title">
                 <xsl:text>Van Gogh letter </xsl:text>
                 <xsl:value-of select="$letno"/>
-                (<xsl:value-of select="$type"/>,
-                <xsl:value-of select="$annotatable"/>)
+                (<xsl:value-of select="$configuration/@display"/>,
+                <xsl:value-of select="$configuration/@annotatable"/>)
             </xsl:variable>
             <html>
                 <head>
@@ -80,8 +63,8 @@
                     </title>
                     <link href="../css/demo.css" rel="stylesheet" type="text/css"/>
                     <link rel="stylesheet" href="../dist/swac.css"/>
-                    <xsl:if test="$annotatable='reprpluswork' or ($type='align' and $annotatable='repr')">
-                        <link rel="alternate" type="text/n3" href="{concat($type,'.ttl')}"/>
+                    <xsl:if test="$configuration/@annotatable='reprpluswork' or ($configuration/@display='align' and $configuration/@annotatable='docpluswork')">
+                        <link rel="alternate" type="text/n3" href="{concat($configuration/@display,'.ttl')}"/>
                     </xsl:if>
                 </head>
                 <body>
@@ -95,21 +78,27 @@
                                     <h1>
                                         <xsl:value-of select="//tei:titleStmt/tei:title"/>
                                     </h1>
-                                    <p>Versions: <a href="align.html">aligned</a> - <a
-                                            href="original.html">original</a> - <a
-                                            href="translated.html">translated</a>
-                                    </p>
-                                    <p>Annotatable:
-                                        <xsl:for-each select="$annotatables//option">
+                                    <xsl:if test="not($configuration/@annotatable = 'docpluswork')">
+                                        <p>Displays with this annotation level: 
+                                            <xsl:if test="$configuration/@annotatable = 'work'">
+                                                <a href="align.html">aligned</a> -     
+                                            </xsl:if>
+                                            <a href="original.html">original</a> - <a
+                                                href="translated.html">translated</a>
+                                        </p>
+                                    </xsl:if>
+                                    <xsl:variable name="curdisplay" select="$configuration/@display"/>
+                                    <p>Annotatable versions of this display:
+                                        <xsl:for-each select="$configurations//configuration[@display = $curdisplay]">
                                             <a>
                                                 <xsl:attribute name="href">
                                                     <xsl:text>../</xsl:text>
-                                                    <xsl:value-of select="@value"/>
+                                                    <xsl:value-of select="@annotatable"/>
                                                     <xsl:text>/</xsl:text>
-                                                    <xsl:value-of select="$type"/>
+                                                    <xsl:value-of select="$curdisplay"/>
                                                     <xsl:text>.html</xsl:text>
                                                 </xsl:attribute>
-                                                <xsl:value-of select="@value"/>
+                                                <xsl:value-of select="@annotatable"/>
                                             </a>
                                             <xsl:if test="position() &lt; last()">
                                                 <xsl:text> - </xsl:text>
@@ -118,30 +107,30 @@
                                     </p>
                                     <div class="content"
                                         vocab="http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#"
-                                        prefix="hi: http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#">
+                                        prefix="hi: http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#
+                                            efrbroo: http://erlangen-crm.org/efrbroo/">
                                         <xsl:attribute name="typeof">
                                             <xsl:choose>
-                                                <xsl:when test="$annotatable='work'">
+                                                <xsl:when test="$configuration/@annotatable='work' or $configuration/@annotatable='docpluswork'">
                                                     <xsl:text>Letter</xsl:text>
                                                 </xsl:when>
                                                 <xsl:otherwise>
-                                                    <xsl:value-of select="vg:typeofbytype($type)"/>
+                                                    <xsl:value-of select="vg:typeofbytype($configuration)"/>
                                                 </xsl:otherwise>
                                             </xsl:choose>
                                         </xsl:attribute>
                                         <xsl:attribute name="resource">
                                             <xsl:choose>
-                                                <xsl:when test="$annotatable='work'">
+                                                <xsl:when test="$configuration/@annotatable='work'">
                                                     <xsl:value-of select="vg:letterurn()"/>
                                                 </xsl:when>
                                                 <xsl:otherwise>
-                                                    <xsl:value-of select="vg:texturn($type)"/>
+                                                    <xsl:value-of select="vg:texturn($configuration)"/>
                                                 </xsl:otherwise>
                                             </xsl:choose>
                                         </xsl:attribute>
                                         <xsl:apply-templates>
-                                            <xsl:with-param name="type" select="$type"/>
-                                            <xsl:with-param name="annotatable" select="$annotatable"/>
+                                            <xsl:with-param name="configuration" select="$configuration"/>
                                         </xsl:apply-templates>
                                     </div>
                                 </div>
@@ -154,12 +143,12 @@
                     <script src="../dist/swac.js"></script>                </body>
             </html>
         </xsl:result-document>
-        <xsl:if test="$annotatable='reprpluswork' or ($type='align' and not($annotatable='work'))">
+        <xsl:if test="$configuration/@annotatable='reprpluswork' or $configuration/@annotatable='docpluswork'">
             <xsl:variable name="ttlhref">
                 <xsl:text>../</xsl:text>
-                <xsl:value-of select="$annotatable"/>
+                <xsl:value-of select="$configuration/@annotatable"/>
                 <xsl:text>/</xsl:text>
-                <xsl:value-of select="$type"/>
+                <xsl:value-of select="$configuration/@display"/>
                 <xsl:text>.ttl</xsl:text>
             </xsl:variable>
             <xsl:result-document href="{$ttlhref}" method="text">
@@ -167,6 +156,7 @@
 @prefix hi: &lt;http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#> .
 @prefix vg: &lt;http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#> .
 @prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix efrbroo: &lt;http://erlangen-crm.org/efrbroo/> .
                 </xsl:text>
                 <xsl:call-template name="vg:writettlline">
                     <xsl:with-param name="s">
@@ -176,28 +166,28 @@
                     <xsl:with-param name="o">vg:Letter</xsl:with-param>
                 </xsl:call-template>
                 <xsl:choose>
-                    <xsl:when test="$type!='align'">
-                        <xsl:call-template name="vg:writettlline">
-                            <xsl:with-param name="s">
-                                <xsl:value-of select="vg:enclose(vg:letterurn())"/>
-                            </xsl:with-param>
-                            <xsl:with-param name="p">hi:hasFragmentOf</xsl:with-param>
-                            <xsl:with-param name="o">
-                                <xsl:value-of select="vg:enclose(vg:texturn($type))"/>
-                            </xsl:with-param>
-                        </xsl:call-template>
-                    </xsl:when>
-                    <xsl:otherwise>
+                    <xsl:when test="$configuration/@annotatable='reprpluswork'">
                         <xsl:call-template name="vg:writettlline">
                             <xsl:with-param name="s">
                                 <xsl:value-of select="vg:enclose(vg:letterurn())"/>
                             </xsl:with-param>
                             <xsl:with-param name="p">hi:hasRepresentation</xsl:with-param>
                             <xsl:with-param name="o">
-                                <xsl:value-of select="vg:enclose(vg:texturn($type))"/>
+                                <xsl:value-of select="vg:enclose(vg:texturn($configuration))"/>
                             </xsl:with-param>
                         </xsl:call-template>
-                        <xsl:variable name="docurn">
+                    </xsl:when>
+                    <xsl:otherwise> <!--i.e.: docpluswork + align--> 
+<!--                        <xsl:call-template name="vg:writettlline">
+                            <xsl:with-param name="s">
+                                <xsl:value-of select="vg:enclose(vg:letterurn())"/>
+                            </xsl:with-param>
+                            <xsl:with-param name="p">hi:hasRepresentation</xsl:with-param>
+                            <xsl:with-param name="o">
+                                <xsl:value-of select="vg:enclose(vg:texturn($configuration/@display))"/>
+                            </xsl:with-param>
+                        </xsl:call-template>
+-->                        <xsl:variable name="docurn">
                             <xsl:value-of select="vg:letterurn()"/>
                             <xsl:text>:doc=0</xsl:text>
                         </xsl:variable>
@@ -246,8 +236,7 @@
                     </xsl:otherwise>
                 </xsl:choose>
                 <xsl:apply-templates mode="rdf">
-                    <xsl:with-param name="type" select="$type"/>
-                    <xsl:with-param name="annotatable" select="$annotatable"/>
+                    <xsl:with-param name="configuration" select="$configuration"/>
                 </xsl:apply-templates>
             </xsl:result-document>
         </xsl:if>
@@ -258,15 +247,14 @@
     </xsl:template>
 
     <xsl:template match="tei:ab">
-        <xsl:param name="type"/>
-        <xsl:param name="annotatable"/>
+        <xsl:param name="configuration"/>
         <span class="para">
             <xsl:attribute name="typeof">
                 <xsl:choose>
-                    <xsl:when test="$annotatable='work'">
+                    <xsl:when test="$configuration/@annotatable='work'">
                         <xsl:text>ParagraphInLetter</xsl:text>
                     </xsl:when>
-                    <xsl:when test="$type='align'">
+                    <xsl:when test="$configuration/@display='align'">
                         <xsl:text>hi:PositionedTextFrag</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
@@ -274,79 +262,80 @@
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:attribute>
-            <xsl:if test="$annotatable='work' or not($type='align')">
-                <xsl:attribute name="property">
-                    <xsl:choose>
-                        <xsl:when test="$annotatable='work'">
-                            <xsl:text>hi:hasWorkPart</xsl:text>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:text>hi:hasTextPart</xsl:text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:attribute>
-            </xsl:if>
+            <xsl:attribute name="property">
+                <xsl:choose>
+                    <xsl:when test="$configuration/@annotatable='work'">
+                        <xsl:text>hi:hasWorkPart</xsl:text>
+                    </xsl:when>
+                    <xsl:when test="$configuration/@annotatable='docpluswork'">
+                        <xsl:text>efrbroo:R15_has_fragment</xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text>hi:hasTextPart</xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
             <xsl:attribute name="resource">
                 <xsl:choose>
-                    <xsl:when test="$annotatable='work'">
+                    <xsl:when test="$configuration/@annotatable='work'">
                         <xsl:call-template name="paraurn">
-                            <xsl:with-param name="type" select="$type"/>
+                            <xsl:with-param name="configuration" select="$configuration"/>
                         </xsl:call-template>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:call-template name="paraurntext">
-                            <xsl:with-param name="type" select="$type"/>
+                            <xsl:with-param name="configuration" select="$configuration"/>
                         </xsl:call-template>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:attribute>
             <xsl:choose>
-                <xsl:when test="$type = 'align' and not($annotatable = 'work')">
+                <xsl:when test="$configuration/@annotatable = 'docpluswork'"> 
                     <xsl:variable name="curnode" select="."/>
                     <xsl:for-each select="distinct-values(.//tei:seg/@lb)">
                         <xsl:variable name="line" select="."/>
                         <xsl:message><xsl:value-of select="$line"/></xsl:message>
                         <xsl:variable name="lb" select="$curnode/id($line,$curnode)"/>
                         <xsl:apply-templates select="$lb">
-                            <xsl:with-param name="type" select="$type"/>
-                            <xsl:with-param name="annotatable" select="$annotatable"/>
+                            <xsl:with-param name="configuration" select="$configuration"/>
                             <xsl:with-param name="ptfmode" select="true()"/>
                         </xsl:apply-templates>
                         <span>
                             <xsl:variable name="lineurntranscr">
 <!--                                <xsl:for-each select="$lb">-->
                                 <xsl:for-each select="$curnode/descendant::tei:seg[@lb = $line and text()[normalize-space()]][1]">
-                                    <xsl:call-template name="lineurntranscr"/>
+                                    <xsl:call-template name="lineurntranscr">
+                                        <xsl:with-param name="configuration" select="$configuration"/>
+                                    </xsl:call-template>
                                 </xsl:for-each>
                             </xsl:variable>
                             <xsl:attribute name="typeof" select="'hi:PositionedTextFrag'"/>
                             <xsl:attribute name="resource">
                                 <xsl:value-of select="$lineurntranscr"/>
                             </xsl:attribute>
+                            <xsl:attribute name="property">
+                                <xsl:text>efrbroo:R15_has_fragment</xsl:text>
+                            </xsl:attribute>
                             <xsl:apply-templates select="$curnode/*[descendant-or-self::*/@lb = $line]">
-                                <xsl:with-param name="type" select="$type"/>
-                                <xsl:with-param name="annotatable" select="$annotatable"/>
+                                <xsl:with-param name="configuration" select="$configuration"/>
                             </xsl:apply-templates>
                         </span>
                     </xsl:for-each>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:apply-templates>
-                        <xsl:with-param name="type" select="$type"/>
-                        <xsl:with-param name="annotatable" select="$annotatable"/>
+                        <xsl:with-param name="configuration" select="$configuration"/>
+                        
                     </xsl:apply-templates>
                 </xsl:otherwise>
             </xsl:choose>
         </span>
-        <!--<xsl:if test="not($type = 'align')">
-            <br/>
-        </xsl:if>-->
     </xsl:template>
     
     <xsl:template match="tei:c">
-        <xsl:param name="type"/>
+        <xsl:param name="configuration"/>
         <xsl:choose>
-            <xsl:when test="$type = 'align'">
+            <xsl:when test="$configuration/@display = 'align'">
                 <xsl:choose>
                     <xsl:when test="@type = 'kk'">
                         <subs>/</subs>
@@ -365,99 +354,117 @@
     </xsl:template>
 
     <xsl:template match="tei:div">
-        <xsl:param name="type"/>
-        <xsl:param name="annotatable"/>
-        <xsl:choose>
-            <xsl:when test="$type = 'translated' and @type = 'translation'">
-                <p>
-                    <xsl:apply-templates>
-                        <xsl:with-param name="type" select="$type"/>
-                        <xsl:with-param name="annotatable" select="$annotatable"/>
-                    </xsl:apply-templates>
-                </p>
-            </xsl:when>
-            <xsl:when test="($type = 'align' or $type = 'original') and @type = 'original'">
-                <p>
-                    <xsl:apply-templates>
-                        <xsl:with-param name="type" select="$type"/>
-                        <xsl:with-param name="annotatable" select="$annotatable"/>
-                    </xsl:apply-templates>
-                </p>
-            </xsl:when>
-        </xsl:choose>
+        <xsl:param name="configuration"/>
+        <xsl:if test="($configuration/@display = 'translated' and @type = 'translation')
+            or (($configuration/@display = 'align' or $configuration/@display = 'original') and @type = 'original')">
+            <p>
+                <xsl:choose>
+                    <xsl:when test="$configuration/@annotatable = 'docpluswork'"> 
+                        <xsl:variable name="curnode" select="."/>
+                        <xsl:for-each select="distinct-values(.//tei:seg[text()[normalize-space()]]/@pb)">
+                            <xsl:variable name="pageid" select="."/>
+                            <xsl:message>pageid <xsl:value-of select="$pageid"/></xsl:message>
+                            <xsl:variable name="pb" select="$curnode/id($pageid,$curnode)"/>
+                            <xsl:apply-templates select="$pb">
+                                <xsl:with-param name="configuration" select="$configuration"/>
+                                <xsl:with-param name="ptfmode" select="true()"/>
+                            </xsl:apply-templates>
+                            <span>
+                                <xsl:variable name="pageurntranscr">
+                                    <xsl:for-each select="$pb">
+                                        <!-- i.e.: non-whitespace text node -->
+                                        <xsl:call-template name="pageurntranscr">
+                                            <xsl:with-param name="configuration" select="$configuration"/>
+                                        </xsl:call-template>
+                                    </xsl:for-each>
+                                </xsl:variable>
+                                <xsl:attribute name="typeof" select="'hi:PositionedTextFrag'"/>
+                                <xsl:attribute name="resource">
+                                    <xsl:value-of select="$pageurntranscr"/>
+                                </xsl:attribute>
+                                <xsl:attribute name="property">
+                                    <xsl:text>efrbroo:R15_has_fragment</xsl:text>
+                                </xsl:attribute>
+                                <xsl:apply-templates select="$curnode/*[descendant-or-self::*/@pb = $pageid]">
+                                    <xsl:with-param name="configuration" select="$configuration"/>
+                                </xsl:apply-templates>
+                            </span>
+                        </xsl:for-each>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:apply-templates>
+                            <xsl:with-param name="configuration" select="$configuration"/>
+                        </xsl:apply-templates>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </p>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="tei:lb">
-        <xsl:param name="type"/>
-        <xsl:param name="annotatable"/>
+        <xsl:param name="configuration"/>
         <xsl:param name="ptfmode" select="false()"/>
-        <xsl:if test="$ptfmode = true() or $annotatable = 'work'">
-            <xsl:if test="$type = 'align'">
-                <xsl:text>
+        <xsl:if test="$configuration/@display = 'align' and ($ptfmode = true() or $configuration/@annotatable = 'work')"> 
+            <xsl:text>
 </xsl:text>
-                <br/>
-                <span class="linenumber" typeof="hi:IgnorableElement" >
-                    <xsl:number level="any" count="tei:lb"/>
-                </span>
-            </xsl:if>
+            <br/>
+            <span class="linenumber" typeof="hi:IgnorableElement" >
+                <xsl:number level="any" count="tei:lb"/>
+            </span>
         </xsl:if>
     </xsl:template>
 
     <xsl:template match="tei:pb">
-        <xsl:param name="type"/>
-        <xsl:param name="annotatable"/>
-        <xsl:if test="$type = 'align'">
+        <xsl:param name="configuration"/>
+        <xsl:param name="ptfmode" select="false()"/>
+        <xsl:if test="$configuration/@display = 'align' and ($ptfmode = true() or $configuration/@annotatable = 'work')">
             <br/>
             <span class="linenumber">
                 <xsl:number level="single" count="tei:lb"/>
             </span>
         </xsl:if>
-        <span typeof="hi:IgnorableElement" class="pagenumber">
-            <xsl:text>[</xsl:text>
-            <span>
-                <xsl:if test="$type='align' and not($annotatable='work')">
-                    <xsl:variable name="pageurntranscr">
-                        <xsl:call-template name="pageurntranscr"/>
-                    </xsl:variable>
-                    <xsl:attribute name="typeof" select="'hi:PositionedTextFrag'"/>
-                    <xsl:attribute name="resource">
-                        <xsl:value-of select="$pageurntranscr"/>
-                    </xsl:attribute>
-                </xsl:if>                
-                <xsl:value-of select="@f"/>:<xsl:value-of select="@n"/>
+        <xsl:if test="$configuration/@display != 'align' or $ptfmode = true() or $configuration/@annotatable = 'work'">
+            <span typeof="hi:IgnorableElement" class="pagenumber">
+                <xsl:text>[</xsl:text>
+                <span>
+    <!--                <xsl:if test="$configuration/@display='align' and not($configuration/@annotatable='work')">
+                        <xsl:variable name="pageurntranscr">
+                            <xsl:call-template name="pageurntranscr"/>
+                        </xsl:variable>
+                        <xsl:attribute name="typeof" select="'hi:PositionedTextFrag'"/>
+                        <xsl:attribute name="resource">
+                            <xsl:value-of select="$pageurntranscr"/>
+                        </xsl:attribute>
+                    </xsl:if>                
+    -->                <xsl:value-of select="@f"/>:<xsl:value-of select="@n"/>
+                </span>
+                <xsl:text>]</xsl:text>
             </span>
-            <xsl:text>]</xsl:text>
-        </span>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="tei:rs[@type='pers']">
-        <xsl:param name="type"/>
-        <xsl:param name="annotatable"/>
+        <xsl:param name="configuration"/>
         <a href="http://vangoghletters.org/vg/persons.html" typeof="hi:IgnorableTag" >
             <xsl:apply-templates>
-                <xsl:with-param name="type" select="$type"/>
-                <xsl:with-param name="annotatable" select="$annotatable"/>
+                <xsl:with-param name="configuration" select="$configuration"/>
             </xsl:apply-templates>
         </a>
     </xsl:template>
 
     <xsl:template match="tei:supplied">
-        <xsl:param name="type"/>
-        <xsl:param name="annotatable"/>
+        <xsl:param name="configuration"/>
         <span typeof="hi:IgnorableElement">[</span>
         <xsl:apply-templates>
-            <xsl:with-param name="type" select="$type"/>
-            <xsl:with-param name="annotatable" select="$annotatable"/>
+            <xsl:with-param name="configuration" select="$configuration"/>
         </xsl:apply-templates>
         <span typef="hi:IgnorableElement">]</span>
     </xsl:template>
     
     <xsl:template match="*">
-        <xsl:param name="type"/>
-        <xsl:param name="annotatable"/>
+        <xsl:param name="configuration"/>
         <xsl:apply-templates>
-            <xsl:with-param name="type" select="$type"/>
-            <xsl:with-param name="annotatable" select="$annotatable"/>
+            <xsl:with-param name="configuration" select="$configuration"/>
         </xsl:apply-templates>
     </xsl:template>
 
