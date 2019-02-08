@@ -1,6 +1,8 @@
 import AppDispatcher from "./AppDispatcher";
 import AnnotationAPI from "../api/AnnotationAPI";
+import AnnotationStore from "../flux/AnnotationStore.js";
 import RDFaUtil from "../util/RDFaUtil.js";
+import FRBRooUtil from "../util/FRBRooUtil.js";
 
 const AnnotationActions = {
 
@@ -49,7 +51,7 @@ const AnnotationActions = {
         if (AnnotationActions.accessStatus.length === 0) {
             AnnotationActions.dispatchAnnotations([]); // when no access levels are selected
         } else {
-            AnnotationActions.loadAnnotations(AnnotationActions.topResources);
+            AnnotationActions.loadAnnotations(AnnotationStore.topResources);
         }
     },
 
@@ -69,15 +71,15 @@ const AnnotationActions = {
 
     lookupIdentifier(sourceId) {
         var source = { type: null, data: null }; // for IDs to external resources
-        if (AnnotationActions.annotationIndex.hasOwnProperty(sourceId))
-            source = { type: "annotation", data: AnnotationActions.annotationIndex[sourceId] };
-        else if (AnnotationActions.resourceIndex.hasOwnProperty(sourceId))
-            source = { type: "resource", data: AnnotationActions.resourceIndex[sourceId] };
+        if (AnnotationStore.annotationIndex.hasOwnProperty(sourceId))
+            source = { type: "annotation", data: AnnotationStore.annotationIndex[sourceId] };
+        else if (AnnotationStore.resourceIndex.hasOwnProperty(sourceId))
+            source = { type: "resource", data: AnnotationStore.resourceIndex[sourceId] };
         return source;
     },
 
     lookupAnnotationsByTarget(resourceId) {
-        return Object.values(AnnotationActions.annotationIndex).filter((annotation) => {
+        return Object.values(AnnotationStore.annotationIndex).filter((annotation) => {
             let match = annotation.target.some((target) => {
                 if (target.source && target.source === resourceId) {
                     return true;
@@ -154,16 +156,16 @@ const AnnotationActions = {
 
     loadAnnotations: (resourceIds) => {
         if (resourceIds === undefined)
-            resourceIds = AnnotationActions.topResources;
+            resourceIds = AnnotationStore.topResources;
         AnnotationAPI.getAnnotationsByTargets(resourceIds, AnnotationActions.accessStatus, (error, annotations) => {
             if (error) {
                 //console.error(resourceIds, error.toString());
                 window.alert("Error loading annotations: " + error.toString());
             }
 
-            AnnotationActions.annotationIndex = {};
+            AnnotationStore.annotationIndex = {};
             annotations.forEach((annotation) => {
-                AnnotationActions.annotationIndex[annotation.id] = annotation;
+                AnnotationStore.annotationIndex[annotation.id] = annotation;
             });
             AnnotationActions.dispatchAnnotations(annotations);
         });
@@ -197,35 +199,59 @@ const AnnotationActions = {
         });
     },
 
-    reload: function() {
+    reload: () => {
         AppDispatcher.dispatch({
             eventName: "reload-annotations"
         });
     },
 
-    indexResources: function(callback) {
+    indexResources: (callback) => {
         RDFaUtil.indexRDFa((error, index) => {
-            AnnotationActions.resourceIndex = index.resources;
-            AnnotationActions.relationIndex = index.relations;
+            AnnotationStore.resourceIndex = index.resources;
+            AnnotationStore.relationIndex = index.relations;
             return callback(error);
         }); // ... refresh index
     },
 
-    loadResources: function() {
-        AnnotationActions.topResources = RDFaUtil.getTopRDFaResources();
+    indexExternalResources: (resources, callback) => {
+        FRBRooUtil.checkExternalResources((error, doIndexing) => {
+            AnnotationStore.externalResourceIndex = {};
+            if (error) {
+                return callback(error);
+            } else if (doIndexing) {
+                AnnotationStore.externalResourceIndex = FRBRooUtil.indexRepresentedResources(resources);
+                return callback(null);
+            }
+        });
+    },
+
+    loadResources: () => {
+        AnnotationStore.topResources = RDFaUtil.getTopRDFaResources();
         AnnotationActions.indexResources((error) => {
             if (error) {
                 //console.error(error);
                 window.alert("Error indexing RDFa resources in this page\n" + error.toString());
                 return false;
             }
-            AnnotationActions.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
+            AnnotationStore.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
+            let resources = Object.keys(AnnotationStore.resourceIndex);
+            console.log(AnnotationStore.resourceIndex);
+            console.log("resources:", resources);
+            AnnotationActions.indexExternalResources(resources, (error) => {
+                if (error) {
+                    console.log("error indexing external resources");
+                    console.log(error);
+                } else {
+                    console.log("external resources indexed");
+                    console.log(AnnotationStore.externalResourceIndex);
+                }
+            });
             AppDispatcher.dispatch({
                 eventName: "load-resources",
-                topResources: AnnotationActions.topResources,
-                resourceMaps: AnnotationActions.resourceMaps
+                topResources: AnnotationStore.topResources,
+                resourceMaps: AnnotationStore.resourceMaps
             });
-            AnnotationActions.loadAnnotations(AnnotationActions.topResources);
+            AnnotationActions.loadAnnotations(AnnotationStore.topResources);
         });
     },
 

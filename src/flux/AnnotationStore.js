@@ -6,6 +6,7 @@ import AppDispatcher from "./AppDispatcher";
 
 class AnnotationStore {
 
+
     setTargetObserverClass() {
         return this.clientConfiguration.targetObserverClass;
     }

@@ -28,9 +28,9 @@ const VocabularyUtil = {
 
     importPredicate : "http://www.w3.org/2002/07/owl#imports",
 
-    readVocabularies : (vocabularyURLs, callback) => {
+    readVocabulariesFromURL : (vocabularyURLs, callback) => {
         vocabularyURLs.forEach((vocabularyURL, index) => {
-            VocabularyUtil.readVocabulary(vocabularyURL, (error) => {
+            VocabularyUtil.readVocabularyFromURL(vocabularyURL, (error) => {
                 if (error) {
                     window.alert("Error reading vocabulary from " + vocabularyURLi + "\n" + error.toString());
                     return callback(error);
@@ -41,7 +41,7 @@ const VocabularyUtil = {
         });
     },
 
-    readVocabulary : (vocabularyURL, callback) => {
+    readVocabularyFromURL : (vocabularyURL, callback) => {
         VocabularyUtil.fetcher.nowOrWhenFetched(vocabularyURL, undefined, (ok, body) => {
             if (!ok) {
                 return callback(body, null);
