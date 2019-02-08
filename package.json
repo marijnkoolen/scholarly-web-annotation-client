@@ -8,9 +8,9 @@
     "url": "https://github.com/CLARIAH/scholarly-web-annotation-client.git"
   },
   "scripts": {
-    "test": "mocha --compilers js:babel-core/register -r jsdom-global/register src/test/test-*.js",
+    "test": "mocha --compilers js:babel/core/register -r jsdom-global/register src/test/test-*.js",
     "test:lint": "eslint . --ext .js --ext .jsx --ignore-path .eslintignore --cache",
-    "dev": "webpack -d --progress --colors --watch --output ./public/js/swac.js",
+    "dev": "webpack -d --progress --colors --watch --output ./dist/swac.js",
     "start": "webpack-dev-server --mode=development --watch",
     "build": "webpack --mode=production --output ./dist/swac.js"
   },
@@ -22,36 +22,43 @@
   "license": "ISC",
   "babel": {
     "presets": [
-      "es2015",
-      "react"
+      "@babel/env",
+      "@babel/react"
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/register": "^7.0.0",
     "ajv": "^6.5.4",
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.4",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-react": "^6.24.1",
+    "babel-loader": "^8.0.5",
     "bootstrap": "^4.0.0",
-    "css-loader": "^1.0.1",
+    "chai": "^4.2.0",
+    "chai-fetch": "^0.3.1",
+    "css-loader": "^2.1.0",
     "flux": "^3.1.3",
+    "graphql": "^14.1.1",
     "gulp": "^4.0.0",
     "gulp-connect": "^5.6.1",
-    "gulp-sass": "^3.1.0",
+    "gulp-sass": "^4.0.2",
     "jquery": "^3.3.1",
-    "jsdom": "^12.2.0",
+    "jsdom": "^13.2.0",
     "jsdom-global": "^3.0.2",
     "microevent": "^1.0.0",
+    "mocha": "^5.2.0",
+    "mockttp": "^0.12.6",
     "moment": "^2.21.0",
     "openseadragon": "^2.3.1",
     "popper": "^1.0.1",
     "popper.js": "^1.14.1",
     "pump": "^3.0.0",
-    "rdflib": "^0.16.7",
+    "rdflib": "^0.19.1",
     "react": "^16.2.0",
     "react-autosuggest": "^9.3.4",
-    "react-bootstrap": "^0.32.1",
+    "react-bootstrap": "^1.0.0-beta.5",
     "react-dom": "^16.2.0",
+    "sinon": "^7.2.3",
     "style-loader": "^0.23.1",
     "uuid4": "^1.1.4",
     "vinyl-named": "^1.1.0",
@@ -59,7 +66,7 @@
     "webpack-bundle-analyzer": "^3.0.3",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.14",
-    "webpack-stream": "^4.0.3"
+    "webpack-stream": "^5.2.1"
   },
   "dependencies": {}
 }
