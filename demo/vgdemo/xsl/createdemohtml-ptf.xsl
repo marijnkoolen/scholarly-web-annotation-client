@@ -108,7 +108,8 @@
                                     <div class="content"
                                         vocab="http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#"
                                         prefix="hi: http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#
-                                            efrbroo: http://erlangen-crm.org/efrbroo/">
+                                            efrbroo: http://erlangen-crm.org/efrbroo/
+                                            vg: http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#">
                                         <xsl:attribute name="typeof">
                                             <xsl:choose>
                                                 <xsl:when test="$configuration/@annotatable='work' or $configuration/@annotatable='docpluswork'">
@@ -252,7 +253,7 @@
             <xsl:attribute name="typeof">
                 <xsl:choose>
                     <xsl:when test="$configuration/@annotatable='work'">
-                        <xsl:text>ParagraphInLetter</xsl:text>
+                        <xsl:text>vg:ParagraphInLetter</xsl:text>
                     </xsl:when>
                     <xsl:when test="$configuration/@display='align'">
                         <xsl:text>hi:PositionedTextFrag</xsl:text>

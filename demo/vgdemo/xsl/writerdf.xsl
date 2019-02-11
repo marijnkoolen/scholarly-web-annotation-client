@@ -20,7 +20,7 @@
                 <xsl:value-of select="vg:enclose($paraurn)"/>
             </xsl:with-param>
             <xsl:with-param name="p">rdf:type</xsl:with-param>
-            <xsl:with-param name="o">ParagraphInLetter</xsl:with-param>
+            <xsl:with-param name="o">vg:ParagraphInLetter</xsl:with-param>
         </xsl:call-template>
         <xsl:call-template name="vg:writettlline">
             <xsl:with-param name="s">
