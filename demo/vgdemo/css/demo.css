@@ -34,18 +34,21 @@ width:1200px;
     overflow: hidden;
 }
 span.para {
-   position:relative;
-    left:140px;
     width: 800px;
     display:inline-block;
     margin-top: 0px;
-    margin-bottom: 0px;
+    margin-bottom: 20px;
     padding: 0px}
 span.linenumber {
-    position:fixed;
-   left:90px;
+    position:absolute;
+   right:820px;
 }
 span.pagenumber {
-   position:fixed;
-    left: 30px;
+   position:absolute;
+    right: 850px;
+}
+p {
+   position:relative;
+    left:100px;
+    width: 800px;
 }

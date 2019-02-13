@@ -157,6 +157,20 @@ hi:isFragmentOf rdf:type owl:ObjectProperty ;
 	rdfs:label "isFragmentIn"  ;
 	rdfs:comment "Connects text fragment to the (part of the) work that it belongs to ";
 	owl:inverseOf hi:hasFragmentOf.
+
+hi:containsFragment rdf:type owl:ObjectProperty ;
+	rdfs:range hi:PositionedTextFrag;
+	rdfs:domain hi:PositionedTextFrag;
+	rdfs:label "containsFragment"  ;
+	rdfs:comment "Describes inclusion relation between PostionedTextFrags (top-down)";
+	rdfs:subPropertyOf efrbroo:R15_has_fragment ; 
+	rdfs:subPropertyOf hi:includes.
+hi:containedInFragment rdf:type owl:ObjectProperty ;
+	rdfs:range hi:PositionedTextFrag;
+	rdfs:domain hi:PositionedTextFrag;
+	rdfs:label "containedInFragment"  ;
+	rdfs:comment "Describes inclusion relation between PostionedTextFrags (bottom-up)";
+	owl:inverseOf hi:containsFragment.
 	
 #################################################################
 #
@@ -207,7 +221,8 @@ hi:hasRepresentation rdf:type owl:ObjectProperty ;
 	rdfs:domain hi:EditableThing;
 	rdfs:range hi:EditionThing;
 	rdfs:label "hasRepresentation"  ;
-	rdfs:comment "Connects an editable thing (doc, work, ptf) to its representation in the edition" .
+	rdfs:comment "Connects an editable thing (doc, work, ptf) to its representation in the edition" ;
+	rdfs:subPropertyOf hi:includes.
 hi:isRepresentationOf rdf:type owl:ObjectProperty ;
 	rdfs:domain hi:EditionThing;
 	rdfs:range hi:EditableThing;
