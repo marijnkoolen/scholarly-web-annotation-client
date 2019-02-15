@@ -91,7 +91,7 @@ class ClassifyingForm extends React.Component {
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                 let data = JSON.parse(xhr.responseText);
-                console.log("results:", data.results);
+                //console.log("results:", data.results);
                 callback(data.results);
             }
         }

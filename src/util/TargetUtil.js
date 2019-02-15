@@ -18,9 +18,11 @@
 
 import DOMUtil from "./DOMUtil.js";
 import RDFaUtil from "./RDFaUtil.js";
+import FRBRooUtil from "./FRBRooUtil.js";
 import SelectionUtil from "./SelectionUtil.js";
 import AnnotationUtil from "./AnnotationUtil.js";
 import AnnotationActions from "../flux/AnnotationActions.js";
+import AnnotationStore from "../flux/AnnotationStore.js";
 
 const TargetUtil = {
 
@@ -146,7 +148,70 @@ const TargetUtil = {
     getCandidates : function(annotations, defaultTargets) {
         let candidateResources = TargetUtil.getCandidateRDFaTargets(defaultTargets);
         let candidateAnnotations = TargetUtil.selectCandidateAnnotations(annotations, candidateResources.highlighted);
-        return {resource: candidateResources, annotation: candidateAnnotations};
+        let candidateExternalResources = TargetUtil.getCandidateExternalResources(candidateResources);
+        return {resource: candidateResources, annotation: candidateAnnotations, external: candidateExternalResources};
+    },
+
+    // Given a set of potential target resources, return a list of all associated external resources
+    getCandidateExternalResources(resources) {
+        let externalResources = {highlighted: null, wholeNodes: []};
+        //console.log(resources.highlighted);
+        if (resources.highlighted && AnnotationActions.hasRepresentedResource(resources.highlighted.source)) {
+            let highlighted = TargetUtil.getCandidateExternalResource(resources.highlighted);
+            //console.log(highlighted);
+            externalResources.highlighted = highlighted;
+            //console.log(resources.highlighted);
+        }
+        //console.log(resources.wholeNodes);
+        //let resourceIds = resources.wholeNodes.map((resource) => { return resource.source });
+        let wholeNodes = resources.wholeNodes.filter((resource) => { return AnnotationActions.hasExternalResource(resource.source); });
+        //let hasExternalResources = resourceIds.filter(AnnotationActions.hasExternalResource);
+        //console.log("resourceIds:", resourceIds);
+        //console.log("hasExternalResources:", hasExternalResources);
+        //externalResources.wholeNodes = hasExternalResources.map((resourceId) => {
+        //    return TargetUtil.getCandidateExternalResource(resourceId);
+        //});
+        externalResources.wholeNodes = wholeNodes.map((wholeNode) => {
+            return TargetUtil.getCandidateExternalResource(wholeNode);
+        });
+        return externalResources;
+    },
+
+    getCandidateExternalResource(resource) {
+        //console.log("resource:", resource);
+        //console.log(AnnotationStore.representedResourceMap);
+        if (AnnotationActions.hasRepresentedResource(resource.source)) {
+            let representationResource = AnnotationStore.representedResourceMap[resource.source];
+            let externalMap = AnnotationStore.externalResourceIndex[representationResource.parentResource];
+            let externalResource = {
+                resource: externalMap.resource,
+                parentResource: externalMap.parentResource,
+                relation: externalMap.relation,
+                resourceType: externalMap.resourceType,
+                type: externalMap.type,
+            };
+            externalResource.params = {};
+            if (resource.params.hasOwnProperty("quote")) {
+                externalResource.params.quote = resource.params.quote;
+            }
+            if (resource.params.hasOwnProperty("position")) {
+                externalResource.params.position = resource.params.position
+            }
+            if (resource.params.hasOwnProperty("text")) {
+                externalResource.params.text = resource.params.text;
+            }
+            externalResource.params.position = resource.params.position;
+            externalResource.params.breadcrumbs = FRBRooUtil.createBreadcrumbTrail(AnnotationStore.externalResourceIndex, externalResource.resource)
+            externalResource.mimeType = resource.mimeType;
+            externalResource.label = externalResource.resourceType.map((resourceType) => {
+                return resourceType.substr(resourceType.indexOf("#") + 1);
+            })
+            externalResource.source = externalResource.resource;
+            //console.log(externalResource);
+            return externalResource;
+        } else {
+            return null;
+        }
     },
 
     // Annotation targets are elements containing
@@ -373,6 +438,10 @@ const TargetUtil = {
         if (target.selector.refinedBy)
             selector = target.selector.refinedBy;
         // if there are multiple selectors, pick any selector since they are alternatives
+        if (TargetUtil.hasQuoteSelector(selector)) {
+            selector = TargetUtil.getQuoteSelector(selector);
+            return selector.exact;
+        }
         selector = Array.isArray(selector) ? selector[0] : selector;
         if (!selector.type)
             return null;
@@ -381,6 +450,35 @@ const TargetUtil = {
         if (selector.type === "TextPositionSelector")
             return TargetUtil.getTargetRangeText(resource.data.domNode, selector.start, selector.end);
         return ""; // if no text can is targeted, return empty string
+    },
+
+    hasQuoteSelector(selector) {
+        let quoteSelector = null;
+        if(Array.isArray(selector)) {
+            return selector.some((s) => { return s.type === "TextQuoteSelector"});
+        } else if (selector.hasOwnProperty("type")) {
+            console.log("selector:", selector);
+            throw Error("Invalid selector:");
+        } else {
+            return selector.type === "TextQuoteSelector";
+        }
+    },
+
+    getQuoteSelector(selector) {
+        let quoteSelector = null;
+        if(Array.isArray(selector)) {
+            selector.forEach((s) => {
+                if (s.type === "TextQuoteSelector") {
+                    quoteSelector = s;
+                }
+            });
+            return quoteSelector
+        } else if (selector.hasOwnProperty("type")) {
+            console.log("selector:", selector);
+            throw Error("Invalid selector:");
+        } else {
+            return selector.type === "TextQuoteSelector";
+        }
     },
 
     getTargetRangeText(node, start, end) {

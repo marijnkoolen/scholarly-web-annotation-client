@@ -242,12 +242,12 @@ const RDFaUtil = {
             let source = AnnotationActions.lookupIdentifier(resourceId);
             breadcrumb[source.data.rdfaResource].type = source.data.rdfaTypeLabel;
             RDFaUtil.addBreadcrumb(labelTrail, source);
-            if (source !== undefined && source.data.rdfaParent) {
-                var val = {id: source.data.rdfaParent};
+            if (source !== undefined && source.data.parentResource) {
+                var val = {id: source.data.parentResource};
                 val[source.data.rdfaProperty] = breadcrumb[source.data.rdfaResource];
-                breadcrumb[source.data.rdfaParent] = val;
+                breadcrumb[source.data.parentResource] = val;
                 delete breadcrumb[source.data.rdfaResource];
-                resourceId = source.data.rdfaParent;
+                resourceId = source.data.parentResource;
             } else {
                 rootFound = true;
             }
@@ -286,7 +286,7 @@ const RDFaUtil = {
                 term: term
             }
         } else {
-            console.log("UNKNOWN PREFIX:", label, prefix);
+            //console.log("UNKNOWN PREFIX:", label, prefix);
             return null;
         }
     },
@@ -306,11 +306,11 @@ const RDFaUtil = {
                 return vocabulary + label;
             } else if (vocabulary) {
                 let message = "Unknown RDF type, not a valid label: " + label;
-                console.log(message);
+                //console.log(message);
                 return null;
             } else {
                 let message = "Unknown RDF type, not a valid URL: " + vocabulary;
-                console.log(message);
+                //console.log(message);
                 return null;
             }
         });
@@ -341,7 +341,7 @@ const RDFaUtil = {
             return vocabulary + rdfaTerm;
         } else {
             let message = "ERROR - Unknown property: " + rdfaTerm;
-            console.log(message);
+            //console.log(message);
             return null;
         }
     },
@@ -359,7 +359,7 @@ const RDFaUtil = {
             return vocabulary + propertyLabel;
         } else {
             let message = "ERROR - Unknown property: " + propertyLabel;
-            console.log(message);
+            //console.log(message);
             return null;
         }
     },
@@ -391,15 +391,15 @@ const RDFaUtil = {
         return attrs.vocab;
     },
 
-    listVocabularies : (node, vocabularies) => {
+    listVocabularyURLs : (node, vocabularyURLs) => {
         if (RDFaUtil.hasVocabulary(node)) {
             let vocabulary = RDFaUtil.getVocabulary(node);
-            if (!vocabularies.includes(vocabulary)) {
-                vocabularies.push(vocabulary);
+            if (!vocabularyURLs.includes(vocabulary)) {
+                vocabularyURLs.push(vocabulary);
             }
         }
         DOMUtil.getDescendants(node).forEach((descendant) => {
-            RDFaUtil.listVocabularies(descendant, vocabularies);
+            RDFaUtil.listVocabularyURLs(descendant, vocabularyURLs);
         });
     },
 
@@ -426,7 +426,7 @@ const RDFaUtil = {
             RDFaUtil.indexPrefixes(node, prefixIndex);
             var indexEntry = RDFaUtil.makeIndexEntry(node, vocabulary, prefixIndex);
             if (parentResource) {
-                indexEntry.rdfaParent = parentResource;
+                indexEntry.parentResource = parentResource;
             }
             if (!index.resources.hasOwnProperty(indexEntry.rdfaResource)) {
                 // only index resource at highest level.
@@ -464,7 +464,7 @@ const RDFaUtil = {
 
     indexParentRelation(relationIndex, resourceIndexEntry) {
         let relation = {
-            subject: resourceIndexEntry.rdfaParent,
+            subject: resourceIndexEntry.parentResource,
             predicate: resourceIndexEntry.rdfaProperty,
             object: resourceIndexEntry.rdfaResource
         }
@@ -553,11 +553,11 @@ const RDFaUtil = {
     findResourceRelations : function(resources, resourceIndex) {
         var hasParent = {};
         resources.forEach(function(resource) {
-            var parent = resourceIndex[resource].rdfaParent;
+            var parent = resourceIndex[resource].parentResource;
             while (parent) {
                 hasParent[resource] = parent;
                 resource = parent;
-                parent = resourceIndex[resource].rdfaParent;
+                parent = resourceIndex[resource].parentResource;
             }
         });
         var relations = [];

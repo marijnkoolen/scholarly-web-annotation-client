@@ -5,7 +5,6 @@ import React from 'react';
 import { Modal } from 'react-bootstrap';
 import CandidateList from './CandidateList.jsx';
 import SelectedList from './SelectedList.jsx';
-import TargetUtil from './../../util/TargetUtil.js';
 import RDFaUtil from './../../util/RDFaUtil.js';
 
 export default class TargetCreator extends React.Component {
@@ -17,7 +16,7 @@ export default class TargetCreator extends React.Component {
             selected: this.props.selectedTargets,
             annotations: [],
             activeType: "resource",
-            candidateTypes: ["resource", "annotation"],
+            candidateTypes: ["resource", "external", "annotation"],
         };
     }
     addToSelected(candidate) {

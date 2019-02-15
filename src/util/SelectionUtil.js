@@ -206,8 +206,11 @@ const SelectionUtil = {
     },
 
     setDOMSelection : function() {
-        var selection = document.getSelection();
-        if (selection.isCollapsed) {
+        var selection = null;
+        if (document.getSelection) {
+            selection = document.getSelection();
+        }
+        if (!selection || selection.isCollapsed) {
             let observerNodes = DOMUtil.getObserverNodes();
             SelectionUtil.currentSelection = {
                 startNode: observerNodes[0],

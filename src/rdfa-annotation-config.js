@@ -1,4 +1,5 @@
 const config = {
+    "baseAnnotationOntologyURL": "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl",
     "targetObserver": {
         "targetObserverClass": "annotation-target-observer",
         "observeMutations": true,

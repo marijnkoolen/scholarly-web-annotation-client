@@ -40,6 +40,15 @@ export default class CandidateList extends React.Component {
                 />
             );
         }
+        var makeExternalCandidate = function(candidate) {
+            return (
+                <CandidateTarget
+                    onClick={candidateList.selectTarget}
+                    key={candidate.resource}
+                    candidate={candidate}
+                />
+            );
+        }
         if (this.props.candidateType === "annotation") {
             var candidateNodes = this.props.candidates.map(function(candidate) {
                 return makeAnnotationCandidate(candidate);
@@ -79,6 +88,34 @@ export default class CandidateList extends React.Component {
                 </div>
             )
         }
+        if (this.props.candidateType === "external") {
+            var candidateWholeNodes = this.props.candidates.wholeNodes.map(function(candidate) {
+                return makeExternalCandidate(candidate);
+            });
+            var candidateHighlighted = false;
+            if (this.props.candidates.highlighted) {
+                let highlighted = this.props.candidates.highlighted;
+                candidateHighlighted = makeExternalCandidate(this.props.candidates.highlighted);
+            }
+            return (
+                <div className="candidateList">
+                    <div className="candidateHighlighted">
+                        <h4>Highlighted fragment:</h4>
+                        {candidateHighlighted}
+                    </div>
+                    <div className="candidateWholeList">
+                        <h4>Whole elements:</h4>
+                        <ul className="list-group">
+                            {candidateWholeNodes}
+                        </ul>
+                    </div>
+                    <br />
+                    <br />
+
+                </div>
+            )
+        }
+
     }
 }
 

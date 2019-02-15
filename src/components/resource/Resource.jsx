@@ -38,8 +38,8 @@ export default class Resource extends React.Component {
             )
         })
 
-        let rdfaParent = this.props.data.rdfaParent;
-        let parent = rdfaParent ? (<div>Parent: &nbsp; {rdfaParent}</div>) : "";
+        let parentResource = this.props.data.parentResource;
+        let parent = parentResource ? (<div>Parent: &nbsp; {parentResource}</div>) : "";
         let rdfaProperty = this.props.data.rdfaProperty ? this.props.data.rdfaProperty.split("#")[1] : null;
         let relation = rdfaProperty ? (<div>Relation: &nbsp; {rdfaProperty}</div>) : "";
 

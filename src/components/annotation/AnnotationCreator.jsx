@@ -41,6 +41,7 @@ class AnnotationCreator extends React.Component {
 
     selectTargets() {
         let candidates = TargetUtil.getCandidates(this.state.annotations, this.props.config.defaults.target);
+        //console.log(candidates);
         this.setState({
             editAnnotation: null,
             candidates: candidates,
@@ -71,6 +72,7 @@ class AnnotationCreator extends React.Component {
         this.setState({showModal: true, create: "target"});
     }
     setTargets(selectedTargets) {
+        console.log("selectedTargets:", selectedTargets);
         this.setState({
             selectedTargets: selectedTargets
         });
@@ -79,7 +81,9 @@ class AnnotationCreator extends React.Component {
         this.setState({createdBodies: createdBodies});
     }
     createAnnotation(annotationTargets) {
+        console.log("annotationTargets:", annotationTargets);
         var annotation = AnnotationUtil.generateW3CAnnotation(annotationTargets, this.props.currentUser.username);
+        console.log("createdBodies:", this.state.createdBodies);
         annotation.body = this.listBodies(this.state.createdBodies);
         this.editAnnotationBody(annotation);
     }
@@ -95,6 +99,7 @@ class AnnotationCreator extends React.Component {
             alert("Cannot save annotation without content. Please add at least one motivation.");
         } else {
             annotation.body = bodies;
+            console.log(annotation);
             AnnotationActions.save(annotation);
             this.hideAnnotationForm();
         }

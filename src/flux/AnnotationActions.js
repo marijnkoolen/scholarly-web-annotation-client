@@ -47,7 +47,6 @@ const AnnotationActions = {
 
     setAccessStatus(accessStatus) {
         AnnotationActions.accessStatus = accessStatus;
-        //console.log("Updating access status:", AnnotationActions.accessStatus);
         if (AnnotationActions.accessStatus.length === 0) {
             AnnotationActions.dispatchAnnotations([]); // when no access levels are selected
         } else {
@@ -61,7 +60,11 @@ const AnnotationActions = {
 
     setPermission(permission) {
         AnnotationActions.permission = permission;
-        //console.log("Updating permission:", AnnotationActions.permission);
+    },
+
+    setBaseAnnotationOntology(url) {
+        FRBRooUtil.baseAnnotationOntologyURL = url;
+        //console.log("AnnotationActions - baseAnnotationOntologyURL:", FRBRooUtil.baseAnnotationOntologyURL);
     },
 
     addListenerElement(element) {
@@ -75,6 +78,8 @@ const AnnotationActions = {
             source = { type: "annotation", data: AnnotationStore.annotationIndex[sourceId] };
         else if (AnnotationStore.resourceIndex.hasOwnProperty(sourceId))
             source = { type: "resource", data: AnnotationStore.resourceIndex[sourceId] };
+        else if (AnnotationStore.externalResourceIndex.hasOwnProperty(sourceId))
+            source = { type: "external", data: AnnotationStore.externalResourceIndex[sourceId] };
         return source;
     },
 
@@ -94,7 +99,6 @@ const AnnotationActions = {
     },
 
     save : function(annotation) {
-        //console.log("saving annotation with permission level", AnnotationActions.permission);
         AnnotationAPI.saveAnnotation(annotation, AnnotationActions.permission, (error, data) => {
             AppDispatcher.dispatch({
                 eventName: "save-annotation",
@@ -157,6 +161,11 @@ const AnnotationActions = {
     loadAnnotations: (resourceIds) => {
         if (resourceIds === undefined)
             resourceIds = AnnotationStore.topResources;
+        let externalResources = AnnotationActions.getExternalResources(resourceIds);
+        let externalIds = externalResources.map((res) => { return res.parentResource });
+        console.log(externalIds);
+        resourceIds = resourceIds.concat(externalIds);
+        console.log(resourceIds);
         AnnotationAPI.getAnnotationsByTargets(resourceIds, AnnotationActions.accessStatus, (error, annotations) => {
             if (error) {
                 //console.error(resourceIds, error.toString());
@@ -214,15 +223,80 @@ const AnnotationActions = {
     },
 
     indexExternalResources: (resources, callback) => {
-        FRBRooUtil.checkExternalResources((error, doIndexing) => {
-            AnnotationStore.externalResourceIndex = {};
+        FRBRooUtil.loadVocabularies((error, store) => {
             if (error) {
                 return callback(error);
-            } else if (doIndexing) {
-                AnnotationStore.externalResourceIndex = FRBRooUtil.indexRepresentedResources(resources);
-                return callback(null);
             }
+            AnnotationStore.vocabularyStore = store;
+            //console.log("AnnotationActions - vocabularyStore:", store);
+            FRBRooUtil.loadExternalResources(AnnotationStore.vocabularyStore, (error, store) => {
+                if (error) {
+                    return callback(error);
+                } else {
+                    AnnotationStore.resourceStore = store;
+                    //console.log("AnnotationActions - resourceStore:", store);
+                    //console.log("AnnotationActions - resources:", resources);
+                    let representedResourceMap = FRBRooUtil.mapRepresentedResources(store, resources);
+                    //console.log("AnnotationActions - representedResourceMap:", representedResourceMap);
+                    AnnotationStore.representedResourceMap = representedResourceMap;
+                    let externalResourceIndex = FRBRooUtil.indexExternalResources(store, resources);
+                    //console.log("AnnotationActions - externalResourceIndex:", externalResourceIndex);
+                    AnnotationStore.externalResourceIndex = externalResourceIndex;
+                    return callback(null);
+                }
+            });
         });
+    },
+
+    hasExternalResource(resourceId) {
+        //console.log(resourceId);
+        //console.log(AnnotationStore.externalResourceIndex);
+        if (!AnnotationStore.externalResourceIndex) {
+            return false;
+        } else {
+            return AnnotationStore.externalResourceIndex.hasOwnProperty(resourceId);
+        }
+    },
+
+    hasRepresentedResource(resourceId) {
+        if (!AnnotationStore.externalResourceIndex) {
+            return false;
+        } else {
+            return AnnotationStore.externalResourceIndex.hasOwnProperty(resourceId);
+        }
+    },
+
+    getRepresentedResource(resourceId) {
+        if (!AnnotationStore.externalResourceIndex) {
+            throw Error("externalResourceIndex does not exist");
+        } else if (!AnnotationStore.externalResourceIndex.hasOwnProperty(resourceId)) {
+            throw Error("resourceId does not have represented resource");
+        } else {
+            return AnnotationStore.externalResourceIndex[resourceId];
+        }
+    },
+
+    getExternalResources(resourceIds) {
+        if (!Array.isArray(resourceIds)) {
+            console.log("resourceIds:", resourceIds);
+            throw Error("resourceIds should be an array");
+        }
+        //console.log("resourceIds:", resourceIds);
+        resourceIds.filter((resourceId) => { console.log(resourceId); console.log(AnnotationActions.hasExternalResource(resourceId)) ;})
+        //console.log("filtered:", resourceIds.filter(AnnotationActions.hasExternalResource));
+        return resourceIds.filter(AnnotationActions.hasExternalResource).map((resourceId) => {
+            return AnnotationActions.getExternalResource(resourceId);
+        });
+    },
+
+    getExternalResource(resourceId) {
+        if (!AnnotationStore.externalResourceIndex) {
+            return null;
+        } else if (AnnotationStore.externalResourceIndex.hasOwnProperty(resourceId)) {
+            return AnnotationStore.externalResourceIndex[resourceId];
+        } else {
+            return null;
+        }
     },
 
     loadResources: () => {
@@ -231,27 +305,27 @@ const AnnotationActions = {
             if (error) {
                 //console.error(error);
                 window.alert("Error indexing RDFa resources in this page\n" + error.toString());
-                return false;
+                return error;
             }
             AnnotationStore.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
             let resources = Object.keys(AnnotationStore.resourceIndex);
-            console.log(AnnotationStore.resourceIndex);
-            console.log("resources:", resources);
             AnnotationActions.indexExternalResources(resources, (error) => {
                 if (error) {
                     console.log("error indexing external resources");
                     console.log(error);
+                    return error;
                 } else {
-                    console.log("external resources indexed");
-                    console.log(AnnotationStore.externalResourceIndex);
+                    //console.log("external resources indexed");
+                    //console.log(AnnotationStore.externalResourceIndex);
+                    AppDispatcher.dispatch({
+                        eventName: "load-resources",
+                        topResources: AnnotationStore.topResources,
+                        resourceMaps: AnnotationStore.resourceMaps
+                    });
+                    AnnotationActions.loadAnnotations(AnnotationStore.topResources);
+                    return null;
                 }
             });
-            AppDispatcher.dispatch({
-                eventName: "load-resources",
-                topResources: AnnotationStore.topResources,
-                resourceMaps: AnnotationStore.resourceMaps
-            });
-            AnnotationActions.loadAnnotations(AnnotationStore.topResources);
         });
     },
 

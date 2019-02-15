@@ -12,6 +12,8 @@ class CandidateTarget extends React.Component {
         this.props.onClick(this.props.candidate);
     }
     render() {
+        //console.log(this.props.candidate);
+        var badgeType = "badge badge-info";
         // TO DO: deal with elements that have multiple types
         var text = "";
         if (this.props.candidate.type === "annotation") {
@@ -21,6 +23,11 @@ class CandidateTarget extends React.Component {
                 text = this.props.candidate.params.quote.exact;
             } else if (this.props.candidate.params.text) {
                 text = this.props.candidate.params.text;
+            }
+        }  else if (this.props.candidate.mimeType === "external") {
+            badgeType = "badge badge-secondary";
+            if (this.props.candidate.params.quote) {
+                text = this.props.candidate.params.quote.exact;
             }
         } else if (this.props.candidate.mimeType === "image") {
             text = "Image selection"
@@ -38,7 +45,7 @@ class CandidateTarget extends React.Component {
                 </div>
                 <div>
                     <label>Type:</label>
-                    <span className="badge badge-info">{this.props.candidate.label}</span>
+                    <span className={badgeType}>{this.props.candidate.label}</span>
                 </div>
                 <div>
                     <label>Content:</label>

@@ -24,7 +24,7 @@ var loadPage = (htmlSource) => {
 }
 
 var loadRDFaPage = () => {
-    let vocabulary = "http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#";
+    let vocabulary = "http://localhost:3001/vangoghannotationontology.ttl#";
     let htmlSource = `
     <html>
         <head>
@@ -42,7 +42,7 @@ var loadRDFaPage = () => {
 }
 
 var loadPlainPage = () => {
-    let vocabulary = "http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#";
+    let vocabulary = "http://localhost:3001/vangoghannotationontology.ttl#";
     let htmlSource = `
     <html>
         <head>
@@ -59,14 +59,118 @@ var loadPlainPage = () => {
 }
 
 let frbrooRelationsString = `
-@prefix hi: <http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#> .
-@prefix vg: <http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#> .
+@prefix hi: <http://localhost:3001/editionannotationontology.ttl#> .
+@prefix vg: <http://localhost:3001/vangoghannotationontology.ttl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 <urn:vangogh/letter=001> rdf:type vg:Letter.
 <urn:vangogh/letter=001> hi:hasRepresentation <urn:vangogh/letter=001:repr=original>.
 <urn:vangogh/letter=001> hi:hasRepresentation <urn:vangogh/letter=001:repr=transcript>.
+<urn:vangogh/letter=001:para=1> rdf:type vg:ParagraphInLetter.
+<urn:vangogh/letter=001:para=1> hi:hasRepresentation <urn:vangogh/letter=001:para=1:repr=original>.
+<urn:vangogh/letter=001> hi:hasWorkPart <urn:vangogh/letter=001:para=1>.
 `;
+
+let editionOntologyString = `
+@prefix hi: <http://localhost:3001/editionannotationontology.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ecrm: <http://erlangen-crm.org/current/> .
+@prefix efrbroo: <http://erlangen-crm.org/efrbroo/> .
+@base <http://localhost:3001/editionannotationontology.ttl> .
+<http://localhost:3001/editionannotationontology.ttl> rdf:type owl:Ontology .
+
+<http://localhost:3001/editionannotationontology.ttl>  owl:imports  <https://raw.githubusercontent.com/erlangen-crm/efrbroo/releases/efrbroo_20160715.owl>.
+
+hi:AnnotatableThing rdf:type owl:Class ;
+    rdfs:label "AnnotatableThing" ;
+    rdfs:subClassOf ecrm:E71_Man-Made_Thing ;
+    rdfs:comment "E71 can be either E24_Physical_Man-Made_Thing (i.e. documents) or E28_Conceptual_Object (i.e. works)" .
+hi:EditableThing rdf:type owl:Class ;
+    rdfs:label "EditableThing" ;
+    rdfs:subClassOf hi:AnnotatableThing ;
+    rdfs:comment "Realm of things that can be or have been edited" .
+hi:EditionThing rdf:type owl:Class ;
+    rdfs:label "EditionThing" ;
+    rdfs:subClassOf hi:AnnotatableThing ;
+    rdfs:comment "Realm of things that result from editing" .
+
+hi:includes rdf:type owl:ObjectProperty ;
+    rdfs:domain hi:AnnotatableThing;
+    rdfs:range hi:AnnotatableThing;
+    rdfs:label "includes" ;
+    rdfs:comment "Superproperty for all relations that are considered hierarchical".
+
+hi:Work rdf:type owl:Class ;
+    rdfs:label "Work" ;
+    rdfs:subClassOf efrbroo:F1_Work ;
+    rdfs:subClassOf hi:EditableThing ;
+    rdfs:comment "Works that are editid" .
+hi:PartOfWork rdf:type owl:Class ;
+    rdfs:label "PartOfWork" ;
+    rdfs:subClassOf hi:EditableThing ;
+    rdfs:subClassOf ecrm:E89_Propositional_Object ;
+    rdfs:comment "Consists of parts of works that are edited" .
+hi:WorkOrPartOfWork rdf:type owl:Class ;
+    rdfs:label "WorkOrPartOfWork" ;
+    owl:unionOf (hi:Work hi:PartOfWork);
+    rdfs:comment "Consists of works that are edited and parts of them" .
+
+hi:hasWorkPart rdf:type owl:ObjectProperty ;
+    rdfs:domain hi:Work;
+    rdfs:range hi:PartOfWork;
+    rdfs:label "hasWorkPart" ;
+    rdfs:comment "Describes relation between Works and parts of Works";
+    rdfs:subPropertyOf hi:includes.
+hi:isWorkPartOf rdf:type owl:ObjectProperty ;
+    rdfs:domain hi:PartOfWork;
+    rdfs:range hi:Work;
+    rdfs:label "isWorkPartOf" ;
+    rdfs:comment "Describes relation between parts of Works and Works";
+    owl:inverseOf hi:hasWorkPart.
+
+
+hi:EditionText rdf:type owl:Class ;
+    rdfs:label "EditionText" ;
+    rdfs:subClassOf efrbroo:F2_Expression ;
+    rdfs:subClassOf hi:EditionThing ;
+    rdfs:comment "Edition reading text" .
+
+hi:hasRepresentation rdf:type owl:ObjectProperty ;
+    rdfs:domain hi:EditableThing;
+    rdfs:range hi:EditionThing;
+    rdfs:label "hasRepresentation"  ;
+    rdfs:comment "Connects an editable thing (doc, work, ptf) to its representation in the edition" ;
+    rdfs:subPropertyOf hi:includes.
+hi:isRepresentationOf rdf:type owl:ObjectProperty ;
+    rdfs:domain hi:EditionThing;
+    rdfs:range hi:EditableThing;
+    rdfs:label "isRepresentationOf"  ;
+    rdfs:comment "Connects a representation to what it represents";
+    owl:inverseOf hi:hasRepresentation.
+
+`;
+
+let vangoghOntologyString = `
+@prefix hi: <http://localhost:3001/editionannotationontology.ttl#> .
+@prefix vg: <http://localhost:3001/vangoghannotationontology.ttl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://localhost:3001/vangoghannotationontology.ttl> .
+<http://localhost:3001/vangoghannotationontology.ttl> rdf:type owl:Ontology .
+
+<http://localhost:3001/vangoghannotationontology.ttl>  owl:imports  <http://localhost:3001/editionannotationontology.ttl>.
+
+vg:Letter rdf:type owl:Class ;
+    rdfs:label "Letter" ;
+    rdfs:subClassOf hi:Work.
+vg:ParagraphInLetter rdf:type owl:Class ;
+    rdfs:label "ParagraphInLetter" ;
+    rdfs:subClassOf hi:PartOfWork.
+`;
+
 
 var prefillStore = () => {
     FRBRooUtil.newStore();
@@ -135,6 +239,8 @@ describe("FRBRooUtil", () => {
 
         beforeEach((done) => {
             mockServer.start((3001));
+            mockServer.get("/doesnotexist").thenReply(404, "not found");
+            mockServer.get("/frbroo_alternate.ttl").thenReply(200, frbrooRelationsString);
             done();
         });
 
@@ -145,23 +251,19 @@ describe("FRBRooUtil", () => {
 
         it("should return null when relations file does not exist", (done) => {
             let url = "http://localhost:3001/doesnotexist";
-            mockServer.get("/doesnotexist").thenReply(404, "not found").then(() => {
-                let frbrooRelations = FRBRooUtil.readExternalResources(url, (error, frbrooRelations) => {
-                    expect(error).to.not.equal(null);
-                    expect(frbrooRelations).to.equal(null);
-                    done();
-                });
+            let frbrooRelations = FRBRooUtil.readExternalResources(url, (error, frbrooRelations) => {
+                expect(error).to.not.equal(null);
+                expect(frbrooRelations).to.equal(null);
+                done();
             });
         });
 
         it("should return an RDFLib store when relations file does exist", (done) => {
             let url = "http://localhost:3001/frbroo_alternate.ttl";
-            mockServer.get("/frbroo_alternate.ttl").thenReply(200, frbrooRelationsString).then(() => {
-                let frbrooRelations = FRBRooUtil.readExternalResources(url, (error, frbrooRelations) => {
-                    expect(error).to.equal(null);
-                    expect(frbrooRelations).to.equal(frbrooRelationsString);
-                    done();
-                });
+            let frbrooRelations = FRBRooUtil.readExternalResources(url, (error, frbrooRelations) => {
+                expect(error).to.equal(null);
+                expect(frbrooRelations).to.equal(frbrooRelationsString);
+                done();
             });
         });
 
@@ -169,22 +271,38 @@ describe("FRBRooUtil", () => {
 
     describe("storeExternalResources", () => {
 
+        it("should throw error when no store given", (done) => {
+            let baseURI = "http://localhost:3001/frbroo_alternate.ttl";
+            let mimeType = "text/n3";
+            let store = null;
+            var error = null;
+            try {
+                FRBRooUtil.storeExternalResources(store, "", baseURI, mimeType);
+            } catch (err) {
+                error = err;
+            }
+            expect(error).to.not.be.null;
+            done();
+        });
+
         it("should have store", (done) => {
             let baseURI = "http://localhost:3001/frbroo_alternate.ttl";
             let mimeType = "text/n3";
-            FRBRooUtil.storeExternalResources("", baseURI, mimeType);
-            expect(FRBRooUtil.store).to.not.be.undefined;
+            let store = FRBRooUtil.newStore();
+            FRBRooUtil.storeExternalResources(store, "", baseURI, mimeType);
+            expect(store).to.not.be.undefined;
             done();
         });
 
         it("should find Letter resource", (done) => {
-            let resourceType = "http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#Letter";
+            let resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
             let predicate = FRBRooUtil.RDF('type');
             let baseURI = "http://localhost:3001/frbroo_alternate.ttl";
             let mimeType = "text/n3";
-            FRBRooUtil.storeExternalResources(frbrooRelationsString, baseURI, mimeType);
+            let store = FRBRooUtil.newStore();
+            FRBRooUtil.storeExternalResources(store, frbrooRelationsString, baseURI, mimeType);
             let object = $rdf.sym(resourceType);
-            let subject = FRBRooUtil.store.any(undefined, predicate, object);
+            let subject = store.any(undefined, predicate, object);
             expect(subject.uri).to.equal("urn:vangogh/letter=001")
             done();
         });
@@ -192,9 +310,16 @@ describe("FRBRooUtil", () => {
 
     describe("findExternalSubjectRelations", () => {
 
+        let mimeType = "text/turtle";
+        let baseUri = "http://localhost:3001/frbroo_alternate.ttl";
+        let resourceStore = {
+            triples: FRBRooUtil.newStore()
+        }
+        $rdf.parse(frbrooRelationsString, resourceStore.triples, baseUri, mimeType);
+
         it("should return null if unknown object is given", (done) => {
             let resource = "urn:unknown";
-            let relations = FRBRooUtil.findExternalSubjectRelations(resource, undefined);
+            let relations = FRBRooUtil.findExternalSubjectRelations(resourceStore, resource, undefined);
             expect(relations.length).to.equal(0);
             done();
         });
@@ -203,10 +328,10 @@ describe("FRBRooUtil", () => {
             let abstractResource = "urn:vangogh/letter=001";
             let originalResource = "urn:vangogh/letter=001:repr=original";
             let transcriptResource = "urn:vangogh/letter=001:repr=transcript";
-            let abstractType = "http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#Letter";
-            let relations = FRBRooUtil.findExternalSubjectRelations(abstractResource, undefined);
+            let abstractType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
+            let relations = FRBRooUtil.findExternalSubjectRelations(resourceStore, abstractResource, undefined);
             let objects = relations.map((relation) => { return relation.object.value });
-            expect(relations.length).to.equal(3);
+            expect(relations.length).to.equal(4);
             expect(objects).to.include(originalResource);
             expect(objects).to.include(transcriptResource);
             expect(objects).to.include(abstractType);
@@ -216,8 +341,8 @@ describe("FRBRooUtil", () => {
         it("should return no relations if represented object and unknown relation are given", (done) => {
             let originalResource = "urn:vangogh/letter=001:repr=original";
             let abstractResource = "urn:vangogh/letter=001";
-            let relation = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#hasUnkownRelation";
-            let relations = FRBRooUtil.findExternalSubjectRelations(abstractResource, relation);
+            let relation = "http://localhost:3001/editionannotationontology.ttl#hasUnkownRelation";
+            let relations = FRBRooUtil.findExternalSubjectRelations(resourceStore, abstractResource, relation);
             expect(relations.length).to.equal(0);
             done();
         });
@@ -226,8 +351,8 @@ describe("FRBRooUtil", () => {
             let originalResource = "urn:vangogh/letter=001:repr=original";
             let transcriptResource = "urn:vangogh/letter=001:repr=transcript";
             let abstractResource = "urn:vangogh/letter=001";
-            let relation = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#hasRepresentation";
-            let relations = FRBRooUtil.findExternalSubjectRelations(abstractResource, relation);
+            let relation = "http://localhost:3001/editionannotationontology.ttl#hasRepresentation";
+            let relations = FRBRooUtil.findExternalSubjectRelations(resourceStore, abstractResource, relation);
             expect(relations.length).to.equal(2);
             let objects = relations.map((relation) => { return relation.object.value });
             expect(objects).to.include(originalResource);
@@ -238,9 +363,17 @@ describe("FRBRooUtil", () => {
 
     describe("findExternalObjectRelations", () => {
 
+        let mimeType = "text/turtle";
+        let baseUri = "http://localhost:3001/frbroo_alternate.ttl";
+        let store = FRBRooUtil.newStore();
+        let resourceStore = {
+            triples: FRBRooUtil.newStore()
+        }
+        $rdf.parse(frbrooRelationsString, resourceStore.triples, baseUri, mimeType);
+
         it("should return null if unknown object is given", (done) => {
             let resource = "urn:unknown";
-            let relations = FRBRooUtil.findExternalObjectRelations(resource, undefined);
+            let relations = FRBRooUtil.findExternalObjectRelations(resourceStore, resource, undefined);
             expect(relations.length).to.equal(0);
             done();
         });
@@ -248,7 +381,7 @@ describe("FRBRooUtil", () => {
         it("should return abstract object if representation of object is given", (done) => {
             let originalResource = "urn:vangogh/letter=001:repr=original";
             let abstractResource = "urn:vangogh/letter=001";
-            let relations = FRBRooUtil.findExternalObjectRelations(originalResource, undefined);
+            let relations = FRBRooUtil.findExternalObjectRelations(resourceStore, originalResource, undefined);
             expect(relations.length).to.equal(1);
             expect(relations[0].subject.value).to.equal(abstractResource)
             done();
@@ -257,8 +390,8 @@ describe("FRBRooUtil", () => {
         it("should return no relations if representation of object and unknown relation are given", (done) => {
             let originalResource = "urn:vangogh/letter=001:repr=original";
             let abstractResource = "urn:vangogh/letter=001";
-            let relation = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#hasUnkownRelation";
-            let relations = FRBRooUtil.findExternalObjectRelations(originalResource, relation);
+            let relation = "http://localhost:3001/editionannotationontology.ttl#hasUnkownRelation";
+            let relations = FRBRooUtil.findExternalObjectRelations(resourceStore, originalResource, relation);
             expect(relations.length).to.equal(0);
             done();
         });
@@ -266,8 +399,8 @@ describe("FRBRooUtil", () => {
         it("should return represented object if representation of object and relation are given", (done) => {
             let originalResource = "urn:vangogh/letter=001:repr=original";
             let abstractResource = "urn:vangogh/letter=001";
-            let relation = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#hasRepresentation";
-            let relations = FRBRooUtil.findExternalObjectRelations(originalResource, relation);
+            let relation = "http://localhost:3001/editionannotationontology.ttl#hasRepresentation";
+            let relations = FRBRooUtil.findExternalObjectRelations(resourceStore, originalResource, relation);
             expect(relations.length).to.equal(1);
             expect(relations[0].subject.value).to.equal(abstractResource);
             expect(relations[0].predicate.value).to.equal(relation);
@@ -277,16 +410,23 @@ describe("FRBRooUtil", () => {
 
     describe("findExternalResources", () => {
 
+        let mimeType = "text/turtle";
+        let baseUri = "http://localhost:3001/frbroo_alternate.ttl";
+        let resourceStore = {
+            triples: FRBRooUtil.newStore()
+        }
+        $rdf.parse(frbrooRelationsString, resourceStore.triples, baseUri, mimeType);
+
         beforeEach((done) => {
             let baseURI = "http://localhost:3001/frbroo_alternate.ttl";
             let mimeType = "text/n3";
-            FRBRooUtil.storeExternalResources(frbrooRelationsString, baseURI, mimeType);
+            FRBRooUtil.storeExternalResources(resourceStore.triples, frbrooRelationsString, baseURI, mimeType);
             done();
         });
 
         it("should return empty list for unknown resources", (done) => {
             let original = "urn:unknown";
-            let relatedResources = FRBRooUtil.findExternalResources(original);
+            let relatedResources = FRBRooUtil.findExternalResources(resourceStore, original);
             expect(relatedResources).to.not.equal(null);
             expect(relatedResources.length).to.equal(0);
             done();
@@ -295,7 +435,7 @@ describe("FRBRooUtil", () => {
         it("should find abstract letter for original representation", (done) => {
             let originalLetter = "urn:vangogh/letter=001:repr=original";
             let abstractLetter = "urn:vangogh/letter=001";
-            let relatedResources = FRBRooUtil.findExternalResources(originalLetter);
+            let relatedResources = FRBRooUtil.findExternalResources(resourceStore, originalLetter);
             expect(relatedResources.length).to.equal(1);
             expect(relatedResources[0].subject.value).to.equal(abstractLetter);
             done();
@@ -306,7 +446,7 @@ describe("FRBRooUtil", () => {
             let transcriptLetter = "urn:vangogh/letter=001:repr=transcript";
             let abstractLetter = "urn:vangogh/letter=001";
             let resources = [originalLetter, transcriptLetter];
-            let relatedResources = FRBRooUtil.findExternalResources(resources);
+            let relatedResources = FRBRooUtil.findExternalResources(resourceStore, resources);
             expect(relatedResources.length).to.equal(2);
             expect(relatedResources[0].subject.value).to.equal(abstractLetter);
             expect(relatedResources[1].subject.value).to.equal(abstractLetter);
@@ -317,9 +457,9 @@ describe("FRBRooUtil", () => {
             let originalLetter = "urn:vangogh/letter=001:repr=original";
             let transcriptLetter = "urn:vangogh/letter=001:repr=transcript";
             let abstractLetter = "urn:vangogh/letter=001";
-            let relationType = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#hasRepresentation";
+            let relationType = "http://localhost:3001/editionannotationontology.ttl#hasRepresentation";
             let resources = [originalLetter, transcriptLetter];
-            let relatedResources = FRBRooUtil.findExternalResources(resources, relationType);
+            let relatedResources = FRBRooUtil.findExternalResources(resourceStore, resources, relationType);
             expect(relatedResources.length).to.equal(2);
             expect(relatedResources[0].subject.value).to.equal(abstractLetter);
             expect(relatedResources[1].subject.value).to.equal(abstractLetter);
@@ -330,9 +470,9 @@ describe("FRBRooUtil", () => {
             let originalLetter = "urn:vangogh/letter=001:repr=original";
             let transcriptLetter = "urn:vangogh/letter=001:repr=transcript";
             let abstractLetter = "urn:vangogh/letter=001";
-            let relationType = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#hasTranslation";
+            let relationType = "http://localhost:3001/editionannotationontology.ttl#hasTranslation";
             let resources = [originalLetter, transcriptLetter];
-            let relatedResources = FRBRooUtil.findExternalResources(resources, relationType);
+            let relatedResources = FRBRooUtil.findExternalResources(resourceStore, resources, relationType);
             expect(relatedResources.length).to.equal(0);
             done();
         });
@@ -342,7 +482,7 @@ describe("FRBRooUtil", () => {
             let transcriptLetter = "urn:vangogh/letter=001:repr=transcript";
             let abstractLetter = "urn:vangogh/letter=001";
             let resources = [unknownResource, transcriptLetter];
-            let relatedResources = FRBRooUtil.findExternalResources(resources);
+            let relatedResources = FRBRooUtil.findExternalResources(resourceStore, resources);
             expect(relatedResources.length).to.equal(1);
             expect(relatedResources[0].subject.value).to.equal(abstractLetter);
             done();
@@ -360,7 +500,7 @@ describe("FRBRooUtil", () => {
 
         it("should add type as string if no previous type is given", (done) => {
             let properties = {};
-            let resourceType = "http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#Letter";
+            let resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
             FRBRooUtil.addResourceTypeProperty(properties, resourceType);
             expect(properties.hasOwnProperty("rdfaType")).to.equal(true);
             expect(properties.rdfaType).to.equal(resourceType);
@@ -369,7 +509,7 @@ describe("FRBRooUtil", () => {
 
         it("should throw error if properties.rdfaType is not array or string", (done) => {
             let properties = {rdfaType: {someProp: "someValue"}};
-            let resourceType = "http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#Letter";
+            let resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
             var error = null;
             try {
                 FRBRooUtil.addResourceTypeProperty(properties, resourceType);
@@ -381,18 +521,18 @@ describe("FRBRooUtil", () => {
         });
 
         it("should change rdfaType to Array if single previous type is given", (done) => {
-            var resourceType = "http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#Letter";
+            var resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
             let properties = {rdfaType: resourceType};
-            var resourceType = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#Work";
+            var resourceType = "http://localhost:3001/editionannotationontology.ttl#Work";
             FRBRooUtil.addResourceTypeProperty(properties, resourceType);
             expect(Array.isArray(properties.rdfaType)).to.equal(true);
             done();
         });
 
         it("should add resourceType to Array if single previous type is given", (done) => {
-            var resourceType = "http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#Letter";
+            var resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
             let properties = {rdfaType: [resourceType]};
-            var resourceType = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#Work";
+            var resourceType = "http://localhost:3001/editionannotationontology.ttl#Work";
             FRBRooUtil.addResourceTypeProperty(properties, resourceType);
             expect(Array.isArray(properties.rdfaType)).to.equal(true);
             expect(properties.rdfaType.length).to.equal(2);
@@ -402,17 +542,22 @@ describe("FRBRooUtil", () => {
 
     describe("gatherResourceProperties", () => {
 
+        let mimeType = "text/turtle";
+        let baseUri = "http://localhost:3001/frbroo_alternate.ttl";
+        let store = FRBRooUtil.newStore();
+        $rdf.parse(frbrooRelationsString, store, baseUri, mimeType);
+
         it("should return null for unknown resources", (done) => {
             let resource = "urn:unknown";
-            let properties = FRBRooUtil.gatherResourceProperties(resource);
+            let properties = FRBRooUtil.gatherResourceProperties(store, resource);
             expect(properties).to.equal(null);
             done();
         });
 
         it("should find Letter property for abstract letter", (done) => {
             let resource = "urn:vangogh/letter=001";
-            var resourceType = "http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#Letter";
-            let properties = FRBRooUtil.gatherResourceProperties(resource);
+            var resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
+            let properties = FRBRooUtil.gatherResourceProperties(store, resource);
             expect(properties.hasOwnProperty("rdfaType")).to.equal(true);
             expect(properties.rdfaType).to.equal(resourceType);
             done();
@@ -420,6 +565,11 @@ describe("FRBRooUtil", () => {
     });
 
     describe("isRDFTriple", () => {
+
+        let mimeType = "text/turtle";
+        let baseUri = "http://localhost:3001/frbroo_alternate.ttl";
+        let store = FRBRooUtil.newStore();
+        $rdf.parse(frbrooRelationsString, store, baseUri, mimeType);
 
         it("should throw an error if triple has no subject", (done) => {
             let error = null;
@@ -444,7 +594,7 @@ describe("FRBRooUtil", () => {
 
         it("should return true if triple has subject, predicate and object", (done) => {
             let error = null;
-            let relation = FRBRooUtil.store.statementsMatching(undefined, FRBRooUtil.RDF('type'))[0];
+            let relation = store.statementsMatching(undefined, FRBRooUtil.RDF('type'))[0];
             expect(FRBRooUtil.isRDFTriple(relation)).to.equal(true);
             done();
         });
@@ -452,10 +602,15 @@ describe("FRBRooUtil", () => {
 
     describe("addIndexEntry", () => {
 
+        let mimeType = "text/turtle";
+        let baseUri = "http://localhost:3001/frbroo_alternate.ttl";
+        let store = FRBRooUtil.newStore();
+        $rdf.parse(frbrooRelationsString, store, baseUri, mimeType);
+
         it("should throw an error if no index is given", (done) => {
             let index = {};
             let resource = "urn:vangogh/letter=001";
-            let relation = FRBRooUtil.store.statementsMatching($rdf.sym(resource), FRBRooUtil.RDF('type'))[0];
+            let relation = store.statementsMatching($rdf.sym(resource), FRBRooUtil.RDF('type'))[0];
             var error = null;
             try {
                 FRBRooUtil.addIndexEntry(null, resource, relation);
@@ -469,7 +624,7 @@ describe("FRBRooUtil", () => {
         it("should throw an error if no resource is given", (done) => {
             let index = {};
             let resource = "urn:vangogh/letter=001";
-            let relation = FRBRooUtil.store.statementsMatching($rdf.sym(resource), FRBRooUtil.RDF('type'))[0];
+            let relation = store.statementsMatching($rdf.sym(resource), FRBRooUtil.RDF('type'))[0];
             var error = null;
             try {
                 FRBRooUtil.addIndexEntry(index, null, relation);
@@ -483,7 +638,7 @@ describe("FRBRooUtil", () => {
         it("should throw an error if no RDF relation is given", (done) => {
             let index = {};
             let resource = "urn:vangogh/letter=001";
-            let relation = FRBRooUtil.store.statementsMatching($rdf.sym(resource), FRBRooUtil.RDF('type'))[0];
+            let relation = store.statementsMatching($rdf.sym(resource), FRBRooUtil.RDF('type'))[0];
             var error = null;
             try {
                 FRBRooUtil.addIndexEntry(index, resource, null);
@@ -497,7 +652,7 @@ describe("FRBRooUtil", () => {
         it("should add relation if index, resource and RDF relation are given", (done) => {
             let index = {};
             let resource = "urn:vangogh/letter=001";
-            let relation = FRBRooUtil.store.statementsMatching($rdf.sym(resource), FRBRooUtil.RDF('type'))[0];
+            let relation = store.statementsMatching($rdf.sym(resource), FRBRooUtil.RDF('type'))[0];
             FRBRooUtil.addIndexEntry(index, resource, relation);
             expect(index.hasOwnProperty(resource)).to.equal(true);
             done();
@@ -507,7 +662,7 @@ describe("FRBRooUtil", () => {
             let index = {};
             let resource = "urn:vangogh/letter=001";
             let otherResource = "urn:unknown";
-            let relation = FRBRooUtil.store.statementsMatching($rdf.sym(resource), FRBRooUtil.RDF('type'))[0];
+            let relation = store.statementsMatching($rdf.sym(resource), FRBRooUtil.RDF('type'))[0];
             var error = null;
             try {
                 FRBRooUtil.addIndexEntry(index, otherResource, relation);
@@ -519,57 +674,25 @@ describe("FRBRooUtil", () => {
         });
     });
 
-    describe("indexExternalResources", () => {
+    describe("mapRepresentedResources", () => {
+
+        let mimeType = "text/turtle";
+        let baseUri = "http://localhost:3001/frbroo_alternate.ttl";
+        let resourceStore = {
+            triples: FRBRooUtil.newStore()
+        }
+        $rdf.parse(frbrooRelationsString, resourceStore.triples, baseUri, mimeType);
 
         it("should return an empty index if no resources are given", (done) => {
             let resources = [];
-            let relatedResourceIndex = FRBRooUtil.indexExternalResources(resources, null);
-            expect(Object.keys(relatedResourceIndex).length).to.equal(0);
-            done();
-        });
-
-        it("should return an empty index if unknown resources are given", (done) => {
-            let resources = ["urn:unknown"];
-            let relatedResourceIndex = FRBRooUtil.indexExternalResources(resources, null);
-            expect(Object.keys(relatedResourceIndex).length).to.equal(0);
-            done();
-        });
-
-        it("should return an empty index if known resource has no related resource", (done) => {
-            let translationLetter = "urn:vangogh/letter=001:repr=translation";
-            let resources = [translationLetter];
-            let relatedResourceIndex = FRBRooUtil.indexExternalResources(resources, null);
-            expect(Object.keys(relatedResourceIndex).length).to.equal(0);
-            done();
-        });
-
-        it("should return a non-empty index if known resource has related resource", (done) => {
-            let abstractLetter = "urn:vangogh/letter=001";
-            let originalLetter = "urn:vangogh/letter=001:repr=original";
-            let relationType = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#hasRepresentation";
-            let resources = [originalLetter];
-            let relatedResourceIndex = FRBRooUtil.indexExternalResources(resources, relationType);
-            expect(Object.keys(relatedResourceIndex).length).to.equal(1);
-            let entries = relatedResourceIndex[originalLetter];
-            expect(entries.length).to.equal(1);
-            expect(entries[0].relatedResource).to.equal(abstractLetter);
-            expect(entries[0].relation).to.equal(relationType);
-            done();
-        });
-    });
-
-    describe("indexRepresentedResources", () => {
-
-        it("should return an empty index if no resources are given", (done) => {
-            let resources = [];
-            let representedResourceIndex = FRBRooUtil.indexRepresentedResources(resources, null);
+            let representedResourceIndex = FRBRooUtil.mapRepresentedResources(resourceStore, resources, null);
             expect(Object.keys(representedResourceIndex).length).to.equal(0);
             done();
         });
 
         it("should return an empty index if unknown resources are given", (done) => {
             let resources = ["urn:unknown"];
-            let representedResourceIndex = FRBRooUtil.indexRepresentedResources(resources, null);
+            let representedResourceIndex = FRBRooUtil.mapRepresentedResources(resourceStore, resources, null);
             expect(Object.keys(representedResourceIndex).length).to.equal(0);
             done();
         });
@@ -577,7 +700,7 @@ describe("FRBRooUtil", () => {
         it("should return an empty index if known resource has no represented resource", (done) => {
             let translationLetter = "urn:vangogh/letter=001:repr=translation";
             let resources = [translationLetter];
-            let representedResourceIndex = FRBRooUtil.indexRepresentedResources(resources, null);
+            let representedResourceIndex = FRBRooUtil.mapRepresentedResources(resourceStore, resources, null);
             expect(Object.keys(representedResourceIndex).length).to.equal(0);
             done();
         });
@@ -585,23 +708,104 @@ describe("FRBRooUtil", () => {
         it("should return a non-empty index if known resource has represented resource", (done) => {
             let abstractLetter = "urn:vangogh/letter=001";
             let originalLetter = "urn:vangogh/letter=001:repr=original";
-            let hasRepresentation = "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#hasRepresentation";
+            let hasRepresentation = "http://localhost:3001/editionannotationontology.ttl#hasRepresentation";
             let resources = [originalLetter];
-            let representedResourceIndex = FRBRooUtil.indexRepresentedResources(resources);
+            let representedResourceIndex = FRBRooUtil.mapRepresentedResources(resourceStore, resources);
             expect(Object.keys(representedResourceIndex).length).to.equal(1);
-            let entries = representedResourceIndex[originalLetter];
-            expect(entries.length).to.equal(1);
-            expect(entries[0].relatedResource).to.equal(abstractLetter);
-            expect(entries[0].relation).to.equal(hasRepresentation);
             done();
+        });
+
+        it("should have object as index entries if known resource has represented resource", (done) => {
+            let abstractLetter = "urn:vangogh/letter=001";
+            let originalLetter = "urn:vangogh/letter=001:repr=original";
+            let hasRepresentation = "http://localhost:3001/editionannotationontology.ttl#hasRepresentation";
+            let resources = [originalLetter];
+            let representedResourceIndex = FRBRooUtil.mapRepresentedResources(resourceStore, resources);
+            expect(typeof representedResourceIndex[originalLetter]).to.equal("object");
+            done();
+        });
+
+        it("should have parentResource in entry if known resource has represented resource", (done) => {
+            let abstractLetter = "urn:vangogh/letter=001";
+            let originalLetter = "urn:vangogh/letter=001:repr=original";
+            let hasRepresentation = "http://localhost:3001/editionannotationontology.ttl#hasRepresentation";
+            let resources = [originalLetter];
+            let representedResourceIndex = FRBRooUtil.mapRepresentedResources(resourceStore, resources);
+            let entry = representedResourceIndex[originalLetter];
+            expect(entry.parentResource).to.equal(abstractLetter);
+            done();
+        });
+
+        it("should have relation property in entry if known resource has represented resource", (done) => {
+            let abstractLetter = "urn:vangogh/letter=001";
+            let originalLetter = "urn:vangogh/letter=001:repr=original";
+            let hasRepresentation = "http://localhost:3001/editionannotationontology.ttl#hasRepresentation";
+            let resources = [originalLetter];
+            let representedResourceIndex = FRBRooUtil.mapRepresentedResources(resourceStore, resources);
+            let entry = representedResourceIndex[originalLetter];
+            expect(entry.relation).to.equal(hasRepresentation);
+            done();
+        });
+    });
+
+    describe("loadExternalResources", () => {
+
+        FRBRooUtil.baseAnnotationOntologyURL = "http://localhost:3001/editionannotationontology.ttl";
+        let vocabularyStore = null;
+
+        beforeEach((done) => {
+            mockServer.start((3001));
+            mockServer.get("/frbroo_alternate.ttl").thenReply(200, frbrooRelationsString);
+            mockServer.get("/vangoghannotationontology.ttl").thenReply(200, vangoghOntologyString);
+            mockServer.get("/editionannotationontology.ttl").thenReply(200, editionOntologyString);
+            loadRDFaPage();
+            FRBRooUtil.loadVocabularies((error, store) => {
+                vocabularyStore = store;
+                done();
+            });
+        });
+
+        afterEach((done) => {
+            mockServer.stop();
+            done();
+        });
+
+        it("should do nothing if no external resources are specified", (done) => {
+            loadPlainPage();
+            FRBRooUtil.loadExternalResources(vocabularyStore, (error, store) => {
+                expect(error).to.equal(null);
+                expect(store).to.equal(null);
+                done();
+            });
+        });
+
+        it("should store relations if external resources are specified", (done) => {
+            loadRDFaPage();
+            FRBRooUtil.loadExternalResources(vocabularyStore, (error, store) => {
+                expect(store).to.not.equal(null);
+                expect(store.relations).to.exist;
+                done();
+            });
+        });
+
+        it("should store triples if external resources are specified", (done) => {
+            loadRDFaPage();
+            FRBRooUtil.loadExternalResources(vocabularyStore, (error, store) => {
+                expect(error).to.equal(null);
+                expect(store).to.not.equal(null);
+                expect(store.triples).to.exist;
+                done();
+            });
         });
     });
 
     describe("checkExternalResources", () => {
 
+        let store = FRBRooUtil.newStore();
+
         beforeEach((done) => {
             mockServer.start((3001));
-            FRBRooUtil.store = null;
+            mockServer.get("/frbroo_alternate.ttl").thenReply(200, frbrooRelationsString);
             done();
         });
 
@@ -612,24 +816,20 @@ describe("FRBRooUtil", () => {
 
         it("should do nothing if no external resources are specified", (done) => {
             loadPlainPage();
-            mockServer.get("/frbroo_alternate.ttl").thenReply(200, frbrooRelationsString).then(() => {
-                FRBRooUtil.checkExternalResources((error, doIndexing) => {
-                    expect(error).to.equal(null);
-                    expect(doIndexing).to.deep.equal(false);
-                    done();
-                });
+            FRBRooUtil.checkExternalResources((error, doIndexing, store) => {
+                expect(error).to.equal(null);
+                expect(doIndexing).to.deep.equal(false);
+                done();
             });
         });
 
         it("should store relations if external resources are specified", (done) => {
             loadRDFaPage();
-            mockServer.get("/frbroo_alternate.ttl").thenReply(200, frbrooRelationsString).then(() => {
-                FRBRooUtil.checkExternalResources((error, doIndexing) => {
-                    expect(error).to.equal(null);
-                    expect(doIndexing).to.deep.equal(true);
-                    expect(FRBRooUtil.store).to.not.equal(null);
-                    done();
-                });
+            FRBRooUtil.checkExternalResources((error, doIndexing, store) => {
+                expect(error).to.equal(null);
+                expect(doIndexing).to.deep.equal(true);
+                expect(store).to.not.equal(null);
+                done();
             });
         });
     });

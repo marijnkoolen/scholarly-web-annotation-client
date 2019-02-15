@@ -2,6 +2,7 @@
 
 import React from 'react';
 import AnnotationActions from './../../flux/AnnotationActions.js';
+import AnnotationStore from './../../flux/AnnotationStore.js';
 import AppCollectionStore from '../../flux/CollectionStore.js';
 import FlexModal from './../FlexModal';
 import AnnotationUtil from './../../util/AnnotationUtil.js';
@@ -9,6 +10,7 @@ import SelectionUtil from './../../util/SelectionUtil.js';
 import TargetUtil from './../../util/TargetUtil.js';
 import TimeUtil from '../../util/TimeUtil';
 import RDFaUtil from '../../util/RDFaUtil';
+import FRBRooUtil from '../../util/FRBRooUtil';
 
 class Annotation extends React.Component {
     constructor(props) {
@@ -72,12 +74,131 @@ class Annotation extends React.Component {
         crumb.node.style.border = "";
     }
 
+    createResourceTarget(target, source, targetCount) {
+        let component = this;
+        var text = "";
+        var label;
+        if (target.type === "Text") {
+            text = TargetUtil.getTargetText(target, source);
+            //console.log(text);
+        } else if (target.type === "Image") {
+            let selector = TargetUtil.getTargetMediaFragment(target);
+            let rect = selector.rect;
+            let topLeft = selector.rect.x + ',' + selector.rect.y;
+            let bottomRight = selector.rect.x + selector.rect.w + ',' + (selector.rect.y + selector.rect.h);
+            text = (
+                <span>
+                    {'[' + topLeft + ' - ' + bottomRight + ']'}
+                </span>
+            )
+        } else if (target.type === "Video") {
+            let selector = TargetUtil.getTargetMediaFragment(target);
+            let segment = selector.interval;
+            text = (
+                <span>
+                    {'[' + TimeUtil.formatTime(segment.start) + ' - ' + TimeUtil.formatTime(segment.end) + ']'}
+                </span>
+            );
+        }
+        if (text.length > 40) {
+            text = text.substr(0, 37) + "...";
+        }
+        label = source.data.rdfaType;
+        let breadcrumbs = RDFaUtil.createBreadcrumbTrail(source.data.rdfaResource);
+        let breadcrumbLabels = breadcrumbs.map((crumb, index) => {
+            let next = " > ";
+            if (!index)
+                next = "";
+            return (
+                <span key={"crumb" + index}
+                    onMouseOver={component.onMouseOverHandler.bind(this, crumb)}
+                    onMouseOut={component.onMouseOutHandler.bind(this, crumb)}
+                >
+                    <span title={crumb.property}>
+                    {next}
+                    </span>
+                    <span
+                        className="badge badge-info"
+                        title={"Identifier: " + crumb.id}
+                    >
+                       {crumb.type}
+                    </span>
+                    &nbsp;
+                </span>
+            );
+        });
+        return (
+            <div key={targetCount}>
+                {breadcrumbLabels}
+                <br/>
+                <span>{text}</span>
+            </div>
+        );
+    }
+
+    createExternalTarget(target, source, targetCount) {
+        var text = "";
+        var label;
+        //console.log(target);
+        if (target.type === "Text") {
+            text = TargetUtil.getTargetText(target, source);
+        }
+        label = source.data.resourceType[0];
+        label = label.substr(label.indexOf("#") + 1);
+        //console.log("label:", label);
+        let breadcrumbs = FRBRooUtil.createBreadcrumbTrail(AnnotationStore.externalResourceIndex, target.source);
+        //console.log("breadcrumbs:", breadcrumbs);
+        let breadcrumbLabels = breadcrumbs.map((crumb, index) => {
+            let next = " > ";
+            if (!index)
+                next = "";
+            let crumbType = crumb.type[0].substr(crumb.type[0].indexOf("#") + 1);
+            return (
+                <span key={"crumb" + index}>
+                    <span title={crumb.property}>
+                    {next}
+                    </span>
+                    <span
+                        className="badge badge-info"
+                        title={"Identifier: " + crumb.id}
+                    >
+                       {crumbType}
+                    </span>
+                    &nbsp;
+                </span>
+            )
+        });
+        return (
+            <div key={targetCount}>
+                {breadcrumbLabels}
+                <br/>
+                <span>{text}</span>
+            </div>
+        );
+    }
+
+    createAnnotationTarget(target, source) {
+        let body = AnnotationUtil.extractBodies(source.data)[0];
+        let label = body.type;
+        let text = body.value;
+        return (
+            <div key={targetCount}>
+                <span></span>
+                <span
+                    className="badge badge-success"
+                    >{label}</span>
+                &nbsp;
+                <span>{text}</span>
+            </div>
+        );
+    }
+
     render() {
         let component = this;
         let annotation = component.props.annotation;
         var bodyCount = 0;
         var timestamp = (new Date(annotation.created)).toLocaleString();
-        var bodies = AnnotationUtil.extractBodies(annotation).map(function(body) {
+        var bodies = AnnotationUtil.extractBodies(annotation).map((body) => {
             bodyCount++;
             return (
                 <div key={bodyCount}>
@@ -91,85 +212,30 @@ class Annotation extends React.Component {
             );
         });
         var targetCount = 0;
-        var targets = AnnotationUtil.extractTargets(annotation).map(function(target) {
-            targetCount++;
-            let source = AnnotationActions.lookupIdentifier(AnnotationUtil.extractTargetIdentifier(target));
-            var text = "";
-            var label;
-            if (source.type === "resource") {
-                if (target.type === "Text") {
-                    text = TargetUtil.getTargetText(target, source);
-                } else if (target.type === "Image") {
-                    let selector = TargetUtil.getTargetMediaFragment(target);
-                    let rect = selector.rect;
-                    let topLeft = selector.rect.x + ',' + selector.rect.y;
-                    let bottomRight = selector.rect.x + selector.rect.w + ',' + (selector.rect.y + selector.rect.h);
-                    text = (
-                        <span>
-                            {'[' + topLeft + ' - ' + bottomRight + ']'}
-                        </span>
-                    )
-                } else if (target.type === "Video") {
-                    let selector = TargetUtil.getTargetMediaFragment(target);
-                    let segment = selector.interval;
-                    text = (
-                        <span>
-                            {'[' + TimeUtil.formatTime(segment.start) + ' - ' + TimeUtil.formatTime(segment.end) + ']'}
-                        </span>
-                    );
+        var targets = AnnotationUtil.extractTargets(annotation).map((target) => {
+            try {
+                targetCount++;
+                //console.log(target);
+                let source = AnnotationActions.lookupIdentifier(AnnotationUtil.extractTargetIdentifier(target));
+                //console.log(source);
+                var text = "";
+                var label;
+                if (source.type === "external") {
+                    return this.createExternalTarget(target, source, targetCount);
                 }
-                if (text.length > 40) {
-                    text = text.substr(0, 37) + "...";
+                if (source.type === "resource") {
+                    return this.createResourceTarget(target, source, targetCount);
+                } else if (source.type === "annotation") {
+                    return this.createAnnotationTarget(target, source);
+                } else if (source.type === undefined) {
+                    console.error("source.type is not defined, showing content of annotation target and associated indexed source", target, source);
                 }
-                label = source.data.rdfaType;
-                let breadcrumbs = RDFaUtil.createBreadcrumbTrail(source.data.rdfaResource);
-                let breadcrumbLabels = breadcrumbs.map((crumb, index) => {
-                    let next = " > ";
-                    if (!index)
-                        next = "";
-                    return (
-                        <span key={"crumb" + index}
-                            onMouseOver={component.onMouseOverHandler.bind(this, crumb)}
-                            onMouseOut={component.onMouseOutHandler.bind(this, crumb)}
-                        >
-                            <span title={crumb.property}>
-                            {next}
-                            </span>
-                            <span
-                                className="badge badge-info"
-                                title={"Identifier: " + crumb.id}
-                            >
-                               {crumb.type}
-                            </span>
-                            &nbsp;
-                        </span>
-                    )
-                })
-                return (
-                    <div key={targetCount}>
-                        {breadcrumbLabels}
-                        <br/>
-                        <span>{text}</span>
-                    </div>
-                );
-            } else if (source.type === "annotation") {
-                let body = AnnotationUtil.extractBodies(source.data)[0];
-                let label = body.type;
-                let text = body.value;
-                return (
-                    <div key={targetCount}>
-                        <span></span>
-                        <span
-                            className="badge badge-success"
-                            >{label}</span>
-                        &nbsp;
-                        <span>{text}</span>
-                    </div>
-                );
-            } else if (source.type === undefined) {
-                console.error("source.type is not defined, showing content of annotation target and associated indexed source", target, source);
+            } catch (error) {
+                // filter out annotation targets that result in errors;
+                console.log("ERROR in annotation target:", target)
+                return undefined;
             }
-        });
+        }).filter((target) => { return target !== undefined });
 
         var renderEditBody = function() {
             return (

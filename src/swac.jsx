@@ -51,6 +51,7 @@ export class ScholarlyWebAnnotator {
         this.configureObservers();
         this.topResources = RDFaUtil.getTopRDFaResources();
         AnnotationActions.setServerAddress(this.clientConfig.services.AnnotationServer.api);
+        AnnotationActions.setBaseAnnotationOntology(this.clientConfig.baseAnnotationOntologyURL);
         AnnotationActions.pollServer();
         AnnotationActions.loadResources();
         if (localStorage.userDetails) {
