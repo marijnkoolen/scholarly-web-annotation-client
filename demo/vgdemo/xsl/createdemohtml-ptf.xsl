@@ -108,7 +108,6 @@
                                     <div class="content"
                                         vocab="http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#"
                                         prefix="hi: http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#
-                                            efrbroo: http://erlangen-crm.org/efrbroo/
                                             vg: http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#">
                                         <xsl:attribute name="typeof">
                                             <xsl:choose>
@@ -157,7 +156,6 @@
 @prefix hi: &lt;http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#> .
 @prefix vg: &lt;http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#> .
 @prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix efrbroo: &lt;http://erlangen-crm.org/efrbroo/> .
                 </xsl:text>
                 <xsl:call-template name="vg:writettlline">
                     <xsl:with-param name="s">
@@ -269,7 +267,7 @@
                         <xsl:text>hi:hasWorkPart</xsl:text>
                     </xsl:when>
                     <xsl:when test="$configuration/@annotatable='docpluswork'">
-                        <xsl:text>efrbroo:R15_has_fragment</xsl:text>
+                        <xsl:text>hi:containsFragment</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>hi:hasTextPart</xsl:text>
@@ -315,7 +313,7 @@
                                 <xsl:value-of select="$lineurntranscr"/>
                             </xsl:attribute>
                             <xsl:attribute name="property">
-                                <xsl:text>efrbroo:R15_has_fragment</xsl:text>
+                                <xsl:text>hi:containsFragment</xsl:text>
                             </xsl:attribute>
                             <xsl:apply-templates select="$curnode/*[descendant-or-self::*/@lb = $line]">
                                 <xsl:with-param name="configuration" select="$configuration"/>
@@ -384,7 +382,7 @@
                                     <xsl:value-of select="$pageurntranscr"/>
                                 </xsl:attribute>
                                 <xsl:attribute name="property">
-                                    <xsl:text>efrbroo:R15_has_fragment</xsl:text>
+                                    <xsl:text>hi:hasFragmentOf</xsl:text>
                                 </xsl:attribute>
                                 <xsl:apply-templates select="$curnode/*[descendant-or-self::*/@pb = $pageid]">
                                     <xsl:with-param name="configuration" select="$configuration"/>

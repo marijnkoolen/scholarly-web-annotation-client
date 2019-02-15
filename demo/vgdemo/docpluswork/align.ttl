@@ -2,7 +2,6 @@
 @prefix hi: <http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#> .
 @prefix vg: <http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix efrbroo: <http://erlangen-crm.org/efrbroo/> .
                 
 <urn:vangogh/letter=001> rdf:type vg:Letter.
 <urn:vangogh/letter=001:doc=0> rdf:type hi:Document.
