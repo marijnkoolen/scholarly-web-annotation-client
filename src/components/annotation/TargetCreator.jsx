@@ -60,11 +60,13 @@ export default class TargetCreator extends React.Component {
 
         var tabContents = this.state.candidateTypes.map((candidateType) => {
             var candidates = this.props.candidates[candidateType];
+            let tabActive = this.state.activeType === candidateType ? 'tab-pane active' : 'tab-pane';
+            let className = "candidate-target-list " + tabActive;
             return (
                 <div
                     key={candidateType + '__tab_content'}
                     id={candidateType}
-                    className={this.state.activeType === candidateType ? 'tab-pane active' : 'tab-pane'}
+                    className={className}
                 >
                         Click on a {candidateType} to select it as annotation target.
                         <CandidateList

@@ -67,11 +67,12 @@ class Annotation extends React.Component {
     }
 
     onMouseOverHandler(crumb) {
-        crumb.node.style.border = "1px solid red";
+        crumb.node.style.border += " 1px solid red";
     }
 
     onMouseOutHandler(crumb) {
-        crumb.node.style.border = "";
+        let index = crumb.node.style.border.indexOf(" 1px solid red");
+        crumb.node.style.border = crumb.node.style.border.substr(0, index);
     }
 
     createResourceTarget(target, source, targetCount) {
@@ -159,7 +160,7 @@ class Annotation extends React.Component {
                     {next}
                     </span>
                     <span
-                        className="badge badge-info"
+                        className="badge badge-secondary"
                         title={"Identifier: " + crumb.id}
                     >
                        {crumbType}

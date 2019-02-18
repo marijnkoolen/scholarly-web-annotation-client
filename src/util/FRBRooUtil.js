@@ -52,13 +52,14 @@ const FRBRooUtil = {
         //console.log("FRBRooUtil - loadExternalResources resourceStore:", resourceStore);
         FRBRooUtil.checkExternalResources((error, doIndexing, triples) => {
             if (error) {
-                return callback(error, null);
+                console.log(error);
+                return callback(error, doIndexing, null);
 
             } else if (!doIndexing) {
-                return callback(null, null);
+                return callback(null, doIndexing, null);
             } else {
                 resourceStore.triples = triples;
-                return callback(null, resourceStore);
+                return callback(null, doIndexing, resourceStore);
             }
         });
     },
@@ -74,9 +75,16 @@ const FRBRooUtil = {
             let store = FRBRooUtil.newStore();
             FRBRooUtil.readExternalResources(ref.url, (error, externalRelations) => {
                 if (error) {
+                    console.log("Error reading external resources for URL", ref);
+                    console.log(error);
                     return callback(error, doIndexing, store);
                 } else {
-                    FRBRooUtil.storeExternalResources(store, externalRelations, ref.url, ref.mimeType);
+                    try {
+                        FRBRooUtil.storeExternalResources(store, externalRelations, ref.url, ref.mimeType);
+                    } catch(error) {
+                        console.log("Error storing external resources:", externalRelations);
+                        return callback(error, false, null);
+                    }
                     return callback(null, doIndexing, store);
                 }
             });
@@ -91,6 +99,8 @@ const FRBRooUtil = {
         }).then((relationsData) => {
             return callback(null, relationsData);
         }).catch((error) => {
+            console.log("Error reading specified vocabulary:", url);
+            console.log(error);
             return callback(error, null);
         });
     },
@@ -479,6 +489,11 @@ const FRBRooUtil = {
         RDFaUtil.listVocabularyURLs(document, vocabularyURLs);
         // read initial vocabularies
         //console.log("vocabularyURLs:", vocabularyURLs);
+        if (vocabularyURLs.length === 0) {
+            // make an empty store if there are no vocabularies
+            let vocabularyStore = FRBRooUtil.makeVocabularyStore([]);
+            return callback(null, null);
+        }
         FRBRooUtil.readVocabularies(vocabularyURLs, (error, vocabularies) => {
             if (error) {
                 return callback(error, null);

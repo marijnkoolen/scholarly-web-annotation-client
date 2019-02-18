@@ -1,0 +1,50 @@
+.annotationClient {
+    background-color: #ddddee;
+    border-radius: 5px;
+    padding: 2px;
+    height: 95%;
+}
+
+.viewer-tabs {
+}
+
+.highlight {
+    box-shadow: 0 0 0 99999px rgba(0, 0, 0, .8);
+}
+
+.viewer-tab {
+    background-color: #efefff;
+    border: 1px solid #ddddee;
+    border-radius: 5px 5px 0px 0px;
+    //-moz-box-shadow:    2px -2px 1px 1px #dde;
+    //-webkit-box-shadow: 2px -2px 1px 1px #dde;
+    //box-shadow:         2px -2px 1px 1px #cce;
+}
+
+.shadow {
+  -moz-box-shadow:    3px 3px 5px 6px #ccc;
+  -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+  box-shadow:         3px 3px 5px 6px #ccc;
+}
+
+.annotation-list-scroll {
+    overflow-y: scroll;
+    height: 65%;
+}
+
+.candidate-target-list {
+    overflow-y: scroll;
+    height: 65%;
+    border-color: 1px solid #ccccee;
+    border-radius: 1px;
+}
+
+.creator-view-buttons {
+    margin-bottom: 10px;
+}
+
+.vocabulary-option {
+    margin-left: 10px;
+}
+
+

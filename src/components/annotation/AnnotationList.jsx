@@ -41,7 +41,7 @@ class AnnotationList extends React.Component {
         return (
             <div className="annotationList">
                 <h3>Stored Annotations</h3>
-                <ul className="list-group">
+                <ul className="list-group annotation-list-scroll">
                     {annotationItems}
                 </ul>
             </div>

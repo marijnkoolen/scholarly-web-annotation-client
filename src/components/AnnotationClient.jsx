@@ -131,7 +131,7 @@ export default class AnnotationClient extends React.Component {
             return (
                 <li
                     key={itemType + '__tab_option'}
-                    className="nav-item"
+                    className="nav-item viewer-tab "
                 >
                     <a data-toggle="tab" href={'#' + itemType} className={component.state.view === itemType ? 'nav-link active' : 'nav-link'}>
                         {itemType}
@@ -159,7 +159,7 @@ export default class AnnotationClient extends React.Component {
                     <div className="col-auto">{serverAvailable}</div>
                 </div>
                 <div>
-                    <ul className="nav nav-tabs nav-fill">
+                    <ul className="nav nav-tabs nav-fill viewer-tabs">
                         {viewerTabs}
                     </ul>
                     <div className="tab-content">

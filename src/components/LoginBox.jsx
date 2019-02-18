@@ -97,7 +97,7 @@ class LoginBox extends React.Component {
 
         return (
             <div>
-                <button className="btn btn-default"
+                <button className="btn btn-light"
                     onClick={this.handleLogin.bind(this)}>
                     {this.state.loginButtonLabel}
                 </button>

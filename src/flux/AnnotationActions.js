@@ -162,10 +162,11 @@ const AnnotationActions = {
         if (resourceIds === undefined)
             resourceIds = AnnotationStore.topResources;
         let externalResources = AnnotationActions.getExternalResources(resourceIds);
-        let externalIds = externalResources.map((res) => { return res.parentResource });
-        console.log(externalIds);
+        let externalIds = externalResources.map((res) => { return res.parentResource }).filter((externalId) => { return typeof externalId === "string"});
+
+        console.log("loadAnnotations - top externalIds:", externalIds);
         resourceIds = resourceIds.concat(externalIds);
-        console.log(resourceIds);
+        console.log("loadAnnotations - top RDFa resourceIds:", resourceIds);
         AnnotationAPI.getAnnotationsByTargets(resourceIds, AnnotationActions.accessStatus, (error, annotations) => {
             if (error) {
                 //console.error(resourceIds, error.toString());
@@ -225,13 +226,21 @@ const AnnotationActions = {
     indexExternalResources: (resources, callback) => {
         FRBRooUtil.loadVocabularies((error, store) => {
             if (error) {
+                console.log(error);
                 return callback(error);
+            } else if (store === null) {
+                // no vocabularies, skip reading external resources
+                return callback(null, false, null);
             }
             AnnotationStore.vocabularyStore = store;
+            AnnotationStore.resourceStore = null;
+            AnnotationStore.representedResourceMap = {};
+            AnnotationStore.externalResourceIndex = {};
             //console.log("AnnotationActions - vocabularyStore:", store);
-            FRBRooUtil.loadExternalResources(AnnotationStore.vocabularyStore, (error, store) => {
+            FRBRooUtil.loadExternalResources(AnnotationStore.vocabularyStore, (error, doIndexing, store) => {
                 if (error) {
                     return callback(error);
+                } else if (!doIndexing) {
                 } else {
                     AnnotationStore.resourceStore = store;
                     //console.log("AnnotationActions - resourceStore:", store);
@@ -282,7 +291,7 @@ const AnnotationActions = {
             throw Error("resourceIds should be an array");
         }
         //console.log("resourceIds:", resourceIds);
-        resourceIds.filter((resourceId) => { console.log(resourceId); console.log(AnnotationActions.hasExternalResource(resourceId)) ;})
+        //resourceIds.filter((resourceId) => { console.log(resourceId); console.log(AnnotationActions.hasExternalResource(resourceId)) ;})
         //console.log("filtered:", resourceIds.filter(AnnotationActions.hasExternalResource));
         return resourceIds.filter(AnnotationActions.hasExternalResource).map((resourceId) => {
             return AnnotationActions.getExternalResource(resourceId);
