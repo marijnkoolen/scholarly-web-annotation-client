@@ -233,7 +233,7 @@ class Annotation extends React.Component {
                 }
             } catch (error) {
                 // filter out annotation targets that result in errors;
-                console.log("ERROR in annotation target:", target)
+                //console.log("ERROR in annotation target:", target)
                 return undefined;
             }
         }).filter((target) => { return target !== undefined });

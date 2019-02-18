@@ -457,7 +457,7 @@ const TargetUtil = {
         if(Array.isArray(selector)) {
             return selector.some((s) => { return s.type === "TextQuoteSelector"});
         } else if (selector.hasOwnProperty("type")) {
-            console.log("selector:", selector);
+            //console.log("selector:", selector);
             throw Error("Invalid selector:");
         } else {
             return selector.type === "TextQuoteSelector";

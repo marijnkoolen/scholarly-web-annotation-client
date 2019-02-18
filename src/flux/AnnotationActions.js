@@ -74,6 +74,9 @@ const AnnotationActions = {
 
     lookupIdentifier(sourceId) {
         var source = { type: null, data: null }; // for IDs to external resources
+        //console.log(AnnotationStore.annotationIndex);
+        //console.log(AnnotationStore.resourceIndex);
+        //console.log(AnnotationStore.externalResourceIndex);
         if (AnnotationStore.annotationIndex.hasOwnProperty(sourceId))
             source = { type: "annotation", data: AnnotationStore.annotationIndex[sourceId] };
         else if (AnnotationStore.resourceIndex.hasOwnProperty(sourceId))
@@ -159,14 +162,17 @@ const AnnotationActions = {
     },
 
     loadAnnotations: (resourceIds) => {
+        //console.log("loadAnnotations - resourceIds:", resourceIds);
         if (resourceIds === undefined)
             resourceIds = AnnotationStore.topResources;
+        //console.log("loadAnnotations - AnnotationStore.resourceIds:", AnnotationStore.resourceIds);
         let externalResources = AnnotationActions.getExternalResources(resourceIds);
+        //console.log("loadAnnotations - externalResources:", externalResources);
         let externalIds = externalResources.map((res) => { return res.parentResource }).filter((externalId) => { return typeof externalId === "string"});
 
-        console.log("loadAnnotations - top externalIds:", externalIds);
+        //console.log("loadAnnotations - top externalIds:", externalIds);
         resourceIds = resourceIds.concat(externalIds);
-        console.log("loadAnnotations - top RDFa resourceIds:", resourceIds);
+        //console.log("loadAnnotations - top RDFa resourceIds:", resourceIds);
         AnnotationAPI.getAnnotationsByTargets(resourceIds, AnnotationActions.accessStatus, (error, annotations) => {
             if (error) {
                 //console.error(resourceIds, error.toString());
@@ -217,9 +223,17 @@ const AnnotationActions = {
 
     indexResources: (callback) => {
         RDFaUtil.indexRDFa((error, index) => {
-            AnnotationStore.resourceIndex = index.resources;
-            AnnotationStore.relationIndex = index.relations;
-            return callback(error);
+            if (error) {
+                console.log("Error indexing resources");
+                console.log(error);
+                return callback(error);
+            } else {
+                //console.log("indexResources - index:", index);
+                AnnotationStore.resourceIndex = index.resources;
+                //console.log("indexResources - AnnotationStore.resourceIndex:", AnnotationStore.resourceIndex);
+                AnnotationStore.relationIndex = index.relations;
+                return callback(error);
+            }
         }); // ... refresh index
     },
 
@@ -230,6 +244,7 @@ const AnnotationActions = {
                 return callback(error);
             } else if (store === null) {
                 // no vocabularies, skip reading external resources
+                //console.log("indexExternalResources - returning with undefined vocabularyStore");
                 return callback(null, false, null);
             }
             AnnotationStore.vocabularyStore = store;
@@ -239,8 +254,11 @@ const AnnotationActions = {
             //console.log("AnnotationActions - vocabularyStore:", store);
             FRBRooUtil.loadExternalResources(AnnotationStore.vocabularyStore, (error, doIndexing, store) => {
                 if (error) {
+                    console.log("Error loading external resources using vocabularyStore");
+                    console.log(error);
                     return callback(error);
                 } else if (!doIndexing) {
+                    return callback(null);
                 } else {
                     AnnotationStore.resourceStore = store;
                     //console.log("AnnotationActions - resourceStore:", store);
@@ -310,14 +328,19 @@ const AnnotationActions = {
 
     loadResources: () => {
         AnnotationStore.topResources = RDFaUtil.getTopRDFaResources();
+        //console.log("loadResources - topResources:", AnnotationStore.topResources);
         AnnotationActions.indexResources((error) => {
             if (error) {
                 //console.error(error);
                 window.alert("Error indexing RDFa resources in this page\n" + error.toString());
                 return error;
             }
+            //console.log("loadResources - indexResources done");
+            //console.log("loadResources - AnnotationStore.resourceIndex:", AnnotationStore.resourceIndex);
             AnnotationStore.resourceMaps = RDFaUtil.buildResourcesMaps(); // .. rebuild maps
+            //console.log("loadResources - resourceMaps:", AnnotationStore.resourceMaps);
             let resources = Object.keys(AnnotationStore.resourceIndex);
+            //console.log("loadResources - resources:", resources);
             AnnotationActions.indexExternalResources(resources, (error) => {
                 if (error) {
                     console.log("error indexing external resources");
