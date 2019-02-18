@@ -7063,19 +7063,43 @@ a.text-dark:hover, a.text-dark:focus {
   border-radius: 50%;
   box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 7px 1px, inset #006 0 -1px 9px, #3F8CFF 0 2px 14px; }
 
+.permission-switch {
+  float: right; }
+
+.collection-label-editor {
+  margin: 20px; }
+
+.annotationClient {
+  background-color: #ddddee;
+  border-radius: 5px;
+  padding: 2px;
+  height: 95%; }
+
+.highlight {
+  box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.8); }
+
+.viewer-tab {
+  background-color: #efefff;
+  border: 1px solid #ddddee;
+  border-radius: 5px 5px 0px 0px; }
+
+.shadow {
+  -moz-box-shadow: 3px 3px 5px 6px #ccc;
+  -webkit-box-shadow: 3px 3px 5px 6px #ccc;
+  box-shadow: 3px 3px 5px 6px #ccc; }
+
+.annotation-list-scroll {
+  overflow-y: scroll;
+  height: 65%; }
+
+.candidate-target-list {
+  overflow-y: scroll;
+  height: 65%;
+  border-color: 1px solid #ccccee;
+  border-radius: 1px; }
+
 .creator-view-buttons {
   margin-bottom: 10px; }
 
 .vocabulary-option {
   margin-left: 10px; }
-
-.permission-switch {
-  float: right; }
-
-.annotationClient {
-  background-color: #ddddee;
-  border-radius: 5px;
-  padding: 2px; }
-
-.collection-label-editor {
-  margin: 20px; }
