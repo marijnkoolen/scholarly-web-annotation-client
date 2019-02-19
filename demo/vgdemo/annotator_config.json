@@ -1,4 +1,4 @@
-{
+{	"baseAnnotationOntologyURL": "http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl",
     "targetObserver": {
         "targetObserverClass": "annotation-target-observer",
         "observeMutations": false,

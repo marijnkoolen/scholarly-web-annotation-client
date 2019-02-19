@@ -1,6 +1,6 @@
-
-@prefix hi: <http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#> .
-@prefix vg: <http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#> .
+#Gegenereerd op 2019-02-18T16:35:34.015+01:00
+@prefix hi: <http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl#> .
+@prefix vg: <http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
                 
 <urn:vangogh/letter=001> rdf:type vg:Letter.

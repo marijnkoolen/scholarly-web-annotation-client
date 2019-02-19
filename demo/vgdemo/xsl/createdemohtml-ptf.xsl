@@ -58,6 +58,10 @@
             </xsl:variable>
             <html>
                 <head>
+                    <xsl:comment>
+                        <xsl:text>Gegenereerd op </xsl:text>
+                        <xsl:value-of select="current-dateTime()"/>
+                    </xsl:comment>
                     <title>
                         <xsl:value-of select="$title"/>
                     </title>
@@ -106,9 +110,9 @@
                                         </xsl:for-each>
                                     </p>
                                     <div class="content"
-                                        vocab="http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#"
-                                        prefix="hi: http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#
-                                            vg: http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#">
+                                        vocab="http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#"
+                                        prefix="hi: http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl#
+                                            vg: http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#">
                                         <xsl:attribute name="typeof">
                                             <xsl:choose>
                                                 <xsl:when test="$configuration/@annotatable='work' or $configuration/@annotatable='docpluswork'">
@@ -152,9 +156,11 @@
                 <xsl:text>.ttl</xsl:text>
             </xsl:variable>
             <xsl:result-document href="{$ttlhref}" method="text">
+                <xsl:text>#Gegenereerd op </xsl:text>
+                <xsl:value-of select="current-dateTime()"/>
                 <xsl:text>
-@prefix hi: &lt;http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#> .
-@prefix vg: &lt;http://boot.huygens.knaw.nl/vgdemo/vangoghannotationontology.ttl#> .
+@prefix hi: &lt;http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl#> .
+@prefix vg: &lt;http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#> .
 @prefix rdf: &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
                 </xsl:text>
                 <xsl:call-template name="vg:writettlline">
