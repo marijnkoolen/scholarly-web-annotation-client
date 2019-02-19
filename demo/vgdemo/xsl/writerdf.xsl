@@ -29,7 +29,7 @@
             <xsl:with-param name="p">
                 <xsl:choose>
                     <xsl:when test="$configuration/@annotatable = 'docpluswork'">
-                        <xsl:text>hi:hasFragmentIn</xsl:text>
+                        <xsl:text>hi:hasFragmentOf</xsl:text>
                     </xsl:when>
                     <xsl:otherwise>
                         <xsl:text>hi:hasRepresentation</xsl:text>

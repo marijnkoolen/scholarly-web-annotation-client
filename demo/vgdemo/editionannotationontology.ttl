@@ -6,7 +6,7 @@
 #    For talk to be given at EADH 2018 (Galway)
 #
 #################################################################
-@prefix hi: <http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#> .
+@prefix hi: <http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xml: <http://www.w3.org/XML/1998/namespace> .
@@ -15,10 +15,10 @@
 @prefix sch: <http://schema.org/> .
 @prefix ecrm: <http://erlangen-crm.org/current/> .
 @prefix efrbroo: <http://erlangen-crm.org/efrbroo/> .
-@base <http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl> .
-<http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl> rdf:type owl:Ontology .
+@base <http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl> .
+<http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl> rdf:type owl:Ontology .
 
-<http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl>  owl:imports  <https://raw.githubusercontent.com/erlangen-crm/efrbroo/releases/efrbroo_20160715.owl>.
+<http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl>  owl:imports  <https://raw.githubusercontent.com/erlangen-crm/efrbroo/releases/efrbroo_20160715.owl>.
 
 #################################################################
 #
