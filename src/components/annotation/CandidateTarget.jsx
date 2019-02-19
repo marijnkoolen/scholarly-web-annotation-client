@@ -14,20 +14,21 @@ class CandidateTarget extends React.Component {
     render() {
         //console.log(this.props.candidate);
         var badgeType = "badge badge-info";
+        var targetType = "Resource";
+        if (this.props.candidate.type === "external") {
+            badgeType = "badge badge-secondary";
+        }
         // TO DO: deal with elements that have multiple types
         var text = "";
         if (this.props.candidate.type === "annotation") {
             text = this.props.candidate.params.text;
+            badgeType = "badge badge-success";
+            targetType = "Annotation";
         } else if (this.props.candidate.mimeType === "text") {
             if (this.props.candidate.params.quote) {
                 text = this.props.candidate.params.quote.exact;
             } else if (this.props.candidate.params.text) {
                 text = this.props.candidate.params.text;
-            }
-        }  else if (this.props.candidate.mimeType === "external") {
-            badgeType = "badge badge-secondary";
-            if (this.props.candidate.params.quote) {
-                text = this.props.candidate.params.quote.exact;
             }
         } else if (this.props.candidate.mimeType === "image") {
             text = "Image selection"
@@ -40,15 +41,18 @@ class CandidateTarget extends React.Component {
                 onClick={this.handleClick}
                 className="list-group-item candidate-target">
                 <div>
-                    <label>Resource:</label>
+                    <label className="badge badge-dark">{targetType}</label>
+                    {': '}
                     <span>{this.props.candidate.source}</span>
                 </div>
                 <div>
-                    <label>Type:</label>
+                    <label className="badge badge-dark">Type</label>
+                    {': '}
                     <span className={badgeType}>{this.props.candidate.label}</span>
                 </div>
                 <div>
-                    <label>Content:</label>
+                    <label className="badge badge-dark">Content</label>
+                    {': '}
                     <span>{text}</span>
                 </div>
             </li>

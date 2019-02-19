@@ -65,7 +65,10 @@ export default class CollectionCreator extends React.Component {
     }
 
     editCollection(collection, view) {
-        console.log(collection);
+        if (!view) {
+            view = "label";
+        }
+        //console.log("editCollection - collection:", collection);
         var page = [];
         if (collection.label !== undefined)
             this.collectionLabel = collection.label;
@@ -75,8 +78,7 @@ export default class CollectionCreator extends React.Component {
             console.log("getting collection page");
             CollectionActions.getCollectionPage(collection.last);
         }
-        this.setState({collection: collection, page: page, view: view});
-        this.setState({showModal: true})
+        this.setState({collection: collection, page: page, view: view, showModal: true});
     }
     hideCollectionForm() {
         this.setState({showModal: false});
@@ -86,7 +88,7 @@ export default class CollectionCreator extends React.Component {
         $('#collection__modal').modal('hide');//TODO ugly, but without this the static backdrop won't disappear!
         var collection = this.state.collection;
         collection.label = this.collectionLabel;
-        console.log(collection);
+        //console.log("saveCollection - collection:", collection);
         CollectionActions.save(collection);
         this.collectionLabel = "";
         this.setState({
@@ -171,6 +173,8 @@ export default class CollectionCreator extends React.Component {
         });
 
         let editorTabContents = editViews.map((editView) => {
+            //console.log("render - state.view:", this.state.view);
+            //console.log("render - editView:", editView);
             if (editView === "label") {
                 editor = (<CollectionLabelEditor
                               onChange={this.handleLabelChange}
@@ -198,7 +202,7 @@ export default class CollectionCreator extends React.Component {
                 key="collection-creator"
             >
                 {this.props.currentUser ?
-                    <button className="btn btn-default" onClick={this.makeCollection.bind(this)}>Make collection</button>
+                    <button className="btn btn-light" onClick={this.makeCollection.bind(this)}>Make collection</button>
                     : null
                 }
                 {this.state.showModal ?
@@ -206,6 +210,8 @@ export default class CollectionCreator extends React.Component {
                         key="collection-flex-modal"
                         elementId="collection__modal"
                         handleHideModal={this.hideCollectionForm.bind(this)}
+                        confirmLabel="Save"
+                        confirmAction={this.saveCollection.bind(this)}
                         title={'Provide a label for your collection'}
                     >
                         <div>
@@ -215,7 +221,6 @@ export default class CollectionCreator extends React.Component {
                             <div className="tab-content">
                                 {editorTabContents}
                             </div>
-                            <button className="btn btn-primary" onClick={this.saveCollection.bind(this)}>Save and close</button>
                         </div>
                     </FlexModal>: null
                 }

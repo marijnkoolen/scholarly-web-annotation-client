@@ -68,7 +68,6 @@ export default class TargetCreator extends React.Component {
                     id={candidateType}
                     className={className}
                 >
-                        Click on a {candidateType} to select it as annotation target.
                         <CandidateList
                             candidates={candidates}
                             addToSelected={this.addToSelected.bind(this)}
@@ -82,7 +81,10 @@ export default class TargetCreator extends React.Component {
             <div className="container-fluid">
                 <div className="row">
                     <div className="col-6">
-                        <h3>Available Targets</h3>
+                        <div>
+                            <h3>Available Targets</h3>
+                            <span>Click on a target to select it.</span>
+                        </div>
                         <ul className="nav nav-tabs">
                             {tabs}
                         </ul>
@@ -91,7 +93,10 @@ export default class TargetCreator extends React.Component {
                         </div>
                     </div>
                     <div className="col-6">
-                        <h3>Selected Targets</h3>
+                        <div>
+                            <h3>Selected Targets</h3>
+                            <span>Click on a selected target to deselect it.</span>
+                        </div>
                         <SelectedList
                             candidates={this.state.selected}
                             removeFromSelected={this.removeFromSelected.bind(this)}

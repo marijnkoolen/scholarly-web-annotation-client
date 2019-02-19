@@ -26,11 +26,9 @@ export default class SelectedList extends React.Component {
         });
         return (
             <div className="selectedList">
-                <h4>Selected targets</h4>
-				<p>Click on a selected target to deselect it.</p>
-				<ul className="list-group">
-					{selectedTargets}
-				</ul>
+                <ul className="list-group candidate-scroll-list">
+                    {selectedTargets}
+                </ul>
             </div>
         )
     }

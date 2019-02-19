@@ -81,7 +81,6 @@ class Annotation extends React.Component {
         var label;
         if (target.type === "Text") {
             text = TargetUtil.getTargetText(target, source);
-            //console.log(text);
         } else if (target.type === "Image") {
             let selector = TargetUtil.getTargetMediaFragment(target);
             let rect = selector.rect;
@@ -101,11 +100,20 @@ class Annotation extends React.Component {
                 </span>
             );
         }
+        //console.log("createResourceTarget - text:", text);
         if (text.length > 40) {
             text = text.substr(0, 37) + "...";
         }
-        label = source.data.rdfaType;
+        if (source.data.hasOwnProperty("rdfaType")) {
+            label = source.data.rdfaType;
+            //console.log("rdfaType:", source.data);
+        } else if (source.data.hasOwnProperty("rdfaTypeLabel")) {
+            label = source.data.rdfaTypeLabel;
+            //console.log("rdfaTypeLabel:", source.data);
+        }
+        //console.log("Annotation - source:", source);
         let breadcrumbs = RDFaUtil.createBreadcrumbTrail(source.data.rdfaResource);
+        //console.log("Annotation - breadcrumbs:", breadcrumbs);
         let breadcrumbLabels = breadcrumbs.map((crumb, index) => {
             let next = " > ";
             if (!index)
@@ -213,18 +221,22 @@ class Annotation extends React.Component {
             );
         });
         var targetCount = 0;
+        //console.log("annotation:", annotation);
         var targets = AnnotationUtil.extractTargets(annotation).map((target) => {
+            //console.log("target:", target);
             try {
                 targetCount++;
                 //console.log(target);
                 let source = AnnotationActions.lookupIdentifier(AnnotationUtil.extractTargetIdentifier(target));
-                //console.log(source);
+                //console.log("Annotation render - source:", source);
                 var text = "";
                 var label;
                 if (source.type === "external") {
                     return this.createExternalTarget(target, source, targetCount);
                 }
                 if (source.type === "resource") {
+                    //console.log("type: resource");
+                    //console.log("source:", source);
                     return this.createResourceTarget(target, source, targetCount);
                 } else if (source.type === "annotation") {
                     return this.createAnnotationTarget(target, source);

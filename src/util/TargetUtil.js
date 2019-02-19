@@ -147,8 +147,8 @@ const TargetUtil = {
     // Return all potential annotation targets.
     getCandidates : function(annotations, defaultTargets) {
         let candidateResources = TargetUtil.getCandidateRDFaTargets(defaultTargets);
-        let candidateAnnotations = TargetUtil.selectCandidateAnnotations(annotations, candidateResources.highlighted);
         let candidateExternalResources = TargetUtil.getCandidateExternalResources(candidateResources);
+        let candidateAnnotations = TargetUtil.selectCandidateAnnotations(annotations, candidateResources.highlighted);
         return {resource: candidateResources, annotation: candidateAnnotations, external: candidateExternalResources};
     },
 
@@ -238,11 +238,12 @@ const TargetUtil = {
     },
 
     selectCandidateAnnotations : function(annotations, highlighted) {
+        console.log("selectCandidateAnnotations - annotations:", annotations);
         if (!highlighted)
             return TargetUtil.addCandidateAnnotations(annotations);
         let candidates = annotations.filter(function(annotation) {
             var targets = Array.isArray(annotation.target) ? annotation.target : [annotation.target];
-            return targets.some(TargetUtil.hasOverlap);
+            return targets.some((target) => { return TargetUtil.hasOverlap(target, highlighted) });
         });
         return TargetUtil.addCandidateAnnotations(candidates);
     },
@@ -250,11 +251,11 @@ const TargetUtil = {
     hasOverlap : function(target, highlighted) {
         // if annotation target is not highlighted resource
         // then annotation is not a candidate target
-        if (target.source != highlighted.source)
+        if (target.source !== highlighted.source)
             return false;
         // double check that annotation target and
         // selected candidate have same mime type
-        if (target.type != TargetUtil.mapMimeType(highlighted.mimeType))
+        if (target.type !== TargetUtil.mapMimeType(highlighted.mimeType))
             return false;
         // if Text target has no selector, it overlaps
         // with highlighted range
@@ -265,8 +266,9 @@ const TargetUtil = {
         // with highlighted range
         if (target.type === "Text") {
             let textPosition = TargetUtil.getSelectorByType(target, "TextPositionSelector");
+            let highlightPosition = highlighted.params.position;
             // if a Text target has a selector, it should have a text position selector
-            if (textPosition && highlighted.start < textPosition.end && highlighted.end > textPosition.start)
+            if (textPosition && highlightPosition.start < textPosition.end && highlightPosition.end > textPosition.start)
                 return true;
             // otherwise, assume target doesn't overlap with highlighted range
             return false;
@@ -432,6 +434,8 @@ const TargetUtil = {
     getTargetText(target, resource) {
         // if whole resource is the target,
         // return the text content of the corresponding node
+        if (!target.selector && !resource.data.text)
+            throw Error("Invalid text target! Should have selector or point to DOM element with text content");
         if (!target.selector)
             return resource.data.text;
         var selector = target.selector;
@@ -442,6 +446,7 @@ const TargetUtil = {
             selector = TargetUtil.getQuoteSelector(selector);
             return selector.exact;
         }
+        //console.log("getTargetText - selector:", selector)
         selector = Array.isArray(selector) ? selector[0] : selector;
         if (!selector.type)
             return null;
@@ -449,6 +454,11 @@ const TargetUtil = {
             return selector.exact;
         if (selector.type === "TextPositionSelector")
             return TargetUtil.getTargetRangeText(resource.data.domNode, selector.start, selector.end);
+        if (selector.type === "NestedPIDSelector") {
+            //console.log("getTargetText - NestedPIDSelector");
+        }
+        if (resource.data.text)
+            return resource.data.text;
         return ""; // if no text can is targeted, return empty string
     },
 
@@ -456,9 +466,9 @@ const TargetUtil = {
         let quoteSelector = null;
         if(Array.isArray(selector)) {
             return selector.some((s) => { return s.type === "TextQuoteSelector"});
-        } else if (selector.hasOwnProperty("type")) {
-            //console.log("selector:", selector);
-            throw Error("Invalid selector:");
+        } else if (!selector.hasOwnProperty("type")) {
+            console.log("selector:", selector);
+            throw Error("Invalid selector! selector requires a 'type' property");
         } else {
             return selector.type === "TextQuoteSelector";
         }

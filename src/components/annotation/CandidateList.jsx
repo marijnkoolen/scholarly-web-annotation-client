@@ -55,7 +55,7 @@ export default class CandidateList extends React.Component {
             });
             return (
                 <div className="candidateList">
-                    <ul className="list-group">
+                    <ul className="list-group candidate-scroll-list">
                         {candidateNodes}
                     </ul>
                 </div>

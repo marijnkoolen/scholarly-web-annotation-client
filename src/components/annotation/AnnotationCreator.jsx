@@ -165,17 +165,12 @@ class AnnotationCreator extends React.Component {
                         onClick={this.addTargets.bind(this)}>
                         Show targets
                     </button>
+                    {' '}
                     <button
                         className="btn btn-primary"
                         disabled={this.state.selectedTargets.length === 0}
                         onClick={this.addMotivations.bind(this)}>
                         Show content
-                    </button>
-                    <button
-                        className="btn btn-primary"
-                        disabled={!canSave}
-                        onClick={this.gatherDataAndSave.bind(this)}>
-                        Save
                     </button>
                     <div className="permission-switch btn-group btn-group-toggle">
                         <label
@@ -217,6 +212,8 @@ class AnnotationCreator extends React.Component {
                     <FlexModal
                         elementId="annotation__modal"
                         handleHideModal={this.hideAnnotationForm.bind(this)}
+                        confirmLabel="Save"
+                        confirmAction={this.gatherDataAndSave.bind(this)}
                         title={title}>
                         {creatorButtons}
                         {creator}

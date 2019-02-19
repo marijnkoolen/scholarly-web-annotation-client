@@ -61,7 +61,7 @@ export default class CollectionViewer extends React.Component {
         return (
             <div className="CollectionList">
                 <h3>Saved collections</h3>
-                <ul className="list-group">
+                <ul className="list-group annotation-list-scroll">
                     {collections}
                 </ul>
             </div>
