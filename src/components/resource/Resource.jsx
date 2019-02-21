@@ -8,23 +8,31 @@ export default class Resource extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            resources: [],
         }
     }
     componentDidMount() {
     }
 
     onMouseOverHandler() {
-        this.props.data.domNode.style.border = "1px solid red";
+        if (this.props.data.domNode) {
+            this.props.data.domNode.style.border = "1px solid red";
+        }
     }
 
     onMouseOutHandler() {
-        this.props.data.domNode.style.border = "";
+        if (this.props.data.domNode) {
+            this.props.data.domNode.style.border = "";
+        }
     }
 
     render() {
         let component = this;
-        let typeLabels = this.props.data.rdfaTypeLabel.map((label) => {
+        //console.log(this.props.data.type);
+        let labels = this.props
+        let typeLabels = this.props.data.rdfTypeLabel.map((label) => {
+            if (!this.props.data.rdfTypeLabel) {
+                return (<span key={this.props.data.resource}></span>)
+            }
             return (
                 <span
                     key={"rdfa-label-" + label}
@@ -38,9 +46,13 @@ export default class Resource extends React.Component {
             )
         })
 
+        let resource = (this.props.data.resource) ? this.props.data.resource : this.props.data.rdfaResource;
         let parentResource = this.props.data.parentResource;
         let parent = parentResource ? (<div>Parent: &nbsp; {parentResource}</div>) : "";
-        let rdfaProperty = this.props.data.rdfaProperty ? this.props.data.rdfaProperty.split("#")[1] : null;
+        var rdfaProperty = this.props.data.rdfaProperty ? this.props.data.rdfaProperty.split("#")[1] : null;
+        if (this.props.data.relation) {
+            rdfaProperty = this.props.data.relation.split("#")[1];
+        }
         let relation = rdfaProperty ? (<div>Relation: &nbsp; {rdfaProperty}</div>) : "";
 
         return (
@@ -53,7 +65,7 @@ export default class Resource extends React.Component {
                 Type: &nbsp; {typeLabels}
                 </div>
                 <div>
-                Identifier: {this.props.data.rdfaResource}
+                Identifier: {resource}
                 </div>
                 {parent}
                 {relation}

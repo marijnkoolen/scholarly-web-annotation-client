@@ -48,14 +48,16 @@ export class ScholarlyWebAnnotator {
         if (configuration)
             this.overrideDefaultConfiguration(configuration);
 
-        this.configureObservers();
-        this.topResources = RDFaUtil.getTopRDFaResources();
         AnnotationActions.setServerAddress(this.clientConfig.services.AnnotationServer.api);
         AnnotationActions.setBaseAnnotationOntology(this.clientConfig.baseAnnotationOntologyURL);
+        this.configureObservers();
+        this.topResources = RDFaUtil.getTopRDFaResources();
         AnnotationActions.pollServer();
-        AnnotationActions.loadResources();
         if (localStorage.userDetails) {
             AnnotationActions.loginUser(JSON.parse(localStorage.userDetails));
+        } else {
+            console.log("configureClient - loadResources");
+            AnnotationActions.loadResources();
         }
     }
 
@@ -64,6 +66,7 @@ export class ScholarlyWebAnnotator {
         this.observerNodes = DOMUtil.getObserverNodes();
         RDFaUtil.setObserverNodes(this.observerNodes);
         this.setSelectionListener();
+        //console.log("configureObservers - setAnnotationAttributes");
         this.setAnnotationAttributes();
         if (this.clientConfig.targetObserver.observeMutations) {
             this.startObserver();
@@ -73,6 +76,7 @@ export class ScholarlyWebAnnotator {
     setAnnotationAttributes() {
         for (var index = 0; index < this.observerNodes.length; index++) {
             this.setSelectWholeElement(this.observerNodes[index]);
+            //console.log("setAnnotationAttributes - setUnselectable");
             this.setUnselectable(this.observerNodes[index]);
         }
     }
@@ -85,6 +89,7 @@ export class ScholarlyWebAnnotator {
     }
 
     setUnselectable(node) {
+        //console.log("setUnselectable - resetIgnoreNodes");
         RDFaUtil.resetIgnoreNodes();
         let ignoreNodes = RDFaUtil.getRDFaIgnoreNodes(node);
         ignoreNodes.forEach(function(ignoreNode) {
@@ -100,6 +105,7 @@ export class ScholarlyWebAnnotator {
             this.setAnnotationAttributes(this.observerNodes);
             // check if there are new resources
             if (this.resourcesChanged())
+                //console.log("startObserver - loadResources");
                 AnnotationActions.loadResources(); // trigger reload of annotations
         });
 

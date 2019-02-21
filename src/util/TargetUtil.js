@@ -61,9 +61,13 @@ const TargetUtil = {
         let precedingNodes = descendants.slice(0, descendants.indexOf(targetNode));
         let textNodes = DOMUtil.filterTextNodes(precedingNodes);
         var targetOffset = 0;
+        //console.log("findNodeOffsetInContainer - targetOffset:", targetOffset);
         textNodes.forEach(function(node) {
+            //console.log("findNodeOffsetInContainer - node:", node);
             let displayText = DOMUtil.getTextNodeDisplayText(node);
-            targetOffset += node.textContent.length;
+            //console.log("finddisplayTextOffsetInContainer - displayText: #" + displayText + "#");
+            targetOffset += displayText.length;
+            //console.log("findtargetOffsetOffsetInContainer - targetOffset:", targetOffset);
         });
         return targetOffset;
     },
@@ -97,10 +101,12 @@ const TargetUtil = {
     },
 
     makeTextSelectors : function(container, selection) {
+        console.log("makeTextSelectors - container:", container);
         var startNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.startNode);
         var endNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.endNode);
         selection.startContainerOffset = startNodeOffset + selection.startOffset;
         selection.endContainerOffset = endNodeOffset + selection.endOffset;
+        console.log("makeTextSelectors - selection:", selection);
         return {
             position: this.makeTextPositionParams(container, selection),
             quote: this.makeTextQuoteParams(container, selection)
@@ -116,10 +122,12 @@ const TargetUtil = {
 
     makeTextQuoteParams : function(container, selection) {
         let textContent = RDFaUtil.getRDFaTextContent(container.node);
+        console.log("makeTextQuoteParams - textContent: #" + textContent + "#");
+        console.log(selection);
         let maxPrefix = selection.startContainerOffset >= 20 ? 20 : selection.startContainerOffset;
         let selectionLength = selection.endContainerOffset - selection.startContainerOffset;
         return {
-            exact: textContent.substr(selection.startContainerOffset, selectionLength),
+            exact: selection.selectionText,
             prefix: textContent.substr(selection.startContainerOffset - maxPrefix, maxPrefix),
             suffix: textContent.substr(selection.endContainerOffset, 20)
         };
@@ -164,7 +172,7 @@ const TargetUtil = {
         }
         //console.log(resources.wholeNodes);
         //let resourceIds = resources.wholeNodes.map((resource) => { return resource.source });
-        let wholeNodes = resources.wholeNodes.filter((resource) => { return AnnotationActions.hasExternalResource(resource.source); });
+        let wholeNodes = resources.wholeNodes.filter((resource) => { return AnnotationActions.hasRepresentedResource(resource.source); });
         //let hasExternalResources = resourceIds.filter(AnnotationActions.hasExternalResource);
         //console.log("resourceIds:", resourceIds);
         //console.log("hasExternalResources:", hasExternalResources);
@@ -178,7 +186,7 @@ const TargetUtil = {
     },
 
     getCandidateExternalResource(resource) {
-        //console.log("resource:", resource);
+        console.log("resource:", resource);
         //console.log(AnnotationStore.representedResourceMap);
         if (AnnotationActions.hasRepresentedResource(resource.source)) {
             let representationResource = AnnotationStore.representedResourceMap[resource.source];
@@ -187,7 +195,7 @@ const TargetUtil = {
                 resource: externalMap.resource,
                 parentResource: externalMap.parentResource,
                 relation: externalMap.relation,
-                resourceType: externalMap.resourceType,
+                rdfType: externalMap.rdfType,
                 type: externalMap.type,
             };
             externalResource.params = {};
@@ -203,11 +211,11 @@ const TargetUtil = {
             externalResource.params.position = resource.params.position;
             externalResource.params.breadcrumbs = FRBRooUtil.createBreadcrumbTrail(AnnotationStore.externalResourceIndex, externalResource.resource)
             externalResource.mimeType = resource.mimeType;
-            externalResource.label = externalResource.resourceType.map((resourceType) => {
-                return resourceType.substr(resourceType.indexOf("#") + 1);
+            externalResource.label = externalResource.rdfType.map((rdfType) => {
+                return rdfType.substr(rdfType.indexOf("#") + 1);
             })
             externalResource.source = externalResource.resource;
-            //console.log(externalResource);
+            console.log(externalResource);
             return externalResource;
         } else {
             return null;
@@ -218,8 +226,10 @@ const TargetUtil = {
     // or contained in the selected passage.
     getCandidateRDFaTargets : function(defaultTargets) {
         var selection = SelectionUtil.getCurrentSelection();
+        console.log("getCandidateRDFaTargets - selection:", selection);
         var ancestors = DOMUtil.findCommonAncestors(selection.startNode, selection.endNode);
         selection.containerNode = ancestors[ancestors.length - 1];
+        console.log("getCandidateRDFaTargets - containerNode:", selection.containerNode);
         var biggerNodes = TargetUtil.getRDFaCandidates(ancestors);
         let selectionNodes = TargetUtil.findSelectionRDFaNodes(selection);
         let smallerNodes = TargetUtil.getRDFaCandidates(selectionNodes);

@@ -295,13 +295,13 @@ describe("FRBRooUtil", () => {
         });
 
         it("should find Letter resource", (done) => {
-            let resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
+            let rdfType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
             let predicate = FRBRooUtil.RDF('type');
             let baseURI = "http://localhost:3001/frbroo_alternate.ttl";
             let mimeType = "text/n3";
             let store = FRBRooUtil.newStore();
             FRBRooUtil.storeExternalResources(store, frbrooRelationsString, baseURI, mimeType);
-            let object = $rdf.sym(resourceType);
+            let object = $rdf.sym(rdfType);
             let subject = store.any(undefined, predicate, object);
             expect(subject.uri).to.equal("urn:vangogh/letter=001")
             done();
@@ -489,30 +489,30 @@ describe("FRBRooUtil", () => {
         });
     });
 
-    describe("addResourceTypeProperty", () => {
+    describe("addRDFTypeProperty", () => {
 
         it("should add no type if no type is given", (done) => {
             let properties = {};
-            FRBRooUtil.addResourceTypeProperty(properties, null);
-            expect(properties.hasOwnProperty("rdfaType")).to.equal(false);
+            FRBRooUtil.addRDFTypeProperty(properties, null);
+            expect(properties.hasOwnProperty("rdfType")).to.equal(false);
             done();
         });
 
         it("should add type as string if no previous type is given", (done) => {
             let properties = {};
-            let resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
-            FRBRooUtil.addResourceTypeProperty(properties, resourceType);
-            expect(properties.hasOwnProperty("rdfaType")).to.equal(true);
-            expect(properties.rdfaType).to.equal(resourceType);
+            let rdfType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
+            FRBRooUtil.addRDFTypeProperty(properties, rdfType);
+            expect(properties.hasOwnProperty("rdfType")).to.equal(true);
+            expect(properties.rdfType).to.equal(rdfType);
             done();
         });
 
-        it("should throw error if properties.rdfaType is not array or string", (done) => {
-            let properties = {rdfaType: {someProp: "someValue"}};
-            let resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
+        it("should throw error if properties.rdfType is not array or string", (done) => {
+            let properties = {rdfType: {someProp: "someValue"}};
+            let rdfType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
             var error = null;
             try {
-                FRBRooUtil.addResourceTypeProperty(properties, resourceType);
+                FRBRooUtil.addRDFTypeProperty(properties, rdfType);
             } catch (err) {
                 error = err;
             }
@@ -520,22 +520,22 @@ describe("FRBRooUtil", () => {
             done();
         });
 
-        it("should change rdfaType to Array if single previous type is given", (done) => {
-            var resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
-            let properties = {rdfaType: resourceType};
-            var resourceType = "http://localhost:3001/editionannotationontology.ttl#Work";
-            FRBRooUtil.addResourceTypeProperty(properties, resourceType);
-            expect(Array.isArray(properties.rdfaType)).to.equal(true);
+        it("should change rdfType to Array if single previous type is given", (done) => {
+            var rdfType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
+            let properties = {rdfType: rdfType};
+            var rdfType = "http://localhost:3001/editionannotationontology.ttl#Work";
+            FRBRooUtil.addRDFTypeProperty(properties, rdfType);
+            expect(Array.isArray(properties.rdfType)).to.equal(true);
             done();
         });
 
-        it("should add resourceType to Array if single previous type is given", (done) => {
-            var resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
-            let properties = {rdfaType: [resourceType]};
-            var resourceType = "http://localhost:3001/editionannotationontology.ttl#Work";
-            FRBRooUtil.addResourceTypeProperty(properties, resourceType);
-            expect(Array.isArray(properties.rdfaType)).to.equal(true);
-            expect(properties.rdfaType.length).to.equal(2);
+        it("should add rdfType to Array if single previous type is given", (done) => {
+            var rdfType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
+            let properties = {rdfType: [rdfType]};
+            var rdfType = "http://localhost:3001/editionannotationontology.ttl#Work";
+            FRBRooUtil.addRDFTypeProperty(properties, rdfType);
+            expect(Array.isArray(properties.rdfType)).to.equal(true);
+            expect(properties.rdfType.length).to.equal(2);
             done();
         });
     });
@@ -556,10 +556,10 @@ describe("FRBRooUtil", () => {
 
         it("should find Letter property for abstract letter", (done) => {
             let resource = "urn:vangogh/letter=001";
-            var resourceType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
+            var rdfType = "http://localhost:3001/vangoghannotationontology.ttl#Letter";
             let properties = FRBRooUtil.gatherResourceProperties(store, resource);
-            expect(properties.hasOwnProperty("rdfaType")).to.equal(true);
-            expect(properties.rdfaType).to.equal(resourceType);
+            expect(properties.hasOwnProperty("rdfType")).to.equal(true);
+            expect(properties.rdfType).to.equal(rdfType);
             done();
         });
     });

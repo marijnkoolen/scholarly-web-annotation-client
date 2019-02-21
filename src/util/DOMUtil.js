@@ -57,6 +57,7 @@ const DOMUtil = {
     getTextNodeDisplayText : function (textNode) {
         var displayText = textNode.textContent;
         let parentDisplayType = DOMUtil.getDisplayType(textNode.parentNode);
+        //console.log("getTextNodeDisplayText - parentDisplayType:", parentDisplayType);
         if (parentDisplayType === "block") {
             if (textNode === textNode.parentNode.firstChild) {
                 displayText = displayText.trimLeft();
@@ -68,8 +69,10 @@ const DOMUtil = {
             } else {
                 displayText = StringUtil.collapseRightWhitespace(displayText);
             }
+            //console.log("displayText: #" + displayText + "#");
         } else {
-            //displayText = StringUtil.collapseWhitespace(displayText);
+            displayText = StringUtil.collapseWhitespace(displayText);
+            //console.log("displayText: #" + displayText + "#");
         }
         return displayText;
     },

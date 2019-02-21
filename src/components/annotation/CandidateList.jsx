@@ -71,7 +71,7 @@ export default class CandidateList extends React.Component {
                 candidateHighlighted = makeResourceCandidate(this.props.candidates.highlighted);
             }
             return (
-                <div className="candidateList">
+                <div className="candidateList candidate-scroll-list">
                     <div className="candidateHighlighted">
                         <h4>Highlighted fragment:</h4>
                         {candidateHighlighted}

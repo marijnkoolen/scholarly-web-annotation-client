@@ -18,6 +18,11 @@ const RDFaUtil = {
     **************************
     */
 
+    setBaseAnnotationOntology(url) {
+        //console.log("RDFaUtil - setting base ontology url:", url);
+        RDFaUtil.baseAnnotationOntologyURL = url;
+    },
+
     setObserverNodes(observerNodes) {
         this.observerNodes = Array.from(observerNodes);
     },
@@ -46,13 +51,20 @@ const RDFaUtil = {
     setIgnoreNode(node, vocab, prefixIndex) {
         let attrs = RDFaUtil.getRDFaAttributes(node);
         if (attrs.hasOwnProperty("typeof")) {
-            let rdfaType = RDFaUtil.expandRDFaTerm(attrs.typeof, vocab, prefixIndex);
-            node.rdfaIgnorable = (RDFaUtil.isIgnoreClass(rdfaType)) ? true : false;
+            //console.log("setIgnoreNode - typeof:", attrs.typeof);
+            let rdfType = RDFaUtil.expandRDFaTerm(attrs.typeof, vocab, prefixIndex);
+            //console.log("setIgnoreNode - rdfType:", rdfType);
+            node.rdfaIgnorable = (RDFaUtil.isIgnoreClass(rdfType)) ? true : false;
+            //console.log("ignore URL:", RDFaUtil.baseAnnotationOntologyURL + "#IgnorableElement");
         }
     },
 
     isIgnoreClass(url) {
-        return url === "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#IgnorableElement";
+        return url === RDFaUtil.baseAnnotationOntologyURL + "#IgnorableElement";
+    },
+
+    isIgnoreNode(node) {
+        return node.rdfaIgnorable;
     },
 
     /*
@@ -168,11 +180,14 @@ const RDFaUtil = {
         if (RDFaUtil.isRDFaIgnoreNode(node) || node.nodeType === window.Node.COMMENT_NODE)
             return "";
         node.childNodes.forEach((childNode) => {
-            var childTextContent;
-            if (childNode.nodeType === window.Node.TEXT_NODE) {
+            var childTextContent = "";
+            if (RDFaUtil.isIgnoreNode(childNode)) {
+                // skip ignore nodes
+            } if (childNode.nodeType === window.Node.TEXT_NODE) {
                 // deal with surrounding whitespace of child nodes
                 // based on browser behaviour
                 childTextContent = DOMUtil.getTextNodeDisplayText(childNode);
+                //console.log("getRDFaTextContent - TEXT_NODE - childTextContent: #" + childTextContent + "#");
                 /*
                 childTextContent = StringUtil.collapseWhitespace(childNode.textContent);
                 if (textContent === "" && DOMUtil.getDisplayType(node) === "block")
@@ -180,16 +195,19 @@ const RDFaUtil = {
                 if (childNode === node.lastChild && DOMUtil.getDisplayType(node) === "block")
                     childTextContent = childTextContent.trimRight();
                 */
-            }
-            else if (childNode.nodeType === window.Node.ELEMENT_NODE) {
+            } else if (childNode.nodeType === window.Node.ELEMENT_NODE) {
                 childTextContent = RDFaUtil.getRDFaTextContent(childNode);
+                /*
                 if (DOMUtil.getDisplayType(childNode) === "block") {
                     if (textContent.length > 0)
                         textContent = textContent.trimRight() + "\n";
                     childTextContent = childTextContent.trim() + "\n";
                 }
+                */
+                //console.log("getRDFaTextContent - ELEMENT_NODE - childTextContent: #" + childTextContent + "#");
             }
             textContent += childTextContent;
+            //console.log("getRDFaTextContent - textContent: #" + textContent + "#");
         });
         return textContent;
     },
@@ -229,7 +247,7 @@ const RDFaUtil = {
             id: source.data.rdfaResource,
             node: source.data.domNode,
             property: source.data.rdfaProperty,
-            type: source.data.rdfaTypeLabel
+            type: source.data.rdfTypeLabel
         });
     },
 
@@ -240,7 +258,7 @@ const RDFaUtil = {
         breadcrumb[resourceId] = {id: resourceId};
         while (!rootFound) {
             let source = AnnotationActions.lookupIdentifier(resourceId);
-            breadcrumb[source.data.rdfaResource].type = source.data.rdfaTypeLabel;
+            breadcrumb[source.data.rdfaResource].type = source.data.rdfTypeLabel;
             RDFaUtil.addBreadcrumb(labelTrail, source);
             if (source !== undefined && source.data.parentResource) {
                 var val = {id: source.data.parentResource};
@@ -291,11 +309,11 @@ const RDFaUtil = {
         }
     },
 
-    getTypeURLs(rdfaTypeLabels, vocabulary, prefixIndex) {
-        if (!rdfaTypeLabels) {
+    getTypeURLs(rdfTypeLabels, vocabulary, prefixIndex) {
+        if (!rdfTypeLabels) {
             return null;
         }
-        return rdfaTypeLabels.map((label) => {
+        return rdfTypeLabels.map((label) => {
             if (RDFaUtil.labelHasPrefix(label)) {
                 let labelInfo = RDFaUtil.labelParsePrefix(label, prefixIndex);
                 let typeURL = labelInfo.url;
@@ -365,17 +383,17 @@ const RDFaUtil = {
     },
 
     makeIndexEntry(node, vocabulary, prefixIndex) {
-        var rdfaTypeLabels ;
+        var rdfTypeLabels ;
         var typeURLs;
         let vocabularies = [];
-        rdfaTypeLabels = RDFaUtil.getRDFaTypeLabels(node);
-        typeURLs = RDFaUtil.getTypeURLs(rdfaTypeLabels, vocabulary, prefixIndex);
+        rdfTypeLabels = RDFaUtil.getRDFaTypeLabels(node);
+        typeURLs = RDFaUtil.getTypeURLs(rdfTypeLabels, vocabulary, prefixIndex);
         return {
             rdfaResource: RDFaUtil.getRDFaResource(node),
             rdfaVocabulary: vocabulary,
             domNode: node,
-            rdfaTypeLabel: rdfaTypeLabels,
-            rdfaTypeURL: typeURLs,
+            rdfTypeLabel: rdfTypeLabels,
+            rdfTypeURL: typeURLs,
             rdfaProperty: RDFaUtil.expandProperty(node.getAttribute("property"), vocabulary, prefixIndex),
             text: RDFaUtil.getRDFaTextContent(node)
         };
@@ -448,14 +466,14 @@ const RDFaUtil = {
     },
 
     indexTypeRelation(relationIndex, resourceIndexEntry) {
-        if (!resourceIndexEntry.rdfaTypeLabel) {
+        if (!resourceIndexEntry.rdfTypeLabel) {
             return false;
         } else {
-            resourceIndexEntry.rdfaTypeURL.forEach((rdfaType) => {
+            resourceIndexEntry.rdfTypeURL.forEach((rdfType) => {
                 let relation = {
                     subject: resourceIndexEntry.rdfaResource,
                     predicate: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-                    object: rdfaType
+                    object: rdfType
                 }
                 relationIndex[relation.subject].push(relation);
             });

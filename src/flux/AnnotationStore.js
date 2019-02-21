@@ -67,7 +67,7 @@ class AnnotationStore {
     }
 
     loadResources(topResources, resourceMaps) {
-        this.trigger("load-resources", topResources, resourceMaps);
+        this.trigger("loaded-resources", topResources, resourceMaps);
     }
 
     loadCollections(collections) {
@@ -127,7 +127,7 @@ AppDispatcher.register( function( action ) {
     case "reload-annotations":
         AppAnnotationStore.reloadAnnotations();
         break;
-    case "load-resources":
+    case "loaded-resources":
         AppAnnotationStore.loadResources(action.topResources, action.resourceMaps);
         break;
     case "load-collections":

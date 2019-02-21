@@ -26,9 +26,7 @@ export default class AnnotationClient extends React.Component {
             user: null,
             view: "annotations",
             serverAvailable: false,
-            private: true,
-            public: false,
-            accessStatus: ["private"],
+            accessStatus: ["private", "public"],
         };
     }
     componentDidMount() {
@@ -45,15 +43,13 @@ export default class AnnotationClient extends React.Component {
     }
     handleAccessPreferenceChange(event) {
         let level = event.target.value;
-        let isChecked = this.state[level] ? false : true;
         var accessStatus = this.state.accessStatus;
-        if (isChecked) {
+        if (!accessStatus.includes(level)) {
             accessStatus.push(level);
         } else {
             accessStatus.splice(accessStatus.indexOf(level), 1);
         }
         this.setState({
-            [level]: isChecked,
             accessStatus: accessStatus
         });
         AnnotationActions.setAccessStatus(accessStatus);
@@ -110,7 +106,7 @@ export default class AnnotationClient extends React.Component {
                         <input
                             type="checkbox"
                             value="private"
-                            checked={this.state.private}
+                            checked={this.state.accessStatus.includes("private")}
                             onChange={this.handleAccessPreferenceChange.bind(this)}
                         />
                         Private annotations</label>
@@ -120,7 +116,7 @@ export default class AnnotationClient extends React.Component {
                         <input
                             type="checkbox"
                             value="public"
-                            checked={this.state.public}
+                            checked={this.state.accessStatus.includes("public")}
                             onChange={this.handleAccessPreferenceChange.bind(this)}
                         />
                         Public annotations</label>

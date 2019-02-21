@@ -41,6 +41,7 @@ class AnnotationCreator extends React.Component {
 
     selectTargets() {
         let candidates = TargetUtil.getCandidates(this.state.annotations, this.props.config.defaults.target);
+        console.log("selectTarget - candidates:", candidates);
         this.setState({
             editAnnotation: null,
             candidates: candidates,

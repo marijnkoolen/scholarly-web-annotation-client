@@ -2,7 +2,6 @@
 'use strict'
 
 import React from 'react';
-import { Modal } from 'react-bootstrap';
 import CandidateList from './CandidateList.jsx';
 import SelectedList from './SelectedList.jsx';
 import RDFaUtil from './../../util/RDFaUtil.js';

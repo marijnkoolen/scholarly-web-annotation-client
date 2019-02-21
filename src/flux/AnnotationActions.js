@@ -7,7 +7,7 @@ import FRBRooUtil from "../util/FRBRooUtil.js";
 const AnnotationActions = {
 
     serverAvailable : false,
-    accessStatus : ["private"], // for retrieving annotations from the server
+    accessStatus : ["private", "public"], // for retrieving annotations from the server
     permission : "private", // for submitting or updating annotations in the server
     annotationIndex : {},
     resourceIndex : {},
@@ -63,7 +63,10 @@ const AnnotationActions = {
     },
 
     setBaseAnnotationOntology(url) {
+        //console.log("AnnotationActions - setBaseAnnotationOntology url:", url);
         FRBRooUtil.baseAnnotationOntologyURL = url;
+        RDFaUtil.baseAnnotationOntologyURL = url;
+        RDFaUtil.setBaseAnnotationOntology(url);
         //console.log("AnnotationActions - baseAnnotationOntologyURL:", FRBRooUtil.baseAnnotationOntologyURL);
     },
 
@@ -238,6 +241,7 @@ const AnnotationActions = {
     },
 
     indexExternalResources: (resources, callback) => {
+        var t0 = performance.now();
         FRBRooUtil.loadVocabularies((error, store) => {
             if (error) {
                 console.log(error);
@@ -247,6 +251,7 @@ const AnnotationActions = {
                 //console.log("indexExternalResources - returning with undefined vocabularyStore");
                 return callback(null, false, null);
             }
+            var t1 = performance.now();
             AnnotationStore.vocabularyStore = store;
             AnnotationStore.resourceStore = null;
             AnnotationStore.representedResourceMap = {};
@@ -260,15 +265,22 @@ const AnnotationActions = {
                 } else if (!doIndexing) {
                     return callback(null);
                 } else {
+                    var t2 = performance.now();
                     AnnotationStore.resourceStore = store;
                     //console.log("AnnotationActions - resourceStore:", store);
                     //console.log("AnnotationActions - resources:", resources);
                     let representedResourceMap = FRBRooUtil.mapRepresentedResources(store, resources);
                     //console.log("AnnotationActions - representedResourceMap:", representedResourceMap);
+                    var t3 = performance.now();
                     AnnotationStore.representedResourceMap = representedResourceMap;
                     let externalResourceIndex = FRBRooUtil.indexExternalResources(store, resources);
                     //console.log("AnnotationActions - externalResourceIndex:", externalResourceIndex);
                     AnnotationStore.externalResourceIndex = externalResourceIndex;
+                    var t4 = performance.now();
+                    //console.log("Call to loadVocabularies took " + (t1 - t0) + " milliseconds.");
+                    //console.log("Call to loadExternalResources took " + (t2 - t1) + " milliseconds.");
+                    //console.log("Call to mapRepresentedResources took " + (t3 - t2) + " milliseconds.");
+                    //console.log("Call to indexExternalResources took " + (t4 - t3) + " milliseconds.");
                     return callback(null);
                 }
             });
@@ -286,10 +298,10 @@ const AnnotationActions = {
     },
 
     hasRepresentedResource(resourceId) {
-        if (!AnnotationStore.externalResourceIndex) {
+        if (!AnnotationStore.representedResourceIndex) {
             return false;
         } else {
-            return AnnotationStore.externalResourceIndex.hasOwnProperty(resourceId);
+            return AnnotationStore.representedResourceIndex.hasOwnProperty(resourceId);
         }
     },
 
@@ -327,6 +339,7 @@ const AnnotationActions = {
     },
 
     loadResources: () => {
+        //console.log("loadResources - getTopRDFaResources");
         AnnotationStore.topResources = RDFaUtil.getTopRDFaResources();
         //console.log("loadResources - topResources:", AnnotationStore.topResources);
         AnnotationActions.indexResources((error) => {
@@ -350,7 +363,7 @@ const AnnotationActions = {
                     //console.log("external resources indexed");
                     //console.log(AnnotationStore.externalResourceIndex);
                     AppDispatcher.dispatch({
-                        eventName: "load-resources",
+                        eventName: "loaded-resources",
                         topResources: AnnotationStore.topResources,
                         resourceMaps: AnnotationStore.resourceMaps
                     });

@@ -161,7 +161,7 @@ const FRBRooUtil = {
             //console.log("\tpredicate:", relation.predicate.value);
             //console.log("\tobject:", relation.object.value);
             if (relation.predicate.value === FRBRooUtil.RDF('type').value) {
-                FRBRooUtil.addResourceTypeProperty(properties, relation.object.value);
+                FRBRooUtil.addRDFTypeProperty(properties, relation.object.value);
             }
         })
         if (subjectRelations.length + objectRelations.length === 0) {
@@ -171,7 +171,19 @@ const FRBRooUtil = {
         }
     },
 
-    getResourceType(resourceStore, resource) {
+    getRDFTypeLabels(typeList) {
+        if (!Array.isArray(typeList)) {
+            return null;
+            //console.log("typeList:", typeList);
+            //throw Error("typeList should be an array of RDF type strings");
+        }
+        return typeList.map((rdfType) => {
+            let index = rdfType.indexOf("#");
+            return rdfType.substr(index);
+        });
+    },
+
+    getRDFType(resourceStore, resource) {
         let node = rdf.sym(resource);
         var triples = resourceStore.triples.statementsMatching(node, FRBRooUtil.RDF('type'), undefined);
         if (triples.length > 0) {
@@ -180,18 +192,18 @@ const FRBRooUtil = {
         return null;
     },
 
-    addResourceTypeProperty(properties, rdfaType) {
-        if (!rdfaType) {
+    addRDFTypeProperty(properties, rdfType) {
+        if (!rdfType) {
             return true;
-        } else if (properties.hasOwnProperty("rdfaType") === false) {
-            properties.rdfaType = rdfaType;
+        } else if (properties.hasOwnProperty("rdfType") === false) {
+            properties.rdfType = rdfType;
             return true;
-        } else if (typeof properties.rdfaType === "string") {
-            properties.rdfaType = [properties.rdfaType, rdfaType];
-        } else if (Array.isArray(properties.rdfaType)){
-            properties.rdfaType.push(rdfaType);
+        } else if (typeof properties.rdfType === "string") {
+            properties.rdfType = [properties.rdfType, rdfType];
+        } else if (Array.isArray(properties.rdfType)){
+            properties.rdfType.push(rdfType);
         } else {
-            throw Error("properties.rdfaType should be string or array");
+            throw Error("properties.rdfType should be string or array");
         }
     },
 
@@ -202,9 +214,10 @@ const FRBRooUtil = {
             //console.log(resource, relation);
             if (relation) {
                 externalResourceIndex[resource] = relation;
-                let resourceType = FRBRooUtil.getResourceType(resourceStore, resource);
+                let rdfType = FRBRooUtil.getRDFType(resourceStore, resource);
                 externalResourceIndex[resource].type = "external";
-                externalResourceIndex[resource].resourceType = resourceType;
+                externalResourceIndex[resource].rdfType = rdfType;
+                externalResourceIndex[resource].rdfTypeLabel = FRBRooUtil.getRDFTypeLabels(rdfType);
                 if (!externalResourceIndex.hasOwnProperty(relation.parentResource)) {
                     FRBRooUtil.indexExternalParentResource(resourceStore, externalResourceIndex, relation.parentResource);
                 }
@@ -219,7 +232,8 @@ const FRBRooUtil = {
             throw Error ("parentResource does not exist: " + resource);
         }
         let resourceInfo = {resource: resource, type: "external"};
-        resourceInfo.resourceType = FRBRooUtil.getResourceType(resourceStore, resource);
+        resourceInfo.rdfType = FRBRooUtil.getRDFType(resourceStore, resource);
+        resourceInfo.rdfTypeLabel = FRBRooUtil.getRDFTypeLabels(resourceInfo.rdfType);
         index[resource]
         let relation = FRBRooUtil.resourceGetParentRelation(resourceStore, resource);
         if (relation) {
@@ -238,20 +252,51 @@ const FRBRooUtil = {
             throw Error("resources should be an array of resource IDs");
         }
         let representedResourceIndex = {};
-        let hasRepresentation = FRBRooUtil.baseAnnotationOntologyURL + "#hasRepresentation";
-        let isRepresentationOf = FRBRooUtil.baseAnnotationOntologyURL + "#isRepresentationOf";
         //console.log(hasRepresentation);
         resources.forEach((resource) => {
             //console.log("FRBRooUtil - resource:", resource);
-            let subjectRelations = FRBRooUtil.findExternalSubjectRelations(resourceStore, resource, isRepresentationOf);
-            let objectRelations = FRBRooUtil.findExternalObjectRelations(resourceStore, resource, hasRepresentation);
-            if (subjectRelations.length > 0) {
-                FRBRooUtil.addIndexEntry(representedResourceIndex, resource, subjectRelations[0]);
-            } else if (objectRelations.length > 0) {
-                FRBRooUtil.addIndexEntry(representedResourceIndex, resource, objectRelations[0]);
-            }
+            FRBRooUtil.mapRepresentedObjectResources(resourceStore, resource, representedResourceIndex);
+            FRBRooUtil.mapRepresentedSubjectResources(resourceStore, resource, representedResourceIndex);
+            FRBRooUtil.mapFragmentObjectResources(resourceStore, resource, representedResourceIndex);
+            FRBRooUtil.mapFragmentSubjectResources(resourceStore, resource, representedResourceIndex);
         });
         return representedResourceIndex;
+    },
+
+    mapFragmentObjectResources(resourceStore, resource, representedResourceIndex) {
+        let hasFragmentIn = FRBRooUtil.baseAnnotationOntologyURL + "#hasFragmentIn";
+        let hasFragmentOf = FRBRooUtil.baseAnnotationOntologyURL + "#hasFragmentOf";
+        var objectRelations = FRBRooUtil.findExternalObjectRelations(resourceStore, resource, hasFragmentIn);
+        var objectRelations = objectRelations.concat(FRBRooUtil.findExternalObjectRelations(resourceStore, resource, hasFragmentOf));
+        if (objectRelations.length > 0) {
+            FRBRooUtil.addIndexEntry(representedResourceIndex, resource, objectRelations[0]);
+        }
+    },
+
+    mapFragmentSubjectResources(resourceStore, resource, representedResourceIndex) {
+        let isFragmentIn = FRBRooUtil.baseAnnotationOntologyURL + "#isFragmentIn";
+        let isFragmentOf = FRBRooUtil.baseAnnotationOntologyURL + "#isFragmentOf";
+        var subjectRelations = FRBRooUtil.findExternalSubjectRelations(resourceStore, resource, isFragmentIn);
+        var subjectRelations = subjectRelations.concat(FRBRooUtil.findExternalSubjectRelations(resourceStore, resource, isFragmentOf));
+        if (subjectRelations.length > 0) {
+            FRBRooUtil.addIndexEntry(representedResourceIndex, resource, subjectRelations[0]);
+        }
+    },
+
+    mapRepresentedObjectResources(resourceStore, resource, representedResourceIndex) {
+        let hasRepresentation = FRBRooUtil.baseAnnotationOntologyURL + "#hasRepresentation";
+        let objectRelations = FRBRooUtil.findExternalObjectRelations(resourceStore, resource, hasRepresentation);
+        if (objectRelations.length > 0) {
+            FRBRooUtil.addIndexEntry(representedResourceIndex, resource, objectRelations[0]);
+        }
+    },
+
+    mapRepresentedSubjectResources(resourceStore, resource, representedResourceIndex) {
+        let isRepresentationOf = FRBRooUtil.baseAnnotationOntologyURL + "#isRepresentationOf";
+        let subjectRelations = FRBRooUtil.findExternalSubjectRelations(resourceStore, resource, isRepresentationOf);
+        if (subjectRelations.length > 0) {
+            FRBRooUtil.addIndexEntry(representedResourceIndex, resource, subjectRelations[0]);
+        }
     },
 
     addIndexEntry(index, resource, relation) {
@@ -461,19 +506,28 @@ const FRBRooUtil = {
         if (!FRBRooUtil.isValidVocabularyStore(vocabularyStore)) {
             throw Error("Invalid vocabularyStore given");
         }
+        var t0 = performance.now();
         let imports = FRBRooUtil.getImports(vocabularyStore);
+        var t1 = performance.now();
         //console.log("imports:", imports);
         if (imports.length > 0) {
             FRBRooUtil.readVocabularies(imports, (error, vocabularies) => {
                 if (error) {
                     return callback(error, false);
                 }
+                var t2 = performance.now();
                 FRBRooUtil.updateVocabularyStore(vocabularyStore, vocabularies);
+                var t3 = performance.now();
                 FRBRooUtil.importAndUpdate(vocabularyStore, (error, done) => {
                     if (error) {
                         console.log(error);
                         return callback(error, false);
                     } else {
+                        var t4 = performance.now();
+                        //console.log("Call to getImports took " + (t1 - t0) + " milliseconds.");
+                        //console.log("Call to readVocabularies took " + (t2 - t1) + " milliseconds.");
+                        //console.log("Call to updateVocabularyStore took " + (t3 - t2) + " milliseconds.");
+                        //console.log("Call to importAndUpdate took " + (t4 - t3) + " milliseconds.");
                         return callback(null, done);
                     }
                 });
@@ -486,9 +540,11 @@ const FRBRooUtil = {
     loadVocabularies(callback) {
         let vocabularyURLs = [];
         let vocabData = [];
+        var t0 = performance.now();
         RDFaUtil.listVocabularyURLs(document, vocabularyURLs);
         // read initial vocabularies
         //console.log("vocabularyURLs:", vocabularyURLs);
+        var t1 = performance.now();
         if (vocabularyURLs.length === 0) {
             // make an empty store if there are no vocabularies
             let vocabularyStore = FRBRooUtil.makeVocabularyStore([]);
@@ -498,15 +554,22 @@ const FRBRooUtil = {
             if (error) {
                 return callback(error, null);
             } else {
+                var t2 = performance.now();
                 // make vocabulary store
                 //console.log("vocabularies:", vocabularies);
                 let vocabularyStore = FRBRooUtil.makeVocabularyStore(vocabularies);
+                var t3 = performance.now();
                 //console.log("vocabularyStore:", vocabularyStore);
                 // iterate: 1) get imports, 2) update store
                 FRBRooUtil.importAndUpdate(vocabularyStore, (error, updatesDone) => {
                     if (error) {
                         return callback(error, vocabularyStore);
                     } else {
+                        var t4 = performance.now();
+                        //console.log("Call to listVocabularyURLs took " + (t1 - t0) + " milliseconds.");
+                        //console.log("Call to readVocabularies took " + (t2 - t1) + " milliseconds.");
+                        //console.log("Call to makeVocabularyStore took " + (t3 - t2) + " milliseconds.");
+                        //console.log("Call to importAndUpdate took " + (t4 - t3) + " milliseconds.");
                         return callback(null, vocabularyStore);
                     }
                 });
@@ -595,7 +658,7 @@ const FRBRooUtil = {
         labelTrail.unshift({
             id: source.data.rdfaResource,
             property: source.data.rdfaProperty,
-            type: source.data.rdfaTypeLabel
+            type: source.data.rdfTypeLabel
         });
     },
 
@@ -608,7 +671,7 @@ const FRBRooUtil = {
             }
             let data = externalResourceIndex[resourceId];
             var breadcrumb = {};
-            breadcrumb.type = data.resourceType;
+            breadcrumb.type = data.rdfType;
             breadcrumb.id = resourceId;
             breadcrumb.property = data.relation;
             labelTrail.unshift(breadcrumb);

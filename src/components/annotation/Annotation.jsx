@@ -78,7 +78,6 @@ class Annotation extends React.Component {
     createResourceTarget(target, source, targetCount) {
         let component = this;
         var text = "";
-        var label;
         if (target.type === "Text") {
             text = TargetUtil.getTargetText(target, source);
         } else if (target.type === "Image") {
@@ -101,15 +100,9 @@ class Annotation extends React.Component {
             );
         }
         //console.log("createResourceTarget - text:", text);
+        //console.log("source:", source);
         if (text.length > 40) {
             text = text.substr(0, 37) + "...";
-        }
-        if (source.data.hasOwnProperty("rdfaType")) {
-            label = source.data.rdfaType;
-            //console.log("rdfaType:", source.data);
-        } else if (source.data.hasOwnProperty("rdfaTypeLabel")) {
-            label = source.data.rdfaTypeLabel;
-            //console.log("rdfaTypeLabel:", source.data);
         }
         //console.log("Annotation - source:", source);
         let breadcrumbs = RDFaUtil.createBreadcrumbTrail(source.data.rdfaResource);
@@ -147,14 +140,11 @@ class Annotation extends React.Component {
 
     createExternalTarget(target, source, targetCount) {
         var text = "";
-        var label;
         //console.log(target);
+        //console.log("createExternalTarget - source:", source);
         if (target.type === "Text") {
             text = TargetUtil.getTargetText(target, source);
         }
-        label = source.data.resourceType[0];
-        label = label.substr(label.indexOf("#") + 1);
-        //console.log("label:", label);
         let breadcrumbs = FRBRooUtil.createBreadcrumbTrail(AnnotationStore.externalResourceIndex, target.source);
         //console.log("breadcrumbs:", breadcrumbs);
         let breadcrumbLabels = breadcrumbs.map((crumb, index) => {
@@ -232,6 +222,7 @@ class Annotation extends React.Component {
                 var text = "";
                 var label;
                 if (source.type === "external") {
+                    //console.log("createExternalTarget");
                     return this.createExternalTarget(target, source, targetCount);
                 }
                 if (source.type === "resource") {
