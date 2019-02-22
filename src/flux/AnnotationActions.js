@@ -4,11 +4,33 @@ import AnnotationStore from "../flux/AnnotationStore.js";
 import RDFaUtil from "../util/RDFaUtil.js";
 import FRBRooUtil from "../util/FRBRooUtil.js";
 
+var restorePermission = () => {
+    var permission = {accessStatus: ["private", "public"], permission: "private"};
+    if (window.localStorage && window.localStorage.hasOwnProperty("swac-permission")) {
+        permission = JSON.parse(window.localStorage.getItem("swac-permission"));
+    }
+    console.log("restoring permissions:", permission);
+    return permission;
+}
+
+let permission = restorePermission();
+
+var storePermission = (permission) => {
+    console.log("storing permissions:", permission);
+    if (!window.localStorage) {
+    } else {
+        window.localStorage.setItem("swac-permission", JSON.stringify(permission));
+    }
+}
+
+
 const AnnotationActions = {
 
     serverAvailable : false,
-    accessStatus : ["private", "public"], // for retrieving annotations from the server
-    permission : "private", // for submitting or updating annotations in the server
+    accessStatus : permission.accessStatus, // for retrieving annotations from the server
+    permission : permission.permission, // for submitting or updating annotations in the server
+    //accessStatus : ["private", "public"], // for retrieving annotations from the server
+    //permission : "private", // for submitting or updating annotations in the server
     annotationIndex : {},
     resourceIndex : {},
     relationIndex : {},
@@ -47,6 +69,7 @@ const AnnotationActions = {
 
     setAccessStatus(accessStatus) {
         AnnotationActions.accessStatus = accessStatus;
+        storePermission({permission: AnnotationActions.permission, accessStatus: accessStatus});
         if (AnnotationActions.accessStatus.length === 0) {
             AnnotationActions.dispatchAnnotations([]); // when no access levels are selected
         } else {
@@ -59,6 +82,7 @@ const AnnotationActions = {
     },
 
     setPermission(permission) {
+        storePermission({permission: permission, accessStatus: AnnotationActions.accessStatus});
         AnnotationActions.permission = permission;
     },
 

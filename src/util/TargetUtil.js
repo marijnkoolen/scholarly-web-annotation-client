@@ -101,12 +101,12 @@ const TargetUtil = {
     },
 
     makeTextSelectors : function(container, selection) {
-        console.log("makeTextSelectors - container:", container);
+        //console.log("makeTextSelectors - container:", container);
         var startNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.startNode);
         var endNodeOffset = TargetUtil.findNodeOffsetInContainer(container.node, selection.endNode);
         selection.startContainerOffset = startNodeOffset + selection.startOffset;
         selection.endContainerOffset = endNodeOffset + selection.endOffset;
-        console.log("makeTextSelectors - selection:", selection);
+        //console.log("makeTextSelectors - selection:", selection);
         return {
             position: this.makeTextPositionParams(container, selection),
             quote: this.makeTextQuoteParams(container, selection)
@@ -122,8 +122,8 @@ const TargetUtil = {
 
     makeTextQuoteParams : function(container, selection) {
         let textContent = RDFaUtil.getRDFaTextContent(container.node);
-        console.log("makeTextQuoteParams - textContent: #" + textContent + "#");
-        console.log(selection);
+        //console.log("makeTextQuoteParams - textContent: #" + textContent + "#");
+        //console.log(selection);
         let maxPrefix = selection.startContainerOffset >= 20 ? 20 : selection.startContainerOffset;
         let selectionLength = selection.endContainerOffset - selection.startContainerOffset;
         return {
@@ -186,7 +186,7 @@ const TargetUtil = {
     },
 
     getCandidateExternalResource(resource) {
-        console.log("resource:", resource);
+        //console.log("resource:", resource);
         //console.log(AnnotationStore.representedResourceMap);
         if (AnnotationActions.hasRepresentedResource(resource.source)) {
             let representationResource = AnnotationStore.representedResourceMap[resource.source];
@@ -215,7 +215,7 @@ const TargetUtil = {
                 return rdfType.substr(rdfType.indexOf("#") + 1);
             })
             externalResource.source = externalResource.resource;
-            console.log(externalResource);
+            //console.log(externalResource);
             return externalResource;
         } else {
             return null;
@@ -226,10 +226,10 @@ const TargetUtil = {
     // or contained in the selected passage.
     getCandidateRDFaTargets : function(defaultTargets) {
         var selection = SelectionUtil.getCurrentSelection();
-        console.log("getCandidateRDFaTargets - selection:", selection);
+        //console.log("getCandidateRDFaTargets - selection:", selection);
         var ancestors = DOMUtil.findCommonAncestors(selection.startNode, selection.endNode);
         selection.containerNode = ancestors[ancestors.length - 1];
-        console.log("getCandidateRDFaTargets - containerNode:", selection.containerNode);
+        //console.log("getCandidateRDFaTargets - containerNode:", selection.containerNode);
         var biggerNodes = TargetUtil.getRDFaCandidates(ancestors);
         let selectionNodes = TargetUtil.findSelectionRDFaNodes(selection);
         let smallerNodes = TargetUtil.getRDFaCandidates(selectionNodes);
@@ -248,7 +248,7 @@ const TargetUtil = {
     },
 
     selectCandidateAnnotations : function(annotations, highlighted) {
-        console.log("selectCandidateAnnotations - annotations:", annotations);
+        //console.log("selectCandidateAnnotations - annotations:", annotations);
         if (!highlighted)
             return TargetUtil.addCandidateAnnotations(annotations);
         let candidates = annotations.filter(function(annotation) {

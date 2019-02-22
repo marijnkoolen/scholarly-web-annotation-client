@@ -4,6 +4,7 @@ import React from 'react';
 import AppAnnotationStore from './../../flux/AnnotationStore';
 import AnnotationActions from './../../flux/AnnotationActions';
 import Annotation from './Annotation.jsx';
+import $ from 'jquery';
 
 class AnnotationList extends React.Component {
     constructor(props) {
@@ -38,6 +39,9 @@ class AnnotationList extends React.Component {
                 );
             });
         }
+        $(() => {
+            $("[data-toggle=popover]").popover();
+        })
         return (
             <div className="annotationList">
                 <h3>Stored Annotations</h3>

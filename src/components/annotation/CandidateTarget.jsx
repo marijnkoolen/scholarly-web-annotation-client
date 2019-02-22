@@ -40,21 +40,34 @@ class CandidateTarget extends React.Component {
             <li
                 onClick={this.handleClick}
                 className="list-group-item candidate-target">
-                <div>
-                    <label className="badge badge-dark">{targetType}</label>
-                    {': '}
-                    <span>{this.props.candidate.source}</span>
-                </div>
-                <div>
-                    <label className="badge badge-dark">Type</label>
-                    {': '}
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                    <label className="annotation-text">{targetType}:</label>
+                            </td>
+                            <td>
+                    <span className="annotation-text">{this.props.candidate.source}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                    <label className="annotation-text">Type:</label>
+                            </td>
+                            <td>
                     <span className={badgeType}>{this.props.candidate.label}</span>
-                </div>
-                <div>
-                    <label className="badge badge-dark">Content</label>
-                    {': '}
-                    <span>{text}</span>
-                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                    <label className="annotation-text">Content:</label>
+                            </td>
+                            <td>
+                    <span className="annotation-text">{text}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </li>
         )
     }

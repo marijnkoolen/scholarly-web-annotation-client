@@ -26,7 +26,8 @@ export default class AnnotationClient extends React.Component {
             user: null,
             view: "annotations",
             serverAvailable: false,
-            accessStatus: ["private", "public"],
+            accessStatus: AnnotationActions.accessStatus,
+            //accessStatus: ["private", "public"],
         };
     }
     componentDidMount() {

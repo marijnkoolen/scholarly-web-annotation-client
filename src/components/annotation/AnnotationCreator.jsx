@@ -41,7 +41,7 @@ class AnnotationCreator extends React.Component {
 
     selectTargets() {
         let candidates = TargetUtil.getCandidates(this.state.annotations, this.props.config.defaults.target);
-        console.log("selectTarget - candidates:", candidates);
+        //console.log("selectTarget - candidates:", candidates);
         this.setState({
             editAnnotation: null,
             candidates: candidates,
@@ -173,29 +173,25 @@ class AnnotationCreator extends React.Component {
                         onClick={this.addMotivations.bind(this)}>
                         Show content
                     </button>
-                    <div className="permission-switch btn-group btn-group-toggle">
-                        <label
-                            className={this.state.permission === "private" ? "btn btn-primary active" : "btn btn-primary"}
-                            >
-                            <input
-                                type="radio"
-                                value="private"
-                                checked={this.state.permission === "private"}
-                                onChange={this.handlePermissionChange.bind(this)}
-                            />
-                            Private
-                        </label>
-                        <label
-                            className={this.state.permission === "public" ? "btn btn-primary active" : "btn btn-primary"}
-                            >
-                            <input
-                                type="radio"
-                                value="public"
-                                checked={this.state.permission === "public"}
-                                onChange={this.handlePermissionChange.bind(this)}
-                            />
-                            Public
-                        </label>
+                    <div className="permission-switch ">
+                        <label>Private</label>
+                        {' '}
+                        <input
+                            type="radio"
+                            value="private"
+                            checked={this.state.permission === "private"}
+                            onChange={this.handlePermissionChange.bind(this)}
+                        />
+                        &nbsp;
+                        &nbsp;
+                        <input
+                            type="radio"
+                            value="public"
+                            checked={this.state.permission === "public"}
+                            onChange={this.handlePermissionChange.bind(this)}
+                        />
+                        {' '}
+                        <label>Public</label>
                     </div>
                 </div>
             </div>

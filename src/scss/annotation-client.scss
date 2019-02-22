@@ -30,6 +30,15 @@
 .annotation-scroll-list {
     overflow-y: scroll;
     height: 60%;
+    font-size: 12px;
+}
+
+.annotation-text {
+    font-size: 12px;
+}
+
+.breadcrumbs {
+    margin-bottom: 5px;
 }
 
 .candidate-scroll-list {

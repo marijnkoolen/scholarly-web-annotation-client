@@ -131,9 +131,14 @@ class Annotation extends React.Component {
         });
         return (
             <div key={targetCount}>
-                {breadcrumbLabels}
-                <br/>
-                <span>{text}</span>
+                <div className="breadcrumbs">
+                    {breadcrumbLabels}
+                </div>
+                <label className="badge badge-warning">Target content</label>
+                {' '}
+                <span
+                    className="annotation-text"
+                >{text}</span>
             </div>
         );
     }
@@ -169,9 +174,14 @@ class Annotation extends React.Component {
         });
         return (
             <div key={targetCount}>
-                {breadcrumbLabels}
-                <br/>
-                <span>{text}</span>
+                <div className="breadcrumbs">
+                    {breadcrumbLabels}
+                </div>
+                <label className="badge badge-warning">Target content</label>
+                {' '}
+                <span
+                    className="annotation-text"
+                >{text}</span>
             </div>
         );
     }
@@ -187,7 +197,9 @@ class Annotation extends React.Component {
                     className="badge badge-success"
                     >{label}</span>
                 &nbsp;
-                <span>{text}</span>
+                <span
+                    className="annotation-text"
+                >{text}</span>
             </div>
         );
     }
@@ -199,14 +211,27 @@ class Annotation extends React.Component {
         var timestamp = (new Date(annotation.created)).toLocaleString();
         var bodies = AnnotationUtil.extractBodies(annotation).map((body) => {
             bodyCount++;
+            var bodyText = body.value;
+            //if (bodyText.length > 100) {
+            //    bodyText = bodyText.substr(0, 97) + "...";
+            //}
+            //
+                        //data-toggle="popover"
+                        //data-trigger="hover"
+                        //data-content={body.value}
+                        //data-placement="top"
             return (
-                <div key={bodyCount}>
+                <div key={bodyCount} >
                     <span></span>
                     <span
                         className="badge badge-success"
                         >{body.purpose}</span>
                     &nbsp;
-                    <span>{body.value}</span>
+                    <span
+                        className="annotation-text"
+                    >
+                        {bodyText}
+                    </span>
                 </div>
             );
         });
