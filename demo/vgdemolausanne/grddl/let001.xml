@@ -4,7 +4,7 @@
 <?xml-model href="out/vgoddlausanne.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <TEI xmlns:vg="http://www.vangoghletters.org/ns/" xmlns="http://www.tei-c.org/ns/1.0"
     xmlns:grddl='http://www.w3.org/2003/g/data-view#'
-    grddl:transformation="glean_title.xsl">
+    grddl:transformation="grddl.xsl">
 <teiHeader xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><fileDesc>
 <titleStmt>
 <title>To Theo van Gogh. The Hague, Sunday, 29 September 1872.</title>
