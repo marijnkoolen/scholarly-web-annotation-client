@@ -232,6 +232,25 @@ hi:isRepresentationOf rdf:type owl:ObjectProperty ;
 
 #################################################################
 #
+#    Associate LOD URIs and locations in XML files
+#
+#################################################################
+	
+hi:refersTo rdf:type owl:ObjectProperty ;
+	rdfs:domain hi:AnnotatableThing;
+	rdfs:range hi:Thing;
+	rdfs:label "refersTo"  ;
+	rdfs:comment "Associates LOD URI and location in XML file".
+	owl:inverseOf hi:hasRepresentation.
+hi:isReferredToBy rdf:type owl:ObjectProperty ;
+	rdfs:range hi:AnnotatableThing;
+	rdfs:domain hi:Thing;
+	rdfs:label "isReferredToBy"  ;
+	rdfs:comment "Associates location in XML file with LOAD URI";
+	owl:inverseOf hi:refersTo.
+
+#################################################################
+#
 #    Practical stuff
 #
 #################################################################
