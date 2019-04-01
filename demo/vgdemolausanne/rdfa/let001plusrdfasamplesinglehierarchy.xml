@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE any  [
+  <!ENTITY weo 'http://www.example.org/'>
+]>
+
+<body vocab="http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#" 
+    prefix="hi: http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl# 
+    vg: http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#">
+<div type="original" xml:id="letter.original.1" 
+    about="&weo;vgcorr/letter=1/" typeof="vg:Letter">
+    <ab xml:id="para.original.1.1" 
+        about="&weo;vgcorr/letter=1/para=1/" typeof="vg:ParagraphInLetter">
+        <!-- content of para -->
+    </ab>
+    <!-- rest of paragraphs -->
+</div>
+</body>

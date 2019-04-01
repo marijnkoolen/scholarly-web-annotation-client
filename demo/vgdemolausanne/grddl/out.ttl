@@ -1,4 +1,4 @@
-#Generated on 2019-03-07T14:42:30.217+01:00. From file:/C:/repos/scholarly-web-annotation-client/demo/vgdemolausanne/grddl/let001.xml
+#Generated on 2019-04-01T16:04:52.798+02:00. From file:/D:/repos/annotationclient/demo/vgdemolausanne/grddl/let001.xml
 @prefix hi: <http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl#> .
 @prefix vg: <http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .

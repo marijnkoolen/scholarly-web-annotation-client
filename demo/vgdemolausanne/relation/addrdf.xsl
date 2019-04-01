@@ -24,17 +24,17 @@
             <process>
                 <step path="tei:div[@type='original']" typeofw="vg:Letter" typeofr="hi:EditionText" association="hi:hasRepresentation"
                     matchPattern="([a-z]+).([0-9]+)" 
-                    replacementPattern="urn:vangogh/letter=$2/" replacementPatternr="urn:vangogh/vgcorr/letter=$2/repr=$1/"/>
+                    replacementPattern="http://www.example.org/vgcorr/letter=$2/" replacementPatternr="http://www.example.org/vgedition/vgcorr/letter=$2/repr=$1/"/>
                 <step path="tei:ab" typeofw="vg:ParagraphInLetter" typeofr="hi:EditionText"  propertyw="hi:hasWorkPart" propertyr="hi:hasTextPart" association="hi:hasRepresentation"
                     matchPattern="([a-z]+).([0-9]+).([0-9]+)" 
-                    replacementPattern="urn:vangogh/letter=$2/para=$3/" replacementPatternr="urn:vangogh/vgcorr/letter=$2/para=$3/repr=$1/"/>
+                    replacementPattern="http://www.example.org/vgcorr/letter=$2/para=$3/" replacementPatternr="http://www.example.org/vgedition/vgcorr/letter=$2/para=$3/repr=$1/"/>
             </process>
             <process>
                 <step path="tei:div[@type='translation']" typeofw="vg:Letter" typeofr="vg:TranslatedEditionText" association="hi:hasRepresentation"
-                    matchPattern="([a-z]+).([0-9]+)" replacementPattern="urn:vangogh/letter=$2/" replacementPatternr="urn:vangogh/vgcorr/letter=$2/repr=$1/"/>
+                    matchPattern="([a-z]+).([0-9]+)" replacementPattern="http://www.example.org/vgcorr/letter=$2/" replacementPatternr="http://www.example.org/vgedition/vgcorr/letter=$2/repr=$1/"/>
                 <step path="tei:ab" typeofw="vg:ParagraphInLetter" typeofr="vg:TranslatedEditionText" propertyw="hi:hasWorkPart" propertyr="hi:hasTextPart" association="hi:hasRepresentation"
                     matchPattern="([a-z]+).([0-9]+).([0-9]+)" 
-                    replacementPattern="urn:vangogh/letter=$2/para=$3/" replacementPatternr="urn:vangogh/vgcorr/letter=$2/para=$3/repr=$1/"/>
+                    replacementPattern="http://www.example.org/vgcorr/letter=$2/para=$3/" replacementPatternr="http://www.example.org/vgedition/vgcorr/letter=$2/para=$3/repr=$1/"/>
             </process>
         </processes>
     </xsl:variable>

@@ -2,7 +2,7 @@
 <!--  Last Changed Date: 2018-07-11 16:09:06 +0200 (Wed, 11 Jul 2018) | SVN Revision: 2200 -->
 <!--Licensed under Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)-->
 <?xml-model href="out/vgoddlausanne.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
-<TEI xmlns:vg="http://www.vangoghletters.org/ns/" xmlns="http://www.tei-c.org/ns/1.0" xmlns:tei="http://www.tei-c.org/ns/1.0"
+<TEI xmlns:vg="http://www.vangoghletters.org/ns/" xmlns="http://www.tei-c.org/ns/1.0"
     xmlns:grddl='http://www.w3.org/2003/g/data-view#'
     grddl:transformation="grddl.xsl">
 <teiHeader xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><fileDesc>
@@ -32,12 +32,12 @@
     <p>Letter headed: ‘<hi rend="ital">[</hi>Den Haag, 29 september 187<hi rend="ital">]</hi>2.’ (see <hi rend="ital">Textual Notes</hi>). The date is  based on the harness racing mentioned in the letter <ref target="#l-18">(l. 18)</ref>, which took place on 28 September 1872.</p></note></vg:letDesc></sourceDesc></fileDesc>
 <encodingDesc>
     <listPrefixDef>
-<prefixDef ident="letter" matchPattern="([a-z]+),([0-9]+)" replacementPattern="urn:vangogh/letter=$2/">
-    <p>Associates letter div with url of letter as work</p>
-</prefixDef>
-<prefixDef ident="letter" matchPattern="([a-z]+),([0-9]+)" replacementPattern="urn:vangogh/vgcorr/letter=$2/repr=$1/">
-    <p>Associates letter div with url of this edition of the letter</p>
-</prefixDef>
+        <prefixDef ident="letter" matchPattern="([a-z]+),([0-9]+)" replacementPattern="urn:vangogh/letter=$2/">
+            <p>Associates letter div with url of letter as work</p>
+        </prefixDef>
+        <prefixDef ident="letter" matchPattern="([a-z]+),([0-9]+)" replacementPattern="urn:vangogh/vgcorr/letter=$2/repr=$1/">
+            <p>Associates letter div with url of this edition of the letter</p>
+        </prefixDef>
         <prefixDef ident="para" matchPattern="([a-z]+),([0-9]+),([0-9]+)" replacementPattern="urn:vangogh/letter=$2/para=$3/">
             <p>Associates letter div with url of letter as work</p>
         </prefixDef>
