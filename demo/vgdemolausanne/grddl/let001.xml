@@ -35,13 +35,13 @@
 <prefixDef ident="letter" matchPattern="([a-z]+),([0-9]+)" replacementPattern="urn:vangogh/letter=$2/">
     <p>Associates letter div with url of letter as work</p>
 </prefixDef>
-<prefixDef ident="letter" matchPattern="([a-z]+),([0-9]+)" replacementPattern="urn:vangogh/vgcorr/letter=$2/repr=$1/">
+<prefixDef ident="letter" matchPattern="([a-z]+),([0-9]+)" replacementPattern="urn:vangogh/letter=$2/repr=$1/">
     <p>Associates letter div with url of this edition of the letter</p>
 </prefixDef>
         <prefixDef ident="para" matchPattern="([a-z]+),([0-9]+),([0-9]+)" replacementPattern="urn:vangogh/letter=$2/para=$3/">
             <p>Associates letter div with url of letter as work</p>
         </prefixDef>
-        <prefixDef ident="para" matchPattern="([a-z]+),([0-9]+),([0-9]+)" replacementPattern="urn:vangogh/vgcorr/letter=$2/para=$3/repr=$1/">
+        <prefixDef ident="para" matchPattern="([a-z]+),([0-9]+),([0-9]+)" replacementPattern="urn:vangogh/letter=$2/para=$3/repr=$1/">
             <p>Associates letter div with url of this edition of the letter</p>
         </prefixDef>
     </listPrefixDef>

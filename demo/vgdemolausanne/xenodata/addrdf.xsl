@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    exclude-result-prefixes="xs fn hi owl saxon"
+    exclude-result-prefixes="xs fn owl saxon"
     version="3.0"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:fn="http://www.w3.org/2005/xpath-functions"
@@ -14,9 +14,9 @@
     
     <xsl:variable name="root" select="."/>
     <xsl:variable name="docuri" select="fn:document-uri()"/>
-
-    <xsl:character-map name="num2ent">
-        <xsl:output-character character="&#38;" string="&amp;"/>
+    
+    <xsl:character-map name="amp">
+        <xsl:output-character character="&#038;" string="&amp;"/>
     </xsl:character-map>
 
     <xsl:variable name="processes">
@@ -24,27 +24,28 @@
             <process>
                 <step path="tei:div[@type='original']" typeofw="vg:Letter" typeofr="hi:EditionText" association="hi:hasRepresentation"
                     matchPattern="([a-z]+).([0-9]+)" 
-                    replacementPattern="urn:vangogh/letter=$2/" replacementPatternr="urn:vangogh/vgcorr/letter=$2/repr=$1/"/>
+                    replacementPattern="urn:vangogh/letter=$2/" replacementPatternr="urn:vangogh/letter=$2/repr=$1/"/>
                 <step path="tei:ab" typeofw="vg:ParagraphInLetter" typeofr="hi:EditionText"  propertyw="hi:hasWorkPart" propertyr="hi:hasTextPart" association="hi:hasRepresentation"
                     matchPattern="([a-z]+).([0-9]+).([0-9]+)" 
-                    replacementPattern="urn:vangogh/letter=$2/para=$3/" replacementPatternr="urn:vangogh/vgcorr/letter=$2/para=$3/repr=$1/"/>
+                    replacementPattern="urn:vangogh/letter=$2/para=$3/" replacementPatternr="urn:vangogh/letter=$2/para=$3/repr=$1/"/>
             </process>
             <process>
                 <step path="tei:div[@type='translation']" typeofw="vg:Letter" typeofr="vg:TranslatedEditionText" association="hi:hasRepresentation"
-                    matchPattern="([a-z]+).([0-9]+)" replacementPattern="urn:vangogh/letter=$2/" replacementPatternr="urn:vangogh/vgcorr/letter=$2/repr=$1/"/>
+                    matchPattern="([a-z]+).([0-9]+)" replacementPattern="urn:vangogh/letter=$2/" replacementPatternr="urn:vangogh/letter=$2/repr=$1/"/>
                 <step path="tei:ab" typeofw="vg:ParagraphInLetter" typeofr="vg:TranslatedEditionText" propertyw="hi:hasWorkPart" propertyr="hi:hasTextPart" association="hi:hasRepresentation"
                     matchPattern="([a-z]+).([0-9]+).([0-9]+)" 
-                    replacementPattern="urn:vangogh/letter=$2/para=$3/" replacementPatternr="urn:vangogh/vgcorr/letter=$2/para=$3/repr=$1/"/>
+                    replacementPattern="urn:vangogh/letter=$2/para=$3/" replacementPatternr="urn:vangogh/letter=$2/para=$3/repr=$1/"/>
             </process>
         </processes>
     </xsl:variable>
     
     <xsl:template match="/">
-        <xsl:result-document href="let001plusrdf.xml" method="xml" use-character-maps="num2ent">
+        <xsl:result-document href="let001plusrdf.xml" method="xml" use-character-maps="amp">
             <xsl:text>&#10;</xsl:text>
             <saxon:doctype>
                 <dtd:doctype name="any" xmlns:dtd="http://saxon.sf.net/dtd" xsl:exclude-result-prefixes="dtd">
-                    <dtd:entity name="weo">'http://www.example.org/'</dtd:entity>
+                    <dtd:entity name="hi">'http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl#'</dtd:entity>
+                    <dtd:entity name="vg">'http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#'</dtd:entity>
                 </dtd:doctype>
             </saxon:doctype>
             <xsl:text>&#10;</xsl:text>
@@ -205,9 +206,13 @@
     <xsl:function name="vg:entity-abbrev">
         <xsl:param name="in"/>
         <xsl:choose>
-            <xsl:when test="fn:starts-with($in,'http://www.example.org/')">
-                <xsl:text>&amp;weo;</xsl:text>
-                <xsl:value-of select="fn:substring($in,24)"/>
+            <xsl:when test="fn:starts-with($in,'hi:')">
+                <xsl:text>&amp;hi;</xsl:text>
+                <xsl:value-of select="fn:substring($in,4)"/>
+            </xsl:when>
+            <xsl:when test="fn:starts-with($in,'vg:')">
+                <xsl:text>&amp;vg;</xsl:text>
+                <xsl:value-of select="fn:substring($in,4)"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="$in"/>

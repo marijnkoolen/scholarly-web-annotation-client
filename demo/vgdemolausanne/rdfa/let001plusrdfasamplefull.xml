@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<body  xmlns="http://www.tei-c.org/ns/1.0" vocab="http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#" 
+    prefix="hi: http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl# 
+    vg: http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#">
+<div type="original" xml:id="letter.original.1" about="urn:vangogh/letter=1" typeof="vg:Letter">
+    <tei:seg resource="urn:vangogh/letter=1:para=1" property="hi:hasWorkPart"/>
+    <tei:div resource="urn:vangogh/letter=1:repr=original" property="hi:hasRepresentation"
+        typeof="hi:EditionText">
+        <tei:seg resource="urn:vangogh/letter=1:para=1:repr=original" property="hi:hasTextPart"/>
+        <ab xml:id="para.original.1.1" about="urn:vangogh/letter=1:para=1"
+            typeof="vg:ParagraphInLetter"><tei:seg
+                resource="urn:vangogh/letter=1:para=1:repr=original"
+                property="hi:hasRepresentation" typeof="hi:EditionText">
+                <!-- content of para -->
+            </tei:seg></ab>
+        <!-- rest of paragraphs -->
+    </tei:div>
+</div>
+</body>

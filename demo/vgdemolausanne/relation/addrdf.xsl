@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    exclude-result-prefixes="xs fn hi owl saxon"
+    exclude-result-prefixes="xs fn owl saxon"
     version="3.0"
     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
     xmlns:fn="http://www.w3.org/2005/xpath-functions"
@@ -14,39 +14,30 @@
     
     <xsl:variable name="root" select="."/>
     <xsl:variable name="docuri" select="fn:document-uri()"/>
-
-    <xsl:character-map name="num2ent">
-        <xsl:output-character character="&#38;" string="&amp;"/>
-    </xsl:character-map>
-
+    
     <xsl:variable name="processes">
         <processes>
             <process>
                 <step path="tei:div[@type='original']" typeofw="vg:Letter" typeofr="hi:EditionText" association="hi:hasRepresentation"
                     matchPattern="([a-z]+).([0-9]+)" 
-                    replacementPattern="http://www.example.org/vgcorr/letter=$2/" replacementPatternr="http://www.example.org/vgedition/vgcorr/letter=$2/repr=$1/"/>
+                    replacementPattern="urn:vangogh/letter=$2/" replacementPatternr="urn:vangogh/letter=$2/repr=$1/"/>
                 <step path="tei:ab" typeofw="vg:ParagraphInLetter" typeofr="hi:EditionText"  propertyw="hi:hasWorkPart" propertyr="hi:hasTextPart" association="hi:hasRepresentation"
                     matchPattern="([a-z]+).([0-9]+).([0-9]+)" 
-                    replacementPattern="http://www.example.org/vgcorr/letter=$2/para=$3/" replacementPatternr="http://www.example.org/vgedition/vgcorr/letter=$2/para=$3/repr=$1/"/>
+                    replacementPattern="urn:vangogh/letter=$2/para=$3/" replacementPatternr="urn:vangogh/letter=$2/para=$3/repr=$1/"/>
             </process>
             <process>
                 <step path="tei:div[@type='translation']" typeofw="vg:Letter" typeofr="vg:TranslatedEditionText" association="hi:hasRepresentation"
-                    matchPattern="([a-z]+).([0-9]+)" replacementPattern="http://www.example.org/vgcorr/letter=$2/" replacementPatternr="http://www.example.org/vgedition/vgcorr/letter=$2/repr=$1/"/>
+                    matchPattern="([a-z]+).([0-9]+)" replacementPattern="urn:vangogh/letter=$2/" replacementPatternr="urn:vangogh/letter=$2/repr=$1/"/>
                 <step path="tei:ab" typeofw="vg:ParagraphInLetter" typeofr="vg:TranslatedEditionText" propertyw="hi:hasWorkPart" propertyr="hi:hasTextPart" association="hi:hasRepresentation"
                     matchPattern="([a-z]+).([0-9]+).([0-9]+)" 
-                    replacementPattern="http://www.example.org/vgcorr/letter=$2/para=$3/" replacementPatternr="http://www.example.org/vgedition/vgcorr/letter=$2/para=$3/repr=$1/"/>
+                    replacementPattern="urn:vangogh/letter=$2/para=$3/" replacementPatternr="urn:vangogh/letter=$2/para=$3/repr=$1/"/>
             </process>
         </processes>
     </xsl:variable>
     
     <xsl:template match="/">
-        <xsl:result-document href="let001plusrdf.xml" method="xml" use-character-maps="num2ent">
+        <xsl:result-document href="let001plusrdf.xml" method="xml">
             <xsl:text>&#10;</xsl:text>
-            <saxon:doctype>
-                <dtd:doctype name="any" xmlns:dtd="http://saxon.sf.net/dtd" xsl:exclude-result-prefixes="dtd">
-                    <dtd:entity name="weo">'http://www.example.org/'</dtd:entity>
-                </dtd:doctype>
-            </saxon:doctype>
             <xsl:text>&#10;</xsl:text>
             <xsl:comment><xsl:text>#Generated on </xsl:text>
             <xsl:value-of select="current-dateTime()"/>
@@ -78,31 +69,30 @@
                 $processes//process[1]/step[$stepnum]/@replacementPattern,
                 $processes//process[1]/step[$stepnum]/@replacementPatternr)"/>
             <xsl:attribute name="ontRef">
-                <xsl:value-of select="vg:entity-abbrev($urls[1])"/>
+                <xsl:value-of select="vg:entity-expand($urls[1])"/>
                 <xsl:text> </xsl:text>
-                <xsl:value-of select="vg:entity-abbrev($urls[2])"/>
+                <xsl:value-of select="vg:entity-expand($urls[2])"/>
             </xsl:attribute>
             <xsl:apply-templates select="node()" mode="copy"/>
         </xsl:copy>
     </xsl:template>
 
-    <xsl:template match="tei:teiHeader" mode="copy">
+    <xsl:template match="tei:sourceDesc" mode="copy">
         <xsl:copy>
             <xsl:apply-templates select="@*|node()" mode="copy"/>
-            <tei:xenodata>
-                <rdf:RDF xmlns:hi="http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl#"
-                    xmlns:vg="http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#"
-                    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-                    xmlns:owl="http://www.w3.org/2002/07/owl">
-                    <xsl:for-each select="$processes//process">
-                        <xsl:call-template name="process">
-                            <xsl:with-param name="stepnum" select="1"/>
-                            <xsl:with-param name="process" select="."/>
-                            <xsl:with-param name="parentnode" select="$root"/>
-                        </xsl:call-template>
-                    </xsl:for-each>
-                </rdf:RDF>
-            </tei:xenodata>
+            <xsl:text>&#10;</xsl:text>
+            <tei:listRelation>
+                <xsl:text>&#10;</xsl:text>
+                <xsl:for-each select="$processes//process">
+                    <xsl:call-template name="process">
+                        <xsl:with-param name="stepnum" select="1"/>
+                        <xsl:with-param name="process" select="."/>
+                        <xsl:with-param name="parentnode" select="$root"/>
+                    </xsl:call-template>
+                </xsl:for-each>
+                <xsl:text>&#10;</xsl:text>
+            </tei:listRelation>
+            <xsl:text>&#10;</xsl:text>
         </xsl:copy>
     </xsl:template>
     
@@ -178,9 +168,7 @@
         <xsl:param name="p"/>
         <xsl:param name="o"/>
         <xsl:text>&#10;</xsl:text>
-        <rdf:Description about="{vg:entity-abbrev(vg:unenclose($s))}">
-            <xsl:attribute name="{$p}" select="vg:entity-abbrev(vg:unenclose($o))"></xsl:attribute>
-        </rdf:Description>
+        <tei:relation active="{vg:entity-expand(vg:unenclose($s))}" ref="{vg:entity-expand(vg:unenclose($p))}" passive="{vg:entity-expand(vg:unenclose($o))}"/>
     </xsl:template>
 
     <xsl:function name="vg:enclose">
@@ -202,12 +190,16 @@
         </xsl:choose>
     </xsl:function>
     
-    <xsl:function name="vg:entity-abbrev">
+    <xsl:function name="vg:entity-expand">
         <xsl:param name="in"/>
         <xsl:choose>
-            <xsl:when test="fn:starts-with($in,'http://www.example.org/')">
-                <xsl:text>&amp;weo;</xsl:text>
-                <xsl:value-of select="fn:substring($in,24)"/>
+            <xsl:when test="fn:starts-with($in,'hi:')">
+                <xsl:text>http://boot.huygens.knaw.nl/vgdemo1/editionannotationontology.ttl#</xsl:text>
+                <xsl:value-of select="$in"/>
+            </xsl:when>
+            <xsl:when test="fn:starts-with($in,'vg:')">
+                <xsl:text>http://boot.huygens.knaw.nl/vgdemo1/vangoghannotationontology.ttl#</xsl:text>
+                <xsl:value-of select="$in"/>
             </xsl:when>
             <xsl:otherwise>
                 <xsl:value-of select="$in"/>
