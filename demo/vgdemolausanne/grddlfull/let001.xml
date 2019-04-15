@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--  Last Changed Date: 2018-07-11 16:09:06 +0200 (Wed, 11 Jul 2018) | SVN Revision: 2200 -->
 <!--Licensed under Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)-->
-<?xml-model href="out/vgoddlausanne.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="../grddl/vgoddlausanne.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
 <TEI xmlns:vg="http://www.vangoghletters.org/ns/" xmlns="http://www.tei-c.org/ns/1.0"
     xmlns:grddl='http://www.w3.org/2003/g/data-view#'
     grddl:transformation="grddl.xsl">
