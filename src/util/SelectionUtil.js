@@ -5,6 +5,18 @@
  * Contributors:
  *   - Marijn Koolen
  *
+ * It's difficult to get selected text without any ignorable element content:
+ * - innerText interface computes how element content is displayed:
+ *   https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/innerText
+ * - but innerText is not an interface for #text nodes, and not available in JSDOM for testing
+ *    - https://github.com/jsdom/jsdom/issues/1245
+ * - http://perfectionkills.com/the-poor-misunderstood-innerText/
+ * - innerText available in:
+ *    - PhantomJS: https://github.com/ariya/phantomjs
+ *    - rangy: https://github.com/timdown/rangy/blob/master/src/modules/rangy-textrange.js
+ * Attempt similar to what's needed:
+ *   - https://stackoverflow.com/questions/34223326/get-selected-text-except-for-un-selectable-elements
+ *
  */
 
 "use strict";
@@ -155,6 +167,7 @@ const SelectionUtil = {
     },
 
     setSelection : function(element, selection, mimeType) {
+        console.log("SelectionUtil - setSelection");
         SelectionUtil.checkDOMElement(element);
         SelectionUtil.currentSelection = {
             startNode: element,
@@ -205,44 +218,180 @@ const SelectionUtil = {
         };
     },
 
+    setObserverNodeSelection() {
+        let observerNodes = DOMUtil.getObserverNodes();
+        SelectionUtil.currentSelection = {
+            startNode: observerNodes[0],
+            endNode: observerNodes[observerNodes.length - 1],
+            mimeType: "multipart" // TODO: FIX based on actual content
+        };
+    },
+
+    ensureFocusAnchorAreLeafNodes(selection) {
+        if (selection.focusNode.nodeType === Node.ELEMENT_NODE) {
+            selection.focusNode = selection.focusNode.childNodes[selection.focusOffset];
+            selection.focusOffset = 0;
+        }
+        if (selection.anchorNode.nodeType === Node.ELEMENT_NODE) {
+            selection.anchorNode = selection.anchorNode.childNodes[selection.anchorOffset];
+            selection.anchorOffset = 0;
+        }
+    },
+
+    endPreceedsStart(selection) {
+        let position = selection.startNode.compareDocumentPosition(selection.endNode);
+        let backwards = position & Node.DOCUMENT_POSITION_PRECEDING;
+        if (position === 0 && selection.startOffset > selection.endOffset)
+            backwards = 1;
+        return (backwards !== 0);
+    },
+
+    ensureSelectionStartPreceedsEnd() {
+        var selection = SelectionUtil.currentSelection;
+        if (SelectionUtil.endPreceedsStart(selection)) {
+            let endNode = selection.startNode;
+            let endOffset = selection.startOffset;
+            selection.startNode = selection.endNode;
+            selection.startOffset = selection.endOffset;
+            selection.endNode = endNode;
+            selection.endOffset = endOffset;
+        }
+    },
+
+    setSelectionStartEndNodes(selection) {
+        SelectionUtil.ensureFocusAnchorAreLeafNodes(selection);
+        SelectionUtil.currentSelection = {
+            startNode: selection.anchorNode,
+            startOffset: selection.anchorOffset,
+            endNode: selection.focusNode,
+            endOffset: selection.focusOffset,
+            mimeType: "text"
+        };
+        SelectionUtil.ensureSelectionStartPreceedsEnd();
+    },
+
     setDOMSelection : function() {
         var selection = null;
         if (document.getSelection) {
             selection = document.getSelection();
         }
         if (!selection || selection.isCollapsed) {
-            let observerNodes = DOMUtil.getObserverNodes();
-            SelectionUtil.currentSelection = {
-                startNode: observerNodes[0],
-                endNode: observerNodes[observerNodes.length - 1],
-                mimeType: "multipart" // TODO: FIX based on actual content
-            };
+            SelectionUtil.setObserverNodeSelection();
+            return true;
         }
         else {
-            let position = selection.anchorNode.compareDocumentPosition(selection.focusNode);
-            let backwards = position & Node.DOCUMENT_POSITION_PRECEDING;
-            if (position === 0 && selection.anchorOffset > selection.focusOffset)
-                backwards = 1;
-            var focusOffset = SelectionUtil.getTrimmedOffset(selection.focusNode, selection.focusOffset);
-            var anchorOffset = SelectionUtil.getTrimmedOffset(selection.anchorNode, selection.anchorOffset);
-            SelectionUtil.currentSelection = {
-                startNode: backwards ? selection.focusNode : selection.anchorNode,
-                startOffset: backwards ? focusOffset : anchorOffset,
-                endNode: backwards ? selection.anchorNode : selection.focusNode,
-                endOffset: backwards ? anchorOffset : focusOffset,
-                selectionText: selection.toString(),
-                mimeType: "text"
-            };
+            SelectionUtil.setSelectionStartEndNodes(selection);
         }
+        // Set container node of start and end nodes
+        SelectionUtil.currentSelection.selectionText = selection.toString();
+        SelectionUtil.setContainerNode();
+        // if end node or parent is an ignorable element, set parent to previous text node
         let endParent = SelectionUtil.currentSelection.endNode.parentNode;
         if (RDFaUtil.isRDFaIgnoreNode(endParent)) {
             let prevNode = DOMUtil.getPreviousTextNode(SelectionUtil.currentSelection.endNode);
             SelectionUtil.currentSelection.endNode = prevNode;
             SelectionUtil.currentSelection.endOffset = prevNode.length;
-            SelectionUtil.adjustSelection(SelectionUtil.currentSelection);
-            selection = document.getSelection();
-            SelectionUtil.currentSelection.selectionText = selection.toString();
+            //SelectionUtil.adjustSelection(SelectionUtil.currentSelection);
+            //selection = document.getSelection();
         }
+        SelectionUtil.setSelectionText();
+    },
+
+    setContainerNode() {
+        SelectionUtil.checkValidTextSelection();
+        let currentSelection = SelectionUtil.currentSelection;
+        var ancestors = DOMUtil.findCommonAncestors(currentSelection.startNode, currentSelection.endNode);
+        currentSelection.containerNode = ancestors[ancestors.length - 1];
+    },
+
+    checkValidTextSelection() {
+        if (!SelectionUtil.currentSelection) {
+            throw Error("No currentSelection set");
+        }
+        let selection = SelectionUtil.currentSelection;
+        if (!selection.mimeType) {
+            throw Error("No currentSelection mimeType set")
+        } else if (selection.mimeType !== "text") {
+            throw Error("currentSelection mimeType is not text")
+        } else if (!selection.startOffset || !selection.endOffset) {
+            throw Error("Invalid currentSelection");
+        }
+    },
+
+    /*
+     * Considerations:
+     * - selection can contain ignorable elements, getSelection().toString captures ignored content
+     * - if there are ignorable elements, their content needs to be stripped from the selection text
+     * - displayed whitespace is difficult to predict for individual text nodes
+     * Strategy:
+     * - list all text nodes of container node and include an ignore flag which is set to true if
+     *   the text node is descendant of an ignorable element
+     * - process text nodes in display order
+     *   - move text node content from unfiltered to filtered selection text if it's not an ignore node
+     *   (trimmed to avoid incorrectly computed leading and trailing whitespace)
+     *   - remove text node content from unfiltered selection text if it is an ignore node
+     */
+    setSelectionText() {
+        SelectionUtil.checkValidTextSelection();
+        if (!SelectionUtil.currentSelection.containerNode) {
+            SelectionUtil.setContainerNode();
+        }
+        let selection = SelectionUtil.currentSelection;
+        var startOffset = SelectionUtil.getTrimmedOffset(selection.startNode, selection.startOffset);
+        var endOffset = SelectionUtil.getTrimmedOffset(selection.endNode, selection.endOffset);
+        //console.log("offsets:", startOffset, endOffset);
+        //let textNodes = RDFaUtil.getRDFaTextNodes(selection.containerNode)
+        let textNodes = RDFaUtil.getRDFaTextNodesExtended(selection.containerNode)
+        let ignoreNodes = RDFaUtil.getRDFaIgnoreNodes(selection.containerNode);
+        if (ignoreNodes.length === 0)
+            return true; // no ignore nodes in selection, no changes needed
+        var include = false;
+        var textChunks = [];
+        var unfilteredText = selection.selectionText;
+        selection.selectionText = "";
+        textNodes.forEach((textNode) => {
+            var displayText = DOMUtil.getTextNodeDisplayText(textNode.node);
+            let startNodePosition = selection.startNode.compareDocumentPosition(textNode.node)
+            let startNodePreceeds = startNodePosition & Node.DOCUMENT_POSITION_FOLLOWING;
+            let endNodePosition = selection.endNode.compareDocumentPosition(textNode.node)
+            let endNodePreceeds = endNodePosition & Node.DOCUMENT_POSITION_FOLLOWING;
+            if (selection.startNode === textNode.node || startNodePreceeds) {
+                include = true;
+            }
+            //console.log("#" + displayText + "#");
+            if (selection.startNode === textNode.node) {
+                displayText = displayText.substr(startOffset);
+            }
+            if (selection.endNode === textNode.node) {
+                displayText = displayText.substr(0, endOffset);
+            }
+            if (include){
+                if (textNode.ignore) {
+                    //console.log("IGNORING displayText: #" + displayText + "#");
+                    let ignoreOffset = unfilteredText.indexOf(displayText);
+                    selection.selectionText += unfilteredText.substr(0, ignoreOffset);
+                    let chunkLength = ignoreOffset + displayText.length;
+                    unfilteredText = unfilteredText.substr(chunkLength);
+                } else {
+                    let chunkLength = unfilteredText.indexOf(displayText.trim()) + displayText.trim().length;
+                    selection.selectionText += unfilteredText.substr(0, chunkLength);
+                    unfilteredText = unfilteredText.substr(chunkLength);
+                    //console.log("displayText: #" + displayText.trim() + "#");
+                    //console.log("unfilteredText: #" + unfilteredText + "#");
+                    //console.log("selection.selectionText: #" + selection.selectionText + "#");
+                }
+                textChunks.push(displayText.trim());
+            }
+            if (selection.endNode === textNode.node || endNodePreceeds) {
+                include = false;
+            }
+        });
+        // if there is any trailing whitespace in the unfiltered text, move it to the filtered text
+        selection.selectionText += unfilteredText;
+        console.log(unfilteredText);
+        console.log(textChunks);
+        //selection.selectionText = allText;
+        //console.log("textNodes:", textNodes);
     },
 
     getTrimmedOffset : function(node, offset) {
