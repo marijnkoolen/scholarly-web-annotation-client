@@ -56,6 +56,7 @@ const RDFaUtil = {
             //console.log("setIgnoreNode - rdfType:", rdfType);
             node.rdfaIgnorable = (RDFaUtil.isIgnoreClass(rdfType)) ? true : false;
             //console.log("ignore URL:", RDFaUtil.baseAnnotationOntologyURL + "#IgnorableElement");
+            //console.log("ignorable:", node.rdfaIgnorable);
         }
     },
 
@@ -171,6 +172,21 @@ const RDFaUtil = {
                 textNodes.push(childNode);
             else
                 textNodes = textNodes.concat(RDFaUtil.getRDFaTextNodes(childNode));
+        });
+        return textNodes;
+    },
+
+    getRDFaTextNodesExtended : function(node, ignoreFlag) {
+        if (ignoreFlag === undefined)
+            ignoreFlag = false;
+        var textNodes = [];
+        if (RDFaUtil.isRDFaIgnoreNode(node))
+            ignoreFlag = true;
+        node.childNodes.forEach((childNode) => {
+            if (childNode.nodeType === window.Node.TEXT_NODE)
+                textNodes.push({node: childNode, ignore: ignoreFlag});
+            else
+                textNodes = textNodes.concat(RDFaUtil.getRDFaTextNodesExtended(childNode, ignoreFlag));
         });
         return textNodes;
     },
@@ -416,9 +432,13 @@ const RDFaUtil = {
                 vocabularyURLs.push(vocabulary);
             }
         }
-        DOMUtil.getDescendants(node).forEach((descendant) => {
-            RDFaUtil.listVocabularyURLs(descendant, vocabularyURLs);
-        });
+        if (!node.hasChildNodes) {
+            return false;
+        }
+        for (var i = 0; i < node.childNodes.length; i++) {
+            let childNode = node.childNodes[i];
+            RDFaUtil.listVocabularyURLs(childNode, vocabularyURLs);
+        }
     },
 
     indexRDFa : (callback) => {

@@ -344,7 +344,7 @@ describe("RDFaUtil parsing page with multiple abouts", () => {
             let resources = Object.keys(index.resources);
             expect(index.resources).to.have.property("urn:vangogh:let001");
             let resource = index.resources["urn:vangogh:let001"];
-            expect(resource.rdfaTypeURL[0]).to.equal(vocabulary + resource.rdfaTypeLabel);
+            expect(resource.rdfTypeURL[0]).to.equal(vocabulary + resource.rdfTypeLabel);
         });
         done();
     });
@@ -356,8 +356,8 @@ describe("RDFaUtil extracting relations", () => {
         rdfaResource: "urn:vangogh:letter:001.para.7.original",
         rdfaVocabulary: [ "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#" ],
         domNode: null,
-        rdfaType: [ "hi:EditionText" ],
-        rdfaTypeURIs: [ "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#EditionText" ],
+        rdfType: [ "hi:EditionText" ],
+        rdfTypeURIs: [ "http://boot.huygens.knaw.nl/vgdemo/editionannotationontology.ttl#EditionText" ],
         rdfaProperty: "hasTextPart",
         text: "Vincent",
         parentResource: "urn:vangogh:letter:001.para.6.original"
