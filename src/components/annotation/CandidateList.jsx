@@ -92,25 +92,37 @@ export default class CandidateList extends React.Component {
             var candidateWholeNodes = this.props.candidates.wholeNodes.map(function(candidate) {
                 return makeExternalCandidate(candidate);
             });
-            var candidateHighlighted = false;
-            if (this.props.candidates.highlighted) {
-                let highlighted = this.props.candidates.highlighted;
-                candidateHighlighted = makeExternalCandidate(this.props.candidates.highlighted);
-            }
-            return (
-                <div className="candidateList">
-                    <div className="candidateHighlighted">
-                        <h4>Highlighted fragment:</h4>
-                        {candidateHighlighted}
-                    </div>
-                    <div className="candidateWholeList">
+            let candidateWholeNodeList = null;
+            if (candidateWholeNodes.length === 0) {
+                candidateWholeNodeList = (<div>No whole {this.props.candidateType} elements available</div>);
+            } else {
+                   candidateWholeNodeList = (
+                   <div className="candidateWholeList">
                         <h4>Whole elements:</h4>
                         <ul className="list-group">
                             {candidateWholeNodes}
                         </ul>
                     </div>
+                   );
+            }
+            var candidateHighlighted = false;
+            if (this.props.candidates.highlighted) {
+                //let highlighted = this.props.candidates.highlighted;
+                let highlighted = makeExternalCandidate(this.props.candidates.highlighted);
+                candidateHighlighted = (
+                    <div className="candidateHighlighted">
+                        <h4>Highlighted fragment:</h4>
+                        {highlighted}
+                    </div>
+                );
+            } else {
+                candidateHighlighted = (<div>No {this.props.candidateType} fragments highlighted</div>);
+            }
+            return (
+                <div className="candidateList">
+                    {candidateHighlighted}
                     <br />
-                    <br />
+                    {candidateWholeNodeList}
 
                 </div>
             )
