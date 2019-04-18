@@ -109,7 +109,12 @@ const FRBRooUtil = {
         if (!store) {
             throw Error("Invalid store given");
         }
-        parse(frbrooRelationsString, store, baseURI, mimeType);
+        try {
+            parse(frbrooRelationsString, store, baseURI, mimeType);
+        } catch(error) {
+            console.log(error);
+            throw error;
+        }
     },
 
     findExternalObjectRelations(resourceStore, resource, relationType) {
@@ -538,12 +543,15 @@ const FRBRooUtil = {
     },
 
     loadVocabularies(callback) {
+        //console.log("FRBRooUtil loadVocabularies - listing vocabulary URLs");
+        //console.log(Date());
         let vocabularyURLs = [];
         let vocabData = [];
         var t0 = performance.now();
         RDFaUtil.listVocabularyURLs(document, vocabularyURLs);
         // read initial vocabularies
-        //console.log("vocabularyURLs:", vocabularyURLs);
+        //console.log("FRBRooUtil loadVocabularies - vocabularyURLs:", vocabularyURLs);
+        //console.log(Date());
         var t1 = performance.now();
         if (vocabularyURLs.length === 0) {
             // make an empty store if there are no vocabularies
@@ -557,9 +565,11 @@ const FRBRooUtil = {
                 var t2 = performance.now();
                 // make vocabulary store
                 //console.log("vocabularies:", vocabularies);
+                //console.log(Date());
                 let vocabularyStore = FRBRooUtil.makeVocabularyStore(vocabularies);
                 var t3 = performance.now();
                 //console.log("vocabularyStore:", vocabularyStore);
+                //console.log(Date());
                 // iterate: 1) get imports, 2) update store
                 FRBRooUtil.importAndUpdate(vocabularyStore, (error, updatesDone) => {
                     if (error) {
@@ -570,6 +580,7 @@ const FRBRooUtil = {
                         //console.log("Call to readVocabularies took " + (t2 - t1) + " milliseconds.");
                         //console.log("Call to makeVocabularyStore took " + (t3 - t2) + " milliseconds.");
                         //console.log("Call to importAndUpdate took " + (t4 - t3) + " milliseconds.");
+                        //console.log(Date());
                         return callback(null, vocabularyStore);
                     }
                 });

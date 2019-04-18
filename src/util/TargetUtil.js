@@ -163,15 +163,15 @@ const TargetUtil = {
     // Given a set of potential target resources, return a list of all associated external resources
     getCandidateExternalResources(resources) {
         let externalResources = {highlighted: null, wholeNodes: []};
-        //console.log(resources.highlighted);
+        //console.log("getCandidateExternalResources - highlighted:", resources.highlighted);
         if (resources.highlighted && AnnotationActions.hasRepresentedResource(resources.highlighted.source)) {
             let highlighted = TargetUtil.getCandidateExternalResource(resources.highlighted);
-            //console.log(highlighted);
+            //console.log("getCandidateExternalResources - externalResources.highlighted:", highlighted);
             externalResources.highlighted = highlighted;
             //console.log(resources.highlighted);
         }
         //console.log(resources.wholeNodes);
-        //let resourceIds = resources.wholeNodes.map((resource) => { return resource.source });
+        let resourceIds = resources.wholeNodes.map((resource) => { return resource.source });
         let wholeNodes = resources.wholeNodes.filter((resource) => { return AnnotationActions.hasRepresentedResource(resource.source); });
         //let hasExternalResources = resourceIds.filter(AnnotationActions.hasExternalResource);
         //console.log("resourceIds:", resourceIds);
@@ -186,11 +186,13 @@ const TargetUtil = {
     },
 
     getCandidateExternalResource(resource) {
-        //console.log("resource:", resource);
-        //console.log(AnnotationStore.representedResourceMap);
+        //console.log("getCandidateRDFaTarget - resource:", resource);
+        //console.log("getCandidateRDFaTarget - representedResourceMap:", AnnotationStore.representedResourceMap);
         if (AnnotationActions.hasRepresentedResource(resource.source)) {
             let representationResource = AnnotationStore.representedResourceMap[resource.source];
+            //console.log("getCandidateRDFaTarget - representationResource:", representationResource);
             let externalMap = AnnotationStore.externalResourceIndex[representationResource.parentResource];
+            //console.log("getCandidateRDFaTarget - externalMap:", externalMap);
             let externalResource = {
                 resource: externalMap.resource,
                 parentResource: externalMap.parentResource,
