@@ -1,0 +1,729 @@
+<?xml version="1.0"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0" xml:lang="en">
+    <teiHeader>
+        <fileDesc>
+            <titleStmt>
+                <title>Van Gogh Letters ODD definitions</title>
+                <author>Peter Boot</author>
+            </titleStmt>
+            <publicationStmt>
+                <publisher>Huygens Instituut voor Nederlandse Geschiedenis</publisher>
+                <publisher>Van Gogh Museum</publisher>
+                <pubPlace>Amsterdam</pubPlace>
+                <date when="2009">2009</date>
+                <availability status="restricted">
+                    <licence target="http://creativecommons.org/licenses/by-nc-sa/4.0/ https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode">
+                        <p>Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) </p>
+                    </licence>
+                </availability>
+            </publicationStmt>
+            <notesStmt>
+                <note type="ns">http://www.vangoghletters.org/ns/</note>
+            </notesStmt>
+            <sourceDesc>
+                <p>created on Wednesday 30th January 2008 04:38:36 AM by the form at
+                    http://www.tei-c.org.uk/Roma/</p>
+            </sourceDesc>
+        </fileDesc>
+        <revisionDesc>
+            <change when="2018-07-03">Brought under version control. Added licence.</change>
+            <change when="2019-03-06">Separate version for Lausanne demo of annotation tool</change>
+        </revisionDesc>
+    </teiHeader>
+    <text>
+        <front>
+            <divGen type="toc"/>
+        </front>
+        <body>
+            <p>used in the publication of the Vincent van Gogh Correspondence</p>
+            <schemaSpec ident="vgodd" docLang="en" xml:lang="en" prefix="vg">
+                <moduleRef key="core"/>
+                <moduleRef key="tei"/>
+                <moduleRef key="header"/>
+                <moduleRef key="textstructure"/>
+                <moduleRef key="transcr"/>
+                <elementSpec ident="letDesc" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Letter description (borrowed from DALF)</desc>
+                    <classes>
+                        <memberOf key="model.sourceDescPart"/>
+                    </classes>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                name="letIdentifier"/>
+                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                name="letHeading"/>
+                            <rng:optional xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="physDesc"/>
+                            </rng:optional>
+                            <rng:optional xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="letContents"/>
+                            </rng:optional>
+                            <rng:oneOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="note"
+                                />
+                            </rng:oneOrMore>
+                        </rng:group>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="letIdentifier" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Letter identifier (borrowed from DALF)</desc>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:oneOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="idno"/>
+                        </rng:oneOrMore>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="letHeading" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Letter heading (borrowed from DALF)</desc>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="author"/>
+                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                name="addressee"/>
+                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="placeLet"/>
+                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="dateLet"
+                            />
+                        </rng:group>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="addressee" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Addressee (borrowed from DALF)</desc>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:text xmlns:rng="http://relaxng.org/ns/structure/1.0"/>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="placeLet" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Place where letter was sent (borrowed from DALF)</desc>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:text xmlns:rng="http://relaxng.org/ns/structure/1.0"/>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="dateLet" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Date of the letter, in words (borrowed from DALF)</desc>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:text xmlns:rng="http://relaxng.org/ns/structure/1.0"/>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="physDesc" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Physical description, used to describe sketches (borrowed from
+                        DALF)</desc>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="decoration"/>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="decoration" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Decoration (borrowed from DALF)</desc>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="decoList"/>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="decoList" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>List of decorations (borrowed from DALF)</desc>
+                    <classes>
+                        <memberOf key="att.global"/>
+                    </classes>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:oneOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="decoItem"
+                            />
+                        </rng:oneOrMore>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="decoItem" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Decoration item (borrowed from DALF)</desc>
+                    <classes>
+                        <memberOf key="att.global"/>
+                    </classes>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="decoDesc"/>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="decoDesc" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Description of a decoration item (borrowed from DALF)</desc>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:oneOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="p"/>
+                        </rng:oneOrMore>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="letContents" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Letter contents (borrowed from DALF)</desc>
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:zeroOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="p"/>
+                            </rng:zeroOrMore>
+                            <rng:zeroOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="note"
+                                />
+                            </rng:zeroOrMore>
+                        </rng:group>
+                    </content>
+                </elementSpec>
+                <elementSpec module="transcr" ident="addSpan" mode="delete"/>
+                <elementSpec module="transcr" ident="am" mode="delete"/>
+                <elementSpec module="transcr" ident="damage" mode="delete"/>
+                <elementSpec module="transcr" ident="damageSpan" mode="delete"/>
+                <elementSpec module="transcr" ident="delSpan" mode="delete"/>
+                <elementSpec module="transcr" ident="ex" mode="delete"/>
+                <elementSpec module="transcr" ident="fw" mode="delete"/>
+                <elementSpec module="transcr" ident="handNotes" mode="delete"/>
+                <elementSpec module="transcr" ident="handShift" mode="delete"/>
+                <elementSpec module="transcr" ident="restore" mode="delete"/>
+                <elementSpec module="transcr" ident="subst" mode="delete"/>
+                <elementSpec module="core" ident="abbr" mode="delete"/>
+                <elementSpec module="core" ident="add" mode="delete"/>
+                <elementSpec module="core" ident="addrLine" mode="delete"/>
+                <elementSpec module="core" ident="address" mode="delete"/>
+                <elementSpec module="core" ident="analytic" mode="delete"/>
+                <elementSpec module="core" ident="biblScope" mode="delete"/>
+                <elementSpec module="core" ident="biblStruct" mode="delete"/>
+                <elementSpec module="core" ident="binaryObject" mode="delete"/>
+                <elementSpec module="core" ident="cb" mode="delete"/>
+                <elementSpec module="core" ident="choice" mode="delete"/>
+                <elementSpec module="core" ident="cit" mode="delete"/>
+                <elementSpec module="core" ident="corr" mode="delete"/>
+                <elementSpec module="core" ident="del" mode="delete"/>
+                <elementSpec module="core" ident="desc" mode="delete"/>
+                <elementSpec module="core" ident="distinct" mode="delete"/>
+                <elementSpec module="core" ident="divGen" mode="delete"/>
+                <elementSpec module="core" ident="emph" mode="delete"/>
+                <elementSpec module="core" ident="expan" mode="delete"/>
+                <elementSpec module="core" ident="foreign" mode="delete"/>
+                <elementSpec module="core" ident="gloss" mode="delete"/>
+                <elementSpec module="core" ident="headItem" mode="delete"/>
+                <elementSpec module="core" ident="headLabel" mode="delete"/>
+                <elementSpec module="core" ident="imprint" mode="delete"/>
+                <elementSpec module="core" ident="index" mode="delete"/>
+                <elementSpec module="core" ident="l" mode="delete"/>
+                <elementSpec module="core" ident="lg" mode="delete"/>
+                <elementSpec module="core" ident="listBibl" mode="delete"/>
+                <elementSpec module="core" ident="measure" mode="delete"/>
+                <elementSpec module="core" ident="measureGrp" mode="delete"/>
+                <elementSpec module="core" ident="meeting" mode="delete"/>
+                <elementSpec module="core" ident="mentioned" mode="delete"/>
+                <elementSpec module="core" ident="milestone" mode="delete"/>
+                <elementSpec module="core" ident="monogr" mode="delete"/>
+                <elementSpec module="core" ident="num" mode="delete"/>
+                <elementSpec module="core" ident="orig" mode="delete"/>
+                <elementSpec module="core" ident="postBox" mode="delete"/>
+                <elementSpec module="core" ident="postCode" mode="delete"/>
+                <elementSpec module="core" ident="q" mode="delete"/>
+                <elementSpec module="core" ident="quote" mode="delete"/>
+                <elementSpec module="core" ident="reg" mode="delete"/>
+                <elementSpec module="core" ident="relatedItem" mode="delete"/>
+                <elementSpec module="core" ident="resp" mode="delete"/>
+                <elementSpec module="core" ident="respStmt" mode="delete"/>
+                <elementSpec module="core" ident="said" mode="delete"/>
+                <elementSpec module="core" ident="series" mode="delete"/>
+                <elementSpec module="core" ident="sic" mode="delete"/>
+                <elementSpec module="core" ident="soCalled" mode="delete"/>
+                <elementSpec module="core" ident="sp" mode="delete"/>
+                <elementSpec module="core" ident="speaker" mode="delete"/>
+                <elementSpec module="core" ident="stage" mode="delete"/>
+                <elementSpec module="core" ident="street" mode="delete"/>
+                <elementSpec module="core" ident="teiCorpus" mode="delete"/>
+                <elementSpec module="core" ident="term" mode="delete"/>
+                <elementSpec module="core" ident="time" mode="delete"/>
+                <elementSpec module="core" ident="unclear" mode="delete"/>
+                <elementSpec module="header" ident="appInfo" mode="delete"/>
+                <elementSpec module="header" ident="application" mode="delete"/>
+                <elementSpec module="header" ident="authority" mode="delete"/>
+                <elementSpec module="header" ident="biblFull" mode="delete"/>
+                <elementSpec module="header" ident="cRefPattern" mode="delete"/>
+                <elementSpec module="header" ident="catDesc" mode="delete"/>
+                <elementSpec module="header" ident="catRef" mode="delete"/>
+                <elementSpec module="header" ident="category" mode="delete"/>
+                <elementSpec module="header" ident="change" mode="delete"/>
+                <elementSpec module="header" ident="classCode" mode="delete"/>
+                <elementSpec module="header" ident="classDecl" mode="delete"/>
+                <elementSpec module="header" ident="correction" mode="delete"/>
+                <elementSpec module="header" ident="creation" mode="delete"/>
+                <elementSpec module="header" ident="distributor" mode="delete"/>
+                <elementSpec module="header" ident="edition" mode="delete"/>
+                <elementSpec module="header" ident="editionStmt" mode="delete"/>
+                <elementSpec module="header" ident="editorialDecl" mode="delete"/>
+                <elementSpec module="header" ident="extent" mode="delete"/>
+                <elementSpec module="header" ident="funder" mode="delete"/>
+                <elementSpec module="header" ident="geoDecl" mode="delete"/>
+                <elementSpec module="header" ident="handNote" mode="delete"/>
+                <elementSpec module="header" ident="hyphenation" mode="delete"/>
+                <elementSpec module="header" ident="interpretation" mode="delete"/>
+                <elementSpec module="header" ident="keywords" mode="delete"/>
+                <elementSpec module="header" ident="langUsage" mode="delete"/>
+                <elementSpec module="header" ident="language" mode="delete"/>
+                <elementSpec module="header" ident="namespace" mode="delete"/>
+                <elementSpec module="header" ident="normalization" mode="delete"/>
+                <elementSpec module="header" ident="notesStmt" mode="delete"/>
+                <elementSpec module="header" ident="principal" mode="delete"/>
+                <elementSpec module="header" ident="profileDesc" mode="delete"/>
+                <elementSpec module="header" ident="projectDesc" mode="delete"/>
+                <elementSpec module="header" ident="quotation" mode="delete"/>
+                <elementSpec module="header" ident="refState" mode="delete"/>
+                <elementSpec module="header" ident="refsDecl" mode="delete"/>
+                <elementSpec module="header" ident="rendition" mode="delete"/>
+                <elementSpec module="header" ident="revisionDesc" mode="delete"/>
+                <elementSpec module="header" ident="samplingDecl" mode="delete"/>
+                <elementSpec module="header" ident="segmentation" mode="delete"/>
+                <elementSpec module="header" ident="seriesStmt" mode="delete"/>
+                <elementSpec module="header" ident="sponsor" mode="delete"/>
+                <elementSpec module="header" ident="stdVals" mode="delete"/>
+                <elementSpec module="header" ident="tagUsage" mode="delete"/>
+                <elementSpec module="header" ident="tagsDecl" mode="delete"/>
+                <elementSpec module="header" ident="taxonomy" mode="delete"/>
+                <elementSpec module="header" ident="textClass" mode="delete"/>
+                <elementSpec module="header" ident="xenoData" mode="delete"/>
+                <elementSpec module="textstructure" ident="argument" mode="delete"/>
+                <elementSpec module="textstructure" ident="back" mode="delete"/>
+                <elementSpec module="textstructure" ident="byline" mode="delete"/>
+                <elementSpec module="textstructure" ident="closer" mode="delete"/>
+                <elementSpec module="textstructure" ident="dateline" mode="delete"/>
+                <elementSpec module="textstructure" ident="div1" mode="delete"/>
+                <elementSpec module="textstructure" ident="div2" mode="delete"/>
+                <elementSpec module="textstructure" ident="div3" mode="delete"/>
+                <elementSpec module="textstructure" ident="div4" mode="delete"/>
+                <elementSpec module="textstructure" ident="div5" mode="delete"/>
+                <elementSpec module="textstructure" ident="div6" mode="delete"/>
+                <elementSpec module="textstructure" ident="div7" mode="delete"/>
+                <elementSpec module="textstructure" ident="docAuthor" mode="delete"/>
+                <elementSpec module="textstructure" ident="docDate" mode="delete"/>
+                <elementSpec module="textstructure" ident="docEdition" mode="delete"/>
+                <elementSpec module="textstructure" ident="docImprint" mode="delete"/>
+                <elementSpec module="textstructure" ident="docTitle" mode="delete"/>
+                <elementSpec module="textstructure" ident="epigraph" mode="delete"/>
+                <elementSpec module="textstructure" ident="floatingText" mode="delete"/>
+                <elementSpec module="textstructure" ident="front" mode="delete"/>
+                <elementSpec module="textstructure" ident="group" mode="delete"/>
+                <elementSpec module="textstructure" ident="imprimatur" mode="delete"/>
+                <elementSpec module="textstructure" ident="opener" mode="delete"/>
+                <elementSpec module="textstructure" ident="postscript" mode="delete"/>
+                <elementSpec module="textstructure" ident="salute" mode="delete"/>
+                <elementSpec module="textstructure" ident="signed" mode="delete"/>
+                <elementSpec module="textstructure" ident="titlePage" mode="delete"/>
+                <elementSpec module="textstructure" ident="titlePart" mode="delete"/>
+                <elementSpec module="textstructure" ident="trailer" mode="delete"/>
+                <moduleRef key="linking"/>
+                <elementSpec module="linking" ident="alt" mode="delete"/>
+                <elementSpec module="linking" ident="altGrp" mode="delete"/>
+                <elementSpec module="linking" ident="join" mode="delete"/>
+                <elementSpec module="linking" ident="joinGrp" mode="delete"/>
+                <elementSpec module="linking" ident="link" mode="delete"/>
+                <elementSpec module="linking" ident="linkGrp" mode="delete"/>
+                <elementSpec module="linking" ident="timeline" mode="delete"/>
+                <elementSpec module="linking" ident="when" mode="delete"/>
+                <elementSpec ident="list" module="core" mode="change">
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:zeroOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:choice xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                    <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                        <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                            name="model.divTop"/>
+                                    </rng:group>
+                                    <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                        <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                            name="model.global"/>
+                                    </rng:group>
+                                </rng:choice>
+                            </rng:zeroOrMore>
+                            <rng:choice xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:oneOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                    <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                        name="item"/>
+                                    <rng:zeroOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                        <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                            name="model.global"/>
+                                    </rng:zeroOrMore>
+                                </rng:oneOrMore>
+                                <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                    <rng:oneOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                        <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                            name="label"/>
+                                        <rng:zeroOrMore
+                                            xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                                name="model.global"/>
+                                        </rng:zeroOrMore>
+                                        <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                            name="item"/>
+                                        <rng:zeroOrMore
+                                            xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                                name="model.global"/>
+                                        </rng:zeroOrMore>
+                                    </rng:oneOrMore>
+                                </rng:group>
+                            </rng:choice>
+                            <rng:zeroOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                    <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                        <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                            name="model.divBottom"/>
+                                    </rng:group>
+                                    <rng:zeroOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                        <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                            name="model.global"/>
+                                    </rng:zeroOrMore>
+                                </rng:group>
+                            </rng:zeroOrMore>
+                        </rng:group>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="titleStmt" module="header" mode="change">
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:oneOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="title"/>
+                            </rng:oneOrMore>
+                            <rng:zeroOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="author"/>
+                            </rng:zeroOrMore>
+                            <rng:zeroOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="editor"/>
+                            </rng:zeroOrMore>
+                        </rng:group>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="fileDesc" module="header" mode="change">
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="titleStmt"/>
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="publicationStmt"/>
+                            </rng:group>
+                            <rng:oneOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="sourceDesc"/>
+                            </rng:oneOrMore>
+                        </rng:group>
+                    </content>
+                </elementSpec>
+<!--                <elementSpec ident="teiHeader" module="header" mode="change">
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="fileDesc"/>
+                            <rng:zeroOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="model.headerPart"/>
+                            </rng:zeroOrMore>
+                        </rng:group>
+                    </content>
+                </elementSpec>
+-->                <elementSpec ident="facsimile" module="transcr" mode="change">
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:oneOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:choice xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                    <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                        name="model.graphicLike"/>
+                                    <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                        name="surface"/>
+                                </rng:choice>
+                            </rng:oneOrMore>
+                        </rng:group>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="text" module="textstructure" mode="change">
+                    <content xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                        <rng:group xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                            <rng:zeroOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="model.global"/>
+                            </rng:zeroOrMore>
+                            <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0" name="body"/>
+                            <rng:zeroOrMore xmlns:rng="http://relaxng.org/ns/structure/1.0">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="model.global"/>
+                            </rng:zeroOrMore>
+                        </rng:group>
+                    </content>
+                </elementSpec>
+<!--                <classSpec ident="att.global" type="atts" mode="change" module="tei">
+                    <attList>
+                        <attDef ident="xml:base" mode="delete"/>
+                        <attDef ident="rendition" mode="delete"/>
+                    </attList>
+                </classSpec>
+-->                <classSpec ident="att.global.linking" type="atts" mode="change" module="tei">
+                    <attList>
+                        <attDef ident="synch" mode="delete"/>
+                        <attDef ident="synch" mode="delete"/>
+                        <attDef ident="sameAs" mode="delete"/>
+                        <attDef ident="copyOf" mode="delete"/>
+                        <attDef ident="next" mode="delete"/>
+                        <attDef ident="prev" mode="delete"/>
+                        <attDef ident="exclude" mode="delete"/>
+                        <attDef ident="select" mode="delete"/>
+                    </attList>
+                </classSpec>
+                <elementSpec ident="suppliedMilestone" ns="http://www.vangoghletters.org/ns/"
+                    mode="add">
+                    <desc>For supplieds that overlap other elements</desc>
+                    <classes mode="change">
+                        <memberOf key="model.milestoneLike" mode="add"/>
+                    </classes>
+                    <content>
+                        <rng:empty xmlns:rng="http://relaxng.org/ns/structure/1.0"/>
+                    </content>
+                    <attList>
+                        <attDef ident="type" mode="add" usage="req">
+                            <desc>open or close milestone</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="data.enumerated"/>
+                            </datatype>
+                            <valList type="closed" mode="replace">
+                                <valItem ident="open"/>
+                                <valItem ident="close"/>
+                            </valList>
+                        </attDef>
+                    </attList>
+                </elementSpec>
+                <elementSpec ident="whiteline" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>White line</desc>
+                    <classes>
+                        <memberOf key="model.milestoneLike"/>
+                    </classes>
+                    <content>
+                        <rng:empty xmlns:rng="http://relaxng.org/ns/structure/1.0"/>
+                    </content>
+                </elementSpec>
+                <elementSpec ident="pb" module="core" mode="change">
+                    <attList>
+                        <attDef ident="f" mode="add" usage="opt">
+                            <desc>refers to 'folio'</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:text xmlns:rng="http://relaxng.org/ns/structure/1.0"/>
+                            </datatype>
+                        </attDef>
+                        <attDef ident="ed" mode="delete"/>
+                    </attList>
+                </elementSpec>
+                <elementSpec ident="bibleref" ns="http://www.vangoghletters.org/ns/" mode="add">
+                    <desc>Reference to the Bible</desc>
+                    <classes>
+                        <memberOf key="model.ptrLike"/>
+                    </classes>
+                    <content>
+                        <rng:text xmlns:rng="http://relaxng.org/ns/structure/1.0"/>
+                    </content>
+                    <attList>
+                        <attDef ident="book" mode="add" usage="req">
+                            <desc>Reference to Bible book</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:text xmlns:rng="http://relaxng.org/ns/structure/1.0"/>
+                            </datatype>
+                        </attDef>
+                        <attDef ident="chap" mode="add" usage="opt">
+                            <desc>Reference to Bible chapter</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:text xmlns:rng="http://relaxng.org/ns/structure/1.0"/>
+                            </datatype>
+                        </attDef>
+                        <attDef ident="v" mode="add" usage="opt">
+                            <desc>Reference to Bible verse</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:text xmlns:rng="http://relaxng.org/ns/structure/1.0"/>
+                            </datatype>
+                        </attDef>
+                        <attDef ident="vr" mode="add" usage="opt">
+                            <desc>Reference to Bible verse range</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:text xmlns:rng="http://relaxng.org/ns/structure/1.0"/>
+                            </datatype>
+                        </attDef>
+                    </attList>
+                </elementSpec>
+                <moduleRef key="analysis"/>
+                <elementSpec module="analysis" ident="cl" mode="delete"/>
+                <elementSpec module="analysis" ident="interp" mode="delete"/>
+                <elementSpec module="analysis" ident="interpGrp" mode="delete"/>
+                <elementSpec module="analysis" ident="m" mode="delete"/>
+                <elementSpec module="analysis" ident="phr" mode="delete"/>
+                <elementSpec module="analysis" ident="s" mode="delete"/>
+                <elementSpec module="analysis" ident="span" mode="delete"/>
+                <elementSpec module="analysis" ident="spanGrp" mode="delete"/>
+                <elementSpec module="analysis" ident="w" mode="delete"/>
+                <elementSpec ident="c" module="analysis" mode="change">
+                    <classes mode="change">
+                        <memberOf key="att.typed" mode="delete"/>
+                        <memberOf key="att.segLike" mode="delete"/>
+                    </classes>
+                    <attList>
+                        <attDef ident="type" mode="add" usage="opt">
+                            <desc>characterizes the type of segment. kk: kunstkomma, kp: kunstpunt,
+                                shy: soft hyphen. shy gebruiken we voor een door Van Gogh geplaatst
+                                afbreekstreepje dat verdwijnt in de doorlopende weergave.</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="data.enumerated"/>
+                            </datatype>
+                            <valList type="closed" mode="replace">
+                                <valItem ident="kk"/>
+                                <valItem ident="kp"/>
+                                <valItem ident="shy"/>
+                            </valList>
+                        </attDef>
+                    </attList>
+                </elementSpec>
+                <moduleRef key="figures"/>
+                <elementSpec module="figures" ident="cell" mode="delete"/>
+                <elementSpec module="figures" ident="figDesc" mode="delete"/>
+                <elementSpec module="figures" ident="formula" mode="delete"/>
+                <elementSpec module="figures" ident="row" mode="delete"/>
+                <elementSpec module="figures" ident="table" mode="delete"/>
+                <elementSpec ident="hi" module="core" mode="change">
+                    <attList>
+                        <attDef ident="rend" mode="change" usage="req">
+                            <desc>indicates how the element in question was rendered or presented
+                                in&#xD; the source text. Waarden: indent (voor inspringing
+                                alinea), ital&#xD; (cursief), sc (smallcaps), ss
+                                (superscript)</desc>
+                            <datatype minOccurs="1" maxOccurs="unbounded">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="data.enumerated"/>
+                            </datatype>
+                            <valList type="closed" mode="replace">
+                                <valItem ident="ital">
+                                    <desc>Italics</desc>
+                                </valItem>
+                                <valItem ident="sc">
+                                    <desc>Smallcaps</desc>
+                                </valItem>
+                                <valItem ident="ss">
+                                    <desc>Superscript</desc>
+                                </valItem>
+                                <valItem ident="bold">
+                                    <desc>Bold</desc>
+                                </valItem>
+                            </valList>
+                        </attDef>
+                    </attList>
+                </elementSpec>
+                <elementSpec ident="rs" module="core" mode="change">
+                    <classes mode="change">
+                        <memberOf key="att.typed" mode="delete"/>
+                    </classes>
+                    <attList>
+                        <attDef ident="type" mode="add" usage="req">
+                            <desc>indicates more specifically the object referred to by the&#xD;
+                                referencing string. Values: ill (illustraties), otherart&#xD;
+                                (kunstwerken die niet voorkomen als illustratie), pers
+                                (personen),&#xD; lit (lektuur van Van Gogh), topo
+                                (plaatsaanduidingen)</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="data.enumerated"/>
+                            </datatype>
+                            <valList type="closed" mode="replace">
+                                <valItem ident="ill"/>
+                                <valItem ident="otherart"/>
+                                <valItem ident="pers"/>
+                                <valItem ident="lit"/>
+                                <valItem ident="topo"/>
+                                <valItem ident="sketch"/>
+                            </valList>
+                        </attDef>
+                    </attList>
+                </elementSpec>
+                <elementSpec ident="ab" module="linking" mode="change">
+                    <classes mode="change">
+                        <memberOf key="att.typed" mode="delete"/>
+                    </classes>
+                    <attList>
+                        <attDef ident="part" mode="delete"/>
+                        <attDef ident="type" mode="delete"/>
+                        <attDef ident="subtype" mode="delete"/>
+                        <attDef ident="n" mode="delete"/>
+                        <attDef ident="rend" mode="change" usage="opt">
+                            <desc>indicates how the element in question was rendered or presented in
+                                the source text. Waarden: indent (voor inspringing alinea), ital
+                                (cursief), sc (smallcaps), ss (superscript)</desc>
+                            <datatype minOccurs="1" maxOccurs="unbounded">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="data.enumerated"/>
+                            </datatype>
+                            <valList type="closed" mode="replace">
+                                <valItem ident="indent"/>
+                                <valItem ident="separate"/>
+                                <valItem ident="html"/>
+                            </valList>
+                        </attDef>
+                        <attDef ident="ontRef" mode="add" usage="opt">
+                            <desc>Identifies URL's of this object in LOD cloud</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="data.pointer"/>
+                            </datatype>
+                        </attDef>
+                        <attDef ident="html" mode="add">
+                            <desc>refers to html fragment to be used in rendering this element
+                                instead of standard transformation </desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="data.pointer"/>
+                            </datatype>
+                        </attDef>
+                    </attList>
+                </elementSpec>
+                <classSpec ident="att.global.analytic" module="analysis" mode="change" type="atts">
+                    <attList>
+                        <attDef ident="ana" mode="delete"/>
+                    </attList>
+                </classSpec>
+                <elementSpec ident="lb" mode="change">
+                    <attList>
+                        <attDef ident="ed" mode="delete"/>
+                    </attList>
+                </elementSpec>
+                <elementSpec ident="anchor" module="linking" mode="change">
+                    <classes mode="change">
+                        <memberOf key="att.typed" mode="delete"/>
+                    </classes>
+                </elementSpec>
+                <classSpec ident="att.segLike" mode="change" type="atts" module="tei">
+                    <attList>
+                        <attDef ident="type" mode="delete"/>
+                        <attDef ident="function" mode="delete"/>
+                        <attDef ident="part" mode="delete"/>
+                    </attList>
+                </classSpec>
+                <elementSpec ident="figure" mode="change">
+                    <attList>
+                        <attDef ident="place" mode="delete"/>
+                    </attList>
+                </elementSpec>
+                <elementSpec ident="TEI" module="textstructure" mode="change">
+                    <attList>
+                        <attDef ident="transformation" mode="add" usage="opt" ns="http://www.w3.org/2003/g/data-view#">
+                            <desc>Identifies transformation to RDF</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="data.pointer"/>
+                            </datatype>
+                        </attDef>
+                    </attList>
+                </elementSpec>
+                <elementSpec ident="div" module="textstructure" mode="change">
+                    <attList>
+                        <attDef ident="ontRef" mode="add" usage="opt">
+                            <desc>Identifies URL's of this object in LOD cloud</desc>
+                            <datatype minOccurs="1" maxOccurs="1">
+                                <rng:ref xmlns:rng="http://relaxng.org/ns/structure/1.0"
+                                    name="data.pointer"/>
+                            </datatype>
+                        </attDef>
+                    </attList>
+                </elementSpec>
+            </schemaSpec>
+        </body>
+    </text>
+</TEI>
