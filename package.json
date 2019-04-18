@@ -8,7 +8,7 @@
     "url": "https://github.com/CLARIAH/scholarly-web-annotation-client.git"
   },
   "scripts": {
-    "test": "mocha --compilers js:babel/core/register -r jsdom-global/register src/test/test-*.js",
+    "test": "mocha --compilers js:@babel/register -r jsdom-global/register src/test/test-*.js",
     "test:lint": "eslint . --ext .js --ext .jsx --ignore-path .eslintignore --cache",
     "dev": "webpack -d --progress --colors --watch --output ./dist/swac.js",
     "start": "webpack-dev-server --mode=development --watch",
