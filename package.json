@@ -42,7 +42,7 @@
     "gulp": "^4.0.0",
     "gulp-connect": "^5.6.1",
     "gulp-sass": "^4.0.2",
-    "jquery": "^3.3.1",
+    "jquery": "^3.4.1",
     "jsdom": "^13.2.0",
     "jsdom-global": "^3.0.2",
     "microevent": "^1.0.0",
@@ -63,7 +63,7 @@
     "uuid4": "^1.1.4",
     "vinyl-named": "^1.1.0",
     "webpack": "^4.22.0",
-    "webpack-bundle-analyzer": "^3.0.3",
+    "webpack-bundle-analyzer": "^3.3.2",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.14",
     "webpack-stream": "^5.2.1"
